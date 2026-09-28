@@ -1,6 +1,8 @@
 import { buildApp } from '../src/server/app.js';
 import { prisma } from '../src/db/client.js';
 import { MarketingService } from '../src/services/marketingService.js';
+import { config } from '../src/config/index.js';
+import crypto from 'crypto';
 
 async function runE2ETests() {
   console.log('====================================================');
@@ -42,21 +44,31 @@ async function runE2ETests() {
     // Clean up any potential leftover from previous test
     await prisma.payment.deleteMany({ where: { stripePaymentId: testPaymentId } });
 
+    const payloadObj = {
+      type: 'checkout.session.completed',
+      data: {
+        object: {
+          id: `cs_${Date.now()}`,
+          payment_intent: testPaymentId,
+          amount_total: 4900, // $49.00
+          currency: 'usd',
+          customer_details: { email: 'buyer@agency.com' },
+        },
+      },
+    };
+    const payloadStr = JSON.stringify(payloadObj);
+    const ts = Math.floor(Date.now() / 1000);
+    const hmac = crypto.createHmac('sha256', config.stripe.webhookSecret).update(`${ts}.${payloadStr}`).digest('hex');
+    const signature = `t=${ts},v1=${hmac}`;
+
     const webhookRes = await app.inject({
       method: 'POST',
       url: '/webhooks/stripe',
-      payload: {
-        type: 'checkout.session.completed',
-        data: {
-          object: {
-            id: `cs_${Date.now()}`,
-            payment_intent: testPaymentId,
-            amount_total: 4900, // $49.00
-            currency: 'usd',
-            customer_details: { email: 'buyer@agency.com' },
-          },
-        },
+      headers: {
+        'content-type': 'application/json',
+        'stripe-signature': signature,
       },
+      payload: payloadStr,
     });
 
     assert(webhookRes.statusCode === 200, 'Webhook accepted with HTTP 200');
@@ -96,19 +108,29 @@ async function runE2ETests() {
 
     // Test 3: Idempotency (Duplicate Webhook Must NOT Re-Burn)
     console.log('\n[Step 3] Testing Idempotency Guard (Duplicate Stripe Webhook Delivery)...');
+    const dupPayloadObj = {
+      type: 'checkout.session.completed',
+      data: {
+        object: {
+          payment_intent: testPaymentId,
+          amount_total: 4900,
+          currency: 'usd',
+        },
+      },
+    };
+    const dupPayloadStr = JSON.stringify(dupPayloadObj);
+    const dupTs = Math.floor(Date.now() / 1000);
+    const dupHmac = crypto.createHmac('sha256', config.stripe.webhookSecret).update(`${dupTs}.${dupPayloadStr}`).digest('hex');
+    const dupSignature = `t=${dupTs},v1=${dupHmac}`;
+
     const duplicateRes = await app.inject({
       method: 'POST',
       url: '/webhooks/stripe',
-      payload: {
-        type: 'checkout.session.completed',
-        data: {
-          object: {
-            payment_intent: testPaymentId,
-            amount_total: 4900,
-            currency: 'usd',
-          },
-        },
+      headers: {
+        'content-type': 'application/json',
+        'stripe-signature': dupSignature,
       },
+      payload: dupPayloadStr,
     });
 
     const duplicateBody = JSON.parse(duplicateRes.body);

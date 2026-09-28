@@ -5,6 +5,7 @@ import { PaymentService } from '../../services/paymentService.js';
 import { BurnService } from '../../services/burnService.js';
 import { MarketingService } from '../../services/marketingService.js';
 import { FulfillmentService } from '../../services/fulfillmentService.js';
+import { SkillFulfillmentService } from '../../services/skillFulfillmentService.js';
 import { EventRouter } from '../../core/router.js';
 import { config } from '../../config/index.js';
 
@@ -59,6 +60,27 @@ export async function webhookRoutes(fastify: FastifyInstance) {
 
         fastify.log.info(`[Webhook] Valid checkout event received for payment ${paymentId}: ${amountCents} ${currency}`);
 
+        const metadata = session.metadata || {};
+
+        // Branch: Claw Mart Skill Purchase
+        if (metadata.type === 'skill_purchase' && metadata.skillId) {
+          fastify.log.info(`[Claw Mart] Processing skill purchase for skill ${metadata.skillId}`);
+          const skillResult = await SkillFulfillmentService.processSkillPurchase({
+            skillId: metadata.skillId,
+            stripePaymentId: paymentId,
+            amountCents,
+            buyerEmail: session.customer_details?.email,
+          });
+
+          return reply.status(200).send({
+            received: true,
+            status: 'completed',
+            type: 'skill_purchase',
+            downloadUrl: skillResult.downloadUrl,
+          });
+        }
+
+        // Branch: Günther Craft Core Playbook Purchase
         // 1. Idempotency Check & Record Payment in DB
         const { payment, isNew, alreadyBurned } = await PaymentService.recordIncomingPayment({
           paymentId,

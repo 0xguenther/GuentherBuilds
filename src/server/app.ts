@@ -4,6 +4,7 @@ import cors from '@fastify/cors';
 import fastifyStatic from '@fastify/static';
 import path from 'path';
 import { webhookRoutes } from './routes/webhookRoutes.js';
+import { skillRoutes } from './routes/skillRoutes.js';
 
 export async function buildApp() {
   const app = Fastify({
@@ -33,6 +34,7 @@ export async function buildApp() {
   // Delivery occurs strictly through authenticated /download/:token endpoint.
 
   await app.register(webhookRoutes);
+  await app.register(skillRoutes);
 
   return app;
 }

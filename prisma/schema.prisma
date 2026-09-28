@@ -53,3 +53,53 @@ model Trace {
   status     String   @default("ok") // ok | error
   createdAt  DateTime @default(now())
 }
+
+// --- Claw Mart: AI Skills & MCP Marketplace ---
+
+model Creator {
+  id                 String   @id @default(uuid())
+  name               String
+  email              String   @unique
+  xHandle            String?
+  stripeCustomerId   String?  @unique
+  subscriptionStatus String   @default("inactive") // inactive | active | past_due | canceled
+  skills             Skill[]
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model Skill {
+  id              String          @id @default(uuid())
+  title           String
+  slug            String          @unique
+  description     String
+  category        String          // mcp | eliza_plugin | workflow
+  priceCents      Int
+  takeRatePercent Int             @default(10) // 10% platform take-rate, 100% if official
+  isOfficial      Boolean         @default(false)
+  creatorId       String?
+  creator         Creator?        @relation(fields: [creatorId], references: [id])
+  assetPath       String          // e.g. "skills/eliza-token-burner.zip"
+  version         String          @default("1.0.0")
+  downloadsCount  Int             @default(0)
+  purchases       SkillPurchase[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model SkillPurchase {
+  id                 String   @id @default(uuid())
+  skillId            String
+  skill              Skill    @relation(fields: [skillId], references: [id])
+  buyerEmail         String?
+  stripePaymentId    String   @unique
+  amountCents        Int
+  burnAmountCents    Int
+  creatorPayoutCents Int
+  downloadToken      String   @unique
+  downloadExpiresAt  DateTime
+  downloadCount      Int      @default(0)
+  status             String   @default("completed") // completed | burned
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}

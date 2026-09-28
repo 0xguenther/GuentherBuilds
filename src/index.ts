@@ -2,6 +2,7 @@ import { buildApp } from './server/app.js';
 import { config } from './config/index.js';
 import { checkDatabaseConnection } from './db/client.js';
 import { guntherDaemon } from './cron/daemon.js';
+import { skillService } from './services/skillService.js';
 
 async function main() {
   console.log('====================================================');
@@ -15,6 +16,9 @@ async function main() {
     process.exit(1);
   }
   console.log('✓ SQLite (Prisma) State Engine initialized & verified.');
+
+  await skillService.seedDefaultSkills();
+  console.log('✓ Claw Mart Skills Catalog initialized & seeded.');
 
   const app = await buildApp();
 

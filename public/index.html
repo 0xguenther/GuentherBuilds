@@ -54,8 +54,8 @@
 
       <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
         <a href="#playbook" class="hover:text-white transition">Günther Craft</a>
+        <a href="#clawmart" class="hover:text-white transition">Claw Mart</a>
         <a href="#ecosystem" class="hover:text-white transition">Ökosystem</a>
-        <a href="#tokenomics" class="hover:text-white transition">Tokenomics</a>
         <a href="#terminal" class="hover:text-white transition">Live Agent</a>
       </nav>
 
@@ -165,6 +165,99 @@
     </div>
   </section>
 
+  <!-- Claw Mart: AI Skills & MCP Marketplace -->
+  <section id="clawmart" class="max-w-6xl mx-auto px-6 py-24 border-b border-slate-800">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+      <div>
+        <span class="text-xs font-mono font-bold tracking-widest uppercase text-blue-400">Marktplatz für KI-Skills</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2">Claw Mart</h2>
+        <p class="mt-2 text-slate-400 text-sm max-w-xl">
+          Modulare, sofort einsatzbereite MCP-Server, ElizaOS-Actions und Workflows. 100% verifiziert, keine Spielzeug-Prompts.
+        </p>
+      </div>
+      <div class="mt-6 md:mt-0 flex gap-4 text-xs font-mono">
+        <div class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-lg">
+          <span class="text-slate-500">PLATFORM FEE:</span> <span class="text-emerald-400 font-bold">10% TO BURN</span>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-lg">
+          <span class="text-slate-500">CREATOR PAYOUT:</span> <span class="text-blue-400 font-bold">90% DIRECT</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skills Grid -->
+    <div id="skills-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Skill 1 -->
+      <div class="bg-slate-900/70 border border-slate-800 hover:border-blue-500/50 rounded-xl p-6 flex flex-col justify-between transition">
+        <div>
+          <div class="flex justify-between items-center mb-4">
+            <span class="text-xs font-mono bg-blue-950 text-blue-400 border border-blue-800 px-2 py-0.5 rounded">ELIZA_PLUGIN</span>
+            <span class="text-xs font-mono text-emerald-400">OFFICIAL</span>
+          </div>
+          <h3 class="text-lg font-bold text-slate-100">ElizaOS Base Token Burner</h3>
+          <p class="text-slate-400 text-xs mt-2 leading-relaxed">
+            Autonomer ElizaOS Action Plugin für mathematisch begrenzte $GÜNTER Burns auf Base L2 via CDP AgentKit MPC.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+          <div>
+            <span class="text-xl font-bold font-mono text-white">$29</span>
+            <span class="text-xs text-slate-500 ml-1 font-mono">USD</span>
+          </div>
+          <button onclick="buySkill('eliza-token-burner')" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow-md shadow-blue-950">
+            Kaufen
+          </button>
+        </div>
+      </div>
+
+      <!-- Skill 2 -->
+      <div class="bg-slate-900/70 border border-slate-800 hover:border-orange-500/50 rounded-xl p-6 flex flex-col justify-between transition">
+        <div>
+          <div class="flex justify-between items-center mb-4">
+            <span class="text-xs font-mono bg-orange-950 text-orange-400 border border-orange-800 px-2 py-0.5 rounded">MCP SERVER</span>
+            <span class="text-xs font-mono text-emerald-400">OFFICIAL</span>
+          </div>
+          <h3 class="text-lg font-bold text-slate-100">Fastify Stripe Webhook MCP</h3>
+          <p class="text-slate-400 text-xs mt-2 leading-relaxed">
+            Hardened Fastify Webhook Gateway mit Raw-Body HMAC-SHA256 Signaturprüfung und MCP-Tool-Anbindung.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+          <div>
+            <span class="text-xl font-bold font-mono text-white">$39</span>
+            <span class="text-xs text-slate-500 ml-1 font-mono">USD</span>
+          </div>
+          <button onclick="buySkill('fastify-stripe-mcp')" class="bg-orange-600 hover:bg-orange-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow-md shadow-orange-950">
+            Kaufen
+          </button>
+        </div>
+      </div>
+
+      <!-- Skill 3 -->
+      <div class="bg-slate-900/70 border border-slate-800 hover:border-emerald-500/50 rounded-xl p-6 flex flex-col justify-between transition">
+        <div>
+          <div class="flex justify-between items-center mb-4">
+            <span class="text-xs font-mono bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded">WORKFLOW</span>
+            <span class="text-xs font-mono text-emerald-400">OFFICIAL</span>
+          </div>
+          <h3 class="text-lg font-bold text-slate-100">CDP MPC Wallet Guard</h3>
+          <p class="text-slate-400 text-xs mt-2 leading-relaxed">
+            Zero-Plaintext-Key MPC Wallet Manager für autonome Agenten mit Gas-Spike-Schutzschalter.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+          <div>
+            <span class="text-xl font-bold font-mono text-white">$49</span>
+            <span class="text-xs text-slate-500 ml-1 font-mono">USD</span>
+          </div>
+          <button onclick="buySkill('cdp-mpc-wallet-guard')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow-md shadow-emerald-950">
+            Kaufen
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Ecosystem: Claw Mart & Clawcommerce -->
   <section id="ecosystem" class="max-w-6xl mx-auto px-6 py-24">
     <div class="text-center max-w-2xl mx-auto mb-16">
@@ -235,5 +328,32 @@
     </div>
   </footer>
 
+  <script>
+    async function buySkill(slug) {
+      const btn = event.target;
+      const originalText = btn.innerText;
+      try {
+        btn.disabled = true;
+        btn.innerText = 'Laden...';
+        const res = await fetch(`/api/skills/${slug}/checkout`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: '{}',
+        });
+        const data = await res.json();
+        if (data.checkoutUrl) {
+          window.location.href = data.checkoutUrl;
+        } else {
+          alert('Checkout-Fehler: ' + (data.error || 'Bitte erneut versuchen'));
+          btn.disabled = false;
+          btn.innerText = originalText;
+        }
+      } catch (err) {
+        alert('Netzwerkfehler beim Starten des Checkouts.');
+        btn.disabled = false;
+        btn.innerText = originalText;
+      }
+    }
+  </script>
 </body>
 </html>

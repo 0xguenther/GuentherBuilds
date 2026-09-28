@@ -63,4 +63,43 @@ export class StripeMcpClient {
       paymentLinkUrl: paymentLink.url,
     };
   }
+
+  /**
+   * Creates a customized Checkout Session for digital products and skills
+   */
+  static async createCheckoutSession(params: {
+    title: string;
+    description: string;
+    priceInCents: number;
+    metadata: Record<string, string>;
+    successUrl: string;
+    cancelUrl: string;
+  }): Promise<{ sessionId: string; sessionUrl: string }> {
+    const stripe = this.getStripe();
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'payment',
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: params.title,
+              description: params.description,
+            },
+            unit_amount: params.priceInCents,
+          },
+          quantity: 1,
+        },
+      ],
+      metadata: params.metadata,
+      success_url: params.successUrl,
+      cancel_url: params.cancelUrl,
+    });
+
+    return {
+      sessionId: session.id,
+      sessionUrl: session.url || '',
+    };
+  }
 }
