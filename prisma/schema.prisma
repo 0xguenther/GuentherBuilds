@@ -21,6 +21,9 @@ model Payment {
   status       String   @default("received") // received | calculating | burning | burned | failed
   burnAmount   BigInt?
   txHash       String?  @unique
+  downloadToken String? @unique
+  downloadExpiresAt DateTime?
+  downloadCount Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }

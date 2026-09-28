@@ -62,6 +62,24 @@ async function runE2ETests() {
     assert(webhookRes.statusCode === 200, 'Webhook accepted with HTTP 200');
     const webhookBody = JSON.parse(webhookRes.body);
     assert(webhookBody.received === true, 'Webhook acknowledged reception');
+    assert(typeof webhookBody.downloadUrl === 'string', `Download URL generated: ${webhookBody.downloadUrl}`);
+
+    // Test 2b: Digital Asset Delivery / Download
+    console.log('\n[Step 2b] Verifying Product Download via Token...');
+    const downloadRes = await app.inject({
+      method: 'GET',
+      url: webhookBody.downloadUrl,
+    });
+    assert(downloadRes.statusCode === 200, 'Download endpoint returns HTTP 200');
+    assert(downloadRes.headers['content-disposition']?.includes('Guenther-Craft-Playbook.md') === true, 'Correct content-disposition attachment header');
+    assert(downloadRes.body.includes('Günther Craft: Das Playbook'), 'File content contains actual Playbook markdown');
+
+    // Test invalid download token
+    const invalidDownloadRes = await app.inject({
+      method: 'GET',
+      url: '/download/fake_token_123',
+    });
+    assert(invalidDownloadRes.statusCode === 404, 'Invalid token returns HTTP 404');
 
     // Allow setImmediate worker to finish
     await new Promise((r) => setTimeout(r, 600));
@@ -73,6 +91,7 @@ async function runE2ETests() {
     assert(paymentInDb !== null, 'Payment saved in SQLite database');
     assert(paymentInDb?.amountCents === 4900, 'Amount correctly stored as 4900 cents ($49.00)');
     assert(paymentInDb?.status === 'burned', 'Payment status transitioned to "burned"');
+    assert(paymentInDb?.downloadCount === 1, 'Download count incremented to 1');
     assert(paymentInDb?.txHash?.startsWith('0x') === true, `Burn TxHash recorded (${paymentInDb?.txHash?.slice(0, 14)}...)`);
 
     // Test 3: Idempotency (Duplicate Webhook Must NOT Re-Burn)

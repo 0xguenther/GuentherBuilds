@@ -1,8 +1,10 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import fs from 'fs';
 import { StripeMcpClient } from '../../mcp/stripeMcp.js';
 import { PaymentService } from '../../services/paymentService.js';
 import { BurnService } from '../../services/burnService.js';
 import { MarketingService } from '../../services/marketingService.js';
+import { FulfillmentService } from '../../services/fulfillmentService.js';
 import { EventRouter } from '../../core/router.js';
 import { config } from '../../config/index.js';
 
@@ -57,13 +59,17 @@ export async function webhookRoutes(fastify: FastifyInstance) {
           return reply.send({ received: true, status: 'already_burned' });
         }
 
-        // 2. Structured Decision Routing
+        // 2. Generate Digital Product Download Token
+        const fulfillment = await FulfillmentService.generateDownloadToken(paymentId);
+        fastify.log.info(`[Fulfillment] Download token created for ${paymentId}: ${fulfillment.downloadUrl}`);
+
+        // 3. Structured Decision Routing
         const decision = await EventRouter.routeEvent({
           source: 'STRIPE_WEBHOOK',
           rawPayload: { paymentId, amountCents, currency },
         });
 
-        // 3. Asynchronously execute Burn & Announcement
+        // 4. Asynchronously execute Burn & Announcement
         if (decision.action === 'EXECUTE_BURN') {
           // Non-blocking trigger to reply fast to Stripe
           setImmediate(async () => {
@@ -82,12 +88,38 @@ export async function webhookRoutes(fastify: FastifyInstance) {
           });
         }
 
-        return reply.status(200).send({ received: true, status: 'processing' });
+        return reply.status(200).send({
+          received: true,
+          status: 'processing',
+          downloadUrl: fulfillment.downloadUrl,
+        });
       }
 
       return reply.status(200).send({ received: true, status: 'ignored' });
     }
   );
+
+  // Digital Asset Fulfillment / Download Endpoint
+  fastify.get('/download/:token', async (request: FastifyRequest<{ Params: { token: string } }>, reply: FastifyReply) => {
+    const { token } = request.params;
+    const result = await FulfillmentService.verifyAndConsumeToken(token);
+
+    if (!result.valid || !result.filePath) {
+      if (result.reason === 'EXPIRED') {
+        return reply.status(403).send({ error: 'Download-Link ist abgelaufen (Gültigkeit: 48 Stunden).' });
+      }
+      if (result.reason === 'LIMIT_EXCEEDED') {
+        return reply.status(403).send({ error: 'Download-Limit (max. 5 Downloads) für diesen Kauf erreicht.' });
+      }
+      return reply.status(404).send({ error: 'Ungültiger oder nicht gefundener Download-Token.' });
+    }
+
+    const stream = fs.createReadStream(result.filePath);
+    return reply
+      .header('Content-Type', 'text/markdown; charset=utf-8')
+      .header('Content-Disposition', `attachment; filename="${result.fileName}"`)
+      .send(stream);
+  });
 
   // Health Check Endpoint
   fastify.get('/health', async () => {
