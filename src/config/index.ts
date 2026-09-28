@@ -19,10 +19,13 @@ export const config = {
   },
   web3: {
     networkId: process.env.BASE_NETWORK_ID || 'base-sepolia',
+    walletAddress: process.env.BASE_WALLET_ADDRESS || '',
+    walletPrivateKey: (process.env.BASE_WALLET_PRIVATE_KEY || '') as `0x${string}`,
+    rpcUrl: process.env.BASE_RPC_URL || '',
     cdpApiKeyName: process.env.CDP_API_KEY_NAME || '',
     cdpApiKeyPrivateKey: process.env.CDP_API_KEY_PRIVATE_KEY || '',
     gunterTokenAddress: process.env.GUNTER_TOKEN_ADDRESS || '0x0000000000000000000000000000000000000000',
-    burnDestinationAddress: process.env.BURN_DESTINATION_ADDRESS || '0x000000000000000000000000000000000000dEaD',
+    burnDestinationAddress: (process.env.BURN_DESTINATION_ADDRESS || '0x000000000000000000000000000000000000dEaD') as `0x${string}`,
     maxGasFeePercentage: parseFloat(process.env.MAX_GAS_FEE_PERCENTAGE || '5.0'),
   },
   x: {

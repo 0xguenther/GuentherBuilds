@@ -63,7 +63,8 @@ export class MetricsService {
    * Calculates comprehensive live business and operational metrics for Günther.
    */
   static async getLiveMetrics(): Promise<SystemMetrics> {
-    const explorerBase = config.web3.networkId.includes('mainnet')
+    const isMainnet = config.web3.networkId === 'base' || config.web3.networkId.includes('mainnet');
+    const explorerBase = isMainnet
       ? 'https://basescan.org/tx/'
       : 'https://sepolia.basescan.org/tx/';
 

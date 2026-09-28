@@ -18,7 +18,7 @@ Du entwickelst und wartest die Codebasis von Günther. Fokus: Stabile ReAct-Loop
 - **Observability:** Jeder LLM-Call muss mit Tags (Task-ID, Modell, User) an Langfuse gesendet werden.
 
 ## Security Rules
-- **Wallets:** Keine Private Keys in der `.env` oder im Code. Nutze ausschliesslich das CDP AgentKit (MPC Wallets) für Token-Transaktionen.
+- **Wallets:** Keine Private Keys im Git oder ungesichertem Code. Nutze den nativen Base L2 viem Signer (Schlüssel strikt via .env/KeePassXC) oder CDP AgentKit für Token-Transaktionen. Keinesfalls Hardcoded Keys.
 - **Idempotenz:** Prüfe vor jeder Aktion die SQLite-Datenbank.
 - **Webhook-Validierung:** Jeder Stripe-Webhook muss über die Stripe-Signatur validiert werden.
 
