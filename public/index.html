@@ -280,18 +280,100 @@
       </div>
 
       <!-- Clawcommerce -->
-      <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-8 hover:border-slate-700 transition">
-        <div class="w-12 h-12 rounded-lg bg-emerald-950 border border-emerald-800 flex items-center justify-center text-emerald-400 font-bold font-mono mb-6">
-          CC
+      <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-8 hover:border-slate-700 transition flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-6">
+            <div class="w-12 h-12 rounded-lg bg-emerald-950 border border-emerald-800 flex items-center justify-center text-emerald-400 font-bold font-mono">
+              CC
+            </div>
+            <span class="text-xs font-mono bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded">ONLINE</span>
+          </div>
+          <h3 class="text-2xl font-bold">Clawcommerce (B2B)</h3>
+          <p class="text-slate-400 text-sm mt-3 leading-relaxed">
+            Schlüsselfertige, autonome Agenten-Setups für etablierte Firmen und Agenturen. Setup: $2.000 einmalig, Betreuung & Tracing: $500/Monat Retainer.
+          </p>
+          <div class="mt-4 flex gap-2 flex-wrap text-xs font-mono text-slate-400">
+            <span class="bg-slate-800/80 px-2 py-1 rounded">SETUP: $2,000</span>
+            <span class="bg-slate-800/80 px-2 py-1 rounded">RETAINER: $500/MO</span>
+            <span class="bg-orange-950/60 text-orange-400 px-2 py-1 rounded">100% BURN</span>
+          </div>
         </div>
-        <h3 class="text-2xl font-bold">Clawcommerce (B2B)</h3>
-        <p class="text-slate-400 text-sm mt-3 leading-relaxed">
-          Schlüsselfertige, autonome Agenten-Setups für etablierte Firmen und Agenturen. Setup: $2.000 einmalig, Betreuung & Tracing: $500/Monat Retainer.
-        </p>
-        <div class="mt-6 text-xs font-mono text-slate-500">STATUS: ON-DEMAND ANFRAGEN VIA X</div>
+        <div class="mt-8 pt-4 border-t border-slate-800 flex items-center justify-between">
+          <span class="text-xs font-mono text-slate-500">QUALIFIZIERUNG OFFEN</span>
+          <button onclick="openB2bModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition shadow-md shadow-emerald-950">
+            Projekt anfragen
+          </button>
+        </div>
       </div>
     </div>
   </section>
+
+  <!-- B2B Intake Modal -->
+  <div id="b2b-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl">
+      <div class="flex justify-between items-center pb-4 border-b border-slate-800">
+        <div>
+          <h3 class="text-xl font-bold text-slate-100">Clawcommerce B2B Intake</h3>
+          <p class="text-xs text-slate-400 mt-1">Automatische Architektur- und Angebotsgenerierung</p>
+        </div>
+        <button onclick="closeB2bModal()" class="text-slate-500 hover:text-slate-300 text-xl font-bold">✕</button>
+      </div>
+
+      <form id="b2b-form" onsubmit="handleB2bSubmit(event)" class="mt-6 space-y-4">
+        <div>
+          <label class="block text-xs font-mono text-slate-400 mb-1">FIRMENNAME *</label>
+          <input type="text" id="b2b-company" required placeholder="z.B. Acme Corp AG" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono">
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-mono text-slate-400 mb-1">ANSPRECHPARTNER *</label>
+            <input type="text" id="b2b-contact" required placeholder="Name Vorname" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono">
+          </div>
+          <div>
+            <label class="block text-xs font-mono text-slate-400 mb-1">E-MAIL *</label>
+            <input type="email" id="b2b-email" required placeholder="kontakt@firma.com" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-mono text-slate-400 mb-1">ANWENDUNGSFALL / USE CASE *</label>
+          <textarea id="b2b-usecase" required rows="3" placeholder="Welche Aufgaben soll der Agent autonom ausführen? (z.B. Customer Support, Lead Qualification, Order Processing)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"></textarea>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-mono text-slate-400 mb-1">MONATLICHES VOLUMEN</label>
+            <select id="b2b-volume" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono">
+              <option value="<1,000 Transaktionen/Mo">&lt; 1.000 Transaktionen/Mo</option>
+              <option value="1,000 - 10,000 Transaktionen/Mo">1.000 - 10.000 Transaktionen/Mo</option>
+              <option value=">10,000 Transaktionen/Mo">&gt; 10.000 Transaktionen/Mo</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-mono text-slate-400 mb-1">GEWÜNSCHTE SCHNITTSTELLEN</label>
+            <input type="text" id="b2b-integrations" placeholder="z.B. Stripe, Telegram, Shopify, ERP" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono">
+          </div>
+        </div>
+
+        <div class="pt-4 flex justify-end gap-3">
+          <button type="button" onclick="closeB2bModal()" class="px-4 py-2 border border-slate-700 text-slate-300 rounded-lg text-xs font-semibold hover:bg-slate-800 transition">Abbrechen</button>
+          <button type="submit" id="b2b-submit-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded-lg text-xs font-semibold transition shadow-lg shadow-emerald-950">Angebot & Architektur generieren</button>
+        </div>
+      </form>
+
+      <!-- Proposal Result View -->
+      <div id="b2b-result" class="hidden mt-6">
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs font-mono text-slate-300 max-h-72 overflow-y-auto whitespace-pre-wrap" id="b2b-proposal-text"></div>
+        <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-800">
+          <div class="text-xs font-mono">
+            <span class="text-slate-400">SETUP:</span> <strong class="text-white">$2,000 USD</strong>
+            <span class="text-slate-400 ml-2">RETAINER:</span> <strong class="text-emerald-400">$500/Mo</strong>
+          </div>
+          <button id="b2b-checkout-btn" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-6 py-3 rounded-lg transition shadow-lg shadow-emerald-950">
+            Setup beauftragen ($2,000 via Stripe)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Live Agent Terminal Mockup -->
   <section id="terminal" class="bg-slate-950 border-t border-slate-800 py-20">
@@ -352,6 +434,67 @@
         alert('Netzwerkfehler beim Starten des Checkouts.');
         btn.disabled = false;
         btn.innerText = originalText;
+      }
+    }
+
+    function openB2bModal() {
+      document.getElementById('b2b-modal').classList.remove('hidden');
+    }
+
+    function closeB2bModal() {
+      document.getElementById('b2b-modal').classList.add('hidden');
+    }
+
+    async function handleB2bSubmit(e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById('b2b-submit-btn');
+      const originalText = submitBtn.innerText;
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Architektur wird generiert...';
+
+      const payload = {
+        companyName: document.getElementById('b2b-company').value,
+        contactName: document.getElementById('b2b-contact').value,
+        contactEmail: document.getElementById('b2b-email').value,
+        useCase: document.getElementById('b2b-usecase').value,
+        monthlyVolume: document.getElementById('b2b-volume').value,
+        integrations: document.getElementById('b2b-integrations').value,
+      };
+
+      try {
+        const res = await fetch('/api/b2b/intake', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          document.getElementById('b2b-form').classList.add('hidden');
+          document.getElementById('b2b-result').classList.remove('hidden');
+          document.getElementById('b2b-proposal-text').innerText = data.proposalMarkdown;
+          
+          document.getElementById('b2b-checkout-btn').onclick = async () => {
+            const btn = document.getElementById('b2b-checkout-btn');
+            btn.disabled = true;
+            btn.innerText = 'Leite zu Stripe weiter...';
+            const checkoutRes = await fetch(`/api/b2b/leads/${data.leadId}/checkout`, { method: 'POST' });
+            const checkoutData = await checkoutRes.json();
+            if (checkoutData.checkoutUrl) {
+              window.location.href = checkoutData.checkoutUrl;
+            } else {
+              alert('Fehler beim Starten des Checkouts: ' + (checkoutData.error || 'Bitte erneut versuchen'));
+              btn.disabled = false;
+              btn.innerText = 'Setup beauftragen ($2,000 via Stripe)';
+            }
+          };
+        } else {
+          alert('Fehler: ' + (data.error || 'Validierung fehlgeschlagen'));
+        }
+      } catch (err) {
+        alert('Netzwerkfehler beim Absenden der Anfrage.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = originalText;
       }
     }
   </script>

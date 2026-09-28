@@ -6,6 +6,7 @@ import { BurnService } from '../../services/burnService.js';
 import { MarketingService } from '../../services/marketingService.js';
 import { FulfillmentService } from '../../services/fulfillmentService.js';
 import { SkillFulfillmentService } from '../../services/skillFulfillmentService.js';
+import { B2bService } from '../../services/b2bService.js';
 import { EventRouter } from '../../core/router.js';
 import { config } from '../../config/index.js';
 
@@ -77,6 +78,24 @@ export async function webhookRoutes(fastify: FastifyInstance) {
             status: 'completed',
             type: 'skill_purchase',
             downloadUrl: skillResult.downloadUrl,
+          });
+        }
+
+        // Branch: Clawcommerce B2B Setup Fee Payment ($2,000)
+        if (metadata.type === 'b2b_setup' && metadata.leadId) {
+          fastify.log.info(`[Clawcommerce] Processing B2B Setup payment for lead ${metadata.leadId}`);
+          await B2bService.handleB2bPayment({
+            leadId: metadata.leadId,
+            stripePaymentId: paymentId,
+            amountCents,
+            customerEmail: session.customer_details?.email,
+          });
+
+          return reply.status(200).send({
+            received: true,
+            status: 'contracted',
+            type: 'b2b_setup',
+            leadId: metadata.leadId,
           });
         }
 
