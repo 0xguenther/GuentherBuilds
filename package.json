@@ -12,6 +12,7 @@
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
+    "stripe:init": "tsx scripts/init-stripe-product.ts",
     "test": "tsx test/simulate-e2e.ts"
   },
   "keywords": [
