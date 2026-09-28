@@ -40,4 +40,8 @@ export const config = {
     secretKey: process.env.LANGFUSE_SECRET_KEY || '',
     baseUrl: process.env.LANGFUSE_BASEURL || 'https://cloud.langfuse.com',
   },
+  monitoring: {
+    kumaPushUrl: process.env.KUMA_PUSH_URL || '',
+    heartbeatIntervalMs: parseInt(process.env.HEARTBEAT_INTERVAL_MS || '60000', 10),
+  },
 };

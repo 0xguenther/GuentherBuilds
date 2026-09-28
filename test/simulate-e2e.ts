@@ -168,6 +168,35 @@ async function runE2ETests() {
     const directBurnAttempt = await (await import('../src/services/burnService.js')).BurnService.executeBurn(testPaymentId);
     assert(directBurnAttempt.skipped === true, 'Concurrent/duplicate burn attempt atomically skipped via CAS');
 
+    // Test 7: Background Daemon Reconciliation & Heartbeat
+    console.log('\n[Step 7] Testing Background Daemon Reconciliation & Heartbeat...');
+    const { GuntherDaemon } = await import('../src/cron/daemon.js');
+    const testDaemon = new GuntherDaemon();
+
+    // 7a: Insert an unprocessed payment (simulating server crash during webhook)
+    const crashPaymentId = `pi_crash_${Date.now()}`;
+    await prisma.payment.create({
+      data: {
+        stripePaymentId: crashPaymentId,
+        amountCents: 4900,
+        currency: 'USD',
+        status: 'received',
+      },
+    });
+
+    const reconciledCount = await testDaemon.reconcilePendingPayments();
+    assert(reconciledCount >= 1, `Daemon reconciled ${reconciledCount} pending payment(s)`);
+
+    const reconciledPayment = await prisma.payment.findUnique({
+      where: { stripePaymentId: crashPaymentId },
+    });
+    assert(reconciledPayment?.status === 'burned', 'Reconciled payment transitioned to "burned"');
+    assert(reconciledPayment?.txHash?.startsWith('0x') === true, 'TxHash recorded for reconciled payment');
+
+    // 7b: Heartbeat check
+    const heartbeatOk = await testDaemon.emitHeartbeat();
+    assert(heartbeatOk === true, 'Heartbeat check reports healthy system');
+
   } catch (err) {
     console.error('Test execution failed with error:', err);
     failed++;
