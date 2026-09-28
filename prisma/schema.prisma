@@ -1,0 +1,52 @@
+// Günther Core — State Management (SQLite via Prisma)
+// Single source of truth for Events, Payments & Mentions (Idempotenz).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// --- Payments & Token Burns ---
+
+model Payment {
+  id           String   @id @default(uuid())
+  stripePaymentId String @unique
+  stripeSessionId String?
+  amountCents  Int
+  currency     String   @default("USD")
+  status       String   @default("received") // received | calculating | burning | burned | failed
+  burnAmount   BigInt?
+  txHash       String?  @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// --- X (Twitter) Mentions ---
+
+model Mention {
+  id        String   @id @default(uuid())
+  tweetId   String   @unique
+  author    String
+  text      String
+  status    String   @default("seen") // seen | replying | replied | failed
+  replyId   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --- LLM / Observability Tracing Log ---
+
+model Trace {
+  id         String   @id @default(uuid())
+  taskId     String
+  model      String
+  task       String
+  costUsd    Float    @default(0)
+  tokens     Int      @default(0)
+  status     String   @default("ok") // ok | error
+  createdAt  DateTime @default(now())
+}
