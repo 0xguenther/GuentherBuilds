@@ -21,3 +21,7 @@
 - **[2026-09-28]** Proxmox CT 115 Deployment & KeePass Vault-Eintrag:
   - LXC Container 115 (`10.0.1.115:3000`) auf Intel NUC Proxmox Cluster eingerichtet und live geschaltet.
   - Tresor-Eintrag `Projects/Gunther` via Vault-Broker angelegt und in `sync-env.ps1` gemappt.
+- **[2026-09-28]** 24/7 Heartbeat & Reconciliation Daemon integriert & deployt (29/29 Tests passed, [APPROVED]):
+  - Automatisches Nachbearbeiten offener Zahlungen bei Server-Restarts via atomarem CAS.
+  - Heartbeat-Monitoring, Uptime Kuma Push Support, Graceful Shutdown (SIGINT/SIGTERM).
+  - Live auf Proxmox CT 115 im `gunther-core.service` aktiv.
