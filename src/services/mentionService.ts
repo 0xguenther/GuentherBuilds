@@ -2,7 +2,7 @@ import { prisma } from '../db/client.js';
 
 export class MentionService {
   /**
-   * Records or checks a mention. Returns whether it is new and needs handling.
+   * Records a new mention if not yet tracked.
    */
   static async recordMention(tweetId: string, author: string, text: string) {
     const existing = await prisma.mention.findUnique({
@@ -12,7 +12,7 @@ export class MentionService {
     if (existing) {
       return {
         mention: existing,
-        shouldProcess: existing.status === 'seen',
+        isNew: false,
       };
     }
 
@@ -27,8 +27,24 @@ export class MentionService {
 
     return {
       mention: created,
-      shouldProcess: true,
+      isNew: true,
     };
+  }
+
+  /**
+   * Atomically claims a mention for replying using CAS.
+   * Only transitions from 'seen' to 'replying'.
+   * Prevents double-reply race conditions.
+   */
+  static async claimForReplying(tweetId: string): Promise<boolean> {
+    const res = await prisma.mention.updateMany({
+      where: {
+        tweetId,
+        status: 'seen',
+      },
+      data: { status: 'replying' },
+    });
+    return res.count > 0;
   }
 
   static async markReplying(tweetId: string) {

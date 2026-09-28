@@ -36,6 +36,22 @@ export class PaymentService {
     };
   }
 
+  /**
+   * Atomically claims a payment for burning using Compare-And-Swap (CAS).
+   * Only transitions from 'received' or 'failed' to 'burning'.
+   * Prevents double-burn race conditions.
+   */
+  static async claimForBurning(stripePaymentId: string): Promise<boolean> {
+    const res = await prisma.payment.updateMany({
+      where: {
+        stripePaymentId,
+        status: { in: ['received', 'failed'] },
+      },
+      data: { status: 'burning' },
+    });
+    return res.count > 0;
+  }
+
   static async markBurning(stripePaymentId: string) {
     return prisma.payment.update({
       where: { stripePaymentId },

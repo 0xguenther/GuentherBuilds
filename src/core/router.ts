@@ -1,6 +1,6 @@
 import { RoutingDecisionSchema, RoutingDecision } from '../types/index.js';
 import { TraceService } from '../services/traceService.js';
-import { config } from '../config/index.js';
+import { LlmClient } from './llmClient.js';
 
 export interface InboundEvent {
   source: 'STRIPE_WEBHOOK' | 'X_MENTION' | 'CRON_TRIGGER' | 'USER_PROMPT';
@@ -16,7 +16,7 @@ export class EventRouter {
   static async routeEvent(event: InboundEvent): Promise<RoutingDecision> {
     const taskId = `route-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
 
-    // Fast deterministic routing for verified webhooks
+    // Fast deterministic routing for verified Stripe webhooks
     if (event.source === 'STRIPE_WEBHOOK') {
       const decision: RoutingDecision = {
         action: 'EXECUTE_BURN',
@@ -42,9 +42,25 @@ export class EventRouter {
     }
 
     if (event.source === 'X_MENTION') {
-      const decision: RoutingDecision = {
+      // 1. Attempt structured routing with local LLM
+      const localDecision = await LlmClient.routeWithLocalLlm(
+        `X Mention von @${event.rawPayload.author}: "${event.rawPayload.text}"`,
+        taskId
+      );
+
+      // Security Guard: Never allow an untrusted X_MENTION to trigger financial burns or product creation!
+      if (
+        localDecision &&
+        localDecision.action !== 'EXECUTE_BURN' &&
+        localDecision.action !== 'CREATE_PRODUCT'
+      ) {
+        return localDecision;
+      }
+
+      // 2. Deterministic Fallback
+      const fallbackDecision: RoutingDecision = {
         action: 'HANDLE_MENTION',
-        reason: 'New X mention received and not yet replied',
+        reason: 'New X mention received (deterministic fallback)',
         priority: 'MEDIUM',
         payload: {
           tweetId: event.rawPayload.tweetId,
@@ -62,7 +78,7 @@ export class EventRouter {
         status: 'ok',
       });
 
-      return RoutingDecisionSchema.parse(decision);
+      return RoutingDecisionSchema.parse(fallbackDecision);
     }
 
     // Default fallback

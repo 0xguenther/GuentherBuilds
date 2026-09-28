@@ -16,18 +16,30 @@ export class FulfillmentService {
   private static readonly DEFAULT_EXPIRY_HOURS = 48;
 
   /**
-   * Generates a cryptographically secure, time-limited download token for a payment.
+   * Generates or retrieves a valid time-limited download token for a payment.
+   * If a valid, non-expired token already exists, reuses it to prevent resetting download counts.
    */
   static async generateDownloadToken(stripePaymentId: string, expiryHours = this.DEFAULT_EXPIRY_HOURS) {
+    const existing = await prisma.payment.findUnique({
+      where: { stripePaymentId },
+    });
+
+    if (existing?.downloadToken && existing.downloadExpiresAt && existing.downloadExpiresAt > new Date()) {
+      return {
+        downloadToken: existing.downloadToken,
+        downloadExpiresAt: existing.downloadExpiresAt,
+        downloadUrl: `/download/${existing.downloadToken}`,
+      };
+    }
+
     const downloadToken = crypto.randomBytes(24).toString('hex');
     const downloadExpiresAt = new Date(Date.now() + expiryHours * 60 * 60 * 1000);
 
-    const updatedPayment = await prisma.payment.update({
+    await prisma.payment.update({
       where: { stripePaymentId },
       data: {
         downloadToken,
         downloadExpiresAt,
-        downloadCount: 0,
       },
     });
 
@@ -39,7 +51,7 @@ export class FulfillmentService {
   }
 
   /**
-   * Verifies the token and increments download count if valid.
+   * Verifies the token and atomically increments download count if within limits.
    */
   static async verifyAndConsumeToken(token: string): Promise<TokenValidationResult> {
     const payment = await prisma.payment.findUnique({
@@ -55,24 +67,26 @@ export class FulfillmentService {
       return { valid: false, reason: 'EXPIRED' };
     }
 
-    // Check max download limit
-    if (payment.downloadCount >= this.MAX_DOWNLOADS) {
-      return { valid: false, reason: 'LIMIT_EXCEEDED' };
-    }
-
     // Product path (Playbook)
     const productFilePath = path.resolve(process.cwd(), 'products', 'gunther-craft', 'PLAYBOOK.md');
     if (!fs.existsSync(productFilePath)) {
       return { valid: false, reason: 'FILE_NOT_FOUND' };
     }
 
-    // Increment download counter
-    await prisma.payment.update({
-      where: { id: payment.id },
+    // Atomic conditional increment: ensures downloadCount < MAX_DOWNLOADS
+    const updateResult = await prisma.payment.updateMany({
+      where: {
+        id: payment.id,
+        downloadCount: { lt: this.MAX_DOWNLOADS },
+      },
       data: {
         downloadCount: { increment: 1 },
       },
     });
+
+    if (updateResult.count === 0) {
+      return { valid: false, reason: 'LIMIT_EXCEEDED' };
+    }
 
     return {
       valid: true,

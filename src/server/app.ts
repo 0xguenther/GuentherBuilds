@@ -23,18 +23,14 @@ export async function buildApp() {
     runFirst: true,
   });
 
-  // Serve static landing page and assets from public/
+  // Serve static landing page and public assets only
   await app.register(fastifyStatic, {
     root: path.resolve(process.cwd(), 'public'),
     prefix: '/',
   });
 
-  // Serve digital products directly under /products/
-  await app.register(fastifyStatic, {
-    root: path.resolve(process.cwd(), 'products'),
-    prefix: '/products/',
-    decorateReply: false,
-  });
+  // NOTE: Digital products in products/ are NEVER served statically.
+  // Delivery occurs strictly through authenticated /download/:token endpoint.
 
   await app.register(webhookRoutes);
 

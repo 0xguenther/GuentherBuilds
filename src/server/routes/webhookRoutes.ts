@@ -18,21 +18,35 @@ export async function webhookRoutes(fastify: FastifyInstance) {
       },
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
-      const sig = request.headers['stripe-signature'] as string;
-      const rawBody = (request as any).rawBody;
+      const sig = request.headers['stripe-signature'];
+      const rawBody = (request as FastifyRequest & { rawBody?: string | Buffer }).rawBody;
 
       let event: any;
 
-      // In testing/dev mode with mock secrets, allow simulated payloads
-      if (config.stripe.webhookSecret.includes('placeholder') || !sig) {
-        fastify.log.warn('[Webhook] Processing in simulation / bypass mode (no real webhook secret)');
+      const isTestEnv = config.server.env === 'test' || process.env.NODE_ENV === 'test';
+      const hasMockSecret = config.stripe.webhookSecret.includes('placeholder');
+
+      // Only allow simulation if explicitly configured with mock secret in test/dev
+      if (hasMockSecret && (isTestEnv || config.server.env === 'development')) {
+        fastify.log.warn('[Webhook] Dev/Test simulation mode active (mock secret configured).');
         event = request.body;
       } else {
+        if (!sig || typeof sig !== 'string') {
+          fastify.log.warn('[Webhook] Missing stripe-signature header. Request rejected.');
+          return reply.status(400).send({ error: 'Missing stripe-signature header' });
+        }
+
+        if (!rawBody) {
+          fastify.log.error('[Webhook] Missing raw request body for signature verification.');
+          return reply.status(400).send({ error: 'Missing raw request body' });
+        }
+
         try {
           event = StripeMcpClient.constructWebhookEvent(rawBody, sig);
-        } catch (err: any) {
-          fastify.log.error(`[Webhook] Signature verification failed: ${err.message}`);
-          return reply.status(400).send({ error: `Webhook Error: ${err.message}` });
+        } catch (err: unknown) {
+          const message = err instanceof Error ? err.message : 'Unknown signature error';
+          fastify.log.error(`[Webhook] Signature verification failed: ${message}`);
+          return reply.status(400).send({ error: `Webhook Error: ${message}` });
         }
       }
 

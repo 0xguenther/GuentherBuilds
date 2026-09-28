@@ -146,6 +146,28 @@ async function runE2ETests() {
     });
     assert(traces.length >= 2, `Traces recorded in DB (${traces.length} found)`);
 
+    // Test 6: Security & Concurrency Verification
+    console.log('\n[Step 6] Verifying Security Hardening & Concurrency...');
+    
+    // 6a: Paywall Protection
+    const directProductAccess = await app.inject({
+      method: 'GET',
+      url: '/products/gunther-craft/PLAYBOOK.md',
+    });
+    assert(directProductAccess.statusCode === 404, 'Direct static access to paid products returns 404 (Paywall intact)');
+
+    // 6b: Download Limit Enforced (Max 5 downloads)
+    for (let i = 0; i < 4; i++) {
+      await app.inject({ method: 'GET', url: webhookBody.downloadUrl });
+    }
+    const limitExceededRes = await app.inject({ method: 'GET', url: webhookBody.downloadUrl });
+    assert(limitExceededRes.statusCode === 403, 'Exceeding max download limit returns HTTP 403');
+    assert(limitExceededRes.body.includes('Download-Limit'), 'Error explains download limit reached');
+
+    // 6c: Direct Concurrent Double-Burn Attempt
+    const directBurnAttempt = await (await import('../src/services/burnService.js')).BurnService.executeBurn(testPaymentId);
+    assert(directBurnAttempt.skipped === true, 'Concurrent/duplicate burn attempt atomically skipped via CAS');
+
   } catch (err) {
     console.error('Test execution failed with error:', err);
     failed++;

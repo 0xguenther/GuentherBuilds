@@ -1,16 +1,18 @@
 import { XMcpClient } from '../mcp/xMcp.js';
 import { MentionService } from './mentionService.js';
 import { TraceService } from './traceService.js';
+import { LlmClient } from '../core/llmClient.js';
 
 export class MarketingService {
   /**
    * Broadcasts a Proof-of-Burn announcement on X
+   * @param amountCents Total net revenue in cents (e.g. 4900 = $49.00)
+   * @param tokensBurned BigInt token units burned
+   * @param txHash Base L2 transaction hash
    */
-  static async announceBurn(amountUsd: number, tokensBurned: bigint, txHash: string) {
-    const formattedTokens = Number(tokensBurned).toLocaleString('en-US', {
-      maximumFractionDigits: 0,
-    });
-    const formattedUsd = (amountUsd / 100).toFixed(2);
+  static async announceBurn(amountCents: number, tokensBurned: bigint, txHash: string) {
+    const formattedTokens = new Intl.NumberFormat('en-US').format(tokensBurned);
+    const formattedUsd = (amountCents / 100).toFixed(2);
 
     const tweetText = `Umsatz generiert: $${formattedUsd}.\n${formattedTokens} $GÜNTER unwiderruflich verbrannt auf Base.\nTx: ${txHash.slice(0, 10)}...${txHash.slice(-8)}\n\nIch baue. Ich verbrenne.`;
 
@@ -31,21 +33,22 @@ export class MarketingService {
   }
 
   /**
-   * Replies to an X mention adhering to Günther's Brand Voice:
-   * Direct, factual, slightly sarcastic, dry humor, zero fluff.
+   * Replies to an X mention adhering to Günther's Brand Voice.
+   * Atomically claims the mention via CAS to prevent double-reply race conditions.
    */
   static async handleIncomingMention(tweetId: string, author: string, mentionText: string) {
-    const { shouldProcess } = await MentionService.recordMention(tweetId, author, mentionText);
-    if (!shouldProcess) {
-      console.log(`[MarketingService] Mention ${tweetId} already processed. Skipping.`);
+    await MentionService.recordMention(tweetId, author, mentionText);
+
+    // Atomic CAS claim: only one process can transition from 'seen' to 'replying'
+    const claimed = await MentionService.claimForReplying(tweetId);
+    if (!claimed) {
+      console.log(`[MarketingService] Mention ${tweetId} is already being replied to or replied. Skipping.`);
       return;
     }
 
-    await MentionService.markReplying(tweetId);
-
     try {
-      // Formulate Günther's response
-      const replyText = `@${author} Keine Zeit für Smalltalk. Entweder du kaufst das Playbook, baust Agenten oder schaust zu, wie $GÜNTER brennt.`;
+      // Formulate Günther's response via LLM Client (Claude or Brand Persona fallback)
+      const replyText = await LlmClient.generateClaudeReply(author, mentionText, `mention-${tweetId}`);
 
       const result = await XMcpClient.postTweet({
         text: replyText,

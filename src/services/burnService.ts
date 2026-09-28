@@ -13,13 +13,13 @@ export class BurnService {
       throw new Error(`Payment with ID ${stripePaymentId} not found.`);
     }
 
-    if (payment.status === 'burned') {
-      console.log(`[BurnService] Payment ${stripePaymentId} is already burned. Skipping.`);
-      return { skipped: true, txHash: payment.txHash };
+    // Atomic CAS claim: only one concurrent process can transition to 'burning'
+    const claimed = await PaymentService.claimForBurning(stripePaymentId);
+    if (!claimed) {
+      const current = await PaymentService.getPaymentByStripeId(stripePaymentId);
+      console.log(`[BurnService] Payment ${stripePaymentId} is already ${current?.status}. Skipping.`);
+      return { skipped: true, txHash: current?.txHash };
     }
-
-    // Mark as burning
-    await PaymentService.markBurning(stripePaymentId);
 
     try {
       // Calculation: Net revenue in Cents converted to Token Burn Units (e.g. 1000 tokens per dollar / 10 tokens per cent)
