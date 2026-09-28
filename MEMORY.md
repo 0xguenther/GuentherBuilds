@@ -14,3 +14,10 @@
   - X MCP Client mit Exponential Backoff bei HTTP 429.
   - Landingpage (`public/index.html`) & Günther Craft Playbook (`products/gunther-craft/PLAYBOOK.md`).
   - Production Multi-Stage Dockerfile & Docker Compose für Proxmox Intel NUC Deployment.
+- **[2026-09-28]** Security Audit & Hardening (25/25 Tests passed, [APPROVED]):
+  - Stripe-Bypass geschlossen, Paywall gehärtet, atomare CAS-Locks für Burns und Downloads.
+- **[2026-09-28]** Offizielle ElizaOS-Architektur integriert:
+  - Character (`characters/gunther.character.json`), Plugin (`src/eliza/plugin.ts`) mit State-Providern & Actions.
+- **[2026-09-28]** Proxmox CT 115 Deployment & KeePass Vault-Eintrag:
+  - LXC Container 115 (`10.0.1.115:3000`) auf Intel NUC Proxmox Cluster eingerichtet und live geschaltet.
+  - Tresor-Eintrag `Projects/Gunther` via Vault-Broker angelegt und in `sync-env.ps1` gemappt.
