@@ -15,6 +15,7 @@ export const config = {
   stripe: {
     secretKey: process.env.STRIPE_SECRET_KEY || '',
     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
+    publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || '',
   },
   web3: {
     networkId: process.env.BASE_NETWORK_ID || 'base-sepolia',
@@ -34,6 +35,8 @@ export const config = {
     localUrl: process.env.LOCAL_LLM_URL || 'http://localhost:11434',
     localModel: process.env.LOCAL_LLM_MODEL || 'llama3:8b',
     anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
+    openrouterApiKey: process.env.OPENROUTER_API_KEY || '',
+    openrouterModel: process.env.OPENROUTER_MODEL || 'anthropic/claude-sonnet-4',
   },
   langfuse: {
     publicKey: process.env.LANGFUSE_PUBLIC_KEY || '',

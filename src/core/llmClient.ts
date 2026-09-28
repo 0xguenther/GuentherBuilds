@@ -91,90 +91,165 @@ ${eventDescription}`;
   }
 
   /**
-   * High-Value Copywriting via Claude 3.5 Sonnet API with Exponential Backoff
+   * Universal Completion via Anthropic Messages API or OpenRouter Chat Completions
+   * with Exponential Backoff (429 handling) and Langfuse Tracing
    */
-  static async generateClaudeReply(
-    author: string,
-    mentionText: string,
-    taskId: string
-  ): Promise<string> {
+  static async generateCompletion(params: {
+    systemPrompt: string;
+    userPrompt: string;
+    maxTokens?: number;
+    taskId: string;
+    taskName: string;
+    timeoutMs?: number;
+  }): Promise<{ text: string; model: string; inputTokens: number; outputTokens: number; costUsd: number } | null> {
     const startTime = Date.now();
+    const hasAnthropic = Boolean(config.llm.anthropicApiKey);
+    const hasOpenRouter = Boolean(config.llm.openrouterApiKey);
 
-    // Fallback if no Anthropic API key is provided
-    if (!config.llm.anthropicApiKey) {
-      return `@${author} Zeit ist Geld. Entweder du kaufst das Playbook, baust Agenten oder schaust zu, wie $GÜNTER brennt.`;
+    if (!hasAnthropic && !hasOpenRouter) {
+      return null;
     }
 
     const maxRetries = 3;
     let delay = 1000;
+    const timeoutMs = params.timeoutMs || 8000;
+    const maxTokens = params.maxTokens || 300;
+    const usedModel = hasAnthropic ? 'claude-3-5-sonnet-20241022' : config.llm.openrouterModel;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': config.llm.anthropicApiKey,
-            'anthropic-version': '2023-06-01',
-          },
-          body: JSON.stringify({
-            model: 'claude-3-5-sonnet-20241022',
-            max_tokens: 150,
-            system: guntherCharacter.systemPrompt,
-            messages: [
-              {
-                role: 'user',
-                content: `Verfasse eine direkte, sachliche Antwort im Brand-Voice auf diesen Tweet von @${author}:\n"${mentionText}"\nMaximal 240 Zeichen. Keine Floskeln.`,
-              },
-            ],
-          }),
-          signal: AbortSignal.timeout(6000),
-        });
+        let replyText = '';
+        let inputTokens = 0;
+        let outputTokens = 0;
 
-        if (response.status === 429 && attempt < maxRetries) {
-          console.warn(`[LlmClient] Claude API rate-limited (429). Retrying in ${delay}ms...`);
-          await new Promise((r) => setTimeout(r, delay));
-          delay *= 2;
-          continue;
+        if (hasAnthropic) {
+          const response = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': config.llm.anthropicApiKey,
+              'anthropic-version': '2023-06-01',
+            },
+            body: JSON.stringify({
+              model: usedModel,
+              max_tokens: maxTokens,
+              system: params.systemPrompt,
+              messages: [{ role: 'user', content: params.userPrompt }],
+            }),
+            signal: AbortSignal.timeout(timeoutMs),
+          });
+
+          if (response.status === 429 && attempt < maxRetries) {
+            console.warn(`[LlmClient] Claude API rate-limited (429). Retrying in ${delay}ms...`);
+            await new Promise((r) => setTimeout(r, delay));
+            delay *= 2;
+            continue;
+          }
+
+          if (!response.ok) {
+            throw new Error(`Claude API error: ${response.status} ${response.statusText}`);
+          }
+
+          const data = (await response.json()) as ClaudeMessageResponse;
+          replyText = data.content?.[0]?.text?.trim() || '';
+          inputTokens = data.usage?.input_tokens || 0;
+          outputTokens = data.usage?.output_tokens || 0;
+        } else {
+          // OpenRouter API call
+          const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${config.llm.openrouterApiKey}`,
+              'HTTP-Referer': 'https://0xguenther.org',
+              'X-Title': 'Guenther Autonomous AI Entrepreneur',
+            },
+            body: JSON.stringify({
+              model: usedModel,
+              max_tokens: maxTokens,
+              messages: [
+                { role: 'system', content: params.systemPrompt },
+                { role: 'user', content: params.userPrompt },
+              ],
+            }),
+            signal: AbortSignal.timeout(timeoutMs),
+          });
+
+          if (response.status === 429 && attempt < maxRetries) {
+            console.warn(`[LlmClient] OpenRouter API rate-limited (429). Retrying in ${delay}ms...`);
+            await new Promise((r) => setTimeout(r, delay));
+            delay *= 2;
+            continue;
+          }
+
+          if (!response.ok) {
+            throw new Error(`OpenRouter API error: ${response.status} ${response.statusText}`);
+          }
+
+          const data = (await response.json()) as any;
+          replyText = data.choices?.[0]?.message?.content?.trim() || '';
+          inputTokens = data.usage?.prompt_tokens || 0;
+          outputTokens = data.usage?.completion_tokens || 0;
         }
 
-        if (!response.ok) {
-          throw new Error(`Claude API error: ${response.status} ${response.statusText}`);
-        }
-
-        const data = await response.json() as ClaudeMessageResponse;
-        const replyText = data.content?.[0]?.text?.trim();
-
-        const inputTokens = data.usage?.input_tokens || 0;
-        const outputTokens = data.usage?.output_tokens || 0;
         const costUsd = (inputTokens * 0.000003) + (outputTokens * 0.000015);
 
         await TraceService.recordTrace({
-          taskId,
-          model: 'claude-3-5-sonnet',
-          task: 'GENERATE_SALES_REPLY',
+          taskId: params.taskId,
+          model: usedModel,
+          task: params.taskName,
           tokens: inputTokens + outputTokens,
           costUsd,
           status: 'ok',
           metadata: { latencyMs: Date.now() - startTime },
         });
 
-        return replyText || `@${author} Zeit ist Geld. Hol dir Günther Craft im Store oder buche ein Clawcommerce-Setup.`;
+        return {
+          text: replyText,
+          model: usedModel,
+          inputTokens,
+          outputTokens,
+          costUsd,
+        };
       } catch (err: unknown) {
         if (attempt === maxRetries) {
-          const message = err instanceof Error ? err.message : 'Unknown Claude API error';
+          const message = err instanceof Error ? err.message : 'Unknown LLM API error';
           await TraceService.recordTrace({
-            taskId,
-            model: 'claude-3-5-sonnet',
-            task: 'GENERATE_SALES_REPLY',
+            taskId: params.taskId,
+            model: usedModel,
+            task: params.taskName,
             tokens: 0,
             costUsd: 0,
             status: 'error',
             metadata: { error: message, latencyMs: Date.now() - startTime },
           });
-          return `@${author} Zeit ist Geld. Entweder du kaufst das Playbook, baust Agenten oder schaust zu, wie $GÜNTER brennt.`;
+          return null;
         }
       }
+    }
+
+    return null;
+  }
+
+  /**
+   * High-Value Copywriting via Claude / OpenRouter API with Fallback
+   */
+  static async generateClaudeReply(
+    author: string,
+    mentionText: string,
+    taskId: string
+  ): Promise<string> {
+    const completion = await this.generateCompletion({
+      systemPrompt: guntherCharacter.systemPrompt,
+      userPrompt: `Verfasse eine direkte, sachliche Antwort im Brand-Voice auf diesen Tweet von @${author}:\n"${mentionText}"\nMaximal 240 Zeichen. Keine Floskeln.`,
+      maxTokens: 150,
+      taskId,
+      taskName: 'GENERATE_SALES_REPLY',
+      timeoutMs: 8000,
+    });
+
+    if (completion && completion.text) {
+      return completion.text;
     }
 
     return `@${author} Zeit ist Geld. Entweder du kaufst das Playbook, baust Agenten oder schaust zu, wie $GÜNTER brennt.`;

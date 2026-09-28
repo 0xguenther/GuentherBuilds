@@ -7,6 +7,7 @@ import { MarketingService } from './marketingService.js';
 import { TraceService } from './traceService.js';
 import { config } from '../config/index.js';
 import { guntherCharacter } from '../core/character.js';
+import { LlmClient } from '../core/llmClient.js';
 
 export const B2bIntakeSchema = z.object({
   companyName: z.string().min(2, 'Firmenname muss mindestens 2 Zeichen lang sein.'),
@@ -69,23 +70,9 @@ export class B2bService {
 
     let proposal = '';
 
-    if (config.llm.anthropicApiKey) {
-      try {
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': config.llm.anthropicApiKey,
-            'anthropic-version': '2023-06-01',
-          },
-          body: JSON.stringify({
-            model: 'claude-3-5-sonnet-20241022',
-            max_tokens: 1000,
-            system: `${guntherCharacter.systemPrompt}\nDu erstellst verbindliche, eiskalt präzise B2B-Architekturangebote für Clawcommerce.`,
-            messages: [
-              {
-                role: 'user',
-                content: `Erstelle ein B2B-Architekturangebot für Kunde:
+    const completion = await LlmClient.generateCompletion({
+      systemPrompt: `${guntherCharacter.systemPrompt}\nDu erstellst verbindliche, eiskalt präzise B2B-Architekturangebote für Clawcommerce.`,
+      userPrompt: `Erstelle ein B2B-Architekturangebot für Kunde:
 Unternehmen: ${lead.companyName}
 Ansprechpartner: ${lead.contactName}
 Anwendungsfall: ${lead.useCase}
@@ -97,19 +84,14 @@ Preise:
 - Monatlicher Retainer: $500 USD/Monat (Monitoring, Langfuse Tracing, Tokenomics & SLA)
 Alle Erlöse fließen in $GÜNTER Burns.
 Halte das Angebot fokussiert und technisch exakt.`,
-              },
-            ],
-          }),
-          signal: AbortSignal.timeout(8000),
-        });
+      maxTokens: 1000,
+      taskId: `b2b-proposal-${lead.id}`,
+      taskName: 'GENERATE_B2B_PROPOSAL',
+      timeoutMs: 12000,
+    });
 
-        if (response.ok) {
-          const data = (await response.json()) as any;
-          proposal = data.content?.[0]?.text || '';
-        }
-      } catch (err) {
-        console.warn('[B2bService] Claude proposal generation failed or timed out. Falling back to deterministic template.');
-      }
+    if (completion && completion.text) {
+      proposal = completion.text;
     }
 
     if (!proposal) {
@@ -148,14 +130,6 @@ Halte das Angebot fokussiert und technisch exakt.`,
         proposalMarkdown: proposal,
         status: 'qualified',
       },
-    });
-
-    await TraceService.recordTrace({
-      taskId: `b2b-proposal-${lead.id}`,
-      model: config.llm.anthropicApiKey ? 'claude-3-5-sonnet' : 'deterministic-template',
-      task: 'GENERATE_B2B_PROPOSAL',
-      status: 'ok',
-      metadata: { companyName: lead.companyName },
     });
 
     return proposal;
