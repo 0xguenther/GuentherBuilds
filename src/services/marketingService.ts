@@ -2,6 +2,8 @@ import { XMcpClient } from '../mcp/xMcp.js';
 import { MentionService } from './mentionService.js';
 import { TraceService } from './traceService.js';
 import { LlmClient } from '../core/llmClient.js';
+import { MetricsService } from './metricsService.js';
+import { guntherCharacter } from '../core/character.js';
 
 export class MarketingService {
   /**
@@ -72,5 +74,53 @@ export class MarketingService {
       await MentionService.markFailed(tweetId);
       throw err;
     }
+  }
+
+  /**
+   * Generates and broadcasts an autonomous daily business & token burn pulse update
+   */
+  static async generateDailyMarketPulse() {
+    const today = new Date().toISOString().slice(0, 10);
+    const metrics = await MetricsService.getLiveMetrics();
+
+    const formattedBurned = new Intl.NumberFormat('en-US').format(
+      BigInt(metrics.financials.totalBurnedTokens)
+    );
+
+    let pulseText = '';
+
+    const completion = await LlmClient.generateCompletion({
+      systemPrompt: `${guntherCharacter.systemPrompt}\nDu schreibst den täglichen, knallharten Marktbericht für Günthers X-Account (@guentherbuilds). Maximal 250 Zeichen. Direkte Sprache. Kein Bullshit.`,
+      userPrompt: `Schreibe ein kurzes Daily Market Pulse Update für heute (${today}).
+Kennzahlen:
+- Gesamtumsatz: $${metrics.financials.totalRevenueUsd.toFixed(2)} USD
+- Verbrannte $GÜNTER: ${formattedBurned}
+- Claw Mart Skills: ${metrics.products.clawMart.totalSkills} (${metrics.products.clawMart.totalDownloads} Downloads)
+- B2B Pipeline: ${metrics.products.clawcommerceB2b.totalLeads} Anfragen
+- LLM Marge: ${metrics.aiObservability.netProfitMarginPercent}%
+Formuliere prägnant und fokussiert.`,
+      maxTokens: 100,
+      taskId: `daily-pulse-${today}`,
+      taskName: 'GENERATE_DAILY_MARKET_PULSE',
+      timeoutMs: 8000,
+    });
+
+    if (completion && completion.text) {
+      pulseText = completion.text;
+    } else {
+      pulseText = `Günther Market Pulse (${today}):\n$${metrics.financials.totalRevenueUsd.toFixed(2)} USD Umsatz. ${formattedBurned} $GÜNTER auf Base verbrannt.\n${metrics.products.clawMart.totalSkills} Skills im Catalog. Netto-Marge: ${metrics.aiObservability.netProfitMarginPercent}%.\n\nIch baue. Ich verbrenne.`;
+    }
+
+    const tweetResult = await XMcpClient.postTweet({
+      text: pulseText,
+      idempotencyKey: `daily_pulse_${today}`,
+    });
+
+    return {
+      date: today,
+      text: pulseText,
+      tweetId: tweetResult.tweetId,
+      metrics,
+    };
   }
 }

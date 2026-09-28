@@ -6,6 +6,7 @@ import path from 'path';
 import { webhookRoutes } from './routes/webhookRoutes.js';
 import { skillRoutes } from './routes/skillRoutes.js';
 import { b2bRoutes } from './routes/b2bRoutes.js';
+import { metricsRoutes } from './routes/metricsRoutes.js';
 
 export async function buildApp() {
   const app = Fastify({
@@ -37,6 +38,7 @@ export async function buildApp() {
   await app.register(webhookRoutes);
   await app.register(skillRoutes);
   await app.register(b2bRoutes);
+  await app.register(metricsRoutes);
 
   return app;
 }

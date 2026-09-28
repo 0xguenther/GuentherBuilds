@@ -9,6 +9,7 @@ export class GuntherDaemon {
   private timer: NodeJS.Timeout | null = null;
   private isRunning = false;
   private isTickBusy = false;
+  private lastPulseDate = '';
 
   /**
    * Starts the background daemon with the configured heartbeat interval.
@@ -45,7 +46,7 @@ export class GuntherDaemon {
   }
 
   /**
-   * Main recurring cycle: reconciliation of pending payments + heartbeat.
+   * Main recurring cycle: reconciliation of pending payments + heartbeat + autonomous daily pulse.
    */
   async tick() {
     if (this.isTickBusy) {
@@ -57,8 +58,26 @@ export class GuntherDaemon {
     try {
       await this.reconcilePendingPayments();
       await this.emitHeartbeat();
+      await this.checkDailyPulse();
     } finally {
       this.isTickBusy = false;
+    }
+  }
+
+  /**
+   * Triggers an autonomous daily market pulse once per day
+   */
+  async checkDailyPulse() {
+    const today = new Date().toISOString().slice(0, 10);
+    if (this.lastPulseDate === today) return;
+
+    try {
+      console.log(`[Daemon] Triggering autonomous daily market pulse for ${today}...`);
+      await MarketingService.generateDailyMarketPulse();
+      this.lastPulseDate = today;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown pulse error';
+      console.warn(`[Daemon] Daily market pulse skipped or delayed: ${msg}`);
     }
   }
 

@@ -1,6 +1,7 @@
 import { prisma } from '../db/client.js';
 import { BurnService } from '../services/burnService.js';
 import { MarketingService } from '../services/marketingService.js';
+import { MetricsService } from '../services/metricsService.js';
 
 export interface ElizaMemory {
   id?: string;
@@ -65,6 +66,23 @@ Verbrannte $GÜNTER: ${formattedTokens}
 Offene Ausführungen: ${pendingCount} Transaktionen`;
     } catch {
       return '[GÜNTHER STATE] SQLite Status offline oder synchronisierend.';
+    }
+  },
+};
+
+/**
+ * Provider 2: Deep Observability & Metrics Provider
+ */
+export const metricsProvider: ElizaProvider = {
+  get: async () => {
+    try {
+      const m = await MetricsService.getLiveMetrics();
+      return `[GÜNTHER METRICS]
+Umsatz: $${m.financials.totalRevenueUsd} USD | Verbrannt: ${m.financials.totalBurnedTokens} $GÜNTER
+Claw Mart: ${m.products.clawMart.totalSkills} Skills (${m.products.clawMart.totalDownloads} Downloads)
+B2B Leads: ${m.products.clawcommerceB2b.totalLeads} | AI Profit Margin: ${m.aiObservability.netProfitMarginPercent}%`;
+    } catch {
+      return '[GÜNTHER METRICS] Live-Metriken werden aggregiert.';
     }
   },
 };
@@ -144,12 +162,44 @@ export const announceBurnAction: ElizaAction = {
 };
 
 /**
+ * Action 3: Autonomous Daily Market Pulse Action
+ */
+export const dailyMarketPulseAction: ElizaAction = {
+  name: 'DAILY_MARKET_PULSE',
+  similes: ['POST_MARKET_UPDATE', 'DAILY_PULSE', 'SHARE_METRICS'],
+  description: 'Erstellt und postet autonom das tägliche Günther Market Pulse Update auf X.',
+  validate: async () => true,
+  handler: async (_memory, _state, _options, callback) => {
+    try {
+      const result = await MarketingService.generateDailyMarketPulse();
+      if (callback) {
+        callback({
+          text: `Daily Market Pulse erfolgreich getwittert (${result.tweetId}): "${result.text}"`,
+          data: result,
+        });
+      }
+      return true;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown pulse error';
+      if (callback) callback({ text: `Market Pulse fehlgeschlagen: ${msg}` });
+      return false;
+    }
+  },
+  examples: [
+    [
+      { user: 'system', content: { text: '24h Timer abgelaufen: Zeit für Market Pulse' } },
+      { user: 'Günther', content: { text: 'Erstelle und poste Daily Market Pulse.', action: 'DAILY_MARKET_PULSE' } },
+    ],
+  ],
+};
+
+/**
  * Official ElizaOS Gunther Plugin
  */
 export const guntherEnterprisePlugin = {
   name: 'gunther-enterprise',
   description: 'Enterprise Revenue, Fulfillment and Burn Plugin for Günther AI Agent',
-  actions: [executeBurnAction, announceBurnAction],
-  providers: [revenueStateProvider],
+  actions: [executeBurnAction, announceBurnAction, dailyMarketPulseAction],
+  providers: [revenueStateProvider, metricsProvider],
   evaluators: [],
 };
