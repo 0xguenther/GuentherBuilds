@@ -502,38 +502,29 @@ HTML_CONTENT = """<!DOCTYPE html>
     </div>
   </div>
 
-  <h2>Sicherheits- &amp; Validierungsarchitektur</h2>
-  <table class="avoid-break">
-    <thead>
-      <tr>
-        <th>Komponente</th>
-        <th>Technische Umsetzung</th>
-        <th>Schutzwirkung</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>Kryptografische Einmal-Tokens</strong></td>
-        <td>HMAC-SHA256 Signierung mit 48 Stunden Gültigkeit</td>
-        <td>Unterbindet die unautorisierte Weitergabe und das direkte Verlinken von Asset-Dateien.</td>
-      </tr>
-      <tr>
-        <td><strong>Download-Limitierung</strong></td>
-        <td>Atomarer CAS-Zähler (Maximum: 5 Abrufe)</td>
-        <td>Schützt Bandbreite und Server-Ressourcen vor automatisierten Scraping-Prozessen.</td>
-      </tr>
-      <tr>
-        <td><strong>Path-Traversal-Schutz</strong></td>
-        <td>Kanonische Pfad-Auflösung via <span class="code-cell">path.resolve</span> gegen Whitelist</td>
-        <td>Verhindert das Auslesen interner System-Dateien oder Environment-Variablen.</td>
-      </tr>
-      <tr>
-        <td><strong>Webhook HMAC-Prüfung</strong></td>
-        <td>Stripe Endpoint Secret Signatur-Verifikation</td>
-        <td>Schützt vor unberechtigten HTTP-Payloads und simulierten Zahlungs-Events.</td>
-      </tr>
-    </tbody>
-  </table>
+  <h2>Kaufmännisches Modell: Gewinnfluss &amp; On-Chain Audit</h2>
+  <div class="callout callout-success avoid-break">
+    <div>
+      <div class="callout-title">Realer Cashflow für den Betreiber (100 % Fiat-Gewinn)</div>
+      <div style="font-size: 8.6pt; line-height: 1.5;">
+        • <strong>Umsatzerfassung:</strong> Alle Verkäufe (Playbooks, Skills, B2B-Setups) werden in realem Fiat-Geld (USD/CHF) über Stripe abgewickelt.<br>
+        • <strong>Direkte Auszahlung:</strong> Nach Abzug der regulären Stripe-Transaktionsgebühr (~2.9 %) wird der gesamte Netto-Erlös (ca. 47 CHF pro Playbook, ca. 1.940 CHF pro B2B-Kunde) <strong>vollständig auf das Bankkonto des Betreibers überwiesen</strong>.<br>
+        • <strong>Kein Geldverlust:</strong> Ihr Umsatz wird zu keinem Zeitpunkt verbrannt oder vernichtet.
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-info avoid-break">
+    <div>
+      <div class="callout-title">Die Rolle des $GUNTER-Tokens &amp; der On-Chain Engine</div>
+      <div style="font-size: 8.6pt; line-height: 1.5;">
+        • <strong>Token-Status:</strong> $GUNTER ist aktuell <strong>kein handelbarer Spekulations-Token</strong> an Börsen (aktueller Marktwert: 0,00 CHF). Er fungiert als interne Rechnungseinheit.<br>
+        • <strong>Was der On-Chain 'Burn' wirklich ist:</strong> Bei jedem Verkauf erzeugt der viem-Signer auf Base L2 eine 0-ETH-Transaktion mit verifizierbarem Calldata (<span class="code-cell">GUNTER_BURN:&lt;id&gt;:&lt;amount&gt;</span>) an die Dead-Adresse. Kosten pro Transaktion: <strong>unter 1 Rappen (&lt; $0.002)</strong> an Gas.<br>
+        • <strong>Marketing-Funktion (Social Proof):</strong> Dieser On-Chain-Beleg dient auf X und BaseScan als technischer Kassenbeleg. Er zieht die Krypto- und Entwickler-Community an und konvertiert sie zu zahlenden Kunden für die realen Software-Produkte.<br>
+        • <strong>Optionale Zukunft:</strong> Das System ist vorbereitet, falls zu einem späteren Zeitpunkt ein echter ERC-20 Token mit dezentralem Liquiditätspool gelauncht werden soll.
+      </div>
+    </div>
+  </div>
 
   <!-- KAPITEL 3 -->
   <div class="page-break"></div>
@@ -797,15 +788,11 @@ def generate_pdf():
         )
         browser.close()
 
-    # Save to docs/
+    # Save strictly to docs/ (local internal storage only)
     with open(OUTPUT_DOCS, 'wb') as f:
         f.write(pdf_bytes)
-    print(f"[OK] Saved to {OUTPUT_DOCS} ({len(pdf_bytes)} bytes)")
+    print(f"[OK] Saved strictly to local docs: {OUTPUT_DOCS} ({len(pdf_bytes)} bytes)")
 
-    # Save to public/assets/
-    with open(OUTPUT_ASSETS, 'wb') as f:
-        f.write(pdf_bytes)
-    print(f"[OK] Saved to {OUTPUT_ASSETS} ({len(pdf_bytes)} bytes)")
 
     print("\n====================================================")
     print("SUCCESS: Professional PDF generated successfully!")

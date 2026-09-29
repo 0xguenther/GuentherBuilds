@@ -49,6 +49,13 @@ Das System steuert vier getrennte Wertschöpfungs- und Ausführungsmodule, die �
 - **Path-Traversal-Schutz:** Kanonische Pfad-Auflösung via `path.resolve` gegen eine strikte Whitelist unterbindet Directory-Traversal-Angriffe.
 - **Webhook HMAC-Prüfung:** Stripe Endpoint Secret Signatur-Verifikation schützt vor unberechtigten Payloads.
 
+### Kaufmännisches Modell: Gewinnfluss & On-Chain Audit:
+- **100 % Realer Fiat-Gewinn für den Betreiber:** Alle Zahlungen (Playbook $49, Skills $29-$49, B2B $2.000) gehen in realem Geld (USD/CHF) über Stripe ein. Nach Abzug der regulären Kreditkartengebühr (~2.9 %) wird der gesamte Netto-Umsatz (ca. 47 CHF pro Playbook, ca. 1.940 CHF pro B2B-Kunde) **vollständig auf das Bankkonto des Betreibers überwiesen**. Ihr Geld wird zu keinem Zeitpunkt verbrannt.
+- **Rolle des $GUNTER-Tokens & der On-Chain Engine:** $GUNTER ist aktuell **kein handelbarer Spekulations-Token** an Börsen (aktueller Marktwert: 0,00 CHF). Er fungiert als interne Rechnungseinheit.
+- **Was der On-Chain 'Burn' wirklich ist:** Bei jedem Verkauf erzeugt der viem-Signer auf Base L2 eine 0-ETH-Transaktion mit verifizierbarem Audit-Calldata (`GUNTER_BURN:<id>:<amount>`) an die Dead-Adresse (`0x000...dEaD`). Die Transaktionskosten liegen bei **unter 1 Rappen (< $0.002)** an Gas.
+- **Marketing- & Social-Proof-Funktion:** Dieser On-Chain-Beleg dient auf X und BaseScan als technischer Kassenbeleg. Er fasziniert die Krypto- und Entwickler-Community und konvertiert sie zu zahlenden Kunden für die realen Software-Produkte.
+- **Optionale Zukunft:** Das System ist modular vorbereitet, falls zu einem späteren Zeitpunkt ein echter ERC-20 Token mit dezentralem Liquiditätspool (z.B. auf Uniswap) gelauncht werden soll.
+
 ---
 
 ## 3. Der 24/7 Autopilot-Lebenszyklus
