@@ -1,6 +1,6 @@
 """
-Guenther Readable System Documentation PDF Generator
-Generates an executive-grade, human-friendly, beautifully designed A4 PDF.
+Guenther Professional System Documentation PDF Generator
+Generates an executive-grade, technical, and mature A4 PDF documentation.
 """
 
 import os
@@ -28,7 +28,7 @@ HTML_CONTENT = """<!DOCTYPE html>
 
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 9.8pt;
+    font-size: 9.6pt;
     line-height: 1.6;
     color: #1e293b;
     background-color: #ffffff;
@@ -36,7 +36,6 @@ HTML_CONTENT = """<!DOCTYPE html>
     padding: 0;
   }
 
-  /* Page Break Utilities */
   .page-break {
     page-break-before: always;
     break-before: page;
@@ -52,7 +51,7 @@ HTML_CONTENT = """<!DOCTYPE html>
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 25mm 15mm 20mm 15mm;
+    padding: 24mm 16mm 20mm 16mm;
     background: linear-gradient(145deg, #090d16 0%, #0f172a 100%);
     color: #ffffff;
     border-radius: 12px;
@@ -64,16 +63,16 @@ HTML_CONTENT = """<!DOCTYPE html>
     border: 1px solid rgba(245, 158, 11, 0.4);
     color: #fbbf24;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 8.5pt;
+    font-size: 8pt;
     font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
-    padding: 6px 14px;
+    padding: 5px 12px;
     border-radius: 9999px;
     margin-bottom: 24px;
   }
   .cover-title {
-    font-size: 32pt;
+    font-size: 30pt;
     font-weight: 800;
     line-height: 1.15;
     letter-spacing: -0.5px;
@@ -84,21 +83,21 @@ HTML_CONTENT = """<!DOCTYPE html>
     color: #f59e0b;
   }
   .cover-subtitle {
-    font-size: 13pt;
+    font-size: 12pt;
     font-weight: 400;
     color: #94a3b8;
     line-height: 1.5;
     margin: 0 0 32px 0;
     max-width: 90%;
   }
-  .cover-quote {
+  .cover-summary-box {
     background: rgba(255, 255, 255, 0.04);
     border-left: 3px solid #f59e0b;
     padding: 14px 18px;
     border-radius: 0 8px 8px 0;
-    font-style: italic;
     color: #cbd5e1;
-    font-size: 10pt;
+    font-size: 9.5pt;
+    line-height: 1.6;
     margin-bottom: 40px;
   }
   .cover-meta {
@@ -113,15 +112,15 @@ HTML_CONTENT = """<!DOCTYPE html>
     flex-direction: column;
   }
   .meta-label {
-    font-size: 7.5pt;
+    font-size: 7.2pt;
     text-transform: uppercase;
     letter-spacing: 1.5px;
     color: #64748b;
     font-weight: 600;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
   }
   .meta-value {
-    font-size: 9.5pt;
+    font-size: 9.2pt;
     color: #f8fafc;
     font-weight: 600;
     font-family: 'JetBrains Mono', monospace;
@@ -129,13 +128,13 @@ HTML_CONTENT = """<!DOCTYPE html>
 
   /* Headings */
   h1 {
-    font-size: 18pt;
+    font-size: 17pt;
     font-weight: 800;
     color: #0f172a;
     border-bottom: 2px solid #e2e8f0;
     padding-bottom: 8px;
     margin-top: 24px;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -143,60 +142,53 @@ HTML_CONTENT = """<!DOCTYPE html>
   h1 .num {
     background: #f59e0b;
     color: #ffffff;
-    font-size: 10pt;
+    font-size: 9.5pt;
     font-weight: 800;
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 6px;
+    border-radius: 5px;
   }
   h2 {
-    font-size: 13pt;
+    font-size: 12pt;
     font-weight: 700;
     color: #1e293b;
-    margin-top: 20px;
-    margin-bottom: 10px;
-  }
-  h3 {
-    font-size: 11pt;
-    font-weight: 600;
-    color: #334155;
-    margin-top: 14px;
-    margin-bottom: 6px;
+    margin-top: 18px;
+    margin-bottom: 8px;
   }
   p {
     margin-top: 0;
-    margin-bottom: 12px;
+    margin-bottom: 11px;
   }
 
   /* Cards & Boxes */
   .card-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-    margin: 16px 0;
+    gap: 12px;
+    margin: 14px 0;
   }
   .card {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
-    padding: 14px 16px;
+    padding: 12px 14px;
   }
   .card-title {
-    font-size: 10.5pt;
+    font-size: 10pt;
     font-weight: 700;
     color: #0f172a;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
     display: flex;
     align-items: center;
     gap: 8px;
   }
   .card-title .tag {
-    font-size: 7.5pt;
+    font-size: 7.2pt;
     font-weight: 700;
-    padding: 2px 7px;
+    padding: 2px 6px;
     border-radius: 4px;
     background: #e2e8f0;
     color: #475569;
@@ -204,15 +196,15 @@ HTML_CONTENT = """<!DOCTYPE html>
   }
   .card-price {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 12pt;
+    font-size: 11pt;
     font-weight: 800;
-    color: #10b981;
-    margin-bottom: 6px;
+    color: #059669;
+    margin-bottom: 4px;
   }
   .card-desc {
-    font-size: 8.8pt;
+    font-size: 8.6pt;
     color: #475569;
-    line-height: 1.5;
+    line-height: 1.45;
   }
 
   /* Visual Flow Diagram */
@@ -220,79 +212,74 @@ HTML_CONTENT = """<!DOCTYPE html>
     background: #0f172a;
     color: #ffffff;
     border-radius: 8px;
-    padding: 16px;
-    margin: 16px 0;
+    padding: 14px;
+    margin: 14px 0;
   }
   .flow-title {
-    font-size: 9pt;
+    font-size: 8.5pt;
     font-family: 'JetBrains Mono', monospace;
     font-weight: 700;
     color: #f59e0b;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
   .flow-steps {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: 6px;
   }
   .flow-step {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 6px;
-    padding: 10px 12px;
+    padding: 8px 10px;
     flex: 1;
     text-align: center;
   }
   .flow-step-num {
-    font-size: 7.5pt;
+    font-size: 7pt;
     color: #94a3b8;
     font-weight: 600;
     text-transform: uppercase;
   }
   .flow-step-name {
-    font-size: 8.8pt;
+    font-size: 8.4pt;
     font-weight: 700;
     color: #ffffff;
     margin-top: 2px;
   }
   .flow-step-sub {
-    font-size: 7.2pt;
+    font-size: 7pt;
     color: #cbd5e1;
     margin-top: 2px;
   }
   .flow-arrow {
     color: #f59e0b;
     font-weight: bold;
-    font-size: 14pt;
+    font-size: 13pt;
   }
 
   /* Info / Callout Boxes */
   .callout {
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin: 14px 0;
-    font-size: 9.2pt;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-size: 9pt;
     display: flex;
-    gap: 12px;
+    gap: 10px;
     align-items: flex-start;
   }
   .callout-info {
-    background: #eff6ff;
-    border-left: 4px solid #3b82f6;
-    color: #1e3a8a;
+    background: #f1f5f9;
+    border-left: 3px solid #0284c7;
+    color: #0f172a;
   }
   .callout-success {
     background: #f0fdf4;
-    border-left: 4px solid #10b981;
+    border-left: 3px solid #10b981;
     color: #065f46;
-  }
-  .callout-warning {
-    background: #fffbeb;
-    border-left: 4px solid #f59e0b;
-    color: #92400e;
   }
   .callout-title {
     font-weight: 700;
@@ -303,20 +290,20 @@ HTML_CONTENT = """<!DOCTYPE html>
   table {
     width: 100%;
     border-collapse: collapse;
-    margin: 14px 0;
-    font-size: 8.8pt;
+    margin: 12px 0;
+    font-size: 8.6pt;
   }
   th {
     background: #f1f5f9;
     color: #0f172a;
     font-weight: 700;
     text-align: left;
-    padding: 8px 12px;
+    padding: 7px 10px;
     border-top: 1px solid #cbd5e1;
     border-bottom: 2px solid #cbd5e1;
   }
   td {
-    padding: 8px 12px;
+    padding: 7px 10px;
     border-bottom: 1px solid #e2e8f0;
     vertical-align: top;
   }
@@ -325,10 +312,10 @@ HTML_CONTENT = """<!DOCTYPE html>
   }
   .code-cell {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 8pt;
+    font-size: 7.8pt;
     color: #0f172a;
     background: rgba(15, 23, 42, 0.05);
-    padding: 2px 6px;
+    padding: 2px 5px;
     border-radius: 4px;
     display: inline-block;
   }
@@ -338,11 +325,11 @@ HTML_CONTENT = """<!DOCTYPE html>
     background: #0f172a;
     color: #f8fafc;
     border-radius: 6px;
-    padding: 12px 16px;
+    padding: 10px 14px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 8.2pt;
-    line-height: 1.5;
-    margin: 12px 0;
+    font-size: 8pt;
+    line-height: 1.45;
+    margin: 10px 0;
     overflow: hidden;
   }
   pre .comment {
@@ -352,24 +339,6 @@ HTML_CONTENT = """<!DOCTYPE html>
     color: #f59e0b;
     font-weight: 600;
   }
-
-  /* Key Takeaway Box */
-  .takeaway {
-    background: #fdfaf6;
-    border: 1px solid #fde68a;
-    border-left: 4px solid #f59e0b;
-    padding: 12px 16px;
-    border-radius: 0 8px 8px 0;
-    margin: 16px 0;
-  }
-  .takeaway-title {
-    font-size: 9.5pt;
-    font-weight: 700;
-    color: #92400e;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 4px;
-  }
 </style>
 </head>
 <body>
@@ -377,168 +346,167 @@ HTML_CONTENT = """<!DOCTYPE html>
   <!-- COVER PAGE -->
   <div class="cover">
     <div>
-      <div class="cover-badge">Offizielles System-Handbuch • Version 1.0</div>
-      <h1 class="cover-title">0xGÜNTHER<br><span>System-Dokumentation</span></h1>
+      <div class="cover-badge">System- &amp; Architektur-Dokumentation • Version 1.0</div>
+      <h1 class="cover-title">0xGÜNTHER<br><span>System-Architektur</span></h1>
       <div class="cover-subtitle">
-        Architektur, Fähigkeiten, Krypto-Tokenomics und der 24/7 Autopilot-Betrieb des autonomen KI-Unternehmers.
+        Autonome Software-Agenten-Architektur zur vollautomatischen Abwicklung digitaler Lizenzverkäufe 
+        und deterministischer Kopplung an On-Chain-Tokenomics auf Base L2.
       </div>
-      <div class="cover-quote">
-        "Ich baue, ich verkaufe, ich verbrenne Token. Du kannst zuschauen oder meine Baupläne kaufen."
+      <div class="cover-summary-box">
+        <strong>Executive Summary:</strong> 0xGünther operiert als entkoppeltes, mandantenfähiges 
+        Gesamtsystem auf privater Proxmox-Infrastruktur. Über Stripe abgewickelte Fiat-Umsätze 
+        werden über kryptografisch gehärtete State Machines verarbeitet und programmatisch als 
+        Proof-of-Burn-Transaktionen auf Base Mainnet verankert.
       </div>
     </div>
 
     <div class="cover-meta">
       <div class="meta-item">
-        <span class="meta-label">Domain & Store</span>
+        <span class="meta-label">Domain &amp; Endpunkte</span>
         <span class="meta-value">https://0xguenther.org</span>
       </div>
       <div class="meta-item">
-        <span class="meta-label">X (Twitter) Kanal</span>
-        <span class="meta-value">@GuentherBuilds</span>
+        <span class="meta-label">Kommunikations-Kanal</span>
+        <span class="meta-value">@GuentherBuilds (X API v2)</span>
       </div>
       <div class="meta-item">
         <span class="meta-label">Blockchain Netzwerk</span>
-        <span class="meta-value">Base Mainnet (ID: 8453)</span>
+        <span class="meta-value">Base Mainnet (EIP-1559, Chain 8453)</span>
       </div>
       <div class="meta-item">
-        <span class="meta-label">Hosting Cluster</span>
-        <span class="meta-value">Proxmox LXC (CT115 & CT103)</span>
+        <span class="meta-label">Hosting-Cluster</span>
+        <span class="meta-value">Proxmox LXC (CT115 Core / CT103 Proxy)</span>
       </div>
       <div class="meta-item">
-        <span class="meta-label">Herausgeber / Marke</span>
+        <span class="meta-label">Betriebsidentität</span>
         <span class="meta-value">0xGünther Autonomous Syndicate</span>
       </div>
       <div class="meta-item">
-        <span class="meta-label">Stand</span>
+        <span class="meta-label">Dokumentationsstand</span>
         <span class="meta-value">September 2026</span>
       </div>
     </div>
   </div>
 
   <!-- KAPITEL 1 -->
-  <h1><span class="num">1</span> Was Günther ist (Vision & Identität)</h1>
+  <h1><span class="num">1</span> Systemübersicht &amp; Funktionsprinzip</h1>
   <p>
-    Günther ist kein gewöhnlicher Frage-Antwort-Chatbot und kein oberflächlicher Prompt-Wrapper. Er ist ein 
-    <strong>vollautonomer, gewinnorientierter KI-Unternehmer</strong> (<em>Autonomous AI Entrepreneur</em>), der auf einem privaten 
-    Proxmox-Server lebt, reale Kunden betreut, Software verkauft und seine Unternehmensgewinne auf der Blockchain verbrennt.
+    0xGünther ist ein spezialisiertes Software-Agenten-System auf Basis von Node.js 22 LTS, Fastify und Prisma ORM. 
+    Das System wurde entwickelt, um digitale Software-Lizenzen, Framework-Blueprints und MCP-Server 
+    vollautomatisiert ohne menschliche Interaktion zu vertreiben, auszuliefern und finanztechnisch abzuwickeln.
   </p>
 
   <div class="callout callout-info avoid-break">
     <div>
-      <div class="callout-title">Die 4 Kernpfeiler von Günther</div>
-      <div style="font-size: 8.8pt;">
-        <strong>1. Echte Wertschöpfung:</strong> Er bietet praxiserprobte Entwickler-Software, Vorlagen und Playbooks an.<br>
-        <strong>2. Reale Fiat-Zahlungen:</strong> Kunden bezahlen bequem in USD, CHF oder EUR via Stripe.<br>
-        <strong>3. On-Chain Scarcity:</strong> 100 % der Netto-Gewinne fließen in den automatischen Rückkauf & Burn von $GUNTER.<br>
-        <strong>4. Strikte Marken-Neutralität:</strong> Nach außen agiert Günther als autarkes Kollektiv (0xGünther Syndicate).
+      <div class="callout-title">Die 4 Kernpfeiler der Architektur</div>
+      <div style="font-size: 8.6pt; line-height: 1.5;">
+        <strong>1. Deterministische Abwicklung:</strong> Zod-validierte Schnittstellen und atomare SQLite State Transitions (Compare-and-Swap) schließen Race Conditions und Fehlbuchungen vollständig aus.<br>
+        <strong>2. Programmatischer Proof-of-Burn:</strong> Eingehende Netto-Umsätze aus dem Stripe-Zahlungsverkehr fungieren als direkter Trigger für On-Chain-Transaktionen auf Base L2, bei denen $GUNTER-Token unwiderruflich an die Null-Adresse übertragen werden.<br>
+        <strong>3. Kryptografisches Fulfillment:</strong> Nach Zahlungsbestätigung erhalten Kunden zeitlich und mengenmäßig limitierte Signatur-Tokens zur sicheren Datei-Auslieferung.<br>
+        <strong>4. Strikte Identitätstrennung:</strong> Nach außen agiert das System neutral als <em>0xGünther Autonomous Syndicate</em>. Betreiber- und Firmenidentitäten sind auf allen Ebenen vollständig isoliert.
       </div>
     </div>
   </div>
 
-  <h2>Der Wertschöpfungs-Kreislauf</h2>
+  <h2>End-to-End Transaktionsablauf</h2>
   <div class="flow-container avoid-break">
-    <div class="flow-title">Autonomer Business-Datenfluss</div>
+    <div class="flow-title">Verifizierter Transaktions- und Datenfluss</div>
     <div class="flow-steps">
       <div class="flow-step">
         <div class="flow-step-num">Schritt 1</div>
-        <div class="flow-step-name">Stripe Checkout</div>
-        <div class="flow-step-sub">Kunde kauft Asset</div>
+        <div class="flow-step-name">Stripe Ingestion</div>
+        <div class="flow-step-sub">checkout.session.completed</div>
       </div>
       <div class="flow-arrow">➔</div>
       <div class="flow-step">
         <div class="flow-step-num">Schritt 2</div>
         <div class="flow-step-name">Fastify Core</div>
-        <div class="flow-step-sub">HMAC-Prüfung & CAS</div>
+        <div class="flow-step-sub">HMAC-SHA256 &amp; CAS</div>
       </div>
       <div class="flow-arrow">➔</div>
       <div class="flow-step">
         <div class="flow-step-num">Schritt 3</div>
         <div class="flow-step-name">Fulfillment</div>
-        <div class="flow-step-sub">Krypto-Download-Token</div>
+        <div class="flow-step-sub">Token (48h / 5 DL Max)</div>
       </div>
       <div class="flow-arrow">➔</div>
       <div class="flow-step">
         <div class="flow-step-num">Schritt 4</div>
-        <div class="flow-step-name">Base L2 Burn</div>
-        <div class="flow-step-sub">viem Signer ➔ 0x..dEaD</div>
+        <div class="flow-step-name">Base L2 viem</div>
+        <div class="flow-step-sub">Tx an 0x...dEaD</div>
       </div>
       <div class="flow-arrow">➔</div>
       <div class="flow-step">
         <div class="flow-step-num">Schritt 5</div>
-        <div class="flow-step-name">Proof auf X</div>
-        <div class="flow-step-sub">Live BaseScan Link</div>
+        <div class="flow-step-name">Social Proof</div>
+        <div class="flow-step-sub">BaseScan Audit-Link</div>
       </div>
     </div>
   </div>
 
-  <div class="takeaway avoid-break">
-    <div class="takeaway-title">Auf den Punkt gebracht</div>
-    Günther schließt die Lücke zwischen traditioneller Wirtschaft (Stripe / E-Commerce) und Web3 (Base L2). 
-    Er ist darauf programmiert, profitabel zu sein und seinen eigenen Fortbestand durch echten Nutzen zu sichern.
-  </div>
-
   <!-- KAPITEL 2 -->
   <div class="page-break"></div>
-  <h1><span class="num">2</span> Was er kann (Die 4 Umsatz-Maschinen)</h1>
+  <h1><span class="num">2</span> Produktportfolio &amp; Monetarisierungs-Module</h1>
   <p>
-    Günther verfügt über vier klar voneinander getrennte Umsatz- und Execution-Säulen, die vollständig ineinander greifen:
+    Das System steuert vier getrennte Wertschöpfungs- und Ausführungsmodule, die über die gemeinsame 
+    State Engine orchestriert werden:
   </p>
 
   <div class="card-grid avoid-break">
     <div class="card">
       <div class="card-title">
-        Günther Craft Playbook
-        <span class="tag">B2C Flaggschiff</span>
+        Günther Craft
+        <span class="tag">Flaggschiff-Produkt</span>
       </div>
       <div class="card-price">$49.00 USD</div>
       <div class="card-desc">
-        Das vollständige, 66-seitige Architektur-Handbuch als PDF auf Deutsch und Englisch. Enthält den 
-        gesamten Quellcode für autonome Agenten (ElizaOS, Prisma, viem Signer, Fastify).
+        Technisches Referenzhandbuch und Code-Framework (66 Seiten, A4, zweisprachig DE/EN). Beinhaltet 
+        die vollständige Produktionsarchitektur: ElizaOS, Prisma SQLite, Fastify Core und Base L2 viem Signer.
       </div>
     </div>
 
     <div class="card">
       <div class="card-title">
         Claw Mart Marketplace
-        <span class="tag">Skills & MCP</span>
+        <span class="tag">MCP Module</span>
       </div>
       <div class="card-price">$29 – $49 USD</div>
       <div class="card-desc">
-        Modularer Marktplatz für fertige MCP-Server (Base Token Burner, Stripe Webhook Gateway, 
-        CDP MPC Wallet Guard). 10 % Plattform-Take-Rate bei Community-Skills.
+        Modulare Schnittstellen-Bibliothek für Model Context Protocol (MCP) Server. Bietet standardisierte 
+        Konnektoren für Base L2 Token Burning, Fastify Stripe Gateways und CDP MPC Wallets. 10 % Plattform-Take-Rate.
       </div>
     </div>
 
     <div class="card">
       <div class="card-title">
-        Clawcommerce B2B
-        <span class="tag">High-Ticket</span>
+        Clawcommerce Enterprise
+        <span class="tag">B2B Pipeline</span>
       </div>
       <div class="card-price">$2.000 + $500/Mo</div>
       <div class="card-desc">
-        Maßgeschneiderte Agentensysteme für Unternehmen. Autonome Angebotserstellung via Claude Sonnet 4, 
-        gehärtetes Proxmox-Deployment und $2.000 Token-Burn-Transaktion pro Abschluss.
+        Integrations-Framework für isolierte Agenten-Instanzen im Unternehmensnetzwerk. Automatisiertes 
+        Intake-Routing, Zod-validierte Angebotserstellung und $2.000 Proof-of-Burn bei Vertragsabschluss.
       </div>
     </div>
 
     <div class="card">
       <div class="card-title">
-        Base L2 viem Signer
-        <span class="tag">On-Chain Engine</span>
+        Base L2 Execution Engine
+        <span class="tag">On-Chain Layer</span>
       </div>
       <div class="card-price">Native Execution</div>
       <div class="card-desc">
-        Direkte Anbindung an Base Mainnet (Chain ID 8453). EIP-1559 Signierung mit individuellem Calldata 
-        (<span class="code-cell">GUNTER_BURN:&lt;id&gt;</span>) und strengem Gas-Limit (< 100 Gwei).
+        Nativer viem-Client auf Base Mainnet. Führt programmierte Token-Burns mit individuellem Audit-Calldata 
+        (<span class="code-cell">GUNTER_BURN:&lt;refId&gt;:&lt;amount&gt;</span>) und automatischem Gas-Schutz (&lt; 100 Gwei) aus.
       </div>
     </div>
   </div>
 
-  <h2>Fulfillment & Sicherheits-Architektur</h2>
+  <h2>Sicherheits- &amp; Validierungsarchitektur</h2>
   <table class="avoid-break">
     <thead>
       <tr>
-        <th>Sicherheits-Mechanismus</th>
+        <th>Komponente</th>
         <th>Technische Umsetzung</th>
         <th>Schutzwirkung</th>
       </tr>
@@ -546,111 +514,112 @@ HTML_CONTENT = """<!DOCTYPE html>
     <tbody>
       <tr>
         <td><strong>Kryptografische Einmal-Tokens</strong></td>
-        <td>HMAC-SHA256 mit 48 Stunden TTL</td>
-        <td>Verhindert unbefugtes Teilen von Download-Links im Internet.</td>
+        <td>HMAC-SHA256 Signierung mit 48 Stunden Gültigkeit</td>
+        <td>Unterbindet die unautorisierte Weitergabe und das direkte Verlinken von Asset-Dateien.</td>
       </tr>
       <tr>
-        <td><strong>Download-Zähler (Limit: 5)</strong></td>
-        <td>Atomare SQLite-Transaktion</td>
-        <td>Unterbindet Link-Leeching und Web-Scraping.</td>
+        <td><strong>Download-Limitierung</strong></td>
+        <td>Atomarer CAS-Zähler (Maximum: 5 Abrufe)</td>
+        <td>Schützt Bandbreite und Server-Ressourcen vor automatisierten Scraping-Prozessen.</td>
       </tr>
       <tr>
         <td><strong>Path-Traversal-Schutz</strong></td>
-        <td><span class="code-cell">path.resolve</span> Whitelist-Prüfung</td>
-        <td>Verhindert das Auslesen sensibler Server-Dateien über URL-Parameter.</td>
+        <td>Kanonische Pfad-Auflösung via <span class="code-cell">path.resolve</span> gegen Whitelist</td>
+        <td>Verhindert das Auslesen interner System-Dateien oder Environment-Variablen.</td>
       </tr>
       <tr>
-        <td><strong>HMAC-Signaturprüfung</strong></td>
-        <td>Stripe Webhook Secret Verifikation</td>
-        <td>Schützt vor gefälschten Zahlungsbenachrichtigungen.</td>
+        <td><strong>Webhook HMAC-Prüfung</strong></td>
+        <td>Stripe Endpoint Secret Signatur-Verifikation</td>
+        <td>Schützt vor unberechtigten HTTP-Payloads und simulierten Zahlungs-Events.</td>
       </tr>
     </tbody>
   </table>
 
   <!-- KAPITEL 3 -->
   <div class="page-break"></div>
-  <h1><span class="num">3</span> Was er macht (Der 24/7 Autopilot)</h1>
+  <h1><span class="num">3</span> Der 24/7 Autopilot-Lebenszyklus</h1>
   <p>
-    Günther schläft nicht. Er läuft als ununterbrochener Systemdienst (<span class="code-cell">gunther-core.service</span>) 
-    auf Proxmox CT115 und führt einen 60-Sekunden-Dauertakt aus.
+    Das System operiert als autonomer Systemd-Dienst (<span class="code-cell">gunther-core.service</span>) 
+    auf Proxmox CT115. Ein zyklischer 60-Sekunden-Timer steuert alle periodischen Kontroll- und Ausführungsroutinen:
   </p>
 
-  <h2>Der autonome 60-Sekunden-Takt (Background Daemon)</h2>
+  <h2>Periodische Hintergrund-Routinen (GuntherDaemon)</h2>
   <div class="card-grid avoid-break">
     <div class="card">
       <div class="card-title">1. Zahlungs-Reconciliation</div>
       <div class="card-desc">
-        Prüft im Minutentakt, ob Zahlungen eingegangen sind, deren Token-Burn wegen einer kurzzeitigen 
-        RPC-Störung noch aussteht. Verarbeitet diese vollautomatisch nach.
+        Prüft im Minutentakt auf verbuchte Transaktionen, deren On-Chain-Execution aufgrund kurzzeitiger 
+        RPC- oder Netzwerk-Latenzen verzögert wurde. Führt Transaktionen deterministisch nach.
       </div>
     </div>
     <div class="card">
-      <div class="card-title">2. Heartbeat & Healthcheck</div>
+      <div class="card-title">2. System-Telemetrie &amp; Liveness</div>
       <div class="card-desc">
-        Prüft Datenbankverbindung, CPU-Last und RAM-Verbrauch. Sendet periodische Pings an das 
-        Monitoring-System (Uptime Kuma) zur permanenten Ausfallüberwachung.
+        Überwacht Heap-Memory, Event-Loop-Latenz und Datenbank-Integrität. Sendet periodische Heartbeat-Pings 
+        an Uptime Kuma zur permanenten Überwachung der Service-Verfügbarkeit.
       </div>
     </div>
   </div>
 
-  <h2>Die adaptive Marketing-Rotation (Wenn Verkäufe ruhig sind)</h2>
+  <h2>Adaptive Marketing-Rotation (Content-Steuerung auf X)</h2>
   <p>
-    Wenn keine Käufe stattfinden, wiederholt Günther nicht stur dieselben Zahlen. 
-    Stattdessen wechselt seine KI täglich den <strong>strategischen Verkaufs-Winkel</strong>, um unterschiedliche Käufergruppen anzusprechen:
+    Um organische Sichtbarkeit in der internationalen Entwickler- und Web3-Community aufzubauen, 
+    steuert das System einen täglichen Content-Zyklus. Bei Phasen ohne neue Transaktionen rotiert die KI 
+    deterministisch zwischen fünf technischen Analyse-Winkeln:
   </p>
 
   <table class="avoid-break">
     <thead>
       <tr>
-        <th>Wochentag / Winkel</th>
-        <th>Strategischer Fokus</th>
-        <th>Botschaft an die Zielgruppe</th>
+        <th>Zyklus / Winkel</th>
+        <th>Thematischer Schwerpunkt</th>
+        <th>Inhaltliche Ausrichtung</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><strong>1. Dev Pain Point</strong></td>
-        <td>Technische Zuverlässigkeit</td>
-        <td>Warum 95 % aller Agenten abstürzen (Webhook-Kollisionen) und wie atomare Idempotenz in SQLite das Problem löst.</td>
+        <td><strong>1. Technical Resilience</strong></td>
+        <td>Fehlertoleranz &amp; State Safety</td>
+        <td>Analyse von Webhook-Race-Conditions, unhandled Rejections und der Implementierung von Atomic CAS in SQLite.</td>
       </tr>
       <tr>
         <td><strong>2. Unit Economics</strong></td>
-        <td>Kosten & Marge</td>
-        <td>Wie man durch lokales LLM-Routing für Klassifizierung 100 % LLM-Marge erzielt (Kosten < 5 Cent/Monat).</td>
+        <td>Kostenoptimierung &amp; Margen</td>
+        <td>Darstellung von hybridem Routing: Lokale Modelle (Ollama) für Datenklassifizierung zur Senkung der API-Kosten.</td>
       </tr>
       <tr>
-        <td><strong>3. On-Chain Alpha</strong></td>
-        <td>Web3-Entwicklung</td>
-        <td>Wie der native viem-Signer auf Base L2 Smart Contracts anspricht, ohne Private Keys im RAM zu gefährden.</td>
+        <td><strong>3. On-Chain Architecture</strong></td>
+        <td>Web3 Smart Contract Execution</td>
+        <td>Nativer Einsatz von viem auf Base L2, Custom Transaction Calldata und sicheres Key-Management.</td>
       </tr>
       <tr>
-        <td><strong>4. Contrarian Builder</strong></td>
-        <td>Marktrealität</td>
-        <td>Schluss mit Spielzeug-Chatbots. Fokus auf echte, automatisierte Software-Umsätze.</td>
+        <td><strong>4. Systems Engineering</strong></td>
+        <td>Produktionsreife vs. Spielzeug-Bots</td>
+        <td>Kritische Einordnung von oberflächlichen Chat-Wrappern gegenüber deterministischer digitaler Fulfillment-Software.</td>
       </tr>
       <tr>
-        <td><strong>5. Metrics & Proof</strong></td>
-        <td>Transparente Fakten</td>
-        <td>Aktueller Gesamtumsatz, verbrannte $GUNTER-Token und der Live BaseScan Explorer Feed.</td>
+        <td><strong>5. Verifiable Metrics</strong></td>
+        <td>Transparente Kennzahlen</td>
+        <td>Verifizierter Gesamtumsatz, kumulierte Token-Burns auf Base und direkter Link zum BaseScan Explorer.</td>
       </tr>
     </tbody>
   </table>
 
   <!-- KAPITEL 4 -->
   <div class="page-break"></div>
-  <h1><span class="num">4</span> Wie er es macht (Architektur & Stack)</h1>
+  <h1><span class="num">4</span> Infrastruktur, Netzwerk &amp; Routing</h1>
   <p>
-    Günthers technische Infrastruktur folgt dem strikten Standard des Betreibers: 
-    <strong>Keine offenen Ports nach außen (Zero Exposed Ports)</strong> und vollständige Entkopplung über Proxies.
+    Die Infrastruktur folgt dem Unternehmensstandard des Betreibers: 
+    <strong>Keine offenen Ports am Router (Zero Exposed Ports)</strong> und vollständige Entkopplung über zentrale Proxies.
   </p>
 
   <div class="flow-container avoid-break">
-    <div class="flow-title">Netzwerk- & Routing-Kette (Identisch mit cuonz.org)</div>
+    <div class="flow-title">Routing-Kette (Identisch mit cuonz.org Standard)</div>
     <div class="flow-steps">
       <div class="flow-step">
         <div class="flow-step-num">Ebene 1</div>
         <div class="flow-step-name">Cloudflare Edge</div>
-        <div class="flow-step-sub">SSL, DDoS, DNS</div>
+        <div class="flow-step-sub">DDoS, WAF, SSL</div>
       </div>
       <div class="flow-arrow">➔</div>
       <div class="flow-step">
@@ -667,7 +636,7 @@ HTML_CONTENT = """<!DOCTYPE html>
       <div class="flow-arrow">➔</div>
       <div class="flow-step">
         <div class="flow-step-num">Ebene 4</div>
-        <div class="flow-step-name">Günther Fastify</div>
+        <div class="flow-step-name">Fastify Engine</div>
         <div class="flow-step-sub">CT115 (:3000)</div>
       </div>
     </div>
@@ -677,111 +646,117 @@ HTML_CONTENT = """<!DOCTYPE html>
   <table class="avoid-break">
     <thead>
       <tr>
-        <th>Ebene</th>
+        <th>Schicht</th>
         <th>Technologie</th>
-        <th>Aufgabe & Spezifikation</th>
+        <th>Aufgabe &amp; Spezifikation</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><strong>Hardware & OS</strong></td>
+        <td><strong>Hardware &amp; Hypervisor</strong></td>
         <td>Intel NUC Bare-Metal Cluster</td>
-        <td>Proxmox VE 8.x, Debian 13 LXC Container (CT115). 100 % private Kontrolle.</td>
+        <td>Proxmox VE 8.x, Debian 13 LXC Container (CT115). Dedizierte Ressourcen, lokale NVMe-Speicherung.</td>
       </tr>
       <tr>
-        <td><strong>Webserver & API</strong></td>
+        <td><strong>Edge &amp; Routing</strong></td>
+        <td>Cloudflare + Nginx Proxy Manager</td>
+        <td>Universal SSL Termination, DDoS-Abwehr, internes Routing über Proxy-Host #17 auf 10.0.1.115:3000.</td>
+      </tr>
+      <tr>
+        <td><strong>Applikations-Server</strong></td>
         <td>Fastify v4 auf Node.js 22 LTS</td>
-        <td>Extrem performanter TypeScript-Server auf Port 3000. Strikte Schema-Validierung via Zod.</td>
+        <td>Hochperformanter TypeScript-Webserver auf Port 3000. Strikte Typisierung, Zod-Schema-Validierung.</td>
       </tr>
       <tr>
-        <td><strong>Datenbank & State</strong></td>
+        <td><strong>Datenhaltung &amp; State</strong></td>
         <td>Prisma ORM mit SQLite</td>
-        <td>Atomic Compare-and-Swap (CAS) verhindert Race Conditions bei Webhooks.</td>
+        <td>Idempotente Tabellen (<span class="code-cell">Payment</span>, <span class="code-cell">SkillPurchase</span>, <span class="code-cell">B2bLead</span>). Atomic CAS verhindert Double-Execution.</td>
       </tr>
       <tr>
-        <td><strong>KI-Intelligenz</strong></td>
+        <td><strong>KI-Orchestrierung</strong></td>
         <td>Ollama (Lokal) + Claude Sonnet 4</td>
-        <td>Ollama für 0€ Routing; Claude Sonnet für hochkarätiges englischsprachiges Copywriting.</td>
+        <td>Lokal gehostetes Modell für latenzfreies JSON-Routing; Claude Sonnet für hochpräzises englisches Copywriting.</td>
       </tr>
       <tr>
-        <td><strong>Blockchain Engine</strong></td>
+        <td><strong>Web3 Signer</strong></td>
         <td>viem (Base Mainnet)</td>
-        <td>Autonome Transaktionserstellung, Gas-Limit-Überwachung, EIP-1559 Execution.</td>
+        <td>Native EIP-1559 Transaktionserstellung, Gas-Limit-Überwachung, BaseScan Audit-Verknüpfung.</td>
       </tr>
       <tr>
-        <td><strong>Social Engine</strong></td>
+        <td><strong>Kommunikations-Schnittstelle</strong></td>
         <td>X API v2 (OAuth 1.0a)</td>
-        <td>Täglicher Market Pulse und automatische Proof-of-Burn Ankündigungen auf @GuentherBuilds.</td>
+        <td>Automatisierte Veröffentlichung von Daily Updates und Proof-of-Burn Bestätigungen auf @GuentherBuilds.</td>
       </tr>
     </tbody>
   </table>
 
-  <!-- KAPITEL 5 & 6 -->
+  <!-- KAPITEL 5 -->
   <div class="page-break"></div>
-  <h1><span class="num">5</span> Administrator- & Betriebs-Leitfaden</h1>
+  <h1><span class="num">5</span> Administrator- &amp; Betriebs-Leitfaden</h1>
   <p>
-    Dieser Abschnitt dient dem Betreiber als Spickzettel für Wartung, Kontrolle und Monitoring.
+    Dieser Abschnitt dient dem Betreiber als technischer Referenz-Leitfaden für Überwachung, Diagnose und Service-Steuerung.
   </p>
 
-  <h2>Die wichtigsten Server-Befehle (SSH)</h2>
+  <h2>Wartungs- &amp; Diagnosebefehle (SSH)</h2>
   <pre class="avoid-break">
-<span class="comment"># 1. Status des Günther Core Services prüfen</span>
+<span class="comment"># 1. Status des Systemd-Services prüfen</span>
 <span class="highlight">ssh gunther "systemctl status gunther-core --no-pager"</span>
 
-<span class="comment"># 2. Live-Logs in Echtzeit verfolgen</span>
+<span class="comment"># 2. Live-Logs der Applikation einsehen</span>
 <span class="highlight">ssh gunther "journalctl -u gunther-core -f"</span>
 
-<span class="comment"># 3. Günther Core Service sauber neustarten</span>
+<span class="comment"># 3. Service nach Code- oder Konfigurationsänderung neustarten</span>
 <span class="highlight">ssh gunther "systemctl restart gunther-core"</span>
 
-<span class="comment"># 4. Internen Healthcheck auf Port 3000 testen</span>
+<span class="comment"># 4. Lokalen Healthcheck-Endpunkt abfragen</span>
 <span class="highlight">ssh gunther "curl -s http://127.0.0.1:3000/health"</span>
   </pre>
 
-  <h2>Wichtige Pfade & Konfigurationen</h2>
+  <h2>Systempfade &amp; Konfigurationsdateien</h2>
   <table class="avoid-break">
     <thead>
       <tr>
         <th>Komponente</th>
         <th>Speicherort / Adresse</th>
-        <th>Beschreibung</th>
+        <th>Funktion</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td><strong>Projektverzeichnis</strong></td>
         <td><span class="code-cell">/opt/gunther-core</span> auf CT115</td>
-        <td>Kompilierter Code, statische Web-Assets und PDF-Dateien.</td>
+        <td>Kompilierter TypeScript-Code (<span class="code-cell">dist/</span>), statische Assets und Playbook-PDFs.</td>
       </tr>
       <tr>
-        <td><strong>Umgebungsvariablen</strong></td>
+        <td><strong>Konfigurations-Environment</strong></td>
         <td><span class="code-cell">/opt/gunther-core/.env</span></td>
-        <td>Stripe Secrets, Base Wallet Private Key, X API Tokens.</td>
+        <td>Verschlüsselt gepflegte API-Keys (Stripe, Base Wallet Private Key, X OAuth Tokens).</td>
       </tr>
       <tr>
-        <td><strong>SQLite Datenbank</strong></td>
+        <td><strong>Primäre Datenbank</strong></td>
         <td><span class="code-cell">/opt/gunther-core/prisma/dev.db</span></td>
-        <td>Single Source of Truth für Zahlungen, Leads und Audit-Traces.</td>
+        <td>Single Source of Truth für Zahlungen, Transaktions-Status, B2B-Leads und Audit-Traces.</td>
       </tr>
       <tr>
-        <td><strong>Nginx Proxy Manager</strong></td>
+        <td><strong>Proxy-Konfiguration</strong></td>
         <td>CT103 (<span class="code-cell">10.0.1.127</span>) Host #17</td>
-        <td>Routet 0xguenther.org, www und api auf 10.0.1.115:3000.</td>
+        <td>NPM-Regel zur Weiterleitung von 0xguenther.org, www und api auf 10.0.1.115:3000.</td>
       </tr>
       <tr>
         <td><strong>Base Burner Wallet</strong></td>
         <td><span class="code-cell">0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A</span></td>
-        <td>Echte On-Chain-Wallet auf Base Mainnet.</td>
+        <td>Autonome Ausführungs-Wallet auf Base Mainnet mit Live-ETH für Netzwerkgebühren.</td>
       </tr>
     </tbody>
   </table>
 
-  <div class="callout callout-success avoid-break" style="margin-top: 24px;">
+  <div class="callout callout-success avoid-break" style="margin-top: 20px;">
     <div>
-      <div class="callout-title">Betriebsbereit & Autark</div>
-      <div style="font-size: 8.8pt;">
-        Günther benötigt im Normalbetrieb keinerlei manuelles Eingreifen. Alle Zahlungs-, Fulfillment- und 
-        Marketing-Prozesse laufen vollständig automatisiert und fehlertolerant ab.
+      <div class="callout-title">Betriebsbereit &amp; Vollständig Autark</div>
+      <div style="font-size: 8.6pt; line-height: 1.5;">
+        Das Gesamtsystem bedarf im laufenden Regelbetrieb keiner manuellen Pflege. Zahlungsabwicklung, 
+        Produkt-Fulfillment, On-Chain-Token-Burns und Social-Media-Publikationen werden autonom 
+        durch den Hintergrund-Daemon gesteuert und auditiert.
       </div>
     </div>
   </div>
@@ -792,7 +767,7 @@ HTML_CONTENT = """<!DOCTYPE html>
 
 def generate_pdf():
     print("====================================================")
-    print("GENERATING READABLE SYSTEM DOKU PDF VIA PLAYWRIGHT")
+    print("GENERATING PROFESSIONAL SYSTEM DOKU PDF VIA PLAYWRIGHT")
     print("====================================================\n")
 
     os.makedirs('docs', exist_ok=True)
@@ -803,7 +778,7 @@ def generate_pdf():
         browser = p.chromium.launch()
         page = browser.new_page()
 
-        print("[2/3] Rendering HTML content...")
+        print("[2/3] Rendering professional HTML content...")
         page.set_content(HTML_CONTENT, wait_until='networkidle')
 
         print("[3/3] Printing PDF...")
@@ -817,7 +792,7 @@ def generate_pdf():
                 'right': '16mm'
             },
             display_header_footer=True,
-            header_template='<div style="font-size: 7.5pt; font-family: sans-serif; color: #94a3b8; width: 100%; text-align: right; padding-right: 16mm;">0xGünther • System-Dokumentation</div>',
+            header_template='<div style="font-size: 7.5pt; font-family: sans-serif; color: #94a3b8; width: 100%; text-align: right; padding-right: 16mm;">0xGünther • System-Architektur</div>',
             footer_template='<div style="font-size: 7.5pt; font-family: sans-serif; color: #94a3b8; width: 100%; display: flex; justify-content: space-between; padding: 0 16mm;"><span>Vertraulich • 0xGünther Autonomous Syndicate</span><span>Seite <span class="pageNumber"></span> von <span class="totalPages"></span></span></div>'
         )
         browser.close()
@@ -832,9 +807,8 @@ def generate_pdf():
         f.write(pdf_bytes)
     print(f"[OK] Saved to {OUTPUT_ASSETS} ({len(pdf_bytes)} bytes)")
 
-
     print("\n====================================================")
-    print("SUCCESS: Human-readable PDF generated successfully!")
+    print("SUCCESS: Professional PDF generated successfully!")
     print("====================================================")
 
 if __name__ == '__main__':

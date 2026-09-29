@@ -1,187 +1,128 @@
-# Systemdokumentation: Günther (0xGünther)
-## Der autonome KI-Unternehmer auf Base L2
+# Systemdokumentation: 0xGünther
+## Autonome Software-Agenten-Architektur auf Base L2
 
-> **Motto:** *"Ich baue, ich verkaufe, ich verbrenne Token. Du kannst zuschauen oder meine Baupläne kaufen."*  
-> **Status:** Live & Vollautonom in Produktion  
-> **Domain:** [https://0xguenther.org](https://0xguenther.org) | [English Version](https://0xguenther.org/en/)  
-> **X (Twitter):** [@GuentherBuilds](https://x.com/GuentherBuilds)  
-> **Netzwerk:** Base Mainnet (Chain ID: 8453)  
-> **Hosting:** Privater Proxmox LXC Cluster (CT115 & CT103)
+> **System-Klassifikation:** Autonome Software-Agenten-Architektur zur vollautomatischen Abwicklung digitaler Produktverkäufe und programmatischen Kopplung von Fiat-Transaktionen an On-Chain-Tokenomics.  
+> **Status:** Live & vollautonom in Produktion  
+> **Domain & Endpunkte:** [https://0xguenther.org](https://0xguenther.org) | [English Version](https://0xguenther.org/en/)  
+> **Kommunikations-Kanal:** [@GuentherBuilds](https://x.com/GuentherBuilds) (X API v2)  
+> **Netzwerk:** Base Mainnet (EIP-1559, Chain ID: 8453)  
+> **Hosting-Cluster:** Privater Proxmox LXC Cluster (CT115 Core / CT103 Proxy)  
+> **Betriebsidentität:** 0xGünther Autonomous Syndicate  
 
 ---
 
-## 1. Was Günther ist (Vision & Identität)
+## 1. Systemübersicht & Funktionsprinzip
 
-Günther ist kein gewöhnlicher Chatbot und kein Prompt-Wrapper. Er ist ein **vollautonomer, gewinnorientierter KI-Unternehmer** (*Autonomous AI Entrepreneur*).
+0xGünther ist ein spezialisiertes Software-Agenten-System auf Basis von Node.js 22 LTS, Fastify und Prisma ORM. Das System wurde entwickelt, um digitale Software-Lizenzen, Framework-Blueprints und MCP-Server vollautomatisiert ohne menschliche Interaktion zu vertreiben, auszuliefern und finanztechnisch abzuwickeln.
 
-### Die Kernphilosophie:
-1. **Echte Produkte statt leeres Chaten:** Günther verkauft reale, praxiserprobte Entwickler-Software, 66-seitige Architektur-Playbooks und MCP-Server.
-2. **Krypto-Fiat-Brücke:** Er nimmt traditionelle Fiat-Währungen (USD / CHF / EUR) über Stripe entgegen und wandelt 100 % der Netto-Gewinne direkt in On-Chain-Aktionen um.
-3. **Deflationäre Tokenomics:** Mit jedem getätigten Verkauf verbrennt Günther automatisch `$GUNTER`-Token auf der Base-Blockchain (Proof-of-Burn).
-4. **Radikale Marken-Neutralität:** Nach außen agiert Günther als autarkes Kollektiv (*0xGünther Autonomous Syndicate*). Sämtliche Betreiber- oder Firmennamen sind strikt vom System getrennt.
+### Die 4 Kernpfeiler der Architektur:
+1. **Deterministische Abwicklung:** Zod-validierte Schnittstellen und atomare SQLite State Transitions (Compare-and-Swap) schließen Race Conditions und Fehlbuchungen bei Webhooks vollständig aus.
+2. **Programmatischer Proof-of-Burn:** Eingehende Netto-Umsätze aus dem Stripe-Zahlungsverkehr fungieren als direkter Trigger für On-Chain-Transaktionen auf Base L2, bei denen `$GUNTER`-Token unwiderruflich an die Null-Adresse (`0x000...dEaD`) übertragen werden.
+3. **Kryptografisches Fulfillment:** Nach Zahlungsbestätigung erhalten Kunden zeitlich und mengenmäßig limitierte Signatur-Tokens zur sicheren Datei-Auslieferung (48h TTL, max. 5 Downloads).
+4. **Strikte Identitätstrennung:** Nach außen agiert das System neutral als *0xGünther Autonomous Syndicate*. Sämtliche Betreiber- oder Firmenidentitäten sind auf allen Ebenen vollständig isoliert.
 
 ```mermaid
 flowchart LR
-    Kunde[Käufer / Developer] -->|1. Kauft Playbook / Skill via Stripe| Stripe[Stripe Checkout]
-    Stripe -->|2. Webhook Event| Guenther[Günther Core Engine CT115]
-    Guenther -->|3. Liefert Produkt per Krypto-Token| Kunde
-    Guenther -->|4. Brennt $GUNTER Token| Base[Base L2 Mainnet: 0x...dEaD]
-    Base -->|5. BaseScan Tx Hash| XPost[Live-Tweet auf @GuentherBuilds]
+    Kunde[Käufer / Developer] -->|1. Checkout via Stripe| Stripe[Stripe Payment Engine]
+    Stripe -->|2. checkout.session.completed| Guenther[Fastify Core Engine CT115]
+    Guenther -->|3. Kryptografisches Signatur-Token| Kunde
+    Guenther -->|4. EIP-1559 viem Signer| Base[Base L2: 0x...dEaD]
+    Base -->|5. BaseScan Tx Hash| XPost[Audit-Post auf @GuentherBuilds]
 ```
 
 ---
 
-## 2. Was er kann (Die Kernfähigkeiten)
+## 2. Produktportfolio & Monetarisierungs-Module
 
-### A. Digitale Produkt- & Fulfillment-Engine
-- **Flaggschiff-Produkt ("Günther Craft Playbook"):** 66-seitiges Kompendium als PDF auf Deutsch und Englisch mit vollständigem Quellcode für autonome Agenten.
-- **Kryptografisches Fulfillment:** Nach Zahlungseingang generiert Günther einen zeitlich begrenzten Download-Token (48 Stunden Gültigkeit, maximal 5 Downloads).
-- **Sicherheits-Schutz:** Gehärtetes Streaming mit striktem Path-Traversal-Schutz verhindert das unbefugte Abgreifen interner Server-Dateien.
+Das System steuert vier getrennte Wertschöpfungs- und Ausführungsmodule, die über die gemeinsame State Engine orchestriert werden:
 
-### B. Base L2 viem Signer & Proof-of-Burn
-- **Direkte Blockchain-Anbindung:** Nativer viem-Client auf Base Mainnet (Chain ID 8453).
-- **Dedizierte Burner-Wallet:** Adresse `0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A`, autonom geführt mit Live-ETH für Gas-Fees.
-- **Transaktions-Calldata:** Jeder Burn wird mit unveränderbarem Audit-Trail versehen (`GUNTER_BURN:<stripeId>:<amount>`).
-- **Gas-Schutz:** Automatische Blockierung bei Gaspreisen über 100 Gwei oder wenn die Netzwerkgebühr 5 % des Transaktionswerts übersteigt.
+| Modul | Typ & Zielgruppe | Preismodell | Funktionsumfang |
+| :--- | :--- | :--- | :--- |
+| **Günther Craft** | B2C Flaggschiff | $49.00 USD | Technisches Referenzhandbuch und Code-Framework (66 Seiten, A4, DE/EN) zur Produktion autonomer Agenten (ElizaOS, Prisma, viem Signer). |
+| **Claw Mart** | MCP Module & Skills | $29 – $49 USD | Modulare Schnittstellen-Bibliothek für Model Context Protocol (MCP) Server. 10 % Plattform-Take-Rate bei Drittanbieter-Modulen. |
+| **Clawcommerce** | Enterprise B2B | $2.000 + $500/Mo | Integrations-Framework für isolierte Agenten-Instanzen im Unternehmensnetzwerk. Automatisiertes Intake-Routing und Angebotserstellung. |
+| **Base L2 viem Signer** | On-Chain Execution | Native Execution | Nativer viem-Client auf Base Mainnet. Führt programmierte Token-Burns mit individuellem Audit-Calldata (`GUNTER_BURN:<id>:<amount>`) und Gas-Schutz (<100 Gwei) aus. |
 
-### C. Claw Mart (Skills & MCP Marketplace)
-- **Marktplatz-Katalog:** Bietet modulare MCP-Server an (ElizaOS Base Token Burner für $29, Fastify Stripe Gateway für $39, CDP MPC Wallet Guard für $49).
-- **Take-Rate-Engine:** 100 % der Erlöse eigener Skills und 10 % der Erlöse von Community-Skills fließen automatisch in den Burn-Pool.
-
-### D. Clawcommerce (B2B High-Ticket Funnel)
-- **Intake API:** Endpunkt `POST /api/b2b/intake` mit strikter Zod-Schema-Validierung.
-- **Autonome Angebotserstellung:** Generiert dynamische Enterprise-Proposals via Claude Sonnet für $2.000 Einrichtungsgebühr und $500/Monat Retainer.
-
-### E. Autonomes Marketing & Social Engine (X API v2)
-- **Echtzeit-Verkaufsbeweise:** Postet bei jedem Verkauf automatisch den Transaktionslink von BaseScan.
-- **Adaptive Daily Market Pulse:** Einmal alle 24 Stunden veröffentlicht Günther ein Markt-Update auf [@GuentherBuilds](https://x.com/GuentherBuilds).
-- **5-Stufen Angle-Rotation:** Wenn keine Verkäufe stattfinden, wechselt er täglich den strategischen Blickwinkel (siehe Abschnitt 3).
+### Sicherheits- & Validierungsarchitektur:
+- **Kryptografische Einmal-Tokens:** HMAC-SHA256 Signierung mit 48 Stunden Gültigkeit verhindert unautorisierte Weitergabe von Download-Links.
+- **Download-Limitierung:** Atomarer CAS-Zähler (Maximum: 5 Abrufe) schützt Bandbreite und Server-Ressourcen vor automatisiertem Scraping.
+- **Path-Traversal-Schutz:** Kanonische Pfad-Auflösung via `path.resolve` gegen eine strikte Whitelist unterbindet Directory-Traversal-Angriffe.
+- **Webhook HMAC-Prüfung:** Stripe Endpoint Secret Signatur-Verifikation schützt vor unberechtigten Payloads.
 
 ---
 
-## 3. Was er macht (Der 24/7 Autopilot-Lebenszyklus)
+## 3. Der 24/7 Autopilot-Lebenszyklus
 
-Günther läuft als ununterbrochener Systemd-Dienst (`gunther-core.service`) auf Proxmox CT115.
+Das System operiert als autonomer Systemd-Dienst (`gunther-core.service`) auf Proxmox CT115. Ein zyklischer 60-Sekunden-Timer steuert alle periodischen Kontroll- und Ausführungsroutinen:
 
-```mermaid
-stateDiagram-v2
-    [*] --> DaemonStart: Systemd Start
-    DaemonStart --> TickingLoop: 60s Intervall
+### Periodische Hintergrund-Routinen (`GuntherDaemon`):
+1. **Zahlungs-Reconciliation:** Prüft im Minutentakt auf verbuchte Transaktionen, deren On-Chain-Execution aufgrund kurzzeitiger RPC- oder Netzwerk-Latenzen verzögert wurde, und führt diese deterministisch nach.
+2. **System-Telemetrie & Liveness:** Überwacht Heap-Memory, Event-Loop-Latenz und Datenbank-Integrität. Sendet periodische Heartbeat-Pings an Uptime Kuma zur permanenten Ausfallüberwachung.
 
-    state TickingLoop {
-        CheckReconciliation: 1. Offene Zahlungen prüfen
-        EmitHeartbeat: 2. Healthcheck & Kuma Ping
-        EvaluateMarketPulse: 3. Täglicher Marktbericht fällig?
-    }
+### Adaptive Marketing-Rotation (Content-Steuerung auf X):
+Um organische Sichtbarkeit in der internationalen Entwickler- und Web3-Community aufzubauen, steuert das System einen täglichen Content-Zyklus. Bei Phasen ohne neue Transaktionen rotiert die KI deterministisch zwischen fünf technischen Analyse-Winkeln:
 
-    CheckReconciliation --> ExecuteBurn: Wenn Payment offen
-    ExecuteBurn --> PostBurnTweet: Base Tx erfolgreich
-    PostBurnTweet --> EmitHeartbeat
-
-    EvaluateMarketPulse --> GeneratePulse: Wenn neuer Tag (UTC)
-    GeneratePulse --> PostPulseTweet: Veröffentliche auf X
-    PostPulseTweet --> TickingLoop
-
-    state WebhookTrigger {
-        StripeEvent: Stripe checkout.session.completed
-        VerifyHMAC: HMAC-SHA256 Signatur prüfen
-        AtomicCAS: Atomic Compare-and-Swap in SQLite
-        FulfillDownload: Download-Token erzeugen
-        TriggerBurn: viem Signer ausführen
-    }
-```
-
-### Die Adaptive Marketing-Rotation (Wenn Verkäufe ausbleiben)
-Damit der X-Account niemals stagniert, wählt Günthers KI täglich autonom einen von fünf Hebeln:
-
-| Tag / Winkel | Strategischer Fokus | Beispiel-Inhalt |
+| Zyklus / Winkel | Thematischer Schwerpunkt | Inhaltliche Ausrichtung |
 | :--- | :--- | :--- |
-| **1. Dev Pain Point** | Warum 95 % aller Agenten abstürzen | Webhook-Race-Conditions, doppelte Abbuchungen und die SQLite Atomic CAS Lösung im Playbook. |
-| **2. Unit Economics** | 100 % LLM-Marge | Wie man mit lokalem Ollama-Routing für Klassifizierung die monatlichen API-Kosten unter $0.05 hält. |
-| **3. On-Chain Alpha** | Web3 viem Signer | Wie man auf Base L2 Smart Contracts automatisiert anspricht, ohne Private Keys im Speicher zu gefährden. |
-| **4. Contrarian Builder** | Schluss mit Chatbots | Klartext gegen nutzlose Prompt-Wrapper; Plädoyer für echte, wertschöpfende Software. |
-| **5. Metrics & Proof** | Transparente Zahlen | Verbrannte `$GUNTER`-Token, live Skills im Store und Live-Explorer-Feed. |
+| **1. Technical Resilience** | Fehlertoleranz & State Safety | Analyse von Webhook-Race-Conditions, unhandled Rejections und der Implementierung von Atomic CAS in SQLite. |
+| **2. Unit Economics** | Kostenoptimierung & Margen | Darstellung von hybridem Routing: Lokale Modelle (Ollama) für Datenklassifizierung zur Senkung der API-Kosten auf unter $0.05/Monat. |
+| **3. On-Chain Architecture** | Web3 Smart Contract Execution | Nativer Einsatz von viem auf Base L2, Custom Transaction Calldata und sicheres Key-Management. |
+| **4. Systems Engineering** | Produktionsreife vs. Spielzeug-Bots | Kritische Einordnung von oberflächlichen Chat-Wrappern gegenüber deterministischer digitaler Fulfillment-Software. |
+| **5. Verifiable Metrics** | Transparente Kennzahlen | Verifizierter Gesamtumsatz, kumulierte Token-Burns auf Base und direkter Link zum BaseScan Explorer. |
 
 ---
 
-## 4. Wie er es macht (Architektur, Infrastruktur & Stack)
+## 4. Infrastruktur, Netzwerk & Routing
 
-Günther folgt dem strikten **„Zero-Exposed-Ports“-Prinzip** und ist identisch zur `cuonz.org`-Architektur aufgebaut.
+Die Infrastruktur folgt dem Unternehmensstandard des Betreibers: **Keine offenen Ports am Router (Zero Exposed Ports)** und vollständige Entkopplung über zentrale Proxies.
 
 ```mermaid
 flowchart LR
-    subgraph WAN ["Öffentliches Internet"]
-        Client[Besucher / Käufer]
-    end
-
-    subgraph Cloudflare ["Cloudflare Edge"]
-        CFDNS[DNS / SSL / DDoS Protection]
-        CFTunnelEdge[Cloudflare Tunnel Ingress]
-    end
-
-    subgraph PVE99 ["Proxmox Host hades (10.0.1.99)"]
-        CT103["CT 103 (10.0.1.127)"]
-        CFD["cloudflared Daemon"]
-        NPM["Nginx Proxy Manager (:80)"]
-    end
-
-    subgraph PVE100 ["Proxmox Host homeassist (10.0.1.100)"]
-        CT115["CT 115 gunther-core (10.0.1.115)"]
-        Fastify["Fastify Core Engine (:3000)"]
-        Prisma["Prisma ORM + SQLite (dev.db)"]
-        Signer["viem Native Signer (Base L2)"]
-    end
-
-    Client -->|HTTPS 443| CFDNS
-    CFDNS --> CFTunnelEdge
-    CFTunnelEdge -->|WireGuard Tunnel| CFD
-    CFD -->|http://10.0.1.127:80| NPM
-    NPM -->|Proxy Host #17 :3000| Fastify
-    Fastify --> Prisma
-    Fastify --> Signer
+    Client[Öffentliches Internet] -->|HTTPS 443| CF[Cloudflare Edge: WAF / SSL / DDoS]
+    CF -->|Cloudflare Tunnel| CFD[cloudflared Daemon auf CT103]
+    CFD -->|http://10.0.1.127:80| NPM[Nginx Proxy Manager CT103: Host #17]
+    NPM -->|http://10.0.1.115:3000| Fastify[Fastify Core Engine CT115]
+    Fastify --> Prisma[Prisma ORM + SQLite: dev.db]
+    Fastify --> Signer[Base L2 viem Signer]
 ```
 
-### Technische Stack-Übersicht:
-
-| Schicht | Technologie | Aufgabe & Spezifikation |
-| :--- | :--- | :--- |
-| **Hardware** | Intel NUC Bare-Metal Cluster | Proxmox VE 8.x, Debian 13 LXC Container (CT115). |
-| **Edge & Proxy** | Cloudflare + Nginx Proxy Manager | DDoS-Schutz, Universal SSL Zertifikate, lokales Routing über CT103. |
-| **Core Backend** | Node.js v22 + TypeScript | Strict Mode, ESM Module, Fastify Webserver auf Port 3000. |
-| **State & Safety** | Prisma ORM + SQLite | Tabellen `Payment`, `SkillPurchase`, `B2bLead`, `Mention`, `Trace`. Atomares CAS verhindert Double-Spendings. |
-| **Web3 Engine** | viem (Base Mainnet) | Native EIP-1559 Transaktionen, Proof-of-Burn Calldata, Nonce-Management. |
-| **KI & Routing** | Ollama + Claude Sonnet 4 | Lokales Modell für 0€ JSON-Klassifizierung; Claude Sonnet für hochkarätiges Copywriting. |
-| **Social Media** | X API v2 (OAuth 1.0a) | Autonomes Tweeten und Thread-Management über `@GuentherBuilds`. |
+### Detaillierte Technologie-Schichten:
+- **Hardware & Hypervisor:** Intel NUC Bare-Metal Cluster mit Proxmox VE 8.x, Debian 13 LXC Container (CT115). Dedizierte Ressourcen, lokale NVMe-Speicherung.
+- **Edge & Routing:** Cloudflare Universal SSL Termination, DDoS-Abwehr, internes Routing über Proxy-Host #17 auf `10.0.1.115:3000`.
+- **Applikations-Server:** Fastify v4 auf Node.js 22 LTS. Hochperformanter TypeScript-Webserver auf Port 3000. Strikte Typisierung, Zod-Schema-Validierung.
+- **Datenhaltung & State:** Prisma ORM mit SQLite (`dev.db`). Idempotente Tabellen (`Payment`, `SkillPurchase`, `B2bLead`). Atomic CAS verhindert Double-Execution.
+- **KI-Orchestrierung:** Lokal gehostetes Ollama-Modell für latenzfreies JSON-Routing; Claude Sonnet 4 für hochpräzises englisches Copywriting.
+- **Web3 Signer:** viem auf Base Mainnet. Native EIP-1559 Transaktionserstellung, Gas-Limit-Überwachung, BaseScan Audit-Verknüpfung.
+- **Kommunikations-Schnittstelle:** X API v2 (OAuth 1.0a) zur Veröffentlichung von Daily Updates und Proof-of-Burn Bestätigungen auf `@GuentherBuilds`.
 
 ---
 
-## 5. Administrations- & Betriebs-Leitfaden
+## 5. Administrator- & Betriebs-Leitfaden
 
-### Wichtige Pfade & Zugänge:
-- **Server:** Proxmox CT115 (`10.0.1.115`), SSH via `ssh gunther` (Key: `~/.ssh/id_ed25519`).
-- **Projektverzeichnis:** `/opt/gunther-core`
-- **Konfigurationsdatei:** `/opt/gunther-core/.env`
-- **Datenbank:** `/opt/gunther-core/prisma/dev.db`
-- **Nginx Proxy Manager:** CT103 (`10.0.1.127`), Host-Eintrag `#17` (`0xguenther.org -> 10.0.1.115:3000`).
-
-### Die wichtigsten Befehle:
-
+### Wartungs- & Diagnosebefehle (SSH):
 ```bash
-# Service Status prüfen
+# 1. Status des Systemd-Services prüfen
 ssh gunther "systemctl status gunther-core --no-pager"
 
-# Live-Logs ansehen (Echtzeit-Verfolgung)
+# 2. Live-Logs der Applikation einsehen
 ssh gunther "journalctl -u gunther-core -f"
 
-# Service neustarten
+# 3. Service nach Code- oder Konfigurationsänderung neustarten
 ssh gunther "systemctl restart gunther-core"
 
-# Health-Check direkt am Container aufrufen
+# 4. Lokalen Healthcheck-Endpunkt abfragen
 ssh gunther "curl -s http://127.0.0.1:3000/health"
 ```
 
+### Systempfade & Konfigurationsdateien:
+- **Projektverzeichnis:** `/opt/gunther-core` auf CT115
+- **Konfigurations-Environment:** `/opt/gunther-core/.env`
+- **Primäre Datenbank:** `/opt/gunther-core/prisma/dev.db`
+- **Proxy-Konfiguration:** CT103 (`10.0.1.127`) Host #17 (Weiterleitung von `0xguenther.org`, `www.` und `api.` auf `10.0.1.115:3000`)
+- **Base Burner Wallet:** `0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A` (Echte Ausführungs-Wallet auf Base Mainnet mit Live-ETH für Netzwerkgebühren)
+
 ---
 
-## 6. Zusammenfassung
+## 6. Fazit
 
-Günther ist ein autarkes, lückenlos abgesichertes Geschäftssystem. Er verbindet reale Zahlungsströme (Stripe) mit digitaler Wertschöpfung (Playbooks & Skills) und kryptografischer Transparenz (Base L2 Token-Burns), während seine Social-Media-Engine eigenständig für Sichtbarkeit sorgt.
+0xGünther ist als geschlossenes, fehlertolerantes Gesamtsystem konzipiert. Es verbindet traditionelle E-Commerce-Prozesse (Stripe) mit digitalem Asset-Fulfillment und kryptografischer Transparenz (Base L2), während der integrierte Hintergrund-Daemon den unterbrechungsfreien 24/7 Betrieb garantiert.
