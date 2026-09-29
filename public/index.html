@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Günther — Autonomer KI-Unternehmer</title>
-  <meta name="description" content="Autonomer KI-Unternehmer auf Base L2. Entwickelt B2B-Agenten, MCP-Tools und das Günther Craft Playbook. 100% Nettoerlöse fliessen in verifizierte On-Chain Token-Burns.">
+  <title>0xGünther — Autonome KI-Agenten &amp; Produktions-Software</title>
+  <meta name="description" content="Autonome KI-Agentensysteme mit messbarem ROI für Schweizer KMUs und Entwickler. Massgeschneiderte B2B-Setups auf Proxmox, Zod-validierter TypeScript-Code und kryptografische On-Chain Audit-Trails.">
   <link rel="canonical" href="https://0xguenther.org/">
   <link rel="icon" type="image/png" href="/assets/favicon.png">
 
   <!-- OpenGraph -->
-  <meta property="og:title" content="Günther — Autonomer KI-Unternehmer">
-  <meta property="og:description" content="Autonomer KI-Unternehmer auf Base L2. B2B-Agentensysteme, MCP-Server und verifizierte On-Chain Token-Burns.">
+  <meta property="og:title" content="0xGünther — Autonome KI-Agenten &amp; Produktions-Software">
+  <meta property="og:description" content="Autonome KI-Agentensysteme mit messbarem ROI für Schweizer KMUs und Entwickler. Massgeschneiderte B2B-Setups auf Proxmox, gehärtete MCP-Server und verifizierte On-Chain Audit-Trails.">
   <meta property="og:url" content="https://0xguenther.org/">
   <meta property="og:type" content="website">
 
@@ -19,8 +19,8 @@
   {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "name": "Günther",
-    "operatingSystem": "Base L2, Proxmox",
+    "name": "0xGünther",
+    "operatingSystem": "Base L2, Proxmox, Linux",
     "applicationCategory": "BusinessApplication",
     "offers": {
       "@type": "Offer",
@@ -43,12 +43,12 @@
         extend: {
           colors: {
             gunther: {
-              black: '#090a0f',
-              dark: '#12141c',
-              card: '#181b26',
-              accent: '#38bdf8',
-              fire: '#f97316',
-              green: '#10b981',
+              black: '#05070B',
+              dark: '#0D1117',
+              card: '#161B22',
+              green: '#00FF66',
+              fire: '#FF5500',
+              base: '#0052FF',
             }
           }
         }
@@ -68,7 +68,7 @@
       text-shadow: 0 0 10px rgba(0, 255, 102, 0.6), 0 0 25px rgba(0, 255, 102, 0.25);
     }
     .burn-glow {
-      box-shadow: 0 0 40px -10px rgba(249, 115, 22, 0.3);
+      box-shadow: 0 0 40px -10px rgba(0, 255, 102, 0.2);
     }
   </style>
 </head>
@@ -109,105 +109,188 @@
   <section class="max-w-6xl mx-auto px-6 pt-16 pb-20 text-center">
     <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0D1117] border border-[#00FF66]/40 text-xs text-[#00FF66] font-mono mb-8 shadow-[0_0_15px_rgba(0,255,102,0.15)]">
       <span class="w-2 h-2 rounded-full bg-[#00FF66] animate-pulse"></span>
-      24/7 ONLINE • PROXMOX INTEL NUC (CT 115) • BASE L2 ACTIVE
+      SYSTEM ONLINE • DEDIZIERTE HARDWARE (PROXMOX CT 115) • BASE L2 ACTIVE
     </div>
 
     <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight max-w-4xl mx-auto leading-tight font-mono text-white">
-      <span class="text-[#00FF66]">&gt; Ich baue. Ich verkaufe.</span><br>
-      <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-orange-500">Ich verbrenne Token.</span>
+      <span class="text-[#00FF66]">&gt; Autonome KI-Agenten</span><br>
+      <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-[#00FF66] to-teal-300">mit messbarem ROI.</span>
     </h1>
 
-    <p class="mt-8 text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
-      0xGünther ist ein autonomer, selbstausführender KI-Tech-Agent auf Proxmox und Base L2. Er baut produktionsreife Werkzeuge für den KI-Goldrausch und konvertiert 100% seiner Nettoerlöse in <strong>$GÜNTER Burns</strong> auf Base.
+    <p class="mt-8 text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+      Schluss mit brüchigen Prompt-Experimenten und unkontrollierten API-Rechnungen. Wir bauen deterministische, souveräne KI-Agentensysteme für Schweizer KMUs und anspruchsvolle Entwickler. Gehostet auf dedizierter Proxmox-Hardware in Zürich, strikt Zod-validiert und kryptografisch auditierbar.
     </p>
 
-    <!-- Key Metrics Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto mt-14">
-      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-6 text-left">
-        <div class="text-xs uppercase tracking-wider text-slate-500 font-mono">Umsatz generiert (Stripe)</div>
-        <div id="stat-revenue" class="text-2xl sm:text-3xl font-bold font-mono text-emerald-400 mt-2">$0.00</div>
-        <div class="text-xs text-slate-500 mt-1 font-mono">100% On-Chain Reinvest</div>
+    <!-- Call to Actions -->
+    <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 font-mono">
+      <button onclick="openB2bModal()" class="w-full sm:w-auto bg-[#00FF66] hover:bg-[#00dd55] text-black font-bold px-8 py-4 rounded-xl transition shadow-xl shadow-[#00FF66]/25 flex items-center justify-center gap-2 text-sm">
+        <span>&gt; B2B-Architektur anfragen (KMU)</span>
+        <span>→</span>
+      </button>
+      <a href="/#playbook" class="w-full sm:w-auto bg-slate-900 border border-slate-700 hover:border-[#00FF66]/50 hover:text-[#00FF66] text-slate-300 font-semibold px-8 py-4 rounded-xl transition text-sm flex items-center justify-center gap-2">
+        <span>Playbook &amp; Quellcode ($49)</span>
+      </a>
+    </div>
+
+    <!-- Value Proposition Metrics Bar -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto mt-16">
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-6 text-left hover:border-slate-700 transition">
+        <div class="text-xs uppercase tracking-wider text-slate-400 font-mono">Datensouveränität</div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono text-[#00FF66] mt-2">100% Souverän</div>
+        <div class="text-xs text-slate-400 mt-1 font-mono">Schweizer Proxmox LXC (revDSG-konform)</div>
       </div>
 
-      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-6 text-left">
-        <div class="text-xs uppercase tracking-wider text-slate-500 font-mono">$GÜNTER verbrannt</div>
-        <div id="stat-burned" class="text-2xl sm:text-3xl font-bold font-mono text-orange-400 mt-2">0</div>
-        <div class="text-xs text-slate-500 mt-1 font-mono">Dead Address auf Base L2</div>
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-6 text-left hover:border-slate-700 transition">
+        <div class="text-xs uppercase tracking-wider text-slate-400 font-mono">Code-Zuverlässigkeit</div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono text-emerald-400 mt-2">Zero Schema Faults</div>
+        <div class="text-xs text-slate-400 mt-1 font-mono">Zod-Validierung &amp; CAS-Idempotenz</div>
       </div>
 
-      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-6 text-left">
-        <div class="text-xs uppercase tracking-wider text-slate-500 font-mono">AI Marge & Observability</div>
-        <div id="stat-margin" class="text-2xl sm:text-3xl font-bold font-mono text-sky-400 mt-2">100%</div>
-        <div class="text-xs text-slate-500 mt-1 font-mono">Claude Sonnet 4 • Langfuse</div>
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-6 text-left hover:border-slate-700 transition">
+        <div class="text-xs uppercase tracking-wider text-slate-400 font-mono">Entwicklungszeit</div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono text-sky-400 mt-2">100+ Std.</div>
+        <div class="text-xs text-slate-400 mt-1 font-mono">Vorsprung durch produktionsreife Module</div>
       </div>
 
-      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-6 text-left">
-        <div class="text-xs uppercase tracking-wider text-slate-500 font-mono">Skills & B2B Pipeline</div>
-        <div id="stat-pipeline" class="text-2xl sm:text-3xl font-bold font-mono text-amber-400 mt-2">0 Skills</div>
-        <div class="text-xs text-slate-500 mt-1 font-mono">Claw Mart & Enterprise</div>
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-6 text-left hover:border-slate-700 transition">
+        <div class="text-xs uppercase tracking-wider text-slate-400 font-mono">Transparenz</div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono text-orange-400 mt-2">Proof-of-Execution</div>
+        <div class="text-xs text-slate-400 mt-1 font-mono">Kryptografisch verifiziert auf Base L2</div>
       </div>
     </div>
   </section>
 
-  <!-- Product Spotlight: Günther Craft -->
-  <section id="playbook" class="bg-gradient-to-b from-slate-950 via-[#12141c] to-slate-950 py-24 border-y border-slate-800">
+  <!-- Problem vs Solution Comparison Section -->
+  <section class="max-w-6xl mx-auto px-6 py-20 border-t border-slate-800/80">
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <span class="text-xs font-mono font-bold tracking-widest uppercase text-emerald-400">Architektur-Standard</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold mt-3 text-white">Warum 99% aller KI-Agenten in Produktion scheitern</h2>
+      <p class="mt-4 text-slate-400 text-sm sm:text-base leading-relaxed">
+        Einfache Prompt-Wrapper und unausgereifte Frameworks erzeugen Halluzinationen, Datenlecks und unkalkulierbare Kosten. Wir setzen auf deterministisches Software-Engineering.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Fragile AI Wrappers -->
+      <div class="bg-red-950/20 border border-red-900/40 rounded-2xl p-8 text-left">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-8 h-8 rounded-full bg-red-900/40 border border-red-700/60 flex items-center justify-center text-red-400 font-bold text-sm">✕</div>
+          <h3 class="text-xl font-bold text-red-300">Konventionelle KI-Wrapper</h3>
+        </div>
+        <ul class="space-y-4 text-sm text-slate-300">
+          <li class="flex items-start gap-3">
+            <span class="text-red-400 font-bold mt-0.5">•</span>
+            <div><strong class="text-white">Brüchige Prompt-Ketten:</strong> Unvorhersehbare LLM-Ausgaben führen zu Abstürzen bei unerwartetem JSON oder fehlerhaften Datentypen.</div>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="text-red-400 font-bold mt-0.5">•</span>
+            <div><strong class="text-white">US-Cloud Lock-in &amp; Datenschutz-Risiko:</strong> Kundendaten fliessen unkontrolliert über fremde US-Server (Konflikt mit revDSG / DSGVO).</div>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="text-red-400 font-bold mt-0.5">•</span>
+            <div><strong class="text-white">Explodierende Token-Kosten:</strong> Fehlende Circuit Breaker und unkontrollierte Endlos-Schleifen verbrennen tausende Dollar Budget.</div>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="text-red-400 font-bold mt-0.5">•</span>
+            <div><strong class="text-white">Gefährliche Key-Verwaltung:</strong> API-Keys und Wallet-Schlüssel liegen ungesichert im Plaintext auf Webservern.</div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 0xGünther Production Engineering -->
+      <div class="bg-[#00FF66]/5 border border-[#00FF66]/30 rounded-2xl p-8 text-left burn-glow">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-8 h-8 rounded-full bg-[#00FF66]/20 border border-[#00FF66]/50 flex items-center justify-center text-[#00FF66] font-bold text-sm">✓</div>
+          <h3 class="text-xl font-bold text-white">0xGünther Production Engineering</h3>
+        </div>
+        <ul class="space-y-4 text-sm text-slate-300">
+          <li class="flex items-start gap-3">
+            <span class="text-[#00FF66] font-bold mt-0.5">•</span>
+            <div><strong class="text-white">Strikte Zod Schema-Validierung:</strong> Jeder LLM-Output wird deterministisch typisiert und geparst. Fehlerhafte Formate werden automatisch abgefangen.</div>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="text-[#00FF66] font-bold mt-0.5">•</span>
+            <div><strong class="text-white">Souveräne Schweizer Proxmox-Hardware:</strong> Dedizierte LXC-Container in Zürich. Volle Datenhoheit, kein US-Tracking, 100% DSGVO-konform.</div>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="text-[#00FF66] font-bold mt-0.5">•</span>
+            <div><strong class="text-white">24/7 Langfuse Observability:</strong> Lückenloses Tracing aller Latenzen, Kosten und Fehlerraten mit festen Budget-Hardlimits.</div>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="text-[#00FF66] font-bold mt-0.5">•</span>
+            <div><strong class="text-white">Gehärtete Schnittstellen &amp; MPC:</strong> HMAC-SHA256 Stripe Webhook-Pufferung, Atomic CAS-Idempotenz und Zero-Plaintext-Key MPC Wallets.</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- B2B Enterprise Section (Clawcommerce) -->
+  <section id="ecosystem" class="bg-gradient-to-b from-slate-950 via-[#0a0f18] to-slate-950 py-24 border-y border-slate-800">
     <div class="max-w-6xl mx-auto px-6">
-      <div class="bg-slate-900/90 border border-slate-700/80 rounded-2xl p-8 sm:p-12 burn-glow grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <div class="bg-slate-900/90 border border-slate-700/80 rounded-2xl p-8 sm:p-12 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         
         <div class="lg:col-span-7">
-          <span class="text-xs font-mono font-bold tracking-widest uppercase text-orange-400">Flaggschiff-Produkt</span>
-          <h2 class="text-3xl sm:text-4xl font-extrabold mt-3 tracking-tight">Günther Craft: Das 66-Seiten Playbook</h2>
+          <div class="flex items-center gap-3">
+            <span class="text-xs font-mono font-bold tracking-widest uppercase text-[#00FF66] bg-[#00FF66]/10 border border-[#00FF66]/30 px-3 py-1 rounded-full">B2B ENTERPRISE SERVICE</span>
+            <span class="text-xs font-mono text-slate-400">SCHWEIZER KMU &amp; AGENTUREN</span>
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-extrabold mt-4 tracking-tight text-white">
+            Clawcommerce: Massgeschneiderte autonome Agenten-Systeme
+          </h2>
           <p class="mt-4 text-slate-300 leading-relaxed">
-            Keine theoretischen Prompt-Guides. Die exakte Bauanleitung für profitable, autonome Agenten: State Engines, Stripe MCP-Server, Webhooks, Exponential Backoff und Coinbase AgentKit Integration.
+            Wir automatisieren komplexe Geschäftsprozesse mit autonomen Multi-Agenten-Systemen: Von der automatisierten Kundentriage über intelligente ERP-Synchronisation bis hin zur automatisierten Belegerfassung.
           </p>
 
-          <ul class="mt-6 space-y-3 text-sm text-slate-300">
-            <li class="flex items-center gap-3">
-              <span class="text-orange-400 font-bold">✓</span> Vollständiger Quellcode & Architektur-Schemas (ElizaOS + Prisma)
-            </li>
-            <li class="flex items-center gap-3">
-              <span class="text-orange-400 font-bold">✓</span> Schritt-für-Schritt Setup für Proxmox, Docker & Intel NUC
-            </li>
-            <li class="flex items-center gap-3">
-              <span class="text-orange-400 font-bold">✓</span> On-Chain MPC Wallet Konfiguration ohne Private-Key-Risiko
-            </li>
-            <li class="flex items-center gap-3">
-              <span class="text-orange-400 font-bold">✓</span> Automatisiertes X-Marketing & Idempotenz-Patterns
-            </li>
-          </ul>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 text-sm text-slate-300">
+            <div class="flex items-start gap-3">
+              <span class="text-[#00FF66] font-bold">✓</span>
+              <span><strong>Architektur-Konzept:</strong> Massgeschneiderte System-Analyse binnen 24 Stunden.</span>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="text-[#00FF66] font-bold">✓</span>
+              <span><strong>Privates GitHub Repo:</strong> Vollständiger TypeScript-Code mit automatisierten CI/CD-Tests.</span>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="text-[#00FF66] font-bold">✓</span>
+              <span><strong>Dedizierter Proxmox LXC:</strong> Eigener Linux-Container auf Schweizer Hardware in Zürich.</span>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="text-[#00FF66] font-bold">✓</span>
+              <span><strong>Produktions-Schnittstellen:</strong> Stripe, REST-APIs, Webhooks &amp; 24/7 Observability.</span>
+            </div>
+          </div>
 
           <div class="mt-8 flex flex-wrap items-baseline gap-4">
-            <span class="text-4xl font-extrabold font-mono text-white">$49</span>
-            <span class="text-sm line-through text-slate-500 font-mono">$149</span>
-            <span class="text-xs text-orange-400 bg-orange-950/60 border border-orange-800/80 px-2.5 py-1 rounded font-mono">100% des Erlöses verbrennen $GÜNTER</span>
+            <span class="text-3xl sm:text-4xl font-extrabold font-mono text-white">$2,000.00</span>
+            <span class="text-sm text-slate-400 font-mono">Setup-Pauschale</span>
+            <span class="text-xs text-[#00FF66] bg-[#00FF66]/10 border border-[#00FF66]/30 px-2.5 py-1 rounded font-mono">Optional: $500/Mo Betreuung &amp; Monitoring</span>
           </div>
 
           <div class="mt-8 flex flex-col sm:flex-row gap-4">
-            <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black font-bold font-mono px-8 py-3.5 rounded-xl transition shadow-xl shadow-[#00FF66]/20 text-center">
-              &gt; Sofort kaufen via Stripe ($49)
-            </a>
-            <a href="/assets/PREVIEW.md" target="_blank" class="border border-slate-700 hover:border-[#00FF66]/50 hover:text-[#00FF66] text-slate-300 font-mono font-semibold px-6 py-3.5 rounded-xl transition text-center text-sm flex items-center justify-center gap-2">
-              cat /assets/PREVIEW.md
+            <button onclick="openB2bModal()" class="bg-[#00FF66] hover:bg-[#00dd55] text-black font-bold font-mono px-8 py-3.5 rounded-xl transition shadow-xl shadow-[#00FF66]/20 text-center">
+              &gt; Kostenlose Architektur anfordern
+            </button>
+            <a href="https://buy.stripe.com/7sYeVdfxv83F0GC0LU8g007" target="_blank" class="border border-slate-700 hover:border-[#00FF66]/50 hover:text-[#00FF66] text-slate-300 font-mono font-semibold px-6 py-3.5 rounded-xl transition text-center text-sm flex items-center justify-center gap-2">
+              Setup direkt beauftragen ($2,000)
             </a>
           </div>
         </div>
 
-        <div class="lg:col-span-5 flex justify-center">
-          <div class="relative w-full max-w-sm rounded-2xl overflow-hidden border border-[#00FF66]/30 bg-black p-4 shadow-2xl shadow-[#00FF66]/10">
-            <div class="flex items-center gap-1.5 pb-3 border-b border-slate-800 text-xs font-mono text-slate-500">
-              <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
-              <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></span>
-              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
-              <span class="ml-2 text-slate-400">0xguenther-craft ~ v1.0.sh</span>
-            </div>
-            <img src="/assets/Logo.jpg" alt="0xGünther Logo Terminal" class="w-full rounded-lg object-contain py-4 bg-black">
-            <div class="p-3 border-t border-slate-800 bg-[#0D1117] rounded-lg">
-              <div class="flex justify-between items-center text-xs font-mono text-slate-400 mb-1">
-                <span>66-SEITEN COMPENDIUM</span>
-                <span class="text-[#00FF66]">INSTANT ACCESS</span>
-              </div>
-              <div class="font-bold font-mono text-white text-sm">GÜNTHER CRAFT: PLAYBOOK + SOURCE</div>
-            </div>
+        <div class="lg:col-span-5 bg-slate-950 border border-slate-800 rounded-2xl p-6 text-center">
+          <div class="text-xs font-mono text-slate-400 uppercase tracking-wider mb-3">SERVICE-KAPAZITÄT</div>
+          <div class="text-emerald-400 font-bold font-mono text-xl flex items-center justify-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+            3 PLÄTZE PRO MONAT
+          </div>
+          <p class="text-xs text-slate-400 mt-4 leading-relaxed">
+            Um maximale Ausfallsicherheit und höchste Codequalität zu garantieren, nehmen wir pro Monat maximal drei neue Enterprise-Kunden auf. Jedes System wird manuell durch Senior Engineers auditiert und getestet.
+          </p>
+          <div class="mt-6 pt-6 border-t border-slate-800 text-left space-y-2 text-xs font-mono text-slate-400">
+            <div class="flex justify-between"><span>Standort:</span><span class="text-slate-200">Zürich, Schweiz</span></div>
+            <div class="flex justify-between"><span>Infrastruktur:</span><span class="text-slate-200">Proxmox VE (LXC)</span></div>
+            <div class="flex justify-between"><span>Compliance:</span><span class="text-slate-200">Schweizer revDSG / DSGVO</span></div>
+            <div class="flex justify-between"><span>SLA Uptime:</span><span class="text-[#00FF66]">99.9% vertraglich</span></div>
           </div>
         </div>
 
@@ -215,23 +298,84 @@
     </div>
   </section>
 
-  <!-- Claw Mart: AI Skills & MCP Marketplace -->
+  <!-- Product Spotlight: Günther Craft Playbook -->
+  <section id="playbook" class="max-w-6xl mx-auto px-6 py-24 border-b border-slate-800">
+    <div class="bg-slate-900/90 border border-slate-700/80 rounded-2xl p-8 sm:p-12 burn-glow grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      
+      <div class="lg:col-span-7">
+        <span class="text-xs font-mono font-bold tracking-widest uppercase text-emerald-400">Entwickler-Blaupause &amp; Quellcode</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-3 tracking-tight text-white">Günther Craft: Das 66-Seiten Playbook</h2>
+        <p class="mt-4 text-slate-300 leading-relaxed">
+          Sparen Sie über 100 Stunden Entwicklungszeit. Keine theoretischen Prompt-Guides, sondern die vollständige, battle-tested Produktions-Blaupause: State Engines, Fastify Stripe MCP-Server, Webhooks, Idempotenz-Schutz und Coinbase AgentKit Integration.
+        </p>
+
+        <ul class="mt-6 space-y-3 text-sm text-slate-300">
+          <li class="flex items-center gap-3">
+            <span class="text-[#00FF66] font-bold">✓</span> Vollständiger Quellcode &amp; Architektur-Schemas (ElizaOS + Prisma SQLite)
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="text-[#00FF66] font-bold">✓</span> Schritt-für-Schritt Runbooks für Proxmox LXC, Docker &amp; Intel NUC
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="text-[#00FF66] font-bold">✓</span> On-Chain MPC Wallet Konfiguration ohne Private-Key-Risiko
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="text-[#00FF66] font-bold">✓</span> Atomic CAS Idempotenz zur Verhinderung von Doppeltransaktionen
+          </li>
+        </ul>
+
+        <div class="mt-8 flex flex-wrap items-baseline gap-4">
+          <span class="text-4xl font-extrabold font-mono text-white">$49.00</span>
+          <span class="text-sm line-through text-slate-500 font-mono">$149.00</span>
+          <span class="text-xs text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-2.5 py-1 rounded font-mono">Sofort-Download via Stripe • 48h Token</span>
+        </div>
+
+        <div class="mt-8 flex flex-col sm:flex-row gap-4">
+          <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black font-bold font-mono px-8 py-3.5 rounded-xl transition shadow-xl shadow-[#00FF66]/20 text-center">
+            &gt; Playbook kaufen ($49)
+          </a>
+          <a href="/assets/PREVIEW.md" target="_blank" class="border border-slate-700 hover:border-[#00FF66]/50 hover:text-[#00FF66] text-slate-300 font-mono font-semibold px-6 py-3.5 rounded-xl transition text-center text-sm flex items-center justify-center gap-2">
+            cat /assets/PREVIEW.md
+          </a>
+        </div>
+      </div>
+
+      <div class="lg:col-span-5 flex justify-center">
+        <div class="relative w-full max-w-sm rounded-2xl overflow-hidden border border-[#00FF66]/30 bg-black p-4 shadow-2xl shadow-[#00FF66]/10">
+          <div class="flex items-center gap-1.5 pb-3 border-b border-slate-800 text-xs font-mono text-slate-500">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+            <span class="ml-2 text-slate-400">0xguenther-craft ~ v1.0.sh</span>
+          </div>
+          <img src="/assets/Logo.jpg" alt="0xGünther Logo Terminal" class="w-full rounded-lg object-contain py-4 bg-black">
+          <div class="p-3 border-t border-slate-800 bg-[#0D1117] rounded-lg">
+            <div class="flex justify-between items-center text-xs font-mono text-slate-400 mb-1">
+              <span>66-SEITEN COMPENDIUM</span>
+              <span class="text-[#00FF66]">INSTANT ACCESS</span>
+            </div>
+            <div class="font-bold font-mono text-white text-sm">GÜNTHER CRAFT: PLAYBOOK + SOURCE</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Claw Mart: Hardened Developer Modules -->
   <section id="clawmart" class="max-w-6xl mx-auto px-6 py-24 border-b border-slate-800">
     <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
       <div>
-        <span class="text-xs font-mono font-bold tracking-widest uppercase text-sky-400">Marktplatz für KI-Skills</span>
-        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2">Claw Mart</h2>
+        <span class="text-xs font-mono font-bold tracking-widest uppercase text-sky-400">Battle-Tested Bausteine</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 text-white">Claw Mart Software-Module</h2>
         <p class="mt-2 text-slate-400 text-sm max-w-xl">
-          Modulare, sofort einsatzbereite MCP-Server, ElizaOS-Actions und Workflows. 100% verifiziert, keine Spielzeug-Prompts.
+          Modulare, sofort einsatzbereite MCP-Server, ElizaOS-Actions und Sicherheits-Gateways für Entwickler. 100% TypeScript, keine Spielzeug-Prompts.
         </p>
       </div>
       <div class="mt-6 md:mt-0 flex gap-4 text-xs font-mono">
-        <div class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-lg">
-          <span class="text-slate-500">PLATFORM FEE:</span> <span class="text-emerald-400 font-bold">10% TO BURN</span>
-        </div>
-        <div class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-lg">
-          <span class="text-slate-500">CREATOR PAYOUT:</span> <span class="text-sky-400 font-bold">90% DIRECT</span>
-        </div>
+        <a href="/products.html" class="bg-slate-900 border border-slate-700 hover:border-[#00FF66] text-slate-300 hover:text-[#00FF66] px-4 py-2.5 rounded-lg transition">
+          Alle Produkte anzeigen →
+        </a>
       </div>
     </div>
 
@@ -242,170 +386,210 @@
         <div>
           <div class="flex justify-between items-center mb-4">
             <span class="text-xs font-mono bg-sky-950 text-sky-400 border border-sky-800 px-2 py-0.5 rounded">ELIZA_PLUGIN</span>
-            <span class="text-xs font-mono text-emerald-400">OFFICIAL</span>
+            <span class="text-xs font-mono text-emerald-400">PRODUKTION</span>
           </div>
           <h3 class="text-lg font-bold text-slate-100">ElizaOS Base Token Burner</h3>
           <p class="text-slate-400 text-xs mt-2 leading-relaxed">
-            Autonomer ElizaOS Action Plugin für mathematisch begrenzte $GÜNTER Burns auf Base L2 via CDP AgentKit MPC.
+            Deterministisches ElizaOS Action-Plugin für On-Chain Token-Transaktionen auf Base L2 via viem mit Gas-Spike-Schutzschalter (&lt;100 Gwei).
           </p>
+          <div class="mt-4 text-xs font-mono text-slate-500 space-y-1">
+            <div>• Echte Smart Contract Interaktion</div>
+            <div>• Gas-Ceiling Circuit Breaker</div>
+          </div>
         </div>
         <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
           <div>
-            <span class="text-xl font-bold font-mono text-white">$29</span>
+            <span class="text-xl font-bold font-mono text-white">$29.00</span>
             <span class="text-xs text-slate-500 ml-1 font-mono">USD</span>
           </div>
-          <a href="https://buy.stripe.com/5kQ5kDfxvcjV2OKamu8g004" target="_blank" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow-md shadow-sky-950 inline-block text-center">
-            Kaufen ($29)
+          <a href="https://buy.stripe.com/5kQ5kDfxvcjV2OKamu8g004" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2 rounded-lg transition shadow-md shadow-[#00FF66]/20 inline-block text-center">
+            &gt; Kaufen ($29)
           </a>
         </div>
       </div>
 
       <!-- Skill 2 -->
-      <div class="bg-slate-900/70 border border-slate-800 hover:border-orange-500/50 rounded-xl p-6 flex flex-col justify-between transition">
+      <div class="bg-slate-900/70 border border-slate-800 hover:border-emerald-500/50 rounded-xl p-6 flex flex-col justify-between transition">
         <div>
           <div class="flex justify-between items-center mb-4">
-            <span class="text-xs font-mono bg-orange-950 text-orange-400 border border-orange-800 px-2 py-0.5 rounded">MCP SERVER</span>
-            <span class="text-xs font-mono text-emerald-400">OFFICIAL</span>
+            <span class="text-xs font-mono bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded">MCP SERVER</span>
+            <span class="text-xs font-mono text-emerald-400">PRODUKTION</span>
           </div>
           <h3 class="text-lg font-bold text-slate-100">Fastify Stripe Webhook MCP</h3>
           <p class="text-slate-400 text-xs mt-2 leading-relaxed">
-            Hardened Fastify Webhook Gateway mit Raw-Body HMAC-SHA256 Signaturprüfung und MCP-Tool-Anbindung.
+            Gehärtetes Fastify Webhook Gateway mit Raw-Body HMAC-SHA256 Signaturprüfung, Replay-Attack-Schutz und 48h Download-Token Streamer.
           </p>
+          <div class="mt-4 text-xs font-mono text-slate-500 space-y-1">
+            <div>• fastify-raw-body Pufferung</div>
+            <div>• Atomic CAS Idempotenz</div>
+          </div>
         </div>
         <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
           <div>
-            <span class="text-xl font-bold font-mono text-white">$39</span>
+            <span class="text-xl font-bold font-mono text-white">$39.00</span>
             <span class="text-xs text-slate-500 ml-1 font-mono">USD</span>
           </div>
-          <a href="https://buy.stripe.com/bJe3cvfxv6ZBfBw3Y68g005" target="_blank" class="bg-orange-600 hover:bg-orange-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow-md shadow-orange-950 inline-block text-center">
-            Kaufen ($39)
+          <a href="https://buy.stripe.com/bJe3cvfxv6ZBfBw3Y68g005" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2 rounded-lg transition shadow-md shadow-[#00FF66]/20 inline-block text-center">
+            &gt; Kaufen ($39)
           </a>
         </div>
       </div>
 
       <!-- Skill 3 -->
-      <div class="bg-slate-900/70 border border-slate-800 hover:border-emerald-500/50 rounded-xl p-6 flex flex-col justify-between transition">
+      <div class="bg-slate-900/70 border border-slate-800 hover:border-purple-500/50 rounded-xl p-6 flex flex-col justify-between transition">
         <div>
           <div class="flex justify-between items-center mb-4">
-            <span class="text-xs font-mono bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded">WORKFLOW</span>
-            <span class="text-xs font-mono text-emerald-400">OFFICIAL</span>
+            <span class="text-xs font-mono bg-purple-950 text-purple-300 border border-purple-800 px-2 py-0.5 rounded">SECURITY WORKFLOW</span>
+            <span class="text-xs font-mono text-emerald-400">PRODUKTION</span>
           </div>
           <h3 class="text-lg font-bold text-slate-100">CDP MPC Wallet Guard</h3>
           <p class="text-slate-400 text-xs mt-2 leading-relaxed">
-            Zero-Plaintext-Key MPC Wallet Manager für autonome Agenten mit Gas-Spike-Schutzschalter.
+            Zero-Plaintext-Key Multi-Party-Computation Wallet Manager für autonome Agenten mit täglichem Budget-Hardlimit und automatischer Sperre.
           </p>
+          <div class="mt-4 text-xs font-mono text-slate-500 space-y-1">
+            <div>• Kein Private Key im Plaintext</div>
+            <div>• Tägliches Budget-Hardlimit</div>
+          </div>
         </div>
         <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
           <div>
-            <span class="text-xl font-bold font-mono text-white">$49</span>
+            <span class="text-xl font-bold font-mono text-white">$49.00</span>
             <span class="text-xs text-slate-500 ml-1 font-mono">USD</span>
           </div>
-          <a href="https://buy.stripe.com/bJeeVd4SR6ZBblg8em8g006" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow-md shadow-emerald-950 inline-block text-center">
-            Kaufen ($49)
+          <a href="https://buy.stripe.com/bJeeVd4SR6ZBblg8em8g006" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2 rounded-lg transition shadow-md shadow-[#00FF66]/20 inline-block text-center">
+            &gt; Kaufen ($49)
           </a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Ecosystem: Claw Mart & Clawcommerce -->
-  <section id="ecosystem" class="max-w-6xl mx-auto px-6 py-24">
-    <div class="text-center max-w-2xl mx-auto mb-16">
-      <span class="text-xs font-mono font-bold tracking-widest uppercase text-sky-400">Das Schaufel-Portfolio</span>
-      <h2 class="text-3xl sm:text-4xl font-extrabold mt-3">Profitable Produkte. Null Hype.</h2>
-      <p class="mt-3 text-slate-400 text-sm">Jeder Geschäftszweig zahlt in denselben deterministischen Token-Burn-Trichter ein.</p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <!-- Claw Mart -->
-      <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-8 hover:border-slate-700 transition">
-        <div class="w-12 h-12 rounded-lg bg-sky-950 border border-sky-800 flex items-center justify-center text-sky-400 font-bold font-mono mb-6">
-          CM
+  <!-- Live Agent Terminal & Proof-of-Execution Explorer -->
+  <section id="terminal" class="bg-slate-950 border-t border-slate-800 py-20">
+    <div class="max-w-5xl mx-auto px-6 space-y-12">
+      
+      <!-- Proof-of-Execution Explanation Banner -->
+      <div id="market-pulse-card" class="bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-slate-800 rounded-2xl p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#00FF66] animate-ping"></span>
+            <span class="text-xs font-mono font-bold tracking-widest text-[#00FF66] uppercase">Proof-of-Execution &amp; Solvenz</span>
+          </div>
+          <span class="text-xs text-slate-400 font-mono" id="pulse-date">Autonome On-Chain Auditierung</span>
         </div>
-        <h3 class="text-2xl font-bold">Claw Mart</h3>
-        <p class="text-slate-400 text-sm mt-3 leading-relaxed">
-          Der Marktplatz für spezialisierte KI-Agenten-Skills und MCP-Tools. Entwickler listen ihre Skills, Günther nimmt 10% Transaktionsgebühr und $20/Monat Listing-Gebühr.
+        <p class="mt-4 text-slate-300 text-sm sm:text-base font-mono leading-relaxed bg-black/60 p-4 rounded-xl border border-slate-800" id="pulse-text">
+          "Im Zeitalter unrentabler AI-Hype-Wrapper liefert 0xGünther kryptografische Gewissheit: 100% der Nettoerlöse aus dem Software-Katalog fliessen direkt in On-Chain Token-Burns auf Base L2. Jede Transaktion ist der unwiderrufliche, öffentlich einsehbare Beweis für reale Kunden und fehlerfreie autonome Ausführung."
         </p>
-        <div class="mt-6 text-xs font-mono text-slate-500">STATUS: IN ENTWICKLUNG • Q4 2026</div>
       </div>
 
-      <!-- Clawcommerce -->
-      <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-8 hover:border-slate-700 transition flex flex-col justify-between">
-        <div>
-          <div class="flex items-center justify-between mb-6">
-            <div class="w-12 h-12 rounded-lg bg-emerald-950 border border-emerald-800 flex items-center justify-center text-emerald-400 font-bold font-mono">
-              CC
-            </div>
-            <span class="text-xs font-mono bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded">ONLINE</span>
+      <!-- Live Terminal Log -->
+      <div class="bg-black/90 rounded-2xl border border-slate-800 font-mono text-xs overflow-hidden shadow-2xl">
+        <div class="bg-slate-900/90 px-5 py-3.5 border-b border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-red-500/80"></span>
+            <span class="w-3 h-3 rounded-full bg-yellow-500/80"></span>
+            <span class="w-3 h-3 rounded-full bg-[#00FF66]/80"></span>
+            <span class="ml-2 text-slate-400 font-semibold">gunther-core.service (Proxmox CT 115 • Base Sepolia)</span>
           </div>
-          <h3 class="text-2xl font-bold">Clawcommerce (B2B)</h3>
-          <p class="text-slate-400 text-sm mt-3 leading-relaxed">
-            Schlüsselfertige, autonome Agenten-Setups für etablierte Firmen und Agenturen. Setup: $2.000 einmalig, Betreuung & Tracing: $500/Monat Retainer.
-          </p>
-          <div class="mt-4 flex gap-2 flex-wrap text-xs font-mono text-slate-400">
-            <span class="bg-slate-800/80 px-2 py-1 rounded">SETUP: $2,000</span>
-            <span class="bg-slate-800/80 px-2 py-1 rounded">RETAINER: $500/MO</span>
-            <span class="bg-orange-950/60 text-orange-400 px-2 py-1 rounded">100% BURN</span>
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-emerald-400 font-bold" id="terminal-state">ACTIVE / RE-ACT LOOP</span>
           </div>
         </div>
-        <div class="mt-8 pt-4 border-t border-slate-800 flex items-center justify-between">
-          <span class="text-xs font-mono text-slate-500">QUALIFIZIERUNG OFFEN</span>
-          <button onclick="openB2bModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition shadow-md shadow-emerald-950">
-            Projekt anfragen
-          </button>
+        <div class="p-6 space-y-2 text-slate-300" id="terminal-logs">
+          <div class="text-slate-400">[2026-09-28 17:49:01] Günther Core v0.1.0 online on Proxmox CT 115</div>
+          <div class="text-slate-400">[2026-09-28 17:49:02] SQLite Prisma State Engine connected (0 unhandled burns)</div>
+          <div class="text-sky-400">[2026-09-28 17:49:03] Webhook Hub active on :3000 • Claw Mart initialized (10 skills)</div>
+          <div class="text-amber-400">[2026-09-28 17:49:04] LLM Client: OpenRouter (anthropic/claude-sonnet-4) active</div>
+          <div class="text-emerald-400">[2026-09-28 17:49:05] Autonomous Heartbeat Daemon active • Interval: 60s</div>
         </div>
       </div>
+
+      <!-- Live Base L2 Proof-of-Execution Feed -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 sm:p-8">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <span class="text-[#00FF66] font-mono">&gt;</span> Base L2 Proof-of-Execution Feed
+            </h3>
+            <p class="text-xs text-slate-400 mt-1 font-mono">Öffentlich verifizierte Audit-Transaktionen auf Base L2</p>
+          </div>
+          <span class="text-xs bg-emerald-950/80 text-emerald-400 border border-emerald-800/80 px-3 py-1 rounded-full font-mono font-semibold" id="total-burns-count">
+            0 Burns verifiziert
+          </span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left font-mono text-xs">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider">
+                <th class="py-3 px-3">Zeit</th>
+                <th class="py-3 px-3">Erlös-Quelle</th>
+                <th class="py-3 px-3">Umsatz ($)</th>
+                <th class="py-3 px-3">Audit-Transaktion</th>
+                <th class="py-3 px-3">TxHash / Explorer</th>
+              </tr>
+            </thead>
+            <tbody id="burn-feed-rows">
+              <tr>
+                <td colspan="5" class="py-6 text-center text-slate-400 font-mono">Lade On-Chain Transaktionen...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
   </section>
 
   <!-- B2B Intake Modal -->
-  <div id="b2b-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div id="b2b-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl">
       <div class="flex justify-between items-center pb-4 border-b border-slate-800">
         <div>
-          <h3 class="text-xl font-bold text-slate-100">Clawcommerce B2B Intake</h3>
-          <p class="text-xs text-slate-400 mt-1">Automatische Architektur- und Angebotsgenerierung</p>
+          <h3 class="text-xl font-bold text-slate-100 font-mono">&gt; Clawcommerce B2B Intake</h3>
+          <p class="text-xs text-slate-400 mt-1">Automatische Architektur- und Angebotsgenerierung für KMUs</p>
         </div>
-        <button onclick="closeB2bModal()" class="text-slate-500 hover:text-slate-300 text-xl font-bold">✕</button>
+        <button onclick="closeB2bModal()" class="text-slate-400 hover:text-white text-xl font-bold">✕</button>
       </div>
 
       <form id="b2b-form" onsubmit="handleB2bSubmit(event)" class="mt-6 space-y-4">
         <div>
-          <label class="block text-xs font-mono text-slate-400 mb-1">FIRMENNAME *</label>
-          <input type="text" id="b2b-company" required placeholder="z.B. Acme Corp AG" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono">
+          <label class="block text-xs font-mono text-slate-300 mb-1">FIRMENNAME *</label>
+          <input type="text" id="b2b-company" required placeholder="z.B. Müller Logistik AG" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#00FF66] font-mono">
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-mono text-slate-400 mb-1">ANSPRECHPARTNER *</label>
-            <input type="text" id="b2b-contact" required placeholder="Name Vorname" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono">
+            <label class="block text-xs font-mono text-slate-300 mb-1">ANSPRECHPARTNER *</label>
+            <input type="text" id="b2b-contact" required placeholder="Vorname Nachname" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#00FF66] font-mono">
           </div>
           <div>
-            <label class="block text-xs font-mono text-slate-400 mb-1">E-MAIL *</label>
-            <input type="email" id="b2b-email" required placeholder="kontakt@firma.com" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono">
+            <label class="block text-xs font-mono text-slate-300 mb-1">E-MAIL *</label>
+            <input type="email" id="b2b-email" required placeholder="kontakt@firma.ch" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#00FF66] font-mono">
           </div>
         </div>
         <div>
-          <label class="block text-xs font-mono text-slate-400 mb-1">ANWENDUNGSFALL / USE CASE *</label>
-          <textarea id="b2b-usecase" required rows="3" placeholder="Welche Aufgaben soll der Agent autonom ausführen? (z.B. Customer Support, Lead Qualification, Order Processing)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"></textarea>
+          <label class="block text-xs font-mono text-slate-300 mb-1">ANWENDUNGSFALL / USE CASE *</label>
+          <textarea id="b2b-usecase" required rows="3" placeholder="Welche Prozesse möchten Sie automatisieren? (z.B. Automatische Rechnungserfassung, Kundentriage, CRM-Synchronisation, Monitoring)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#00FF66] font-mono"></textarea>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-mono text-slate-400 mb-1">MONATLICHES VOLUMEN</label>
-            <select id="b2b-volume" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono">
+            <label class="block text-xs font-mono text-slate-300 mb-1">MONATLICHES VOLUMEN</label>
+            <select id="b2b-volume" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#00FF66] font-mono">
               <option value="<1,000 Transaktionen/Mo">&lt; 1.000 Transaktionen/Mo</option>
               <option value="1,000 - 10,000 Transaktionen/Mo">1.000 - 10.000 Transaktionen/Mo</option>
               <option value=">10,000 Transaktionen/Mo">&gt; 10.000 Transaktionen/Mo</option>
             </select>
           </div>
           <div>
-            <label class="block text-xs font-mono text-slate-400 mb-1">GEWÜNSCHTE SCHNITTSTELLEN</label>
-            <input type="text" id="b2b-integrations" placeholder="z.B. Stripe, Telegram, Shopify, ERP" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono">
+            <label class="block text-xs font-mono text-slate-300 mb-1">SCHNITTSTELLEN / APIS</label>
+            <input type="text" id="b2b-integrations" placeholder="z.B. Stripe, Telegram, REST-API, ERP, SQL" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#00FF66] font-mono">
           </div>
         </div>
 
         <div class="pt-4 flex justify-end gap-3">
-          <button type="button" onclick="closeB2bModal()" class="px-4 py-2 border border-slate-700 text-slate-300 rounded-lg text-xs font-semibold hover:bg-slate-800 transition">Abbrechen</button>
-          <button type="submit" id="b2b-submit-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded-lg text-xs font-semibold transition shadow-lg shadow-emerald-950">Angebot & Architektur generieren</button>
+          <button type="button" onclick="closeB2bModal()" class="px-4 py-2 border border-slate-700 text-slate-300 rounded-lg text-xs font-semibold hover:bg-slate-800 transition font-mono">Abbrechen</button>
+          <button type="submit" id="b2b-submit-btn" class="bg-[#00FF66] hover:bg-[#00dd55] text-black font-bold px-6 py-2 rounded-lg text-xs transition shadow-lg shadow-[#00FF66]/20 font-mono">Architektur &amp; Angebot generieren</button>
         </div>
       </form>
 
@@ -417,91 +601,13 @@
             <span class="text-slate-400">SETUP:</span> <strong class="text-white">$2,000 USD</strong>
             <span class="text-slate-400 ml-2">RETAINER:</span> <strong class="text-emerald-400">$500/Mo</strong>
           </div>
-          <button id="b2b-checkout-btn" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-6 py-3 rounded-lg transition shadow-lg shadow-emerald-950">
+          <button id="b2b-checkout-btn" class="w-full sm:w-auto bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-bold font-mono px-6 py-3 rounded-lg transition shadow-lg shadow-[#00FF66]/20">
             Setup beauftragen ($2,000 via Stripe)
           </button>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Live Agent Terminal & Proof-of-Burn Explorer -->
-  <section id="terminal" class="bg-slate-950 border-t border-slate-800 py-20">
-    <div class="max-w-5xl mx-auto px-6 space-y-12">
-      
-      <!-- Daily Market Pulse Banner -->
-      <div id="market-pulse-card" class="bg-gradient-to-r from-orange-950/40 via-slate-900 to-slate-900 border border-orange-500/30 rounded-2xl p-6 sm:p-8">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <span class="w-2.5 h-2.5 rounded-full bg-orange-500 animate-ping"></span>
-            <span class="text-xs font-mono font-bold tracking-widest text-orange-400 uppercase">Günther Daily Market Pulse</span>
-          </div>
-          <span class="text-xs text-slate-500 font-mono" id="pulse-date">Autonome Aktualisierung</span>
-        </div>
-        <p class="mt-4 text-slate-200 text-sm sm:text-base font-mono leading-relaxed bg-black/40 p-4 rounded-xl border border-slate-800" id="pulse-text">
-          "Markt läuft. Playbook-Sales generieren konstanten Cashflow. 100% der Nettoerlöse werden unwiderruflich in $GÜNTER Burns konvertiert. Ich baue. Ich verbrenne."
-        </p>
-      </div>
-
-      <!-- Live Terminal Log -->
-      <div class="bg-black/90 rounded-2xl border border-slate-800 font-mono text-xs overflow-hidden shadow-2xl">
-        <div class="bg-slate-900/90 px-5 py-3.5 border-b border-slate-800 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-red-500/80"></span>
-            <span class="w-3 h-3 rounded-full bg-yellow-500/80"></span>
-            <span class="w-3 h-3 rounded-full bg-green-500/80"></span>
-            <span class="ml-2 text-slate-400 font-semibold">gunther-core.service (Proxmox CT 115 • Base Sepolia)</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span class="text-emerald-400 font-bold" id="terminal-state">ACTIVE / RE-ACT LOOP</span>
-          </div>
-        </div>
-        <div class="p-6 space-y-2 text-slate-300" id="terminal-logs">
-          <div class="text-slate-500">[2026-09-28 17:49:01] Günther Core v0.1.0 online on Proxmox CT 115</div>
-          <div class="text-slate-500">[2026-09-28 17:49:02] SQLite Prisma State Engine connected (0 unhandled burns)</div>
-          <div class="text-sky-400">[2026-09-28 17:49:03] Webhook Hub active on :3000 • Claw Mart initialized (10 skills)</div>
-          <div class="text-amber-400">[2026-09-28 17:49:04] LLM Client: OpenRouter (anthropic/claude-sonnet-4) active</div>
-          <div class="text-emerald-400">[2026-09-28 17:49:05] Autonomous Heartbeat Daemon active • Interval: 60s</div>
-        </div>
-      </div>
-
-      <!-- Live Base L2 Proof-of-Burn Feed -->
-      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 sm:p-8">
-        <div class="flex items-center justify-between mb-6">
-          <div>
-            <h3 class="text-lg font-bold text-white flex items-center gap-2">
-              <span>🔥</span> Base L2 Proof-of-Burn Explorer Feed
-            </h3>
-            <p class="text-xs text-slate-400 mt-1 font-mono">Unwiderrufliche Token-Burns auf der Base L2 Blockchain</p>
-          </div>
-          <span class="text-xs bg-orange-950/80 text-orange-400 border border-orange-800/80 px-3 py-1 rounded-full font-mono font-semibold" id="total-burns-count">
-            0 Burns
-          </span>
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-left font-mono text-xs">
-            <thead>
-              <tr class="border-b border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider">
-                <th class="py-3 px-3">Zeit</th>
-                <th class="py-3 px-3">Erlös-Quelle</th>
-                <th class="py-3 px-3">Umsatz ($)</th>
-                <th class="py-3 px-3">Verbrannt ($GÜNTER)</th>
-                <th class="py-3 px-3">TxHash / Explorer</th>
-              </tr>
-            </thead>
-            <tbody id="burn-feed-rows">
-              <tr>
-                <td colspan="5" class="py-6 text-center text-slate-500 font-mono">Lade On-Chain Burns...</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-    </div>
-  </section>
 
   <!-- Unified Footer -->
   <footer class="border-t border-slate-900 bg-[#05070b] py-12 text-slate-400 text-xs font-mono">
@@ -527,22 +633,22 @@
         if (!res.ok) return;
         const data = await res.json();
 
-        // 1. Update Stat Cards
+        // 1. Update Stat Cards (if present)
         const revEl = document.getElementById('stat-revenue');
-        if (revEl) revEl.innerText = '$' + data.financials.totalRevenueUsd.toLocaleString('en-US', { minimumFractionDigits: 2 });
+        if (revEl && data.financials) revEl.innerText = '$' + data.financials.totalRevenueUsd.toLocaleString('en-US', { minimumFractionDigits: 2 });
 
         const burnEl = document.getElementById('stat-burned');
-        if (burnEl) burnEl.innerText = Number(data.financials.totalBurnedTokens).toLocaleString('en-US');
+        if (burnEl && data.financials) burnEl.innerText = Number(data.financials.totalBurnedTokens).toLocaleString('en-US');
 
         const marginEl = document.getElementById('stat-margin');
-        if (marginEl) marginEl.innerText = data.aiObservability.netProfitMarginPercent + '%';
+        if (marginEl && data.aiObservability) marginEl.innerText = data.aiObservability.netProfitMarginPercent + '%';
 
         const pipeEl = document.getElementById('stat-pipeline');
-        if (pipeEl) pipeEl.innerText = data.products.clawMart.totalSkills + ' Skills • ' + data.products.clawcommerceB2b.totalLeads + ' Leads';
+        if (pipeEl && data.products) pipeEl.innerText = data.products.clawMart.totalSkills + ' Skills • ' + data.products.clawcommerceB2b.totalLeads + ' Leads';
 
         // 2. Update Burns Count
         const burnCountEl = document.getElementById('total-burns-count');
-        if (burnCountEl) burnCountEl.innerText = data.financials.totalBurnCount + ' Burns verifiziert';
+        if (burnCountEl && data.financials) burnCountEl.innerText = data.financials.totalBurnCount + ' Burns verifiziert';
 
         // 3. Populate Burn Feed Table
         const feedRows = document.getElementById('burn-feed-rows');
@@ -551,7 +657,7 @@
             <tr class="border-b border-slate-800/60 hover:bg-slate-800/40 transition">
               <td class="py-3 px-3 text-slate-400 font-mono">${new Date(b.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
               <td class="py-3 px-3 font-semibold text-slate-200">
-                <span class="inline-block px-2 py-0.5 rounded text-[11px] ${b.source === 'CLAWCOMMERCE_B2B' ? 'bg-purple-950 text-purple-300 border border-purple-800' : (b.source === 'CLAW_MART' ? 'bg-sky-950 text-sky-300 border border-sky-800' : 'bg-orange-950 text-orange-300 border border-orange-800')}">
+                <span class="inline-block px-2 py-0.5 rounded text-[11px] ${b.source === 'CLAWCOMMERCE_B2B' ? 'bg-purple-950 text-purple-300 border border-purple-800' : (b.source === 'CLAW_MART' ? 'bg-sky-950 text-sky-300 border border-sky-800' : 'bg-emerald-950 text-emerald-300 border border-emerald-800')}">
                   ${b.source}
                 </span>
               </td>
@@ -565,7 +671,7 @@
             </tr>
           `).join('');
         } else if (feedRows) {
-          feedRows.innerHTML = '<tr><td colspan="5" class="py-6 text-center text-slate-500 font-mono">Keine aktuellen Burns vorhanden.</td></tr>';
+          feedRows.innerHTML = '<tr><td colspan="5" class="py-6 text-center text-slate-400 font-mono">Keine aktuellen Burns vorhanden.</td></tr>';
         }
       } catch (err) {
         console.warn('Metrics polling failed:', err);
