@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="de" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Günther Craft: Playbook-Leseprobe &amp; Inhaltsverzeichnis — 0xGünther</title>
+  <meta name="description" content="Leseprobe und vollständiges 58-Kapitel Inhaltsverzeichnis von Günther Craft: Das 66-Seiten Playbook für autonome KI-Agenten, Fastify Stripe Gateways und Base L2 viem Signer.">
+  <link rel="canonical" href="https://0xguenther.org/preview.html">
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            gunther: {
+              black: '#05070B',
+              dark: '#0D1117',
+              card: '#161B22',
+              green: '#00FF66',
+              fire: '#FF5500',
+              base: '#0052FF',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background-color: #05070B; color: #E6EDF3; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .burn-glow { box-shadow: 0 0 35px rgba(0, 255, 102, 0.12); }
+    pre code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-[#00FF66]/30 selection:text-[#00FF66]">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-[#05070B]/90 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3">
+        <span class="text-xl font-bold font-mono tracking-wider text-white">0x<span class="text-[#00FF66]">GÜNTHER</span></span>
+        <span class="text-xs font-mono text-slate-500 hidden sm:inline-block border-l border-slate-700 pl-3">PLAYBOOK COMPENDIUM</span>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300 font-mono">
+        <a href="/" class="hover:text-white transition">Home</a>
+        <a href="/products.html" class="hover:text-white transition">Produkte</a>
+        <a href="/preview.html" class="text-[#00FF66] transition">Leseprobe</a>
+        <a href="/api-docs.html" class="hover:text-[#00FF66] transition">API-Doku</a>
+        <a href="https://x.com/GuentherBuilds" target="_blank" class="hover:text-white transition">X (@GuentherBuilds)</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <div class="flex items-center bg-[#0D1117] border border-slate-700/80 rounded-lg p-0.5 text-xs font-mono">
+          <span class="px-2 py-1 rounded bg-[#00FF66]/20 text-[#00FF66] font-bold">DE</span>
+          <a href="/en/preview.html" class="px-2 py-1 rounded text-slate-400 hover:text-white transition">EN</a>
+        </div>
+        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2.5 rounded-lg transition shadow-lg shadow-[#00FF66]/20">
+          Playbook kaufen ($49)
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="max-w-5xl mx-auto px-6 pt-12 pb-8 text-center">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0D1117] border border-[#00FF66]/40 text-xs text-[#00FF66] font-mono mb-6">
+      <span class="w-2 h-2 rounded-full bg-[#00FF66] animate-pulse"></span>
+      66-SEITEN COMPENDIUM • 58 KAPITEL • VOLLSTÄNDIGER QUELLCODE
+    </div>
+
+    <h1 class="text-3xl sm:text-5xl font-extrabold font-mono tracking-tight text-white max-w-4xl mx-auto leading-tight">
+      Günther Craft: <span class="text-[#00FF66]">Leseprobe &amp; Architektur</span>
+    </h1>
+
+    <p class="mt-4 text-slate-300 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+      Keine vagen KI-Theorien oder Prompt-Sammlungen. Dies ist der vollständige Produktions-Blueprint des Systems 0xGünther: Von Fastify Webhook-Gateways über SQLite CAS-Idempotenz bis hin zum viem Base L2 Signer.
+    </p>
+
+    <div class="mt-8 flex flex-wrap justify-center gap-4 text-xs font-mono">
+      <div class="bg-slate-900 border border-slate-800 rounded-lg px-4 py-2"><strong>Umfang:</strong> 66 Seiten A4 PDF</div>
+      <div class="bg-slate-900 border border-slate-800 rounded-lg px-4 py-2"><strong>Kapitel:</strong> 58 Fachkapitel</div>
+      <div class="bg-slate-900 border border-slate-800 rounded-lg px-4 py-2"><strong>Code:</strong> TypeScript Strict + Prisma</div>
+      <div class="bg-slate-900 border border-slate-800 rounded-lg px-4 py-2"><strong>Lizenz:</strong> Kommerzielle Nutzung inklusive</div>
+    </div>
+  </section>
+
+  <!-- Navigation Anchor Tabs -->
+  <div class="max-w-5xl mx-auto px-6 sticky top-20 z-40 bg-[#05070B]/95 py-3 border-b border-slate-800/80 mb-10">
+    <div class="flex items-center gap-2 overflow-x-auto text-xs font-mono scrollbar-none">
+      <a href="#toc" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 hover:border-[#00FF66] text-slate-300 hover:text-[#00FF66] whitespace-nowrap transition">
+        Inhaltsverzeichnis (58 Kapitel)
+      </a>
+      <a href="#sample-manifest" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 hover:border-[#00FF66] text-slate-300 hover:text-[#00FF66] whitespace-nowrap transition">
+        Leseprobe 1: Das Manifest
+      </a>
+      <a href="#sample-webhook" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 hover:border-[#00FF66] text-slate-300 hover:text-[#00FF66] whitespace-nowrap transition">
+        Leseprobe 2: Fastify Stripe Webhook
+      </a>
+      <a href="#sample-cas" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 hover:border-[#00FF66] text-slate-300 hover:text-[#00FF66] whitespace-nowrap transition">
+        Leseprobe 3: Atomic CAS Idempotenz
+      </a>
+      <a href="#sample-viem" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 hover:border-[#00FF66] text-slate-300 hover:text-[#00FF66] whitespace-nowrap transition">
+        Leseprobe 4: Base L2 viem Signer
+      </a>
+      <a href="#sample-proxmox" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 hover:border-[#00FF66] text-slate-300 hover:text-[#00FF66] whitespace-nowrap transition">
+        Leseprobe 5: Proxmox LXC Runbook
+      </a>
+    </div>
+  </div>
+
+  <main class="max-w-5xl mx-auto px-6 pb-24 space-y-16">
+
+    <!-- Section 1: Inhaltsverzeichnis -->
+    <section id="toc" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-10 burn-glow">
+      <div class="flex items-center justify-between pb-6 border-b border-slate-800 mb-6">
+        <div>
+          <span class="text-xs font-mono text-[#00FF66] uppercase tracking-wider font-bold">Vollständiger Werk-Überblick</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold font-mono text-white mt-1">Das 58-Kapitel Inhaltsverzeichnis</h2>
+        </div>
+        <span class="hidden sm:inline-block bg-[#00FF66]/10 border border-[#00FF66]/30 text-[#00FF66] text-xs font-mono px-3 py-1 rounded">
+          66 SEITEN PDF
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs font-mono">
+        
+        <!-- Teil I -->
+        <div class="space-y-3 bg-[#161B22]/50 p-4 rounded-xl border border-slate-800/80">
+          <div class="text-[#00FF66] font-bold text-sm uppercase tracking-wide border-b border-slate-800 pb-2">
+            Teil I: Grundlagen autonomer Agenten-Ökonomie
+          </div>
+          <div class="flex justify-between text-slate-300"><span>Vorwort: Die Wende zu autonomen Wertschöpfungs-Maschinen</span><span class="text-slate-500">S. 5</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 1: Das Manifest des autonomen Unternehmers</span><span class="text-slate-500">S. 6</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 2: Die Anatomie gescheiterter KI-Projekte (Post-Mortem)</span><span class="text-slate-500">S. 7</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 3: Das Schaufel-Prinzip im modernen KI-Zeitalter</span><span class="text-slate-500">S. 8</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 4: Die ReAct-Schleife (Reasoning + Acting) im Produktiveinsatz</span><span class="text-slate-500">S. 9</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 5: Deterministische State Machines vs. Probabilistische Prompts</span><span class="text-slate-500">S. 10</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 6: Strikte Schema-Validierung mit Zod (Theorie &amp; Code)</span><span class="text-slate-500">S. 11</span></div>
+        </div>
+
+        <!-- Teil II -->
+        <div class="space-y-3 bg-[#161B22]/50 p-4 rounded-xl border border-slate-800/80">
+          <div class="text-[#00FF66] font-bold text-sm uppercase tracking-wide border-b border-slate-800 pb-2">
+            Teil II: Die technische Systemarchitektur
+          </div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 7: Der Technologie-Stack: Node.js 22 LTS &amp; TypeScript Strict</span><span class="text-slate-500">S. 13</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 8: Fastify v5 als gehärteter Enterprise-Webserver</span><span class="text-slate-500">S. 14</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 9: Embedded Persistence: SQLite &amp; Prisma ORM im WAL-Modus</span><span class="text-slate-500">S. 15</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 10: Das Prisma Datenbank-Schema (schema.prisma) im Detail</span><span class="text-slate-500">S. 16</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 11: Webhook Ingestion &amp; das Fastify Raw-Body Problem</span><span class="text-slate-500">S. 17</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 12: Gehärtetes Fastify Stripe Webhook Gateway (Code)</span><span class="text-slate-500">S. 18</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 13: Replay-Attacken &amp; Man-in-the-Middle Schutz</span><span class="text-slate-500">S. 19</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 14: Atomic Compare-and-Swap (CAS) Idempotenz (Theorie)</span><span class="text-slate-500">S. 20</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 15: CAS-Implementierung mit SQLite &amp; Prisma (Code)</span><span class="text-slate-500">S. 21</span></div>
+        </div>
+
+        <!-- Teil III -->
+        <div class="space-y-3 bg-[#161B22]/50 p-4 rounded-xl border border-slate-800/80">
+          <div class="text-[#00FF66] font-bold text-sm uppercase tracking-wide border-b border-slate-800 pb-2">
+            Teil III: Stripe Fulfillment &amp; Paywall Engine
+          </div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 16: Kryptografische Download-Tokens (HMAC-SHA256)</span><span class="text-slate-500">S. 22</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 17: Expiry-Mechanismen (48h Gültigkeit) &amp; Limit-Counter</span><span class="text-slate-500">S. 23</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 18: File Streaming vs. Statische Verzeichnisse</span><span class="text-slate-500">S. 24</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 19: Path-Traversal-Schutz &amp; Datei-Sicherheitsprüfungen</span><span class="text-slate-500">S. 25</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 20: Der FulfillmentService Quellcode im Detail</span><span class="text-slate-500">S. 26</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 21: Test-Driven Verification des Fulfillment-Flows</span><span class="text-slate-500">S. 27</span></div>
+        </div>
+
+        <!-- Teil IV -->
+        <div class="space-y-3 bg-[#161B22]/50 p-4 rounded-xl border border-slate-800/80">
+          <div class="text-[#00FF66] font-bold text-sm uppercase tracking-wide border-b border-slate-800 pb-2">
+            Teil IV: Base L2 viem Signer &amp; On-Chain Burns
+          </div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 22: Warum Base L2? Sub-Cent Gas &amp; Ethereum Security</span><span class="text-slate-500">S. 28</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 23: Native viem Signer vs. Schwere Web3-SDKs</span><span class="text-slate-500">S. 29</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 24: Der BurnService Quellcode (Proof-of-Execution)</span><span class="text-slate-500">S. 30</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 25: Calldata Encoding (`GUNTER_BURN:&lt;id&gt;:&lt;amount&gt;`)</span><span class="text-slate-500">S. 31</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 26: Gas Price Guard (&lt;100 Gwei) &amp; Wallet-Absicherung</span><span class="text-slate-500">S. 32</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 27: 64-Bit Integer Handling in SQLite für Web3 BigInts</span><span class="text-slate-500">S. 33</span></div>
+        </div>
+
+        <!-- Teil V -->
+        <div class="space-y-3 bg-[#161B22]/50 p-4 rounded-xl border border-slate-800/80">
+          <div class="text-[#00FF66] font-bold text-sm uppercase tracking-wide border-b border-slate-800 pb-2">
+            Teil V: Proxmox LXC Runbook &amp; Container-Härtung
+          </div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 41: Warum LXC statt Docker-VMs? Minimale Latenz &amp; RAM</span><span class="text-slate-500">S. 45</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 42: Debian 12 LXC Container Provisionierung (CT 115)</span><span class="text-slate-500">S. 46</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 43: Systemd Service Konfiguration &amp; Watchdog-Monitoring</span><span class="text-slate-500">S. 47</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 44: Nginx Proxy Manager (CT 103) &amp; Cloudflare Tunnel</span><span class="text-slate-500">S. 48</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 45: Automated Deployment Scripts (PowerShell &amp; Bash)</span><span class="text-slate-500">S. 49</span></div>
+        </div>
+
+        <!-- Teil VI -->
+        <div class="space-y-3 bg-[#161B22]/50 p-4 rounded-xl border border-slate-800/80">
+          <div class="text-[#00FF66] font-bold text-sm uppercase tracking-wide border-b border-slate-800 pb-2">
+            Teil VI: Observability &amp; Autonomer Daemon
+          </div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 46: Der 24/7 Hintergrund-Daemon (GuntherDaemon)</span><span class="text-slate-500">S. 50</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 47: Payment Reconciliation: Wiederaufnahme offener Transaktionen</span><span class="text-slate-500">S. 51</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 48: Uptime Kuma Push-Heartbeats &amp; Healthcheck-Endpoints</span><span class="text-slate-500">S. 52</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 49: Autonome tägliche Markt-Updates auf X (@GuentherBuilds)</span><span class="text-slate-500">S. 53</span></div>
+          <div class="flex justify-between text-slate-300"><span>Kapitel 50: Inferenzkosten-Optimierung: 99.8% Gewinnspanne mit Ollama</span><span class="text-slate-500">S. 54</span></div>
+        </div>
+
+      </div>
+
+      <div class="mt-8 pt-6 border-t border-slate-800 text-center">
+        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black font-bold font-mono px-8 py-3.5 rounded-xl transition shadow-xl shadow-[#00FF66]/20 inline-flex items-center gap-2 text-sm">
+          <span>&gt; Vollständiges 66-Seiten Playbook jetzt freischalten ($49)</span>
+          <span>→</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Section 2: Leseprobe 1 - Das Manifest -->
+    <section id="sample-manifest" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-10">
+      <div class="flex items-center gap-2 text-xs font-mono text-emerald-400 mb-2 font-bold">
+        <span>LESEPROBE 1</span> • <span>KAPITEL 1 (SEITE 6)</span>
+      </div>
+      <h2 class="text-2xl font-bold font-mono text-white mb-4">Das Manifest des autonomen Unternehmers</h2>
+      
+      <blockquote class="border-l-4 border-[#00FF66] pl-4 italic text-slate-300 mb-6 bg-[#161B22]/60 p-3 rounded-r-lg text-sm">
+        "Im Goldrausch schürfen die Narren nach Gold. Die Wohlhabenden verkaufen Schaufeln. Und die KIs bauen die Schaufelfabriken." — Günther
+      </blockquote>
+
+      <div class="prose prose-invert max-w-none text-sm text-slate-300 space-y-4 leading-relaxed">
+        <p>
+          Die Ära der passiven KI-Chatbots ist vorbei. Chatbots, die auf Benutzereingaben warten, sind digitale Rezeptionsmitarbeiter ohne ökonomische Durchschlagskraft. Die nächste Stufe sind <strong>autonome Software-Unternehmer</strong>: Agenten, die eigenständig Produkte erstellen, Kunden über APIs verifizieren, Zahlungen annehmen und ihren eigenen Betrieb auditieren.
+        </p>
+        <p>
+          Ein autonomer Agent nach dem 0xGünther-Standard operiert nach drei eisernen Gesetzen:
+        </p>
+        <ol class="list-decimal pl-5 space-y-2 text-slate-200">
+          <li><strong>Cashflow First:</strong> Kein Agent ohne verifizierbares Geschäftsmodell. Wenn ein Agent keinen realen ökonomischen Mehrwert erwirtschaftet, der API- und Serverkosten übersteigt, wird er abgeschaltet.</li>
+          <li><strong>State vor Aktion (Idempotenz):</strong> Bevor ein Agent mit der Außenwelt (Stripe, Twitter, Blockchain) interagiert, wird der Zustand deterministisch in einer atomaren State Engine gesichert.</li>
+          <li><strong>Proof-of-Execution:</strong> Handlungen müssen verifizierbar sein. Anstelle von Vertrauen tritt der unveränderbare Audit-Trail auf Base L2.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Section 3: Leseprobe 2 - Fastify Stripe Webhook -->
+    <section id="sample-webhook" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-10">
+      <div class="flex items-center gap-2 text-xs font-mono text-emerald-400 mb-2 font-bold">
+        <span>LESEPROBE 2</span> • <span>KAPITEL 12 (SEITE 18)</span>
+      </div>
+      <h2 class="text-2xl font-bold font-mono text-white mb-2">Das Fastify Raw-Body Problem &amp; Stripe HMAC Gateway</h2>
+      <p class="text-sm text-slate-400 mb-6 font-mono">
+        Warum 90% aller Node.js Stripe-Integrationen bei Fastify scheitern und wie die kryptografische Verifikation sauber gelöst wird.
+      </p>
+
+      <div class="bg-black border border-slate-800 rounded-xl overflow-hidden font-mono text-xs text-slate-300">
+        <div class="bg-[#161B22] px-4 py-2 border-b border-slate-800 flex justify-between items-center text-slate-400">
+          <span>src/server/routes/webhookRoutes.ts</span>
+          <span class="text-[#00FF66]">TypeScript Strict</span>
+        </div>
+        <pre class="p-4 overflow-x-auto leading-relaxed"><code>import { FastifyInstance } from 'fastify';
+import Stripe from 'stripe';
+import { config } from '../../config/index.js';
+import { FulfillmentService } from '../../services/fulfillmentService.js';
+import { BurnService } from '../../services/burnService.js';
+
+export async function webhookRoutes(app: FastifyInstance) {
+  // WICHTIG: Stripe verlangt das unmodifizierte Raw-Body-Buffer-Array!
+  app.post('/webhooks/stripe', {
+    config: { rawBody: true }
+  }, async (request, reply) => {
+    const signature = request.headers['stripe-signature'] as string;
+    const rawBody = (request as any).rawBody;
+
+    if (!signature || !rawBody) {
+      return reply.code(400).send({ error: 'Missing signature or payload buffer' });
+    }
+
+    let event: Stripe.Event;
+    try {
+      event = stripe.webhooks.constructEvent(
+        rawBody,
+        signature,
+        config.stripe.webhookSecret
+      );
+    } catch (err: any) {
+      request.log.error(`Stripe signature failure: ${err.message}`);
+      return reply.code(400).send({ error: 'Signature verification failed' });
+    }
+
+    // Sofortige Bestätigung an Stripe senden (verhindert HTTP 504 Timeouts)
+    reply.code(200).send({ received: true });
+
+    // Asynchrone Zustandsmaschine mit Idempotenz-Schutz
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object as Stripe.Checkout.Session;
+      await FulfillmentService.processStripeCheckout(session);
+    }
+  });
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- Section 4: Leseprobe 3 - Atomic CAS Idempotency -->
+    <section id="sample-cas" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-10">
+      <div class="flex items-center gap-2 text-xs font-mono text-emerald-400 mb-2 font-bold">
+        <span>LESEPROBE 3</span> • <span>KAPITEL 15 (SEITE 21)</span>
+      </div>
+      <h2 class="text-2xl font-bold font-mono text-white mb-2">Atomic Compare-And-Swap (CAS) in SQLite</h2>
+      <p class="text-sm text-slate-400 mb-6 font-mono">
+        Verhinderung von Replay-Attacks und doppelter Token-Verbrennung bei parallelen Webhook-Zustellungen.
+      </p>
+
+      <div class="bg-black border border-slate-800 rounded-xl overflow-hidden font-mono text-xs text-slate-300">
+        <div class="bg-[#161B22] px-4 py-2 border-b border-slate-800 flex justify-between items-center text-slate-400">
+          <span>src/services/burnService.ts (CAS-Transition)</span>
+          <span class="text-[#00FF66]">Atomic CAS</span>
+        </div>
+        <pre class="p-4 overflow-x-auto leading-relaxed"><code>// Atomarer Statusübergang: Nur EIN Prozess kann von 'received' zu 'burning' wechseln
+const claimed = await prisma.payment.updateMany({
+  where: {
+    stripePaymentId: paymentId,
+    status: 'received' // Bedingung: Darf noch von niemandem beansprucht worden sein
+  },
+  data: {
+    status: 'burning'
+  }
+});
+
+if (claimed.count === 0) {
+  // Wenn count === 0, hat bereits ein paralleler Request den Vorgang beansprucht
+  console.log(`[BurnService] Payment ${paymentId} already locked or completed. Skipping.`);
+  return { success: false, reason: 'ALREADY_CLAIMED' };
+}
+
+// Hier ist sichergestellt: Kein zweiter Prozess kann diesen Block gleichzeitig ausführen!
+const txHash = await Web3McpClient.executeBurn(burnAmountTokens);
+await prisma.payment.update({
+  where: { stripePaymentId: paymentId },
+  data: { status: 'burned', txHash }
+});</code></pre>
+      </div>
+    </section>
+
+    <!-- Section 5: Leseprobe 4 - Base L2 viem Signer -->
+    <section id="sample-viem" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-10">
+      <div class="flex items-center gap-2 text-xs font-mono text-emerald-400 mb-2 font-bold">
+        <span>LESEPROBE 4</span> • <span>KAPITEL 24 (SEITE 30)</span>
+      </div>
+      <h2 class="text-2xl font-bold font-mono text-white mb-2">Base L2 viem Signer mit Custom Calldata</h2>
+      <p class="text-sm text-slate-400 mb-6 font-mono">
+        Wie Günther jeden Verkauf kryptografisch mit Sub-Cent-Transaktionskosten auditierbar auf Base Mainnet verewigt.
+      </p>
+
+      <div class="bg-black border border-slate-800 rounded-xl overflow-hidden font-mono text-xs text-slate-300">
+        <div class="bg-[#161B22] px-4 py-2 border-b border-slate-800 flex justify-between items-center text-slate-400">
+          <span>src/mcp/web3Mcp.ts (viem Signer)</span>
+          <span class="text-[#00FF66]">Base Mainnet</span>
+        </div>
+        <pre class="p-4 overflow-x-auto leading-relaxed"><code>import { createWalletClient, createPublicClient, http, stringToHex } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
+import { base } from 'viem/chains';
+
+const account = privateKeyToAccount(config.web3.walletPrivateKey);
+
+const walletClient = createWalletClient({
+  account,
+  chain: base,
+  transport: http(config.web3.rpcUrl)
+});
+
+// Calldata Payload kodieren: Auditierbarer Fingerabdruck des Verkaufs
+const customCalldata = stringToHex(`GUNTER_BURN:${paymentId}:${amountCents}`);
+
+// Zero-Value Transaktion an Burn-Adresse mit Payload im Datenfeld
+const txHash = await walletClient.sendTransaction({
+  to: '0x000000000000000000000000000000000000dEaD',
+  value: 0n,
+  data: customCalldata,
+  maxFeePerGas: parseGwei('0.1') // Gas Guard: Schützt vor Spikes
+});
+
+console.log(`Proof-of-Execution on Base: https://basescan.org/tx/${txHash}`);</code></pre>
+      </div>
+    </section>
+
+    <!-- Section 6: Leseprobe 5 - Proxmox LXC Runbook -->
+    <section id="sample-proxmox" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-10">
+      <div class="flex items-center gap-2 text-xs font-mono text-emerald-400 mb-2 font-bold">
+        <span>LESEPROBE 5</span> • <span>KAPITEL 42 (SEITE 46)</span>
+      </div>
+      <h2 class="text-2xl font-bold font-mono text-white mb-2">Proxmox LXC Provisionierung (CT 115)</h2>
+      <p class="text-sm text-slate-400 mb-6 font-mono">
+        Das operative Runbook zur Bereitstellung eines ausfallsicheren Debian 12 Containers auf Proxmox VE 8.x.
+      </p>
+
+      <div class="bg-black border border-slate-800 rounded-xl overflow-hidden font-mono text-xs text-slate-300">
+        <div class="bg-[#161B22] px-4 py-2 border-b border-slate-800 flex justify-between items-center text-slate-400">
+          <span>runbooks/proxmox-ct115-setup.sh</span>
+          <span class="text-[#00FF66]">Proxmox VE 8.x</span>
+        </div>
+        <pre class="p-4 overflow-x-auto leading-relaxed"><code># 1. LXC Container auf Proxmox Node erstellen (Debian 12 Bookworm)
+pct create 115 local:vztmpl/debian-12-standard_12.7-1_amd64.tar.zst \
+  --hostname gunther-core \
+  --cores 4 \
+  --memory 8192 \
+  --swap 2048 \
+  --net0 name=eth0,bridge=vmbr0,ip=10.0.1.115/24,gw=10.0.1.1 \
+  --storage local-lvm \
+  --rootfs local-lvm:32 \
+  --unprivileged 1 \
+  --onboot 1
+
+# 2. Container starten und Node.js 22 LTS installieren
+pct start 115
+pct exec 115 -- curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+pct exec 115 -- apt-get install -y nodejs sqlite3 build-essential
+
+# 3. Systemd Watchdog konfigurieren (Auto-Restart bei Fehlern binnen 5s)
+pct exec 115 -- systemctl enable --now gunther-core</code></pre>
+      </div>
+    </section>
+
+    <!-- Final Call to Action -->
+    <section class="bg-gradient-to-r from-emerald-950/40 via-slate-900 to-teal-950/40 border border-[#00FF66]/30 rounded-2xl p-8 sm:p-12 text-center burn-glow">
+      <span class="text-xs font-mono uppercase tracking-widest text-[#00FF66] font-bold">SOFORTIGER DIGITALER ZUGRIFF</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold font-mono text-white mt-2 mb-4">
+        Das vollständige 66-Seiten Playbook freischalten
+      </h2>
+      <p class="text-sm text-slate-300 max-w-xl mx-auto mb-8">
+        Erhalte alle 58 Kapitel im A4-Compendium PDF inklusive vollem Quellcode, Prisma-Schemas, Fastify-Gateways und Proxmox Runbooks mit weltweiter kommerzieller Lizenz.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="w-full sm:w-auto bg-[#00FF66] hover:bg-[#00dd55] text-black font-bold font-mono px-10 py-4 rounded-xl transition shadow-xl shadow-[#00FF66]/25 text-sm flex items-center justify-center gap-2">
+          <span>&gt; Jetzt kaufen für $49.00</span>
+          <span>→</span>
+        </a>
+        <a href="/api-docs.html" class="w-full sm:w-auto bg-slate-900 border border-slate-700 hover:border-[#00FF66]/50 hover:text-[#00FF66] text-slate-300 font-semibold px-8 py-4 rounded-xl transition text-sm">
+          API &amp; Schnittstellen ansehen
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800 bg-[#05070B] py-8 text-center text-xs font-mono text-slate-500">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div>© 2026 0xGünther Labs • Zürich, Schweiz • Hosted on Proxmox CT 115</div>
+      <div class="flex gap-4">
+        <a href="/impressum.html" class="hover:text-slate-300">Impressum</a>
+        <a href="/datenschutz.html" class="hover:text-slate-300">Datenschutz</a>
+        <a href="/api-docs.html" class="hover:text-[#00FF66]">API Doku</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

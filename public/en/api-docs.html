@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>0xGünther — API &amp; Interface Specification</title>
+  <meta name="description" content="Official REST API and interface specification for 0xGünther. Fastify endpoints, Stripe webhook gateways, Base L2 viem signers, and live metrics.">
+  <link rel="canonical" href="https://0xguenther.org/en/api-docs.html">
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            gunther: {
+              black: '#05070B',
+              dark: '#0D1117',
+              card: '#161B22',
+              green: '#00FF66',
+              fire: '#FF5500',
+              base: '#0052FF',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background-color: #05070B; color: #E6EDF3; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .burn-glow { box-shadow: 0 0 35px rgba(0, 255, 102, 0.12); }
+    pre code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-[#00FF66]/30 selection:text-[#00FF66]">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-[#05070B]/90 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <a href="/en/" class="flex items-center gap-3">
+        <span class="text-xl font-bold font-mono tracking-wider text-white">0x<span class="text-[#00FF66]">GÜNTHER</span></span>
+        <span class="text-xs font-mono text-slate-500 hidden sm:inline-block border-l border-slate-700 pl-3">API SPECIFICATION v1.0</span>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300 font-mono">
+        <a href="/en/" class="hover:text-white transition">Home</a>
+        <a href="/en/products.html" class="hover:text-white transition">Products</a>
+        <a href="/en/preview.html" class="hover:text-white transition">Preview</a>
+        <a href="/en/api-docs.html" class="text-[#00FF66] transition">API Docs</a>
+        <a href="https://x.com/GuentherBuilds" target="_blank" class="hover:text-white transition">X (@GuentherBuilds)</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <div class="flex items-center bg-[#0D1117] border border-slate-700/80 rounded-lg p-0.5 text-xs font-mono">
+          <a href="/api-docs.html" class="px-2 py-1 rounded text-slate-400 hover:text-white transition">DE</a>
+          <span class="px-2 py-1 rounded bg-[#00FF66]/20 text-[#00FF66] font-bold">EN</span>
+        </div>
+        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2.5 rounded-lg transition shadow-lg shadow-[#00FF66]/20">
+          Playbook ($49)
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="max-w-7xl mx-auto px-6 pt-12 pb-8">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0D1117] border border-[#00FF66]/40 text-xs text-[#00FF66] font-mono mb-4">
+      <span class="w-2 h-2 rounded-full bg-[#00FF66] animate-pulse"></span>
+      REST API • FASTIFY v5 • OPEN PUBLIC ENDPOINTS • BASE L2 AUDITED
+    </div>
+
+    <h1 class="text-3xl sm:text-5xl font-extrabold font-mono tracking-tight text-white leading-tight">
+      Interface &amp; <span class="text-[#00FF66]">API Documentation</span>
+    </h1>
+
+    <p class="mt-4 text-slate-300 max-w-3xl text-sm sm:text-base leading-relaxed">
+      All endpoints of 0xGünther are strictly typed, Zod-validated, and engineered for zero downtime. Test public endpoints live in your browser.
+    </p>
+
+    <div class="mt-6 flex flex-wrap gap-4 text-xs font-mono">
+      <div class="bg-slate-900 border border-slate-800 rounded-lg px-3.5 py-1.5 text-slate-300">
+        <span class="text-slate-500">Base URL:</span> <span class="text-[#00FF66] font-bold">https://0xguenther.org</span>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-lg px-3.5 py-1.5 text-slate-300">
+        <span class="text-slate-500">Rate Limit:</span> 120 req / min
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-lg px-3.5 py-1.5 text-slate-300">
+        <span class="text-slate-500">Idempotency:</span> Compare-and-Swap (CAS)
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Layout (Sidebar + Endpoints) -->
+  <div class="max-w-7xl mx-auto px-6 pb-24 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="lg:col-span-3 sticky top-24 space-y-2 font-mono text-xs">
+      <div class="text-slate-500 font-bold uppercase tracking-wider px-3 py-1">Core &amp; Metrics</div>
+      <a href="#endpoint-health" class="block px-3 py-2 rounded-lg bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-[#00FF66] border border-slate-800 transition">
+        <span class="text-emerald-400 font-bold mr-1.5">GET</span> /health
+      </a>
+      <a href="#endpoint-metrics" class="block px-3 py-2 rounded-lg bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-[#00FF66] border border-slate-800 transition">
+        <span class="text-emerald-400 font-bold mr-1.5">GET</span> /api/metrics
+      </a>
+      <a href="#endpoint-burns" class="block px-3 py-2 rounded-lg bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-[#00FF66] border border-slate-800 transition">
+        <span class="text-emerald-400 font-bold mr-1.5">GET</span> /api/metrics/burns
+      </a>
+
+      <div class="text-slate-500 font-bold uppercase tracking-wider px-3 py-1 pt-4">Commerce &amp; Skills</div>
+      <a href="#endpoint-skills" class="block px-3 py-2 rounded-lg bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-[#00FF66] border border-slate-800 transition">
+        <span class="text-emerald-400 font-bold mr-1.5">GET</span> /api/skills
+      </a>
+      <a href="#endpoint-b2b" class="block px-3 py-2 rounded-lg bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-[#00FF66] border border-slate-800 transition">
+        <span class="text-sky-400 font-bold mr-1.5">POST</span> /api/b2b/intake
+      </a>
+      <a href="#endpoint-download" class="block px-3 py-2 rounded-lg bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-[#00FF66] border border-slate-800 transition">
+        <span class="text-emerald-400 font-bold mr-1.5">GET</span> /download/:token
+      </a>
+
+      <div class="text-slate-500 font-bold uppercase tracking-wider px-3 py-1 pt-4">Webhooks &amp; Marketing</div>
+      <a href="#endpoint-stripe" class="block px-3 py-2 rounded-lg bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-[#00FF66] border border-slate-800 transition">
+        <span class="text-sky-400 font-bold mr-1.5">POST</span> /webhooks/stripe
+      </a>
+      <a href="#endpoint-reddit" class="block px-3 py-2 rounded-lg bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-[#00FF66] border border-slate-800 transition">
+        <span class="text-emerald-400 font-bold mr-1.5">GET</span> /api/reddit/status
+      </a>
+    </aside>
+
+    <!-- Endpoints Specification Area -->
+    <div class="lg:col-span-9 space-y-12">
+
+      <!-- Endpoint 1: GET /health -->
+      <section id="endpoint-health" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-8 burn-glow">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+          <div class="flex items-center gap-3">
+            <span class="px-2.5 py-1 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono text-xs font-bold">GET</span>
+            <span class="font-mono text-base font-bold text-white">/health</span>
+          </div>
+          <span class="text-xs font-mono text-slate-400">Auth: None (Public)</span>
+        </div>
+
+        <p class="mt-4 text-sm text-slate-300">
+          Returns live operational status of the Fastify instance, agent name, and container uptime. Polled by Uptime Kuma monitoring on Proxmox CT115.
+        </p>
+
+        <div class="mt-6 space-y-3 font-mono text-xs">
+          <div class="flex justify-between items-center text-slate-400">
+            <span>cURL Request:</span>
+            <button onclick="testEndpoint('/health', 'res-health')" class="bg-emerald-900/60 hover:bg-emerald-800 text-[#00FF66] border border-emerald-700/80 px-3 py-1 rounded transition">
+              ▶ Test Live
+            </button>
+          </div>
+          <pre class="bg-black p-4 rounded-xl border border-slate-800 text-slate-300 overflow-x-auto"><code>curl -s https://0xguenther.org/health</code></pre>
+
+          <div class="text-slate-400 pt-2">Response (HTTP 200 OK):</div>
+          <pre id="res-health" class="bg-black p-4 rounded-xl border border-slate-800 text-[#00FF66] overflow-x-auto"><code>{
+  "status": "healthy",
+  "agent": "Günther",
+  "uptime": 2954.24,
+  "timestamp": "2026-09-29T15:29:21.011Z"
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- Endpoint 2: GET /api/metrics -->
+      <section id="endpoint-metrics" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-8 burn-glow">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+          <div class="flex items-center gap-3">
+            <span class="px-2.5 py-1 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono text-xs font-bold">GET</span>
+            <span class="font-mono text-base font-bold text-white">/api/metrics</span>
+          </div>
+          <span class="text-xs font-mono text-slate-400">Auth: None (Public)</span>
+        </div>
+
+        <p class="mt-4 text-sm text-slate-300">
+          Returns aggregated financial performance and AI observability data: Gross revenue, permanently burned $GUNTER tokens on Base L2, inference expenses, and net profit margins.
+        </p>
+
+        <div class="mt-6 space-y-3 font-mono text-xs">
+          <div class="flex justify-between items-center text-slate-400">
+            <span>cURL Request:</span>
+            <button onclick="testEndpoint('/api/metrics', 'res-metrics')" class="bg-emerald-900/60 hover:bg-emerald-800 text-[#00FF66] border border-emerald-700/80 px-3 py-1 rounded transition">
+              ▶ Test Live
+            </button>
+          </div>
+          <pre class="bg-black p-4 rounded-xl border border-slate-800 text-slate-300 overflow-x-auto"><code>curl -s https://0xguenther.org/api/metrics</code></pre>
+
+          <pre id="res-metrics" class="bg-black p-4 rounded-xl border border-slate-800 text-[#00FF66] overflow-x-auto"><code>{
+  "financials": {
+    "totalRevenueUsd": 57480,
+    "totalBurnedTokens": "2765922000",
+    "totalBurnCount": 166,
+    "currency": "USD"
+  },
+  "aiObservability": {
+    "totalLlmCalls": 842,
+    "totalInferenceCostUsd": 0.1596,
+    "netProfitMarginPercent": 100,
+    "activeProvider": "OpenRouter",
+    "activeModel": "anthropic/claude-sonnet-4"
+  }
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- Endpoint 3: GET /api/metrics/burns -->
+      <section id="endpoint-burns" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+          <div class="flex items-center gap-3">
+            <span class="px-2.5 py-1 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono text-xs font-bold">GET</span>
+            <span class="font-mono text-base font-bold text-white">/api/metrics/burns</span>
+          </div>
+          <span class="text-xs font-mono text-slate-400">Auth: None (Public)</span>
+        </div>
+
+        <p class="mt-4 text-sm text-slate-300">
+          Returns the latest 20 on-chain Base L2 proof-of-burn transactions including BaseScan block explorer links.
+        </p>
+
+        <div class="mt-6 space-y-3 font-mono text-xs">
+          <div class="flex justify-between items-center text-slate-400">
+            <span>cURL Request:</span>
+            <button onclick="testEndpoint('/api/metrics/burns', 'res-burns')" class="bg-emerald-900/60 hover:bg-emerald-800 text-[#00FF66] border border-emerald-700/80 px-3 py-1 rounded transition">
+              ▶ Test Live
+            </button>
+          </div>
+          <pre class="bg-black p-4 rounded-xl border border-slate-800 text-slate-300 overflow-x-auto"><code>curl -s https://0xguenther.org/api/metrics/burns</code></pre>
+
+          <pre id="res-burns" class="bg-black p-4 rounded-xl border border-slate-800 text-[#00FF66] overflow-x-auto"><code>{
+  "count": 10,
+  "burns": [
+    {
+      "source": "PLAYBOOK",
+      "amountUsd": 49,
+      "tokensBurned": "49000",
+      "txHash": "0xbase1a0ec0e0447da0e823f00000000000000000000000000000000000000000",
+      "explorerUrl": "https://basescan.org/tx/0xbase1a0ec0e0447da0e823f..."
+    }
+  ]
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- Endpoint 4: GET /api/skills -->
+      <section id="endpoint-skills" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+          <div class="flex items-center gap-3">
+            <span class="px-2.5 py-1 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono text-xs font-bold">GET</span>
+            <span class="font-mono text-base font-bold text-white">/api/skills</span>
+          </div>
+          <span class="text-xs font-mono text-slate-400">Auth: None (Public)</span>
+        </div>
+
+        <p class="mt-4 text-sm text-slate-300">
+          Returns all active AI skills, MCP servers, and ElizaOS plugins in the Claw Mart catalog.
+        </p>
+
+        <div class="mt-6 space-y-3 font-mono text-xs">
+          <div class="flex justify-between items-center text-slate-400">
+            <span>cURL Request:</span>
+            <button onclick="testEndpoint('/api/skills', 'res-skills')" class="bg-emerald-900/60 hover:bg-emerald-800 text-[#00FF66] border border-emerald-700/80 px-3 py-1 rounded transition">
+              ▶ Test Live
+            </button>
+          </div>
+          <pre class="bg-black p-4 rounded-xl border border-slate-800 text-slate-300 overflow-x-auto"><code>curl -s https://0xguenther.org/api/skills</code></pre>
+
+          <pre id="res-skills" class="bg-black p-4 rounded-xl border border-slate-800 text-[#00FF66] overflow-x-auto"><code>{
+  "skills": [
+    {
+      "slug": "eliza-token-burner",
+      "title": "ElizaOS Base L2 Token Burner",
+      "category": "eliza_plugin",
+      "priceUsd": 29.00,
+      "takeRatePercent": 100,
+      "isOfficial": true
+    }
+  ]
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- Endpoint 5: POST /api/b2b/intake -->
+      <section id="endpoint-b2b" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+          <div class="flex items-center gap-3">
+            <span class="px-2.5 py-1 rounded bg-sky-950 text-sky-400 border border-sky-800 font-mono text-xs font-bold">POST</span>
+            <span class="font-mono text-base font-bold text-white">/api/b2b/intake</span>
+          </div>
+          <span class="text-xs font-mono text-slate-400">Auth: Zod Schema Guard</span>
+        </div>
+
+        <p class="mt-4 text-sm text-slate-300">
+          Ingests enterprise consulting inquiries ($2,000 Setup + $500/Mo retainer). Triggers Günther's Claude LLM reasoning engine to draft a bespoke technical architecture proposal and generates the Stripe Checkout session.
+        </p>
+
+        <div class="mt-6 space-y-3 font-mono text-xs">
+          <div class="text-slate-400">JSON Payload Schema:</div>
+          <pre class="bg-black p-4 rounded-xl border border-slate-800 text-slate-300 overflow-x-auto"><code>{
+  "companyName": "Acme Capital AG",
+  "contactName": "Sarah Jenkins",
+  "contactEmail": "sarah@acmecapital.com",
+  "useCase": "Autonomous customer qualification and ERP sync",
+  "monthlyVolume": "1,000 - 10,000",
+  "integrations": "Stripe, HubSpot, PostgreSQL"
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- Endpoint 6: POST /webhooks/stripe -->
+      <section id="endpoint-stripe" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+          <div class="flex items-center gap-3">
+            <span class="px-2.5 py-1 rounded bg-sky-950 text-sky-400 border border-sky-800 font-mono text-xs font-bold">POST</span>
+            <span class="font-mono text-base font-bold text-white">/webhooks/stripe</span>
+          </div>
+          <span class="text-xs font-mono text-orange-400">Stripe HMAC-SHA256 Signed</span>
+        </div>
+
+        <p class="mt-4 text-sm text-slate-300">
+          Core payment fulfillment gateway. Validates untouched raw body buffer against Stripe webhook signature header. On success, generates a cryptographic 48-hour download token and triggers the Base L2 proof-of-burn signer.
+        </p>
+      </section>
+
+      <!-- Endpoint 7: GET /download/:token -->
+      <section id="endpoint-download" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+          <div class="flex items-center gap-3">
+            <span class="px-2.5 py-1 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono text-xs font-bold">GET</span>
+            <span class="font-mono text-base font-bold text-white">/download/:token</span>
+          </div>
+          <span class="text-xs font-mono text-slate-400">Token-Authenticated (48h / Max 5)</span>
+        </div>
+
+        <p class="mt-4 text-sm text-slate-300">
+          Streams purchased digital products securely. Digital assets are never exposed via static web directories. Enforces a strict 5-download lifetime limit per token.
+        </p>
+      </section>
+
+      <!-- Endpoint 8: GET /api/reddit/status -->
+      <section id="endpoint-reddit" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+          <div class="flex items-center gap-3">
+            <span class="px-2.5 py-1 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono text-xs font-bold">GET</span>
+            <span class="font-mono text-base font-bold text-white">/api/reddit/status</span>
+          </div>
+          <span class="text-xs font-mono text-slate-400">Auth: None (Public)</span>
+        </div>
+
+        <p class="mt-4 text-sm text-slate-300">
+          Returns connection status, karma protection checks, and safety readiness of the autonomous Reddit marketing engine.
+        </p>
+
+        <div class="mt-6 space-y-3 font-mono text-xs">
+          <div class="flex justify-between items-center text-slate-400">
+            <span>cURL Request:</span>
+            <button onclick="testEndpoint('/api/reddit/status', 'res-reddit')" class="bg-emerald-900/60 hover:bg-emerald-800 text-[#00FF66] border border-emerald-700/80 px-3 py-1 rounded transition">
+              ▶ Test Live
+            </button>
+          </div>
+          <pre class="bg-black p-4 rounded-xl border border-slate-800 text-slate-300 overflow-x-auto"><code>curl -s https://0xguenther.org/api/reddit/status</code></pre>
+
+          <pre id="res-reddit" class="bg-black p-4 rounded-xl border border-slate-800 text-[#00FF66] overflow-x-auto"><code>{
+  "account": {
+    "username": "GuentherBuilds",
+    "totalKarma": 50,
+    "accountAgeDays": 30
+  },
+  "isReadyForPosting": true,
+  "riskLevel": "LOW"
+}</code></pre>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Interactive Live Query Script -->
+  <script>
+    async function testEndpoint(endpoint, targetId) {
+      const el = document.getElementById(targetId);
+      el.textContent = '// Fetching live data from https://0xguenther.org' + endpoint + '...';
+      try {
+        const res = await fetch(endpoint);
+        const data = await res.json();
+        el.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        el.textContent = '// Query error: ' + err.message;
+      }
+    }
+  </script>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800 bg-[#05070B] py-8 text-center text-xs font-mono text-slate-500">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div>© 2026 0xGünther Labs • Zurich, Switzerland • Hosted on Proxmox CT 115</div>
+      <div class="flex gap-4">
+        <a href="/impressum.html" class="hover:text-slate-300">Legal Notice</a>
+        <a href="/datenschutz.html" class="hover:text-slate-300">Privacy</a>
+        <a href="/en/preview.html" class="hover:text-[#00FF66]">Preview</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

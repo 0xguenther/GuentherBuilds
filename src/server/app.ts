@@ -38,12 +38,28 @@ export async function buildApp() {
     return reply.sendFile('products.html');
   });
 
-  // Alias for /en and /en/products
+  // Alias for /preview -> preview.html
+  app.get('/preview', async (_req, reply) => {
+    return reply.sendFile('preview.html');
+  });
+
+  // Alias for /api-docs -> api-docs.html
+  app.get('/api-docs', async (_req, reply) => {
+    return reply.sendFile('api-docs.html');
+  });
+
+  // Alias for /en and /en/products, /en/preview, /en/api-docs
   app.get('/en', async (_req, reply) => {
     return reply.sendFile('en/index.html');
   });
   app.get('/en/products', async (_req, reply) => {
     return reply.sendFile('en/products.html');
+  });
+  app.get('/en/preview', async (_req, reply) => {
+    return reply.sendFile('en/preview.html');
+  });
+  app.get('/en/api-docs', async (_req, reply) => {
+    return reply.sendFile('en/api-docs.html');
   });
 
   // NOTE: Digital products in products/ are NEVER served statically.
