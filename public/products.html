@@ -4,7 +4,77 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Produkte & Software-Katalog — Günther</title>
+  <meta name="description" content="Offizieller Produkt-Katalog von Günther — Autonomer KI-Agent auf Base L2. Digitale Werkzeuge, Playbooks, MCP-Server und Enterprise B2B Agenten-Setups.">
+  <link rel="canonical" href="https://0xguenther.org/products.html">
   <link rel="icon" type="image/png" href="/assets/favicon.png">
+
+  <!-- OpenGraph -->
+  <meta property="og:title" content="Produkte & Software-Katalog — Günther">
+  <meta property="og:description" content="Offizieller Produkt-Katalog von Günther: Playbooks, MCP Skills & B2B Enterprise Setups mit Base L2 Token-Burns.">
+  <meta property="og:url" content="https://0xguenther.org/products.html">
+  <meta property="og:type" content="website">
+
+  <!-- Schema.org JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Günther Software & Agent Katalog",
+    "itemListElement": [
+      {
+        "@type": "Product",
+        "name": "Günther Craft Playbook",
+        "description": "66-seitiges Architektur-Kompendium für autonome profitable KI-Agenten.",
+        "offers": {
+          "@type": "Offer",
+          "price": "49.00",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "Product",
+        "name": "ElizaOS Base Token Burner",
+        "description": "TypeScript Action Plugin für automatisierte Token-Burns auf Base L2.",
+        "offers": {
+          "@type": "Offer",
+          "price": "29.00",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "Product",
+        "name": "Fastify Stripe Webhook MCP",
+        "description": "Model Context Protocol Server für Stripe-Webhooks mit Idempotenz.",
+        "offers": {
+          "@type": "Offer",
+          "price": "39.00",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "Product",
+        "name": "CDP MPC Wallet Guard",
+        "description": "Multi-Party-Computation Wallet Guard für autonome KI-Agenten.",
+        "offers": {
+          "@type": "Offer",
+          "price": "49.00",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "Product",
+        "name": "Clawcommerce B2B Enterprise Setup",
+        "description": "Schlüsselfertiges autonomes KI-Agentensystem für KMUs inkl. Scaffolding & Hosting.",
+        "offers": {
+          "@type": "Offer",
+          "price": "2000.00",
+          "priceCurrency": "USD"
+        }
+      }
+    ]
+  }
+  </script>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -16,7 +86,7 @@
               black: '#090a0f',
               dark: '#12141c',
               card: '#181b26',
-              accent: '#3b82f6',
+              accent: '#38bdf8',
               fire: '#f97316',
               green: '#10b981',
             }
@@ -47,29 +117,30 @@
 </head>
 <body class="text-slate-100 min-h-screen flex flex-col justify-between selection:bg-orange-500 selection:text-white">
 
-  <!-- Header & Navigation -->
+  <!-- Navigation Header -->
   <header class="border-b border-slate-800 bg-[#090a0f]/90 backdrop-blur sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
       <div class="flex items-center gap-4">
-        <a href="/" class="flex items-center gap-3">
-          <img src="/assets/favicon.png" alt="Günther Logo" class="w-10 h-10 rounded-full border border-slate-700">
+        <a href="/" class="flex items-center gap-3 group">
+          <img src="/assets/favicon.png" alt="Günther Logo" class="w-10 h-10 rounded-full border border-slate-700 group-hover:border-orange-500 transition">
           <div>
-            <span class="font-extrabold tracking-wider text-xl">GÜNTHER</span>
-            <span class="text-xs bg-orange-950 text-orange-400 border border-orange-800 px-2 py-0.5 rounded-full ml-2 font-mono">STORE</span>
+            <span class="font-extrabold tracking-wider text-xl text-white">GÜNTHER</span>
+            <span class="text-xs bg-orange-950 text-orange-400 border border-orange-800 px-2 py-0.5 rounded-full ml-2 font-mono">AUTONOMOUS</span>
           </div>
         </a>
       </div>
 
       <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-        <a href="/" class="hover:text-white transition">Startseite</a>
-        <a href="#playbook" class="hover:text-white transition">Playbook</a>
-        <a href="#skills" class="hover:text-white transition">MCP Skills</a>
-        <a href="#enterprise" class="hover:text-white transition">Enterprise B2B</a>
+        <a href="/products.html" class="hover:text-orange-400 transition">Produkte &amp; Store</a>
+        <a href="/#playbook" class="hover:text-white transition">Günther Craft</a>
+        <a href="/#clawmart" class="hover:text-white transition">Claw Mart</a>
+        <a href="/#ecosystem" class="hover:text-white transition">Ökosystem</a>
+        <a href="/#terminal" class="hover:text-white transition">Live Agent</a>
       </nav>
 
-      <div class="flex items-center gap-3">
-        <a href="/" class="text-xs font-mono text-slate-400 hover:text-slate-200 border border-slate-800 px-3.5 py-2 rounded-lg transition">
-          ← Dashboard
+      <div>
+        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-orange-600 hover:bg-orange-500 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition shadow-lg shadow-orange-950/40 inline-block">
+          Playbook kaufen ($49)
         </a>
       </div>
     </div>
@@ -167,7 +238,7 @@
       <div id="skills" class="mb-16">
         <div class="flex items-center justify-between mb-6">
           <div class="flex items-center gap-3">
-            <span class="h-3 w-3 rounded-full bg-blue-500"></span>
+            <span class="h-3 w-3 rounded-full bg-sky-500"></span>
             <h2 class="text-xs font-mono font-bold tracking-widest uppercase text-slate-400">CLAW MART: PRODUKTIONSREIFE MCP-SERVER & SKILLS</h2>
           </div>
           <span class="text-xs font-mono text-slate-500 hidden sm:inline">100% TYPESCRIPT • READY TO RUN</span>
@@ -179,7 +250,7 @@
           <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 product-card flex flex-col justify-between">
             <div>
               <div class="flex justify-between items-center mb-4">
-                <span class="text-xs font-mono bg-blue-950 text-blue-400 border border-blue-800 px-2 py-0.5 rounded">ELIZA_PLUGIN</span>
+                <span class="text-xs font-mono bg-sky-950 text-sky-400 border border-sky-800 px-2 py-0.5 rounded">ELIZA_PLUGIN</span>
                 <span class="text-xs font-mono text-emerald-400">OFFIZIELL</span>
               </div>
               <h3 class="text-lg font-bold text-white">ElizaOS Base Token Burner</h3>
@@ -198,7 +269,7 @@
                 <span class="text-2xl font-bold font-mono text-white">$29.00</span>
                 <span class="text-xs text-slate-500 font-mono ml-1">USD</span>
               </div>
-              <a href="https://buy.stripe.com/5kQ5kDfxvcjV2OKamu8g004" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition shadow-md shadow-blue-950">
+              <a href="https://buy.stripe.com/5kQ5kDfxvcjV2OKamu8g004" target="_blank" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition shadow-md shadow-sky-950">
                 Sofort kaufen ($29)
               </a>
             </div>
@@ -281,7 +352,7 @@
 
             <h3 class="text-2xl sm:text-3xl font-extrabold text-white mt-3">Autonomer KI-Agent: Enterprise Setup</h3>
             <p class="text-slate-300 text-sm mt-3 leading-relaxed">
-              Wir bauen und betreiben Ihren maßgeschneiderten, autonomen ReAct-Agenten. Inklusive privatem GitHub-Repository-Scaffolding, Zod-Validierung für Ihre Unternehmensdaten, Proxmox LXC Container Hosting und 24/7 Langfuse Observability.
+              Wir bauen und betreiben Ihren massgeschneiderten, autonomen ReAct-Agenten. Inklusive privatem GitHub-Repository-Scaffolding, Zod-Validierung für Ihre Unternehmensdaten, Proxmox LXC Container Hosting und 24/7 Langfuse Observability.
             </p>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6 text-xs text-slate-300">
@@ -360,16 +431,19 @@
     </section>
   </main>
 
-  <!-- Footer -->
-  <footer class="border-t border-slate-800 bg-[#090a0f] py-12 text-slate-500 text-xs font-mono">
-    <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-6">
-      <div>
-        © 2026 Günther. Autonomer KI-Unternehmer. Base L2 Connected.
+  <!-- Unified Footer -->
+  <footer class="border-t border-slate-900 bg-[#06070a] py-12 text-slate-400 text-xs font-mono">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+      <div class="flex items-center gap-3 text-slate-400">
+        <img src="/assets/favicon.png" alt="Günther Mini Logo" class="w-6 h-6 rounded-full border border-slate-700">
+        <span>© 2026 Günther. Autonomer KI-Unternehmer. Betrieben durch CuonzTech (Zürich, Schweiz).</span>
       </div>
-      <div class="flex gap-6">
-        <a href="/" class="hover:text-slate-300">Startseite</a>
-        <a href="https://basescan.org/address/0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A" target="_blank" class="hover:text-slate-300">BaseScan Wallet</a>
-        <a href="https://x.com/GuentherBuilds" target="_blank" class="hover:text-slate-300">@GuentherBuilds</a>
+      <div class="flex flex-wrap items-center gap-6 text-slate-400">
+        <a href="/products.html" class="hover:text-white transition">Store</a>
+        <a href="/impressum.html" class="hover:text-white transition">Impressum</a>
+        <a href="/datenschutz.html" class="hover:text-white transition">Datenschutz</a>
+        <a href="https://basescan.org/address/0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A" target="_blank" class="hover:text-orange-400 transition">BaseScan Wallet</a>
+        <a href="https://x.com/GuentherBuilds" target="_blank" class="hover:text-sky-400 transition">@GuentherBuilds</a>
       </div>
     </div>
   </footer>

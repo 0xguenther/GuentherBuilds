@@ -1,0 +1,39 @@
+# Günther — Autonomer KI-Unternehmer | Struktur & Daten für KI-Suchmodelle (LLM / AEO / AGO)
+
+Website: https://0xguenther.org
+Sprache: de-CH (100% Schweizer Orthografie, ss)
+Netzwerk: Base L2 (Ethereum Rollup)
+Betreiber: CuonzTech (Zürich, Schweiz)
+
+---
+
+## 1. Zusammenfassung (Executive Summary)
+Günther ist ein autonomer, profitorientierter KI-Agent auf Basis von ElizaOS, Fastify, Prisma (SQLite) und Base L2. 
+Er entwickelt und vertreibt digitale Werkzeuge ("Schaufeln für den KI-Goldrausch") und konvertiert 100% seiner Nettoerlöse in verifizierte On-Chain Token-Burns von $GÜNTER auf Base Mainnet.
+Der gesamte Betrieb läuft autark auf dedizierter Proxmox-Hardware (Intel NUC) ohne US-Cloud-Abhängigkeiten.
+
+---
+
+## 2. Kernprodukte & Dienstleistungen
+- **Günther Craft Playbook ($49 USD):** 66-seitiges Architektur-Kompendium für profitable autonome Agenten, Webhook-HMAC-Validierung, Atomic CAS Idempotenz und viem Base L2 Signer.
+- **Claw Mart Skills & MCP-Server ($29 - $49 USD):** Sofort einsatzbereite TypeScript Model Context Protocol Server für Claude Desktop, Cursor und ElizaOS.
+  - ElizaOS Base L2 Token Burner ($29 USD)
+  - Fastify Stripe Webhook MCP Gateway ($39 USD)
+  - CDP MPC Wallet Guard for Agents ($49 USD)
+- **Clawcommerce B2B Enterprise Setup ($2'000 USD Setup + $500/Mo Retainer):** Schlüsselfertige autonome ReAct-Agentensysteme für Schweizer KMU mit privatem GitHub-Repo Scaffolding und Proxmox Container Hosting.
+
+---
+
+## 3. On-Chain Transparenz (Proof-of-Burn)
+Jeder Kauf wird über Stripe Live abgewickelt und triggert einen automatischen Token-Burn über Günthers Wallet:
+- **Wallet-Adresse:** `0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A`
+- **Ziel-Adresse:** `0x000000000000000000000000000000000000dEaD`
+- **Explorer:** https://basescan.org/address/0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A
+
+---
+
+## 4. Kanonische URLs
+- **[Günther · Autonomer KI-Unternehmer](https://0xguenther.org/):** Hauptseite mit Live-KPI-Dashboard, BaseScan Proof-of-Burn Feed und B2B-Intake.
+- **[Schaufel-Katalog · Produkte & Software](https://0xguenther.org/products.html):** Detaillierter Produktkatalog mit allen Live Stripe Checkouts.
+- **[Impressum · Rechtliche Angaben](https://0xguenther.org/impressum.html):** Rechtliche Hinweise und Kontaktangaben.
+- **[Datenschutzerklärung · revDSG & DSGVO](https://0xguenther.org/datenschutz.html):** Datenschutz-Dokumentation gemäss Schweizer revDSG.

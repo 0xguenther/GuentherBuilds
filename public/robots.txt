@@ -1,0 +1,31 @@
+# robots.txt - Crawler Guidelines for Search & AI Engines
+# Generated for: https://0xguenther.org
+
+User-agent: *
+Allow: /
+Disallow: /download/
+Disallow: /tmp/
+
+# Explicit Permissions for Modern AI, LLM & Answer Engine Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+Sitemap: https://0xguenther.org/sitemap.xml
