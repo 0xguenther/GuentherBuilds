@@ -4,6 +4,9 @@ import { buildApp } from '../src/server/app.js';
 import { guntherDaemon } from '../src/cron/daemon.js';
 
 test('Günther Metrics, Observability & Autonomous Daily Pulse Test Suite', async (t) => {
+  process.env.NODE_ENV = 'test';
+  const { config } = await import('../src/config/index.js');
+  config.server.env = 'test';
   const app = await buildApp();
 
   await t.test('1. GET /api/metrics should return comprehensive live business data', async () => {

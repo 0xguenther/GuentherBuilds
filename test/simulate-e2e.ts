@@ -5,6 +5,9 @@ import { config } from '../src/config/index.js';
 import crypto from 'crypto';
 
 async function runE2ETests() {
+  process.env.NODE_ENV = 'test';
+  config.server.env = 'test';
+
   console.log('====================================================');
   console.log('🧪 RUNNING GÜNTHER CORE E2E SIMULATION TEST SUITE');
   console.log('====================================================\n');

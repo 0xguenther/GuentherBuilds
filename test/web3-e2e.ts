@@ -1,10 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert';
 import { Web3McpClient } from '../src/mcp/web3Mcp.js';
+import { config } from '../src/config/index.js';
 import { createPublicClient, http, formatEther } from 'viem';
 import { base } from 'viem/chains';
 
 test('Web3 MCP: Base L2 Token Burning & Public Client Suite', async (t) => {
+  process.env.NODE_ENV = 'test';
+  config.server.env = 'test';
+
   await t.test('1. should simulate burn deterministically when in test environment', async () => {
     const result = await Web3McpClient.burnTokens({
       amount: 49000000000000000000000n,

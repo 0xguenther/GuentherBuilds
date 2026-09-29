@@ -11,6 +11,8 @@ describe('Clawcommerce: High-Ticket B2B Funnel Test Suite ($2,000 Setup + $500/M
   let app: FastifyInstance;
 
   before(async () => {
+    process.env.NODE_ENV = 'test';
+    config.server.env = 'test';
     app = await buildApp();
     await app.ready();
   });

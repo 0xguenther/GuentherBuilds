@@ -10,6 +10,9 @@ describe('Claw Mart: AI Skills & MCP Marketplace Test Suite', () => {
   let app: FastifyInstance;
 
   before(async () => {
+    process.env.NODE_ENV = 'test';
+    const { config } = await import('../src/config/index.js');
+    config.server.env = 'test';
     app = await buildApp();
     await app.ready();
     await skillService.seedDefaultSkills();
