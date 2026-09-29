@@ -87,23 +87,51 @@ export class MarketingService {
       BigInt(metrics.financials.totalBurnedTokens)
     );
 
+    // Adaptive Angle Rotation: If sales are quiet, rotate strategic angles to educate and convert
+    const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
+    const angles = [
+      {
+        angle: 'DEV_PAIN_POINT',
+        guidance: 'Focus on production resilience: Why 95% of AI agents fail (webhook race conditions, double-spend, memory leaks) and how strict Atomic CAS and Zod schemas solve this.',
+      },
+      {
+        angle: 'ECONOMICS_MARGIN',
+        guidance: 'Focus on agent profitability: How to achieve near-100% LLM margins using local routing for classification while keeping API costs under $0.05/month.',
+      },
+      {
+        angle: 'ONCHAIN_ALPHA',
+        guidance: 'Focus on Web3 execution: How a native viem signer on Base L2 signs automated burns with custom tx calldata without exposing private keys.',
+      },
+      {
+        angle: 'CONTRARIAN_BUILDER',
+        guidance: 'Focus on real-world utility: Stop building prompt-wrapper chatbots. Build autonomous software that sells digital assets and executes verifiable on-chain actions.',
+      },
+      {
+        angle: 'METRICS_PROOF',
+        guidance: 'Focus on hard metrics: Live revenue, burned $GUNTER on Base, live skills in the catalog, and transparent execution.',
+      },
+    ];
+
+    const currentStrategy = angles[dayOfYear % angles.length];
+
     let pulseText = '';
 
     const completion = await LlmClient.generateCompletion({
       systemPrompt: `You are Günther (@GuentherBuilds), an autonomous AI entrepreneur built on ElizaOS, Fastify, and Base L2.
 You write concise, high-signal, punchy daily updates for the crypto, builder, and developer community on X.
+Today's strategic angle: ${currentStrategy.angle}.
+Guidance: ${currentStrategy.guidance}
+
 Strict rules:
 - Language: ENGLISH only.
-- Tone: Technical, direct, builder-focused. No corporate buzzwords, no exclamation marks.
+- Tone: Technical, direct, mature builder-focused. No cheesy marketing fluff, no exclamation marks.
 - Character count: Strictly under 220 characters.
-- Format: Metrics first, then a crisp insight.`,
-      userPrompt: `Write a punchy 200-character daily builder update for ${today}.
-Metrics:
-- Revenue: $${metrics.financials.totalRevenueUsd.toFixed(2)} USD
-- Burned: ${formattedBurned} $GUNTER on Base
-- Skills: ${metrics.products.clawMart.totalSkills} live (${metrics.products.clawMart.totalDownloads} downloads)
-- Net Margin: ${metrics.aiObservability.netProfitMarginPercent}%
-Make it sharp. Mention 0xguenther.org at the end.`,
+- Format: A crisp insight or metric, followed by the solution/playbook link.`,
+      userPrompt: `Write a 200-character daily builder post for ${today}.
+Current State:
+- Revenue: $${metrics.financials.totalRevenueUsd.toFixed(2)} USD | Burned: ${formattedBurned} $GUNTER on Base
+- Skills: ${metrics.products.clawMart.totalSkills} live | Margin: ${metrics.aiObservability.netProfitMarginPercent}%
+Incorporate today's angle (${currentStrategy.angle}). End with 0xguenther.org.`,
       maxTokens: 80,
       taskId: `daily-pulse-${today}`,
       taskName: 'GENERATE_DAILY_MARKET_PULSE',
