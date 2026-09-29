@@ -32,6 +32,11 @@ export async function buildApp() {
     prefix: '/',
   });
 
+  // Alias for /products -> products.html
+  app.get('/products', async (_req, reply) => {
+    return reply.sendFile('products.html');
+  });
+
   // NOTE: Digital products in products/ are NEVER served statically.
   // Delivery occurs strictly through authenticated /download/:token endpoint.
 
