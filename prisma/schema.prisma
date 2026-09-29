@@ -137,3 +137,19 @@ model B2bContract {
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 }
+
+// --- Reddit Automated Distribution ---
+
+model RedditPost {
+  id          String   @id @default(uuid())
+  subreddit   String
+  title       String
+  body        String
+  redditId    String?  @unique
+  redditUrl   String?
+  status      String   @default("draft") // draft | submitted | failed
+  upvotes     Int      @default(0)
+  numComments Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

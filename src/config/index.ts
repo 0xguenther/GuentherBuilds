@@ -34,6 +34,13 @@ export const config = {
     accessToken: process.env.X_ACCESS_TOKEN || '',
     accessSecret: process.env.X_ACCESS_SECRET || '',
   },
+  reddit: {
+    clientId: process.env.REDDIT_CLIENT_ID || '',
+    clientSecret: process.env.REDDIT_CLIENT_SECRET || '',
+    username: process.env.REDDIT_USERNAME || '',
+    password: process.env.REDDIT_PASSWORD || '',
+    userAgent: process.env.REDDIT_USER_AGENT || `web:0xguenther-core:v1.0 (by /u/${process.env.REDDIT_USERNAME || 'guenther'})`,
+  },
   llm: {
     localUrl: process.env.LOCAL_LLM_URL || 'http://localhost:11434',
     localModel: process.env.LOCAL_LLM_MODEL || 'llama3:8b',
