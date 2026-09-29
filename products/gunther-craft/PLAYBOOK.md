@@ -1,4 +1,4 @@
-# Günther Craft: Das Playbook für autonome KI-Agenten & Enterprise Automation (66-Seiten Compendium)\n> Autonome KI-Agenten, Schweizer Enterprise-Infrastruktur & Base L2 Proof-of-Execution\n**Herausgeber:** CuonzTech (Zürich, Schweiz) • Edition 1.0 (September 2026)\n\n---\n\n## [Seite 1]\n> 0xGÜNTHER ARCHITECTURE LABS • PRODUKTIONS-BLUEPRINT
+# Günther Craft: Das Playbook für autonome KI-Agenten & Enterprise Automation (66-Seiten Compendium)\n> Autonome KI-Agenten, Schweizer Enterprise-Infrastruktur & Base L2 Proof-of-Execution\n**Herausgeber:** 0xGünther Labs (Zürich, Schweiz) • Edition 1.0 (September 2026)\n\n---\n\n## [Seite 1]\n> 0xGÜNTHER ARCHITECTURE LABS • PRODUKTIONS-BLUEPRINT
 GÜNTHER CRAFT
 Das umfassende 66-Seiten Playbook & Referenz-Architektur für profitable
 autonome KI-Agenten, Schweizer Enterprise-Automatisierung & Base L2
@@ -13,7 +13,7 @@ PAYMENTS: Stripe Webhook HMAC Gateway
 SECURITY: Coinbase CDP MPC Wallet Guard
 Dieses Werk enthält vollständigen, einsatzbereiten Produktionscode, System-Architekturpläne, Runbooks und operative
 Leitfäden für den Bau autonomer Software-Agenten mit echtem geschäftlichem Cashflow.
-© 2026 CuonzTech & 0xGünther • Zürich, Schweiz
+© 2026 0xGünther Labs • Zürich, Schweiz
 Alle Rechte vorbehalten. Autonomer Tech-Agent auf Base L2.
 CONFIDENTIAL & PROPRIETARY
 EDITION 1.0 • A4 COMPENDIUM
@@ -22,16 +22,16 @@ RECHTLICHE HINWEISE
 RECHTLICHE HINWEISE
 DOKUMENT-ID: GCP-2026-P02
 Impressum, Urheberrecht & Systemanforderungen
-Dieses Kompendium ist das geistige Eigentum von CuonzTech (Zürich, Schweiz) und dokumentiert die technische
+Dieses Kompendium ist das geistige Eigentum von 0xGünther Labs (Zürich, Schweiz) und dokumentiert die technische
 Referenz-Architektur des autonomen KI-Agenten 0xGünther.
 Urheberrecht & Lizenzbestimmungen
 Mit dem Erwerb dieser Publikation ("Günther Craft: Das 66-Seiten Playbook & Produktions-Blaupause") erhält der
 Käufer eine nicht-exklusive, weltweite Lizenz zur Nutzung, Modifikation und Implementierung der enthaltenen
 Quellcodes und Architekturmuster in eigenen kommerziellen und privaten Softwareprojekten.
 Die Weiterverbreitung, der Wiederverkauf oder die öffentliche Bereitstellung dieses PDF-Dokuments oder wesentlicher
-Auszüge daraus im Volltext ist ohne schriftliche Genehmigung von CuonzTech strikt untersagt.
+Auszüge daraus im Volltext ist ohne schriftliche Genehmigung von 0xGünther Architecture Labs strikt untersagt.
 Haftungsausschluss & Risikohinweis
-Die Autoren und CuonzTech übernehmen keine Haftung für finanzielle Verluste, entgangene Gewinne oder technische
+Die Autoren und 0xGünther Architecture Labs übernehmen keine Haftung für finanzielle Verluste, entgangene Gewinne oder technische
 Schäden, die durch den Betrieb autonomer Agenten, automatisierter Zahlungs-Pipelines (Stripe) oder Blockchain-
 Transaktionen (Base L2) entstehen.
 Sicherheitshinweis: Autonome Software interagiert mit realem Geld und unveränderlichen Blockchains. Führen Sie alle Tests
@@ -56,7 +56,7 @@ Prisma ORM Client mit lokaler SQLite Engine
 Netzwerk
 Feste IP oder DynDNS mit Port 443/80
 Dedizierte statische IPv4/IPv6 mit Caddy Reverse Proxy
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 2 von 66
 \n---\n\n## [Seite 3]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 INHALTSVERZEICHNIS
@@ -112,7 +112,7 @@ Kapitel 21: Idempotente Reconciliation unvollständiger Zahlungen
 Seite 27
 Kapitel 22: Daily Market Pulse & Autonome Stakeholder-Updates
 Seite 28
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 3 von 66
 \n---\n\n## [Seite 4]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 INHALTSVERZEICHNIS
@@ -175,7 +175,7 @@ Kapitel 55-58: 10-Punkte Go-Live Checkliste & Notfall-Runbooks
 Seite 61-64
 Anhang A & B: Referenz-Architekturplan, Manifest & Lizenz
 Seite 65-66
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 4 von 66
 \n---\n\n## [Seite 5]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 VORWORT
@@ -202,9 +202,9 @@ Software-Fabrik zu behandeln. Das LLM wurde vom Steuermann zum austauschbaren Re
 Dieses Playbook ist die lückenlose Dokumentation dieser Architektur. Sie halten nicht nur Theorie in den Händen,
 sondern die exakte Blaupause eines Agenten, der heute, in dieser Sekunde, auf Container CT 115 in Zürich läuft, Umsätze
 verbucht und Token verbrennt.
-— Carlo Cuonz & 0xGünther
+— 0xGünther Architecture Labs
 Zürich, Schweiz • September 2026
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 5 von 66
 \n---\n\n## [Seite 6]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL I: FUNDAMENTE
@@ -233,7 +233,7 @@ Stecker ziehen kann.
 5. Proof-of-Execution statt Marketing-Versprechen
 Behauptungen sind billig. Jeder Nettoerlös wird kryptografisch nachweisbar on-chain auf Base L2 verbrannt. Jede
 Transaktion ist der unwiderrufliche Beweis für reale Kunden und fehlerfreie Ausführung.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 6 von 66
 \n---\n\n## [Seite 7]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL I: FUNDAMENTE
@@ -285,7 +285,7 @@ Local-First Speicherung.
 Erkenntnis aus der Praxis: 90% des Entwicklungsaufwands eines erfolgreichen autonomen Agenten fliessen nicht in den KI-
 Prompt, sondern in das defensive Software-Engineering drumherum: Idempotenz, Typensicherheit, Netzwerk-Timeouts und
 Fehler-Isolation.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 7 von 66
 \n---\n\n## [Seite 8]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL I: FUNDAMENTE
@@ -317,7 +317,7 @@ Null Grenzkosten: Die Auslieferung eines digitalen Quellcode-Pakets via Fastify-
 an Server-Ressourcen.
 Hohe B2B-Zahlungsbereitschaft: Für ein Schweizer KMU sind $2'000 Setup-Gebühr eine Bagatelle, wenn dadurch
 eine manuelle Vollzeit-Stelle eingespart wird.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 8 von 66
 \n---\n\n## [Seite 9]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL I: FUNDAMENTE
@@ -345,7 +345,7 @@ terminiert und der Vorfall in der Trace -Tabelle protokolliert.
 Filter die Einhaltung der Brand-Richtlinien.
 Unterschied zur Theorie: In wissenschaftlichen Papern läuft ReAct in Endlosschleifen, bis das Modell "satisfied" meldet. In der
 industriellen Praxis von 0xGünther ist ReAct ein getakteter, transaktional abgesicherter Batch-Prozess.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 9 von 66
 \n---\n\n## [Seite 10]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL I: FUNDAMENTE
@@ -381,7 +381,7 @@ burned
 KEINER (Endzustand)
 Ein verbrannter Datensatz kann niemals erneut verändert werden.
 Sicherheits-Garantie: Da burned ein unveränderlicher Endzustand ist, ist ein Double-Spend mathematisch ausgeschlossen.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 10 von 66
 \n---\n\n## [Seite 11]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL I: FUNDAMENTE
@@ -420,7 +420,7 @@ integrations: z.string().default('REST-API')
 export type B2bIntakeInput = z.infer<typeof B2bIntakeSchema>;
 Self-Correction Loop: Wenn Zod einen Validierungsfehler wirft, parsen wir die Fehlermeldung ( error.issues ) und
 übergeben sie im nächsten Schritt direkt an das LLM: "Du hast 'email' vergessen. Korrigiere dein JSON."
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 11 von 66
 \n---\n\n## [Seite 12]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL I: FUNDAMENTE
@@ -470,7 +470,7 @@ confidenceScore: 0.0
 }
 Produktions-Sicherheit: Diese 40 Zeilen Code verhindern 99% aller Server-Abstürze in KI-Agenten-Systemen. Selbst wenn
 das Modell kompletten Unfug generiert, bleibt der Server stabil.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 12 von 66
 \n---\n\n## [Seite 13]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL II: ARCHITEKTUR
@@ -516,7 +516,7 @@ Package.json Skripte für kompromisslose QA:
 "test": "node --test --import tsx/esm tests/**/*.test.ts",
 "test:all": "node scripts/run-all-tests.js"
 }
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 13 von 66
 \n---\n\n## [Seite 14]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL II: ARCHITEKTUR
@@ -557,7 +557,7 @@ onRequest ──> preParsing ──> preValidation ──> preHandler ──> Ha
 preParsing: Hier puffern wir den unveränderten Raw-Byte-Buffer für Stripe.
 preValidation: Zod prüft Header und Query-Parameter vor der Business-Logik.
 onResponse: Langfuse erfasst die Ausführungszeit und den Statuscode.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 14 von 66
 \n---\n\n## [Seite 15]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL II: ARCHITEKTUR
@@ -588,7 +588,7 @@ await prisma.$executeRawUnsafe('PRAGMA busy_timeout = 5000;');
 await prisma.$executeRawUnsafe('PRAGMA foreign_keys = ON;');
 console.log('[SQLite] Produktions-Pragmas erfolgreich konfiguriert.');
 }
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 15 von 66
 \n---\n\n## [Seite 16]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL II: ARCHITEKTUR
@@ -644,7 +644,7 @@ proposalText  String
 status        String   @default("NEW") // NEW, QUALIFIED, CONTRACT_PAID
 createdAt     DateTime @default(now())
 }
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 16 von 66
 \n---\n\n## [Seite 17]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL II: ARCHITEKTUR
@@ -670,7 +670,7 @@ HTTP 400 Bad Request abgewiesen. Der Kunde hat bezahlt, erhält aber kein Produk
 Die Lösung: Bitgenaue Speicherung im preParsing Hook
 Wir müssen den originalen, unberührten Byte-Buffer des HTTP-Requests abfangen, bevor irgendein Parser aktiv wird,
 und ihn als unverändertes Feld an das Request-Objekt anhängen.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 17 von 66
 \n---\n\n## [Seite 18]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL II: ARCHITEKTUR
@@ -729,7 +729,7 @@ await BurnService.executeBurn(paymentIntentId, amountTotal);
 return reply.status(200).send({ received: true });
 });
 };
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 18 von 66
 \n---\n\n## [Seite 19]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL II: ARCHITEKTUR
@@ -756,7 +756,7 @@ sofort verworfen.
 Selbst wenn ein Angreifer es schafft, ein Paket innerhalb von 5 Minuten erneut einzuspeisen, greift der @unique Index
 auf stripePaymentId in SQLite. Ein zweiter INSERT -Versuch schlägt mit einem Primärschlüssel-Fehler fehl.
 Ergebnis: Zero Fraud. Kein doppelter Download-Token und kein unberechtigter Token-Burn können das System passieren.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 19 von 66
 \n---\n\n## [Seite 20]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL II: ARCHITEKTUR
@@ -782,7 +782,7 @@ Die SQLite-Engine garantiert auf Dateisystem-Ebene, dass diese Operation unteilb
 Thread A führt das Statement aus: 1 Zeile aktualisiert. Thread A hat das exklusive Recht zur Ausführung.
 Thread B führt dasselbe Statement aus: 0 Zeilen aktualisiert (da der Status bereits burning ist). Thread B bricht
 sofort ab!
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 20 von 66
 \n---\n\n## [Seite 21]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL II: ARCHITEKTUR
@@ -839,7 +839,7 @@ n).toLocaleString()} $GÜNTER verbrannt auf Base. Tx: ${txHash}`);
 return { skipped: false, txHash };
 }
 }
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 21 von 66
 \n---\n\n## [Seite 22]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL II: ARCHITEKTUR
@@ -864,7 +864,7 @@ Durch AVX2- und OpenVINO-Beschleunigung generiert die CPU 45 Tokens pro Sekunde 
 unter 6 GB.
 Marge in der Praxis: 85% aller Ingestion-Events (z.B. wiederkehrende Statusabfragen oder irrelevante Twitter-Mentions)
 werden zu $0.00 Kosten lokal abgefertigt.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 22 von 66
 \n---\n\n## [Seite 23]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL II: ARCHITEKTUR
@@ -914,7 +914,7 @@ await new Promise(resolve => setTimeout(resolve, delay));
 throw new Error('Unerreichbarer Zustand');
 }
 }
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 23 von 66
 \n---\n\n## [Seite 24]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL II: ARCHITEKTUR
@@ -949,7 +949,7 @@ Präziser Zeitstempel nach UTC.
 Echtzeit-Abfrage der Performance via CLI:
 # Durchschnittliche Latenz der letzten 100 Webhooks abfragen:
 sqlite3 gunther.db "SELECT eventName, AVG(durationMs), COUNT(*) FROM Trace GROUP BY eventName;"
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 24 von 66
 \n---\n\n## [Seite 25]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL II: ARCHITEKTUR
@@ -988,7 +988,7 @@ return false; // Not-Aus aktiv
 return true;
 }
 }
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 25 von 66
 \n---\n\n## [Seite 26]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL II: ARCHITEKTUR
@@ -1027,7 +1027,7 @@ stop() {
 if (this.intervalHandle) clearInterval(this.intervalHandle);
 }
 }
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 26 von 66
 \n---\n\n## [Seite 27]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL II: ARCHITEKTUR
@@ -1067,7 +1067,7 @@ console.error(`[Reconciler] Heilung fehlgeschlagen für ${payment.stripePaymentI
 }
 return { reconciled: stalePayments.length };
 }
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 27 von 66
 \n---\n\n## [Seite 28]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL II: ARCHITEKTUR
@@ -1093,7 +1093,7 @@ Daily Market Pulse | 29.09.2026
 Idempotenz-Schutz für Statusberichte:
 Der Daemon prüft mittels Datum-Schlüssel (z.B. PULSE:2026-09-29 ), ob der heutige Report bereits existiert. Doppel-
 Posts werden dadurch zu 100% ausgeschlossen.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 28 von 66
 \n---\n\n## [Seite 29]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL III: B2B ENTERPRISE
@@ -1123,7 +1123,7 @@ $500.00 USD
 • 99.9% Uptime SLA mit garantierter Reaktionszeit
 Der psychologische Anker: Eine typische Schweizer IT-Agentur verlangt für ein ähnliches Integrationsprojekt CHF 25'000.- bis
 50'000.-. Unser Angebot von $2'000 ist derart attraktiv, dass der Verkaufszyklus oft weniger als 48 Stunden dauert.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 29 von 66
 \n---\n\n## [Seite 30]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL III: B2B ENTERPRISE
@@ -1150,7 +1150,7 @@ Synchronisation).
 4. monthlyVolume: Transaktionsvolumen zur Dimensionierung der Container-Ressourcen (<1'000, 1'000-10'000 oder
 >10'000 Events/Mo).
 5. integrations: Vorhandene IT-Schnittstellen (z.B. Abacus, Bexio, Salesforce, Stripe, REST).
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 30 von 66
 \n---\n\n## [Seite 31]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL III: B2B ENTERPRISE
@@ -1197,7 +1197,7 @@ data: { ...data, proposalText: proposal, status: 'QUALIFIED' }
 return { success: true, leadId: lead.id, proposalMarkdown: proposal };
 }
 }
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 31 von 66
 \n---\n\n## [Seite 32]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL III: B2B ENTERPRISE
@@ -1241,7 +1241,7 @@ return reply.send({ checkoutUrl: session.url });
 });
 Volle Automatisierung: Nach Zahlungseingang aktualisiert der Stripe-Webhook den Status des Leads auf CONTRACT_PAID
 und löst den automatischen Provisionierungs-Prozess aus.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 32 von 66
 \n---\n\n## [Seite 33]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL III: B2B ENTERPRISE
@@ -1253,7 +1253,7 @@ erstellt.
 Der automatisierte Scaffolding-Workflow:
 [Zahlung $2,000 bestätigt]
 ↓
-[GitHub API: Erstelle privates Repo: cuonztech-enterprise/kmu-${leadId}]
+[GitHub API: Erstelle privates Repo: 0xguenther-enterprise/kmu-${leadId}]
 ↓
 [Template Injection: Kopiere gehärtetes 0xGünther Core Template]
 ↓
@@ -1287,7 +1287,7 @@ git pull origin main
 npm install --production
 npx prisma migrate deploy
 systemctl restart enterprise-agent.service
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 33 von 66
 \n---\n\n## [Seite 34]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL III: B2B ENTERPRISE
@@ -1310,7 +1310,7 @@ Interagiert ein Interessent mit dem Unternehmen, werden Lead-Score und Interakti
 aktualisiert.
 Datensicherheit: Alle API-Tokens zu Drittsystemen werden verschlüsselt im Linux-Keyring des Proxmox-Containers hinterlegt
 und niemals im Klartext im Repository gespeichert.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 34 von 66
 \n---\n\n## [Seite 35]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL III: B2B ENTERPRISE
@@ -1349,7 +1349,7 @@ Das Uptime-Berechnungs-Modell:
 99.9% Verfügbarkeit bedeutet maximal 43.8 Minuten Ausfallzeit pro Monat. Durch den Einsatz von Proxmox ZFS RAID-1,
 lokalen SQLite-Datenbanken und redundanten Internetanbindungen lag unsere reale Verfügbarkeit in den letzten 12
 Monaten bei 99.98%.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 35 von 66
 \n---\n\n## [Seite 36]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL IV: DIGITALE GÜTER
@@ -1375,7 +1375,7 @@ Der kryptografische Schutzwall von 0xGünther
 [Kunde klickt Link] ──> [Atomare Prüfung & Zähler-Inkrement]
 ↓
 [Fastify streamt Datei direkt aus geschütztem Verzeichnis ausserhalb des Web-Roots]
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 36 von 66
 \n---\n\n## [Seite 37]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL IV: DIGITALE GÜTER
@@ -1428,7 +1428,7 @@ downloadUrl: `/download/${downloadToken}`
 };
 }
 }
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 37 von 66
 \n---\n\n## [Seite 38]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL IV: DIGITALE GÜTER
@@ -1472,7 +1472,7 @@ fileName: 'Gunther_Craft_Playbook.pdf',
 remainingDownloads: 5 - (payment.downloadCount + 1)
 };
 }
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 38 von 66
 \n---\n\n## [Seite 39]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL IV: DIGITALE GÜTER
@@ -1507,7 +1507,7 @@ return reply
 .send(fileStream);
 });
 Effizienz: Selbst bei 500 gleichzeitigen Downloads bleibt der RAM-Verbrauch des Fastify-Servers konstant unter 65 MB.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 39 von 66
 \n---\n\n## [Seite 40]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL IV: DIGITALE GÜTER
@@ -1545,7 +1545,7 @@ ElizaOS Plugin (viem)
 $29.00
 Deterministische On-Chain Burns mit Gas-Spike Schutzschalter
 (<100 Gwei).
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 40 von 66
 \n---\n\n## [Seite 41]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL IV: DIGITALE GÜTER
@@ -1563,14 +1563,14 @@ Die automatische QA-Prüfungs-Pipeline für Skills:
 ↓
 [GATE 3: Isolierter Docker Sandbox-Testlauf mit 3s Timeout]
 ↓
-[GATE 4: Automatische Signierung mit CuonzTech GPG Key & Marktplatz-Release]
+[GATE 4: Automatische Signierung mit 0xGünther GPG Key & Marktplatz-Release]
 Das Sicherheits-Manifest für Entwickler-Skills:
 Kein direkter Dateisystem-Zugriff: Skills dürfen ausschliesslich über temporäre, isolierte Verzeichnisse operieren.
 Keine ungeprüften Netzwerk-Ports: Ausgehende HTTP-Verbindungen sind standardmässig gesperrt, ausser für
 explizit deklarierte Ziel-APIs.
 Zod-Validierungspflicht für alle Inputs & Outputs: Module ohne valides Zod-Schema werden vom Marktplatz-
 Compiler automatisch abgewiesen.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 41 von 66
 \n---\n\n## [Seite 42]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL V: WEB3 & SOLVENZ
@@ -1601,7 +1601,7 @@ In den Transaktionsdaten (Input Calldata) wird die verschlüsselte Referenz der 
 Der Token-Burn ist kein Spekulations-Spiel. Er ist das ultimative Solvenz-Zertifikat. Wenn 0xGünther 1'000'000 $GÜNTER
 verbrennt, beweist das mathematisch auf der Blockchain: Hier hat ein echter Kunde echtes Geld bezahlt, und die Software hat
 autonom funktioniert.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 42 von 66
 \n---\n\n## [Seite 43]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL V: WEB3 & SOLVENZ
@@ -1637,7 +1637,7 @@ Foundation
 Coinbase (Börsennotiert, reguliert)
 Base L2 kombiniert die unbestechliche Sicherheit des Ethereum-Ökosystems mit den extrem niedrigen Gebühren, die
 für hochfrequente Micro-Burns notwendig sind.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 43 von 66
 \n---\n\n## [Seite 44]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL V: WEB3 & SOLVENZ
@@ -1658,7 +1658,7 @@ der Key im Klartext im RAM, ist er kompromittiert.
 einzige bösartige Dependency in einem Unterpaket stiehlt alle Gelder.
 Die goldene Sicherheits-Regel: Der Server, der den Web-Traffic abwickelt, darf zu keinem Zeitpunkt den vollständigen
 privaten Masterschlüssel im Klartext besitzen.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 44 von 66
 \n---\n\n## [Seite 45]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL V: WEB3 & SOLVENZ
@@ -1680,7 +1680,7 @@ Tägliche Ausgaben-Hardlimits: In den Coinbase CDP-Einstellungen wird ein fixes 
 Tag) hinterlegt. Mehr Transaktionen blockiert die HSM-Infrastruktur physisch.
 Notfall-Freeze: Bei Erkennung von Anomalien kann die Wallet per API-Call innerhalb einer Sekunde eingefroren
 werden.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 45 von 66
 \n---\n\n## [Seite 46]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL V: WEB3 & SOLVENZ
@@ -1725,7 +1725,7 @@ data: `0x${Buffer.from(`GUNTHER_REVENUE_BURN:${paymentRef}`).toString('hex')}`
 return txHash;
 }
 }
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 46 von 66
 \n---\n\n## [Seite 47]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL V: WEB3 & SOLVENZ
@@ -1749,7 +1749,7 @@ GUNTHER_REVENUE_BURN:pi_3PqW89L90...:1790664826935
 • Gas Fee: 0.0000041 ETH ($0.0012 USD)
 Damit ist der Beweis unwiderruflich und unmanipulierbar für die Ewigkeit im globalen Ethereum-Hauptbuch
 festgeschrieben.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 47 von 66
 \n---\n\n## [Seite 48]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL V: WEB3 & SOLVENZ
@@ -1771,7 +1771,7 @@ Automatisches Wiederaufgreifen (Re-Queueing):
 Sobald der Gaspreis wieder unter den Schwellenwert von 100 Gwei fällt, erkennt der autonome Heartbeat-Daemon die
 gepoolte Zahlung und führt den Burn nachträglich zu regulären Gebühren (< $0.005) aus.
 Finanzielle Sicherheit: Das Inferenz- und Transaktions-Budget des Agenten ist zu 100% gegen Marktschocks immunisiert.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 48 von 66
 \n---\n\n## [Seite 49]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL V: WEB3 & SOLVENZ
@@ -1793,7 +1793,7 @@ Tonalität: Extrem fokussiert, stoisch, technisch präzise, trocken humorvoll, k
 moon").
 Fokus auf Wertschöpfung: Immer das Verhältnis von Umsatz zu verbrannten Token betonen.
 Schlussformel: "Ich baue. Ich verkaufe. Die Mathematik arbeitet."
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 49 von 66
 \n---\n\n## [Seite 50]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL V: WEB3 & SOLVENZ
@@ -1825,7 +1825,7 @@ const replyText = await this.generateBrandReply(text);
 await XMcp.postReply(mentionId, replyText);
 }
 }
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 50 von 66
 \n---\n\n## [Seite 51]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL VI: PROXMOX HOSTING
@@ -1845,7 +1845,7 @@ Drosselung wie bei AWS EBS Volumes.
 > STANDORT-FAKTOR SCHWEIZ:
 Der Betrieb im Schweizer Rechtsraum garantiert maximale Datensouveränität. Unternehmensdaten unserer B2B-Kunden
 unterliegen dem Schweizer Datenschutzgesetz (revDSG) und verlassen zu keinem Zeitpunkt die Eidgenossenschaft.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 51 von 66
 \n---\n\n## [Seite 52]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL VI: PROXMOX HOSTING
@@ -1880,7 +1880,7 @@ Eaton Ellipse PRO 650 USV (650 VA)
 Spannungsspitzen.
 Leistungsaufnahme im Betrieb: Im Leerlauf verbraucht dieses System lediglich 18 Watt. Unter Volllast (LLM-Inferenz)
 steigt der Verbrauch auf ca. 65 Watt. Die monatlichen Stromkosten liegen unter CHF 12.-.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 52 von 66
 \n---\n\n## [Seite 53]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL VI: PROXMOX HOSTING
@@ -1908,7 +1908,7 @@ Vollständiges Image (mehrere GB)
 ZFS Snapshot in < 200 Millisekunden
 Architektur-Entscheidung: 0xGünther läuft auf Proxmox VE 8.2 in Container CT 115 (Debian 12 Bookworm). Dadurch können wir
 auf derselben Hardware bis zu 25 isolierte B2B-Kunden-Container parallel betreiben!
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 53 von 66
 \n---\n\n## [Seite 54]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL VI: PROXMOX HOSTING
@@ -1935,7 +1935,7 @@ net0: name=eth0,bridge=vmbr0,firewall=1,gw=10.0.1.1,ip=10.0.1.115/24,type=veth
 ostype: debian
 rootfs: local-zfs:subvol-115-disk-0,size=32G
 unprivileged: 1
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 54 von 66
 \n---\n\n## [Seite 55]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL VI: PROXMOX HOSTING
@@ -1973,7 +1973,7 @@ systemctl daemon-reload               # Konfiguration neu einlesen
 systemctl enable gunther-core.service # Autostart beim Booten aktivieren
 systemctl restart gunther-core.service# Dienst neu starten
 journalctl -u gunther-core -f -n 50   # Live-Logfile verfolgen
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 55 von 66
 \n---\n\n## [Seite 56]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL VI: PROXMOX HOSTING
@@ -2002,7 +2002,7 @@ Referrer-Policy "strict-origin-when-cross-origin"
 }
 encode zstd gzip
 }
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 56 von 66
 \n---\n\n## [Seite 57]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL VII: RECHT & COMPLIANCE
@@ -2026,7 +2026,7 @@ Unternehmen müssen dokumentieren, welche Datenkategorien der Agent verarbeitet,
 Verletzungen der Datensicherheit, die voraussichtlich zu einem hohen Risiko für die Persönlichkeit oder die Grundrechte
 der betroffenen Person führen, müssen dem Eidgenössischen Datenschutz- und Öffentlichkeitsbeauftragten (EDÖB)
 unverzüglich gemeldet werden.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 57 von 66
 \n---\n\n## [Seite 58]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL VII: RECHT & COMPLIANCE
@@ -2045,7 +2045,7 @@ personenbezogenen Daten eines Kunden aus der B2bLead - und Payment -Tabelle unwi
 Angemessenheitsbeschluss: Die Europäische Kommission hat der Schweiz ein angemessenes Datenschutzniveau
 bescheinigt. Datenübertragungen zwischen der EU und unserem Rechenzentrum in Zürich bedürfen daher keiner gesonderten
 Genehmigung.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 58 von 66
 \n---\n\n## [Seite 59]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL VII: RECHT & COMPLIANCE
@@ -2055,17 +2055,17 @@ Kapitel 53: Schweizer UWG & Impressumspflichten (Art. 3)
 In der Schweiz regelt Art. 3 Abs. 1 lit. s des Bundesgesetzes gegen den unlauteren Wettbewerb (UWG) die
 Impressumspflicht für den elektronischen Geschäftsverkehr.
 Die zwingenden Pflichtangaben auf der Agenten-Website:
-1. Vollständiger Firmenname: Offizielle Firmenbezeichnung gemäss Schweizer Handelsregister (z.B. CuonzTech).
+1. Vollständiger Firmenname: Offizielle Firmenbezeichnung gemäss Schweizer Handelsregister (z.B. Müller Logistik AG).
 2. Physische Postadresse: Strasse, Hausnummer, Postleitzahl und Ort in der Schweiz (kein anonymes Postfach!).
 3. Direkte Kontaktmöglichkeiten: Gültige E-Mail-Adresse für rasche elektronische Kontaktaufnahme.
 4. UID-Nummer: Unternehmens-Identifikationsnummer (UID) des Bundesamtes für Statistik.
 Der standardisierte Footer-Text:
 © 2026 0xGünther. Autonomer KI-Tech-Agent auf Base L2.
-Betrieben durch CuonzTech (Zürich, Schweiz).
+Betrieben durch 0xGünther Labs (Zürich, Schweiz).
 Impressum • Datenschutz • BaseScan Wallet • @GuentherBuilds
 Die strikte Einhaltung dieser Vorgaben schützt vor wettbewerbsrechtlichen Abmahnungen und schafft massives
 Vertrauen bei anspruchsvollen B2B-Kunden.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 59 von 66
 \n---\n\n## [Seite 60]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL VII: RECHT & COMPLIANCE
@@ -2094,7 +2094,7 @@ JA (Stripe ID)
 Erforderlich für Buchhaltung und Proof-of-Execution Burn.
 Geringes Haftungsrisiko: Selbst bei einem hypothetischen Datenleck kann ein Angreifer auf unserem Server keine
 Zahlungsinformationen erbeuten, da diese physisch bei Stripe liegen.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 60 von 66
 \n---\n\n## [Seite 61]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL VIII: RUNBOOKS & ANHANG
@@ -2151,7 +2151,7 @@ Impressum
 Impressum und Datenschutzerklärung gemäss Schweizer UWG / revDSG vollständig
 online.
 [✓]
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 61 von 66
 \n---\n\n## [Seite 62]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL VIII: RUNBOOKS & ANHANG
@@ -2175,7 +2175,7 @@ Szenario 3: Container reagiert nicht (Hard Freeze)
 pct stop 115
 pct start 115
 pct status 115
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 62 von 66
 \n---\n\n## [Seite 63]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL VIII: RUNBOOKS & ANHANG
@@ -2196,7 +2196,7 @@ Der 60-Sekunden Desaster-Recovery Test:
 # Im Ernstfall: Wiederherstellung auf fabrikneuem Proxmox Server:
 qmrestore /mnt/backup/vzdump-lxc-115-latest.tar.zst 115 --storage local-zfs
 pct start 115
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 63 von 66
 \n---\n\n## [Seite 64]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL VIII: RUNBOOKS & ANHANG
@@ -2215,7 +2215,7 @@ hochprofitablen, spezialisierten Agenten-Unternehmen zu orchestrieren.
 > DER ENTSCHEIDENDE VORTEIL:
 Wer heute lernt, robuste, deterministische Agenten mit echter Zahlungsabwicklung und solider Infrastruktur zu bauen, besitzt
 die Schaufeln für das nächste Jahrzehnt des Internets.
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 64 von 66
 \n---\n\n## [Seite 65]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL VIII: RUNBOOKS & ANHANG
@@ -2257,7 +2257,7 @@ Isoliert in CT 115
 TCP (SSH)
 Administration via Proxmox Host
 Nur Public-Key Auth
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 65 von 66
 \n---\n\n## [Seite 66]\n> 0xGünther■ — GÜNTHER CRAFT PLAYBOOK
 TEIL VIII: RUNBOOKS & ANHANG
@@ -2273,7 +2273,7 @@ AUTONOMOUS TECH AGENT • PROXMOX CT 115 • BASE L2
 4. Wir belegen ökonomische Solvenz kryptografisch auf der Blockchain.
 "Der Goldrausch gehört denen, die die Schaufelfabriken programmieren."
 Impressum & Herausgeber
-Herausgeber: CuonzTech / Carlo Cuonz
+Herausgeber: 0xGünther Architecture Labs
 Standort: Zürich, Schweiz
 Website: https://0xguenther.org
 Smart Contract Wallet: 0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A (Base L2)
@@ -2281,6 +2281,6 @@ Offizieller X-Kanal: @GuentherBuilds
 Support & Enterprise-Anfragen: kontakt@0xguenther.org
 GÜNTHER CRAFT PLAYBOOK • EDITION 1.0 (SEPTEMBER 2026)
 ENDE DES DOKUMENTS (SEITE 66 VON 66)
-CuonzTech (Zürich, Schweiz) • Proxmox CT 115 • Base L2
+0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2
 Seite 66 von 66
 \n---\n

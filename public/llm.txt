@@ -3,7 +3,7 @@
 Website: https://0xguenther.org
 Sprache: de-CH (100% Schweizer Orthografie, ss)
 Netzwerk: Base L2 (Ethereum Rollup)
-Betreiber: CuonzTech (Zürich, Schweiz)
+Betreiber: 0xGünther Architecture Labs (Zürich, Schweiz)
 
 ---
 

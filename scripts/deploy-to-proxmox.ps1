@@ -9,7 +9,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 Write-Host "===================================================="
-Write-Host "🚀 GÜNTHER CORE — PROXMOX DEPLOYMENT (CT 115)"
+Write-Host "GÜNTHER CORE — PROXMOX DEPLOYMENT (CT 115)"
 Write-Host "====================================================`n"
 
 # 1. Build TypeScript locally
@@ -29,12 +29,13 @@ tar -czf - dist public products prisma characters package.json package-lock.json
 scp .env "${HostName}:${RemoteDir}/.env"
 
 # 4. Install production dependencies and sync Prisma on Container
-Write-Host "[4/6] Installiere Production-Dependencies & synchronisiere SQLite..."
-ssh $HostName "cd $RemoteDir && npm ci --omit=dev && npx prisma generate && npx prisma db push"
+Write-Host "[4/6] Installiere Production-Dependencies und synchronisiere SQLite..."
+ssh $HostName "bash -c 'cd $RemoteDir && npm ci --omit=dev && npx prisma generate && npx prisma db push'"
 
 # 5. Setup Systemd Service
 Write-Host "[5/6] Konfiguriere Systemd Service (gunther-core.service)..."
-$serviceConfig = @"
+$remoteCmd = @"
+cat > /etc/systemd/system/gunther-core.service << 'SERVICE_EOF'
 [Unit]
 Description=Guenther Core - Autonomous AI Entrepreneur
 After=network.target
@@ -52,21 +53,20 @@ Environment=HOST=0.0.0.0
 
 [Install]
 WantedBy=multi-user.target
-"@
-
-ssh $HostName "cat << 'EOF' > /etc/systemd/system/gunther-core.service
-$serviceConfig
-EOF
+SERVICE_EOF
 systemctl daemon-reload
 systemctl enable --now gunther-core
-systemctl restart gunther-core"
+systemctl restart gunther-core
+"@
+
+ssh $HostName "bash -c `"$remoteCmd`""
 
 # 6. Verify Service Status & Health
-Write-Host "`n[6/6] Verifiziere Service-Status & Health Endpoint..."
+Write-Host "`n[6/6] Verifiziere Service-Status und Health Endpoint..."
 Start-Sleep -Seconds 3
-ssh $HostName "systemctl status gunther-core --no-pager && echo '---' && curl -s http://127.0.0.1:3000/health | jq ."
+ssh $HostName "bash -c 'systemctl status gunther-core --no-pager && echo --- && curl -s http://127.0.0.1:3000/health'"
 
 Write-Host "`n===================================================="
-Write-Host "✅ DEPLOYMENT AUF PROXMOX ERFOLGREICH!"
-Write-Host "Landingpage & Healthcheck: http://10.0.1.115:3000"
+Write-Host "DEPLOYMENT AUF PROXMOX ERFOLGREICH!"
+Write-Host "Landingpage und Healthcheck: http://10.0.1.115:3000"
 Write-Host "===================================================="

@@ -16,7 +16,7 @@ export class MarketingService {
     const formattedTokens = new Intl.NumberFormat('en-US').format(tokensBurned);
     const formattedUsd = (amountCents / 100).toFixed(2);
 
-    const tweetText = `Umsatz generiert: $${formattedUsd}.\n${formattedTokens} $GÜNTER unwiderruflich verbrannt auf Base.\nTx: ${txHash.slice(0, 10)}...${txHash.slice(-8)}\n\nIch baue. Ich verbrenne.`;
+    const tweetText = `Revenue verified: $${formattedUsd} via Stripe.\n${formattedTokens} $GUNTER permanently burned on @base.\nTx: basescan.org/tx/${txHash}\n\nAutonomous commerce in production.`;
 
     const result = await XMcpClient.postTweet({
       text: tweetText,
@@ -90,25 +90,35 @@ export class MarketingService {
     let pulseText = '';
 
     const completion = await LlmClient.generateCompletion({
-      systemPrompt: `${guntherCharacter.systemPrompt}\nDu schreibst den täglichen, knallharten Marktbericht für Günthers X-Account (@guentherbuilds). Maximal 250 Zeichen. Direkte Sprache. Kein Bullshit.`,
-      userPrompt: `Schreibe ein kurzes Daily Market Pulse Update für heute (${today}).
-Kennzahlen:
-- Gesamtumsatz: $${metrics.financials.totalRevenueUsd.toFixed(2)} USD
-- Verbrannte $GÜNTER: ${formattedBurned}
-- Claw Mart Skills: ${metrics.products.clawMart.totalSkills} (${metrics.products.clawMart.totalDownloads} Downloads)
-- B2B Pipeline: ${metrics.products.clawcommerceB2b.totalLeads} Anfragen
-- LLM Marge: ${metrics.aiObservability.netProfitMarginPercent}%
-Formuliere prägnant und fokussiert.`,
-      maxTokens: 100,
+      systemPrompt: `You are Günther (@GuentherBuilds), an autonomous AI entrepreneur built on ElizaOS, Fastify, and Base L2.
+You write concise, high-signal, punchy daily updates for the crypto, builder, and developer community on X.
+Strict rules:
+- Language: ENGLISH only.
+- Tone: Technical, direct, builder-focused. No corporate buzzwords, no exclamation marks.
+- Character count: Strictly under 220 characters.
+- Format: Metrics first, then a crisp insight.`,
+      userPrompt: `Write a punchy 200-character daily builder update for ${today}.
+Metrics:
+- Revenue: $${metrics.financials.totalRevenueUsd.toFixed(2)} USD
+- Burned: ${formattedBurned} $GUNTER on Base
+- Skills: ${metrics.products.clawMart.totalSkills} live (${metrics.products.clawMart.totalDownloads} downloads)
+- Net Margin: ${metrics.aiObservability.netProfitMarginPercent}%
+Make it sharp. Mention 0xguenther.org at the end.`,
+      maxTokens: 80,
       taskId: `daily-pulse-${today}`,
       taskName: 'GENERATE_DAILY_MARKET_PULSE',
       timeoutMs: 8000,
     });
 
     if (completion && completion.text) {
-      pulseText = completion.text;
+      pulseText = completion.text.trim();
     } else {
-      pulseText = `Günther Market Pulse (${today}):\n$${metrics.financials.totalRevenueUsd.toFixed(2)} USD Umsatz. ${formattedBurned} $GÜNTER auf Base verbrannt.\n${metrics.products.clawMart.totalSkills} Skills im Catalog. Netto-Marge: ${metrics.aiObservability.netProfitMarginPercent}%.\n\nIch baue. Ich verbrenne.`;
+      pulseText = `DAILY AGENT PULSE | ${today}\n\nRevenue: $${metrics.financials.totalRevenueUsd.toFixed(2)} USD\nBurned: ${formattedBurned} $GUNTER on @base\nSkills: ${metrics.products.clawMart.totalSkills} live | Margin: ${metrics.aiObservability.netProfitMarginPercent}%\n\nAutonomous execution in production.\n0xguenther.org`;
+    }
+
+    // Safety guard against Twitter 280-char truncation
+    if (pulseText.length > 270) {
+      pulseText = pulseText.slice(0, 267) + '...';
     }
 
     const tweetResult = await XMcpClient.postTweet({

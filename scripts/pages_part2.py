@@ -586,7 +586,7 @@ export class B2bService {
 <div class="diagram-box">
   [Zahlung $2,000 bestätigt]<br>
   ↓<br>
-  [GitHub API: Erstelle privates Repo: cuonztech-enterprise/kmu-${leadId}]<br>
+  [GitHub API: Erstelle privates Repo: 0xguenther-enterprise/kmu-${leadId}]<br>
   ↓<br>
   [Template Injection: Kopiere gehärtetes 0xGünther Core Template]<br>
   ↓<br>

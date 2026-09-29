@@ -37,6 +37,14 @@ export async function buildApp() {
     return reply.sendFile('products.html');
   });
 
+  // Alias for /en and /en/products
+  app.get('/en', async (_req, reply) => {
+    return reply.sendFile('en/index.html');
+  });
+  app.get('/en/products', async (_req, reply) => {
+    return reply.sendFile('en/products.html');
+  });
+
   // NOTE: Digital products in products/ are NEVER served statically.
   // Delivery occurs strictly through authenticated /download/:token endpoint.
 

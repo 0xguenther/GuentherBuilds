@@ -44,7 +44,7 @@ def get_pages_part1():
 
   <div style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid #1e293b; padding-top: 12px; font-family: 'JetBrains Mono', monospace; font-size: 7.2pt; color: #64748b;">
     <div>
-      © 2026 CuonzTech &amp; 0xGünther • Zürich, Schweiz<br>
+      © 2026 0xGünther Labs • Zürich, Schweiz<br>
       Alle Rechte vorbehalten. Autonomer Tech-Agent auf Base L2.
     </div>
     <div style="text-align: right; color: #00FF66;">
@@ -61,7 +61,7 @@ def get_pages_part1():
     # ==========================================
     content2 = """
 <p>
-  Dieses Kompendium ist das geistige Eigentum von CuonzTech (Zürich, Schweiz) und dokumentiert die technische Referenz-Architektur des autonomen KI-Agenten 0xGünther.
+  Dieses Kompendium ist das geistige Eigentum von 0xGünther Architecture Labs (Zürich, Schweiz) und dokumentiert die technische Referenz-Architektur des autonomen KI-Agenten 0xGünther.
 </p>
 
 <h2>Urheberrecht &amp; Lizenzbestimmungen</h2>
@@ -69,12 +69,12 @@ def get_pages_part1():
   Mit dem Erwerb dieser Publikation ("Günther Craft: Das 66-Seiten Playbook &amp; Produktions-Blaupause") erhält der Käufer eine nicht-exklusive, weltweite Lizenz zur Nutzung, Modifikation und Implementierung der enthaltenen Quellcodes und Architekturmuster in eigenen kommerziellen und privaten Softwareprojekten.
 </p>
 <p>
-  Die Weiterverbreitung, der Wiederverkauf oder die öffentliche Bereitstellung dieses PDF-Dokuments oder wesentlicher Auszüge daraus im Volltext ist ohne schriftliche Genehmigung von CuonzTech strikt untersagt.
+  Die Weiterverbreitung, der Wiederverkauf oder die öffentliche Bereitstellung dieses PDF-Dokuments oder wesentlicher Auszüge daraus im Volltext ist ohne schriftliche Genehmigung von 0xGünther Architecture Labs strikt untersagt.
 </p>
 
 <h2>Haftungsausschluss &amp; Risikohinweis</h2>
 <p>
-  Die Autoren und CuonzTech übernehmen keine Haftung für finanzielle Verluste, entgangene Gewinne oder technische Schäden, die durch den Betrieb autonomer Agenten, automatisierter Zahlungs-Pipelines (Stripe) oder Blockchain-Transaktionen (Base L2) entstehen.
+  Die Autoren und 0xGünther Architecture Labs übernehmen keine Haftung für finanzielle Verluste, entgangene Gewinne oder technische Schäden, die durch den Betrieb autonomer Agenten, automatisierter Zahlungs-Pipelines (Stripe) oder Blockchain-Transaktionen (Base L2) entstehen.
 </p>
 <div class="callout callout-warning">
   <strong>Sicherheitshinweis:</strong> Autonome Software interagiert mit realem Geld und unveränderlichen Blockchains. Führen Sie alle Tests zunächst in Testnetzen (Base Sepolia) und im Stripe-Sandbox-Modus durch, bevor Sie Agenten mit echten Geldern operieren lassen.
@@ -236,7 +236,7 @@ def get_pages_part1():
   Dieses Playbook ist die lückenlose Dokumentation dieser Architektur. Sie halten nicht nur Theorie in den Händen, sondern die exakte Blaupause eines Agenten, der heute, in dieser Sekunde, auf Container CT 115 in Zürich läuft, Umsätze verbucht und Token verbrennt.
 </p>
 <p style="text-align: right; margin-top: 15px; font-weight: 700;">
-  — Carlo Cuonz &amp; 0xGünther<br>
+  — 0xGünther Architecture Labs<br>
   <span style="font-size: 7.5pt; color: #64748b; font-family: 'JetBrains Mono', monospace;">Zürich, Schweiz • September 2026</span>
 </p>
 """

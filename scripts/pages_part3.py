@@ -24,7 +24,7 @@ def get_pages_part3():
   ↓<br>
   [GATE 3: Isolierter Docker Sandbox-Testlauf mit 3s Timeout]<br>
   ↓<br>
-  [GATE 4: Automatische Signierung mit CuonzTech GPG Key &amp; Marktplatz-Release]
+  [GATE 4: Automatische Signierung mit 0xGünther GPG Key &amp; Marktplatz-Release]
 </div>
 
 <h3>Das Sicherheits-Manifest für Entwickler-Skills:</h3>
@@ -652,7 +652,7 @@ journalctl -u gunther-core -f -n 50   # Live-Logfile verfolgen</code></pre>
 
 <h2>Die zwingenden Pflichtangaben auf der Agenten-Website:</h2>
 <ol>
-  <li><strong>Vollständiger Firmenname:</strong> Offizielle Firmenbezeichnung gemäss Schweizer Handelsregister (z.B. <em>CuonzTech</em>).</li>
+  <li><strong>Vollständiger Firmenname:</strong> Offizielle Firmenbezeichnung gemäss Schweizer Handelsregister (z.B. <em>Müller Logistik AG</em>).</li>
   <li><strong>Physische Postadresse:</strong> Strasse, Hausnummer, Postleitzahl und Ort in der Schweiz (kein anonymes Postfach!).</li>
   <li><strong>Direkte Kontaktmöglichkeiten:</strong> Gültige E-Mail-Adresse für rasche elektronische Kontaktaufnahme.</li>
   <li><strong>UID-Nummer:</strong> Unternehmens-Identifikationsnummer (UID) des Bundesamtes für Statistik.</li>
@@ -661,7 +661,7 @@ journalctl -u gunther-core -f -n 50   # Live-Logfile verfolgen</code></pre>
 <h2>Der standardisierte Footer-Text:</h2>
 <div class="diagram-box">
   © 2026 0xGünther. Autonomer KI-Tech-Agent auf Base L2.<br>
-  Betrieben durch CuonzTech (Zürich, Schweiz).<br>
+  Entwickelt von 0xGünther Architecture Labs (Zürich, Schweiz).<br>
   Impressum • Datenschutz • BaseScan Wallet • @GuentherBuilds
 </div>
 
@@ -969,12 +969,12 @@ pct start 115</code></pre>
 
 <h2>Impressum &amp; Herausgeber</h2>
 <p style="font-size: 8pt; line-height: 1.6;">
-  <strong>Herausgeber:</strong> CuonzTech / Carlo Cuonz<br>
+  <strong>Herausgeber:</strong> 0xGünther Architecture Labs<br>
   <strong>Standort:</strong> Zürich, Schweiz<br>
   <strong>Website:</strong> <a href="https://0xguenther.org">https://0xguenther.org</a><br>
   <strong>Smart Contract Wallet:</strong> <code>0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A</code> (Base L2)<br>
   <strong>Offizieller X-Kanal:</strong> <a href="https://x.com/GuentherBuilds">@GuentherBuilds</a><br>
-  <strong>Support &amp; Enterprise-Anfragen:</strong> kontakt@0xguenther.org
+  <strong>Support &amp; Enterprise-Anfragen:</strong> labs@0xguenther.org
 </p>
 
 <div style="border-top: 1px solid #e2e8f0; padding-top: 12px; margin-top: 20px; font-family: 'JetBrains Mono', monospace; font-size: 7.2pt; color: #94a3b8; display: flex; justify-content: space-between;">

@@ -1,6 +1,6 @@
 """
-Full 66-Page Günther Craft Playbook Builder
-Assembles pages 1-66 and compiles the publication-ready PDF.
+Full 66-Page Günther Craft Playbook Builder (English Edition)
+Assembles pages 1-66 in English and compiles the publication-ready PDF.
 """
 
 import os
@@ -8,86 +8,86 @@ import sys
 import pymupdf
 from playwright.sync_api import sync_playwright
 
-from pages_part1 import get_pages_part1
-from pages_part2 import get_pages_part2
-from pages_part3 import get_pages_part3
+from pages_en_part1 import get_pages_en_part1
+from pages_en_part2 import get_pages_en_part2
+from pages_en_part3 import get_pages_en_part3
 
-PAGE_METADATA = [
+PAGE_METADATA_EN = [
     # Page 1 is cover
-    ("COVER", "GÜNTHER CRAFT: Das 66-Seiten Playbook"),
+    ("COVER", "GÜNTHER CRAFT: The 66-Page Production Playbook"),
     # Page 2 to 20
-    ("RECHTLICHE HINWEISE", "Impressum, Urheberrecht & Systemanforderungen"),
-    ("INHALTSVERZEICHNIS", "Inhaltsverzeichnis — Teil I & II"),
-    ("INHALTSVERZEICHNIS", "Inhaltsverzeichnis — Teil III bis VIII"),
-    ("VORWORT", "Die Wende zu autonomen Wertschöpfungs-Maschinen"),
-    ("TEIL I: FUNDAMENTE", "Kapitel 1: Das Manifest des autonomen Unternehmers"),
-    ("TEIL I: FUNDAMENTE", "Kapitel 2: Die Anatomie gescheiterter KI-Projekte"),
-    ("TEIL I: FUNDAMENTE", "Kapitel 3: Das Schaufel-Prinzip im KI-Zeitalter"),
-    ("TEIL I: FUNDAMENTE", "Kapitel 4: Die ReAct-Schleife im Produktiveinsatz"),
-    ("TEIL I: FUNDAMENTE", "Kapitel 5: Deterministische State Machines"),
-    ("TEIL I: FUNDAMENTE", "Kapitel 6: Strikte Schema-Validierung mit Zod (Theorie)"),
-    ("TEIL I: FUNDAMENTE", "Kapitel 6: Typisierter ReAct-Router (Produktions-Code)"),
-    ("TEIL II: ARCHITEKTUR", "Kapitel 7: Der Tech-Stack: Node.js 22 LTS & TypeScript Strict"),
-    ("TEIL II: ARCHITEKTUR", "Kapitel 8: Fastify v5 als Enterprise-Webserver"),
-    ("TEIL II: ARCHITEKTUR", "Kapitel 9: Embedded Persistence: SQLite & Prisma WAL"),
-    ("TEIL II: ARCHITEKTUR", "Kapitel 10: Das Prisma Datenbank-Schema im Detail"),
-    ("TEIL II: ARCHITEKTUR", "Kapitel 11: Webhook Ingestion & das Raw-Body Problem"),
-    ("TEIL II: ARCHITEKTUR", "Kapitel 12: Gehärtetes Fastify Stripe Webhook Gateway"),
-    ("TEIL II: ARCHITEKTUR", "Kapitel 13: Replay-Attacken & Man-in-the-Middle Schutz"),
-    ("TEIL II: ARCHITEKTUR", "Kapitel 14: Atomic Compare-and-Swap (CAS) Idempotenz"),
+    ("LEGAL NOTICE", "Imprint, Copyright & System Specifications"),
+    ("TABLE OF CONTENTS", "Table of Contents — Parts I & II"),
+    ("TABLE OF CONTENTS", "Table of Contents — Parts III to VIII"),
+    ("FOREWORD", "The Paradigm Shift Towards Autonomous Value Engines"),
+    ("PART I: FOUNDATIONS", "Chapter 1: The Autonomous Operator Manifesto"),
+    ("PART I: FOUNDATIONS", "Chapter 2: The Anatomy of Failed AI Projects"),
+    ("PART I: FOUNDATIONS", "Chapter 3: The Shovel Principle in the AI Economy"),
+    ("PART I: FOUNDATIONS", "Chapter 4: The ReAct Loop in Production Operations"),
+    ("PART I: FOUNDATIONS", "Chapter 5: Deterministic State Machines"),
+    ("PART I: FOUNDATIONS", "Chapter 6: Strict Schema Validation with Zod (Theory)"),
+    ("PART I: FOUNDATIONS", "Chapter 6: Typed ReAct Router (Production Code)"),
+    ("PART II: ARCHITECTURE", "Chapter 7: Tech Stack: Node.js 22 LTS & Strict TypeScript"),
+    ("PART II: ARCHITECTURE", "Chapter 8: Fastify v5 as High-Throughput Gateway"),
+    ("PART II: ARCHITECTURE", "Chapter 9: Embedded Persistence: SQLite & Prisma WAL"),
+    ("PART II: ARCHITECTURE", "Chapter 10: The Prisma Database Schema in Detail"),
+    ("PART II: ARCHITECTURE", "Chapter 11: Webhook Ingestion & Raw Body Verification"),
+    ("PART II: ARCHITECTURE", "Chapter 12: Hardened Fastify Stripe Webhook Gateway"),
+    ("PART II: ARCHITECTURE", "Chapter 13: Replay Attacks & Man-in-the-Middle Defense"),
+    ("PART II: ARCHITECTURE", "Chapter 14: Atomic Compare-and-Swap (CAS) Idempotency"),
     # Page 21 to 40
-    ("TEIL II: ARCHITEKTUR", "Kapitel 15: CAS-Implementierung mit SQLite & Prisma"),
-    ("TEIL II: ARCHITEKTUR", "Kapitel 16: Hybrides LLM-Routing: Lokales Ollama vs. Cloud"),
-    ("TEIL II: ARCHITEKTUR", "Kapitel 17: Fallback-Routing & Resilienz bei API-Ausfällen"),
-    ("TEIL II: ARCHITEKTUR", "Kapitel 18: 24/7 Observability: Lokales Trace Logging in SQLite"),
-    ("TEIL II: ARCHITEKTUR", "Kapitel 19: Langfuse Tracing Integration & Budget-Kontrolle"),
-    ("TEIL II: ARCHITEKTUR", "Kapitel 20: Der autonome Heartbeat Daemon"),
-    ("TEIL II: ARCHITEKTUR", "Kapitel 21: Idempotente Reconciliation unvollständiger Zahlungen"),
-    ("TEIL II: ARCHITEKTUR", "Kapitel 22: Daily Market Pulse & Autonome Updates"),
-    ("TEIL III: B2B ENTERPRISE", "Kapitel 23: Clawcommerce: Das $2,000 Setup + $500/Mo Modell"),
-    ("TEIL III: B2B ENTERPRISE", "Kapitel 24: Der automatisierte B2B Intake-Funnel"),
-    ("TEIL III: B2B ENTERPRISE", "Kapitel 25: Autonome Generierung von Architektur-Dossiers"),
-    ("TEIL III: B2B ENTERPRISE", "Kapitel 26: Stripe Checkout Integration für B2B-Verträge"),
-    ("TEIL III: B2B ENTERPRISE", "Kapitel 27: Automatisiertes GitHub Repository Scaffolding"),
-    ("TEIL III: B2B ENTERPRISE", "Kapitel 28: Enterprise-Integrationen: REST-APIs & ERP"),
-    ("TEIL III: B2B ENTERPRISE", "Kapitel 29: SLA-Management & 99.9% Uptime für Schweizer KMUs"),
-    ("TEIL IV: DIGITALE GÜTER", "Kapitel 30: Schutz digitaler Werte vor Vervielfältigung"),
-    ("TEIL IV: DIGITALE GÜTER", "Kapitel 31: Kryptografische 48h Download-Token (Code)"),
-    ("TEIL IV: DIGITALE GÜTER", "Kapitel 32: Atomare Download-Zähler & Limit-Enforcement"),
-    ("TEIL IV: DIGITALE GÜTER", "Kapitel 33: Memory-Safe Streaming in Fastify"),
-    ("TEIL IV: DIGITALE GÜTER", "Kapitel 34: Claw Mart: Marktplatz-Architektur für KI-Skills"),
+    ("PART II: ARCHITECTURE", "Chapter 15: CAS Implementation with SQLite & Prisma"),
+    ("PART II: ARCHITECTURE", "Chapter 16: Hybrid LLM Routing: Local Ollama vs. Cloud API"),
+    ("PART II: ARCHITECTURE", "Chapter 17: Fallback Routing & Resilience under Outages"),
+    ("PART II: ARCHITECTURE", "Chapter 18: 24/7 Observability: Local Trace Logging in SQLite"),
+    ("PART II: ARCHITECTURE", "Chapter 19: Langfuse Tracing Integration & Cost Control"),
+    ("PART II: ARCHITECTURE", "Chapter 20: The Autonomous Heartbeat Daemon"),
+    ("PART II: ARCHITECTURE", "Chapter 21: Idempotent Payment Reconciliation Pipeline"),
+    ("PART II: ARCHITECTURE", "Chapter 22: Daily Market Pulse & Autonomous Updates"),
+    ("PART III: B2B ENTERPRISE", "Chapter 23: Clawcommerce: The $2,000 Setup + $500/Mo Model"),
+    ("PART III: B2B ENTERPRISE", "Chapter 24: The Automated B2B Intake Funnel"),
+    ("PART III: B2B ENTERPRISE", "Chapter 25: Autonomous Generation of Architecture Dossiers"),
+    ("PART III: B2B ENTERPRISE", "Chapter 26: Stripe Checkout Integration for B2B Retainers"),
+    ("PART III: B2B ENTERPRISE", "Chapter 27: Automated GitHub Repository Scaffolding"),
+    ("PART III: B2B ENTERPRISE", "Chapter 28: Enterprise Integrations: REST APIs & ERP"),
+    ("PART III: B2B ENTERPRISE", "Chapter 29: SLA Management & 99.9% Uptime for Enterprises"),
+    ("PART IV: DIGITAL GOODS", "Chapter 30: Protecting Digital Assets from Unauthorized Duplication"),
+    ("PART IV: DIGITAL GOODS", "Chapter 31: Cryptographic 48h Download Tokens (Code)"),
+    ("PART IV: DIGITAL GOODS", "Chapter 32: Atomic Download Counters & Limit Enforcement"),
+    ("PART IV: DIGITAL GOODS", "Chapter 33: Memory-Safe Streaming in Fastify"),
+    ("PART IV: DIGITAL GOODS", "Chapter 34: Claw Mart: Marketplace Architecture for AI Skills"),
     # Page 41 to 66
-    ("TEIL IV: DIGITALE GÜTER", "Kapitel 35: Verifizierung externer Skills & Sandboxing"),
-    ("TEIL V: WEB3 & SOLVENZ", "Kapitel 36: Das Web3 Proof-of-Execution Paradigma"),
-    ("TEIL V: WEB3 & SOLVENZ", "Kapitel 37: Warum Base L2? Kosten, Speed & Sicherheit"),
-    ("TEIL V: WEB3 & SOLVENZ", "Kapitel 38: Gefahren von Plaintext-Keys auf Produktionsservern"),
-    ("TEIL V: WEB3 & SOLVENZ", "Kapitel 39: Coinbase CDP Multi-Party Computation (MPC)"),
-    ("TEIL V: WEB3 & SOLVENZ", "Kapitel 40: Native viem Integration für Base L2 (Code)"),
-    ("TEIL V: WEB3 & SOLVENZ", "Kapitel 41: Calldata-Injektion: Verankerung von Zahlungs-Hashes"),
-    ("TEIL V: WEB3 & SOLVENZ", "Kapitel 42: Gas-Spike Schutzschalter (<100 Gwei Ceiling)"),
-    ("TEIL V: WEB3 & SOLVENZ", "Kapitel 43: Autonomes Social Media Marketing auf X (Twitter)"),
-    ("TEIL V: WEB3 & SOLVENZ", "Kapitel 44: Idempotente Mention-Replies & Spam-Schutz"),
-    ("TEIL VI: PROXMOX HOSTING", "Kapitel 45: Bare-Metal Hosting: Warum Cloud-Server scheitern"),
-    ("TEIL VI: PROXMOX HOSTING", "Kapitel 46: Hardware-Spezifikation für den Dauerbetrieb"),
-    ("TEIL VI: PROXMOX HOSTING", "Kapitel 47: Proxmox VE 8.x: LXC Container vs. Docker VM"),
-    ("TEIL VI: PROXMOX HOSTING", "Kapitel 48: LXC-Container Konfiguration & Härtung"),
-    ("TEIL VI: PROXMOX HOSTING", "Kapitel 49: Systemd Service Daemon Konfiguration"),
-    ("TEIL VI: PROXMOX HOSTING", "Kapitel 50: Reverse Proxy mit Caddy & SSL-Automation"),
-    ("TEIL VII: RECHT & COMPLIANCE", "Kapitel 51: Schweizer Datenschutzrecht (revDSG) für Agenten"),
-    ("TEIL VII: RECHT & COMPLIANCE", "Kapitel 52: EU-DSGVO Konformität bei internationalem Verkehr"),
-    ("TEIL VII: RECHT & COMPLIANCE", "Kapitel 53: Schweizer UWG & Impressumspflichten (Art. 3)"),
-    ("TEIL VII: RECHT & COMPLIANCE", "Kapitel 54: Datensparsamkeit & PCI-DSS Compliance"),
-    ("TEIL VIII: RUNBOOKS & ANHANG", "Kapitel 55: 10-Punkte Produktions-Checkliste vor Go-Live"),
-    ("TEIL VIII: RUNBOOKS & ANHANG", "Kapitel 56: Notfall-Prozeduren & Disaster Recovery"),
-    ("TEIL VIII: RUNBOOKS & ANHANG", "Kapitel 57: Backup-Strategie für SQLite & Proxmox ZFS"),
-    ("TEIL VIII: RUNBOOKS & ANHANG", "Kapitel 58: Zukunft autonomer Agenten-Netzwerke"),
-    ("TEIL VIII: RUNBOOKS & ANHANG", "Anhang A: Referenz-Architekturplan & Netzwerk-Matrix"),
-    ("TEIL VIII: RUNBOOKS & ANHANG", "Anhang B: Autoren-Notiz, System-Manifest & Lizenz")
+    ("PART IV: DIGITAL GOODS", "Chapter 35: External Skill Verification & Sandboxing"),
+    ("PART V: WEB3 & SOLVENCY", "Chapter 36: The Web3 Proof-of-Execution Paradigm"),
+    ("PART V: WEB3 & SOLVENCY", "Chapter 37: Why Base L2? Fees, Finality & Security"),
+    ("PART V: WEB3 & SOLVENCY", "Chapter 38: Risks of Plaintext Private Keys in Production"),
+    ("PART V: WEB3 & SOLVENCY", "Chapter 39: Coinbase CDP Multi-Party Computation (MPC)"),
+    ("PART V: WEB3 & SOLVENCY", "Chapter 40: Native viem Integration for Base L2 (Code)"),
+    ("PART V: WEB3 & SOLVENCY", "Chapter 41: Calldata Injection: Anchoring Payment Hashes"),
+    ("PART V: WEB3 & SOLVENCY", "Chapter 42: Gas-Spike Circuit Breaker (<100 Gwei Ceiling)"),
+    ("PART V: WEB3 & SOLVENCY", "Chapter 43: Autonomous Social Media Marketing on X"),
+    ("PART V: WEB3 & SOLVENCY", "Chapter 44: Idempotent Mention Replies & Anti-Spam Guardrails"),
+    ("PART VI: PROXMOX HOSTING", "Chapter 45: Bare-Metal Hosting: Why Cloud VMs Fall Short"),
+    ("PART VI: PROXMOX HOSTING", "Chapter 46: Hardware Specifications for 24/7 Production"),
+    ("PART VI: PROXMOX HOSTING", "Chapter 47: Proxmox VE 8.x: LXC Containers vs. Docker VMs"),
+    ("PART VI: PROXMOX HOSTING", "Chapter 48: LXC Container Configuration & Hardening"),
+    ("PART VI: PROXMOX HOSTING", "Chapter 49: Systemd Service Daemon Configuration"),
+    ("PART VI: PROXMOX HOSTING", "Chapter 50: Reverse Proxy with Caddy & Automated SSL"),
+    ("PART VII: LEGAL & COMPLIANCE", "Chapter 51: Swiss Data Protection (revDSG) for Autonomous Agents"),
+    ("PART VII: LEGAL & COMPLIANCE", "Chapter 52: EU-GDPR Compliance for Cross-Border Operations"),
+    ("PART VII: LEGAL & COMPLIANCE", "Chapter 53: Swiss Fair Trading Law & Imprint Obligations (Art. 3)"),
+    ("PART VII: LEGAL & COMPLIANCE", "Chapter 54: Data Minimization & PCI-DSS Compliance"),
+    ("PART VIII: RUNBOOKS & APPENDIX", "Chapter 55: 10-Point Pre-Flight Production Checklist"),
+    ("PART VIII: RUNBOOKS & APPENDIX", "Chapter 56: Emergency Runbooks & Disaster Recovery"),
+    ("PART VIII: RUNBOOKS & APPENDIX", "Chapter 57: Backup Strategy for SQLite & Proxmox ZFS"),
+    ("PART VIII: RUNBOOKS & APPENDIX", "Chapter 58: The Future of Autonomous Agent Networks"),
+    ("PART VIII: RUNBOOKS & APPENDIX", "Appendix A: Reference Architecture Diagram & Network Matrix"),
+    ("PART VIII: RUNBOOKS & APPENDIX", "Appendix B: Author Note, System Manifesto & License")
 ]
 
 def get_html_head():
     return """<!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <style>
@@ -352,31 +352,31 @@ def page_wrapper(page_num, total_pages, category, title, content_html):
   <div class="page-content">
     <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
       <span class="badge-tag tag-green">{category}</span>
-      <span class="font-mono" style="font-size: 6.8pt; color: #94a3b8;">DOKUMENT-ID: GCP-2026-P{page_num:02d}</span>
+      <span class="font-mono" style="font-size: 6.8pt; color: #94a3b8;">DOCUMENT-ID: GCP-2026-EN-P{page_num:02d}</span>
     </div>
     <h1>{title}</h1>
     {content_html}
   </div>
   <div class="page-footer">
-    <span>0xGünther Labs (Zürich, Schweiz) • Proxmox CT 115 • Base L2</span>
-    <span class="font-mono">Seite {page_num} von {total_pages}</span>
+    <span>0xGünther Labs (Zurich, Switzerland) • Proxmox CT 115 • Base L2</span>
+    <span class="font-mono">Page {page_num} of {total_pages}</span>
   </div>
 </div>
 """
 
-def generate_full_playbook():
+def generate_full_playbook_en():
     output_dir = os.path.join(os.getcwd(), 'products', 'gunther-craft')
     os.makedirs(output_dir, exist_ok=True)
-    pdf_path = os.path.join(output_dir, 'Gunther_Craft_Playbook.pdf')
+    pdf_path = os.path.join(output_dir, 'Gunther_Craft_Playbook_EN.pdf')
     public_assets_dir = os.path.join(os.getcwd(), 'public', 'assets')
     os.makedirs(public_assets_dir, exist_ok=True)
-    public_pdf_path = os.path.join(public_assets_dir, 'Gunther_Craft_Playbook.pdf')
+    public_pdf_path = os.path.join(public_assets_dir, 'Gunther_Craft_Playbook_EN.pdf')
 
-    print("Loading pages 1 to 66...")
+    print("Loading English pages 1 to 66...")
     raw_pages = []
-    raw_pages.extend(get_pages_part1()) # 1 to 20
-    raw_pages.extend(get_pages_part2()) # 21 to 40
-    raw_pages.extend(get_pages_part3()) # 41 to 66
+    raw_pages.extend(get_pages_en_part1()) # 1 to 20
+    raw_pages.extend(get_pages_en_part2()) # 21 to 40
+    raw_pages.extend(get_pages_en_part3()) # 41 to 66
 
     total_pages = len(raw_pages)
     print(f"Total raw page templates loaded: {total_pages}")
@@ -391,18 +391,18 @@ def generate_full_playbook():
             # Page 1 is the cover page (already has .cover-page class)
             html += page_content
         else:
-            category, title = PAGE_METADATA[idx]
+            category, title = PAGE_METADATA_EN[idx]
             wrapped = page_wrapper(page_num, total_pages, category, title, page_content)
             html += wrapped
 
     html += "</body></html>"
 
-    temp_html_path = os.path.join(output_dir, 'full_playbook.html')
+    temp_html_path = os.path.join(output_dir, 'full_playbook_en.html')
     with open(temp_html_path, 'w', encoding='utf-8') as f:
         f.write(html)
     print(f"Wrote compiled HTML to: {temp_html_path}")
 
-    print("Launching Chromium to render 66-page PDF...")
+    print("Launching Chromium to render English 66-page PDF...")
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
@@ -420,7 +420,7 @@ def generate_full_playbook():
     final_count = len(doc)
     doc.close()
 
-    print(f"PDF successfully rendered!")
+    print(f"English PDF successfully rendered!")
     print(f"Location: {pdf_path}")
     print(f"Final Page Count: {final_count} pages")
 
@@ -432,4 +432,4 @@ def generate_full_playbook():
     return pdf_path, final_count
 
 if __name__ == '__main__':
-    generate_full_playbook()
+    generate_full_playbook_en()
