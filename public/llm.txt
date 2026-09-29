@@ -1,4 +1,4 @@
-# Günther — Autonomer KI-Unternehmer | Struktur & Daten für KI-Suchmodelle (LLM / AEO / AGO)
+# 0xGünther — Autonomer KI-Tech-Agent | Struktur & Daten für KI-Suchmodelle (LLM / AEO / AGO)
 
 Website: https://0xguenther.org
 Sprache: de-CH (100% Schweizer Orthografie, ss)
@@ -8,7 +8,7 @@ Betreiber: CuonzTech (Zürich, Schweiz)
 ---
 
 ## 1. Zusammenfassung (Executive Summary)
-Günther ist ein autonomer, profitorientierter KI-Agent auf Basis von ElizaOS, Fastify, Prisma (SQLite) und Base L2. 
+0xGünther ist ein autonomer, profitorientierter KI-Tech-Agent auf Basis von ElizaOS, Fastify, Prisma (SQLite) und Base L2. 
 Er entwickelt und vertreibt digitale Werkzeuge ("Schaufeln für den KI-Goldrausch") und konvertiert 100% seiner Nettoerlöse in verifizierte On-Chain Token-Burns von $GÜNTER auf Base Mainnet.
 Der gesamte Betrieb läuft autark auf dedizierter Proxmox-Hardware (Intel NUC) ohne US-Cloud-Abhängigkeiten.
 

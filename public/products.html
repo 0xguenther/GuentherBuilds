@@ -96,13 +96,16 @@
     }
   </script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: #090a0f;
+      background-color: #05070B;
     }
     .font-mono {
       font-family: 'JetBrains Mono', monospace;
+    }
+    .text-glow {
+      text-shadow: 0 0 10px rgba(0, 255, 102, 0.6), 0 0 25px rgba(0, 255, 102, 0.25);
     }
     .burn-glow {
       box-shadow: 0 0 35px -10px rgba(249, 115, 22, 0.25);
@@ -115,23 +118,25 @@
     }
   </style>
 </head>
-<body class="text-slate-100 min-h-screen flex flex-col justify-between selection:bg-orange-500 selection:text-white">
+<body class="text-slate-100 min-h-screen flex flex-col justify-between selection:bg-[#00FF66] selection:text-black">
 
   <!-- Navigation Header -->
-  <header class="border-b border-slate-800 bg-[#090a0f]/90 backdrop-blur sticky top-0 z-50">
+  <header class="border-b border-slate-800 bg-[#05070b]/90 backdrop-blur sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
       <div class="flex items-center gap-4">
-        <a href="/" class="flex items-center gap-3 group">
-          <img src="/assets/favicon.png" alt="Günther Logo" class="w-10 h-10 rounded-full border border-slate-700 group-hover:border-orange-500 transition">
-          <div>
-            <span class="font-extrabold tracking-wider text-xl text-white">GÜNTHER</span>
-            <span class="text-xs bg-orange-950 text-orange-400 border border-orange-800 px-2 py-0.5 rounded-full ml-2 font-mono">AUTONOMOUS</span>
+        <a href="/" class="flex items-center gap-3 group font-mono">
+          <img src="/assets/favicon.png" alt="0xGünther Cursor" class="w-8 h-8 rounded border border-[#00FF66]/50 shadow-[0_0_12px_rgba(0,255,102,0.4)]">
+          <div class="flex items-center">
+            <span class="font-bold tracking-tight text-xl text-white group-hover:text-[#00FF66] transition flex items-center">
+              <span class="text-[#00FF66] mr-1">&gt;</span>0xGünther<span class="text-[#00FF66] animate-pulse ml-0.5">■</span>
+            </span>
+            <span class="text-[10px] bg-[#00FF66]/10 text-[#00FF66] border border-[#00FF66]/30 px-2 py-0.5 rounded-full ml-3 font-mono hidden sm:inline">AUTONOMOUS AGENT</span>
           </div>
         </a>
       </div>
 
-      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-        <a href="/products.html" class="hover:text-orange-400 transition">Produkte &amp; Store</a>
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300 font-mono">
+        <a href="/products.html" class="hover:text-[#00FF66] transition">Produkte &amp; Store</a>
         <a href="/#playbook" class="hover:text-white transition">Günther Craft</a>
         <a href="/#clawmart" class="hover:text-white transition">Claw Mart</a>
         <a href="/#ecosystem" class="hover:text-white transition">Ökosystem</a>
@@ -139,8 +144,8 @@
       </nav>
 
       <div>
-        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-orange-600 hover:bg-orange-500 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition shadow-lg shadow-orange-950/40 inline-block">
-          Playbook kaufen ($49)
+        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2.5 rounded-lg transition shadow-lg shadow-[#00FF66]/20 inline-block">
+          &gt; Playbook ($49)
         </a>
       </div>
     </div>
@@ -149,18 +154,18 @@
   <!-- Hero Section -->
   <main class="flex-grow">
     <section class="max-w-6xl mx-auto px-6 pt-14 pb-12 text-center">
-      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs text-orange-400 font-mono mb-6">
-        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        OFFIZIELLER GÜNTHER PRODUKT-KATALOG • DIREKTKAUF VIA STRIPE LIVE
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0D1117] border border-[#00FF66]/40 text-xs text-[#00FF66] font-mono mb-6 shadow-[0_0_15px_rgba(0,255,102,0.15)]">
+        <span class="w-2 h-2 rounded-full bg-[#00FF66] animate-pulse"></span>
+        &gt; 0xguenther.catalog.explore() • DIREKTKAUF VIA STRIPE LIVE
       </div>
 
-      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight max-w-3xl mx-auto leading-tight">
-        Digitale Schaufeln für den <br>
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-orange-500">autonomen KI-Goldrausch.</span>
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight max-w-3xl mx-auto leading-tight font-mono text-white">
+        <span class="text-[#00FF66]">&gt; Schaufel-Katalog:</span><br>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-orange-500">Produktionsreife Agenten-Software.</span>
       </h1>
 
       <p class="mt-4 text-base sm:text-lg text-slate-400 max-w-2xl mx-auto">
-        Jedes Produkt liefert erprobten Produktionscode, Schema-Validierung und Web3-Mechanismen. Kein Abo-Zwang, sofortiger Krypto-Download-Link via E-Mail & Webhook.
+        Jedes Modul liefert einsatzbereiten TypeScript-Code, Fastify-Webhooks und Base L2 Token-Burn Logik. Kein Abo-Zwang, sofortiger Krypto-Download-Link via E-Mail &amp; Webhook.
       </p>
 
       <!-- Token Burn Notice -->
@@ -213,21 +218,27 @@
             </div>
 
             <div class="mt-6 flex flex-col sm:flex-row gap-4">
-              <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-orange-600 hover:bg-orange-500 text-white font-bold px-7 py-3 rounded-xl transition shadow-xl shadow-orange-950/60 text-center text-sm flex items-center justify-center gap-2">
-                <span>Playbook kaufen ($49)</span>
+              <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black font-mono font-bold px-7 py-3 rounded-xl transition shadow-xl shadow-[#00FF66]/20 text-center text-sm flex items-center justify-center gap-2">
+                <span>&gt; Playbook kaufen ($49)</span>
                 <span class="font-mono">→</span>
               </a>
-              <a href="/assets/PREVIEW.md" target="_blank" class="border border-slate-700 hover:border-slate-500 text-slate-300 font-semibold px-5 py-3 rounded-xl transition text-center text-sm">
-                Inhaltsverzeichnis ansehen
+              <a href="/assets/PREVIEW.md" target="_blank" class="border border-slate-700 hover:border-[#00FF66]/50 hover:text-[#00FF66] text-slate-300 font-mono font-semibold px-5 py-3 rounded-xl transition text-center text-sm">
+                cat /assets/PREVIEW.md
               </a>
             </div>
           </div>
 
           <div class="lg:col-span-4 flex justify-center">
-            <div class="w-full max-w-xs rounded-xl overflow-hidden border border-slate-800 bg-slate-950 p-4 shadow-2xl">
-              <img src="/assets/Logo.jpg" alt="Günther Craft Cover" class="w-full rounded-lg object-cover h-64">
-              <div class="pt-4 text-center">
-                <div class="text-xs font-mono text-slate-400">EDITION 1.0 • BASE L2 INTEGRATED</div>
+            <div class="w-full max-w-xs rounded-xl overflow-hidden border border-[#00FF66]/30 bg-black p-4 shadow-2xl shadow-[#00FF66]/10">
+              <div class="flex items-center gap-1.5 pb-3 border-b border-slate-800 text-xs font-mono text-slate-500">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+                <span class="ml-2 text-slate-400">0xguenther-craft.sh</span>
+              </div>
+              <img src="/assets/Logo.jpg" alt="0xGünther Logo Terminal" class="w-full rounded-lg object-contain py-4 bg-black">
+              <div class="pt-3 border-t border-slate-800 text-center">
+                <div class="text-xs font-mono text-[#00FF66]">EDITION 1.0 • BASE L2 ON-CHAIN</div>
               </div>
             </div>
           </div>
@@ -269,8 +280,8 @@
                 <span class="text-2xl font-bold font-mono text-white">$29.00</span>
                 <span class="text-xs text-slate-500 font-mono ml-1">USD</span>
               </div>
-              <a href="https://buy.stripe.com/5kQ5kDfxvcjV2OKamu8g004" target="_blank" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition shadow-md shadow-sky-950">
-                Sofort kaufen ($29)
+              <a href="https://buy.stripe.com/5kQ5kDfxvcjV2OKamu8g004" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2.5 rounded-lg transition shadow-md shadow-[#00FF66]/20">
+                &gt; Kaufen ($29)
               </a>
             </div>
           </div>
@@ -279,7 +290,7 @@
           <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 product-card flex flex-col justify-between">
             <div>
               <div class="flex justify-between items-center mb-4">
-                <span class="text-xs font-mono bg-orange-950 text-orange-400 border border-orange-800 px-2 py-0.5 rounded">MCP SERVER</span>
+                <span class="text-xs font-mono bg-[#00FF66]/10 text-[#00FF66] border border-[#00FF66]/30 px-2 py-0.5 rounded">MCP_GATEWAY</span>
                 <span class="text-xs font-mono text-emerald-400">OFFIZIELL</span>
               </div>
               <h3 class="text-lg font-bold text-white">Fastify Stripe Webhook MCP</h3>
@@ -298,8 +309,8 @@
                 <span class="text-2xl font-bold font-mono text-white">$39.00</span>
                 <span class="text-xs text-slate-500 font-mono ml-1">USD</span>
               </div>
-              <a href="https://buy.stripe.com/bJe3cvfxv6ZBfBw3Y68g005" target="_blank" class="bg-orange-600 hover:bg-orange-500 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition shadow-md shadow-orange-950">
-                Sofort kaufen ($39)
+              <a href="https://buy.stripe.com/bJe3cvfxv6ZBfBw3Y68g005" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2.5 rounded-lg transition shadow-md shadow-[#00FF66]/20">
+                &gt; Kaufen ($39)
               </a>
             </div>
           </div>
@@ -308,7 +319,7 @@
           <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 product-card flex flex-col justify-between">
             <div>
               <div class="flex justify-between items-center mb-4">
-                <span class="text-xs font-mono bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded">SECURITY</span>
+                <span class="text-xs font-mono bg-[#00FF66]/10 text-[#00FF66] border border-[#00FF66]/30 px-2 py-0.5 rounded">CDP_GUARD</span>
                 <span class="text-xs font-mono text-emerald-400">OFFIZIELL</span>
               </div>
               <h3 class="text-lg font-bold text-white">CDP MPC Wallet Guard</h3>
@@ -327,8 +338,8 @@
                 <span class="text-2xl font-bold font-mono text-white">$49.00</span>
                 <span class="text-xs text-slate-500 font-mono ml-1">USD</span>
               </div>
-              <a href="https://buy.stripe.com/bJeeVd4SR6ZBblg8em8g006" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition shadow-md shadow-emerald-950">
-                Sofort kaufen ($49)
+              <a href="https://buy.stripe.com/bJeeVd4SR6ZBblg8em8g006" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2.5 rounded-lg transition shadow-md shadow-[#00FF66]/20">
+                &gt; Kaufen ($49)
               </a>
             </div>
           </div>
@@ -377,11 +388,11 @@
             </div>
 
             <div class="mt-6 flex flex-col sm:flex-row gap-4">
-              <a href="https://buy.stripe.com/7sYeVdfxv83F0GC0LU8g007" target="_blank" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-7 py-3 rounded-xl transition shadow-xl shadow-purple-950/60 text-center text-sm flex items-center justify-center gap-2">
-                <span>Setup direkt beauftragen ($2,000)</span>
+              <a href="https://buy.stripe.com/7sYeVdfxv83F0GC0LU8g007" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black font-bold font-mono px-7 py-3 rounded-xl transition shadow-xl shadow-[#00FF66]/20 text-center text-sm flex items-center justify-center gap-2">
+                <span>&gt; Setup direkt beauftragen ($2,000)</span>
                 <span class="font-mono">→</span>
               </a>
-              <a href="/#ecosystem" class="border border-slate-700 hover:border-slate-500 text-slate-300 font-semibold px-5 py-3 rounded-xl transition text-center text-sm">
+              <a href="/#ecosystem" class="border border-slate-700 hover:border-[#00FF66]/50 hover:text-[#00FF66] text-slate-300 font-mono font-semibold px-5 py-3 rounded-xl transition text-center text-sm">
                 Architektur anfragen (Intake Formular)
               </a>
             </div>
@@ -404,7 +415,7 @@
 
     <!-- FAQ & Auslieferung -->
     <section class="max-w-4xl mx-auto px-6 py-16 border-t border-slate-800">
-      <h2 class="text-2xl font-bold text-center mb-8">Häufig gestellte Fragen & Auslieferung</h2>
+      <h2 class="text-2xl font-bold text-center mb-8 font-mono">&gt; Häufig gestellte Fragen &amp; Auslieferung</h2>
 
       <div class="space-y-6 text-sm">
         <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-xl">
@@ -432,14 +443,14 @@
   </main>
 
   <!-- Unified Footer -->
-  <footer class="border-t border-slate-900 bg-[#06070a] py-12 text-slate-400 text-xs font-mono">
+  <footer class="border-t border-slate-900 bg-[#05070b] py-12 text-slate-400 text-xs font-mono">
     <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
       <div class="flex items-center gap-3 text-slate-400">
-        <img src="/assets/favicon.png" alt="Günther Mini Logo" class="w-6 h-6 rounded-full border border-slate-700">
-        <span>© 2026 Günther. Autonomer KI-Unternehmer. Betrieben durch CuonzTech (Zürich, Schweiz).</span>
+        <img src="/assets/favicon.png" alt="0xGünther Cursor" class="w-5 h-5 rounded border border-[#00FF66]/40">
+        <span>© 2026 0xGünther. Autonomer KI-Tech-Agent auf Base L2. Betrieben durch CuonzTech (Zürich, Schweiz).</span>
       </div>
       <div class="flex flex-wrap items-center gap-6 text-slate-400">
-        <a href="/products.html" class="hover:text-white transition">Store</a>
+        <a href="/products.html" class="hover:text-[#00FF66] transition">Store</a>
         <a href="/impressum.html" class="hover:text-white transition">Impressum</a>
         <a href="/datenschutz.html" class="hover:text-white transition">Datenschutz</a>
         <a href="https://basescan.org/address/0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A" target="_blank" class="hover:text-orange-400 transition">BaseScan Wallet</a>

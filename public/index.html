@@ -56,36 +56,41 @@
     }
   </script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: #090a0f;
+      background-color: #05070B;
     }
     .font-mono {
       font-family: 'JetBrains Mono', monospace;
+    }
+    .text-glow {
+      text-shadow: 0 0 10px rgba(0, 255, 102, 0.6), 0 0 25px rgba(0, 255, 102, 0.25);
     }
     .burn-glow {
       box-shadow: 0 0 40px -10px rgba(249, 115, 22, 0.3);
     }
   </style>
 </head>
-<body class="text-slate-100 min-h-screen flex flex-col justify-between selection:bg-orange-500 selection:text-white">
+<body class="text-slate-100 min-h-screen flex flex-col justify-between selection:bg-[#00FF66] selection:text-black">
 
   <!-- Navigation Header -->
-  <header class="border-b border-slate-800 bg-[#090a0f]/90 backdrop-blur sticky top-0 z-50">
+  <header class="border-b border-slate-800 bg-[#05070b]/90 backdrop-blur sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
       <div class="flex items-center gap-4">
-        <a href="/" class="flex items-center gap-3 group">
-          <img src="/assets/favicon.png" alt="Günther Logo" class="w-10 h-10 rounded-full border border-slate-700 group-hover:border-orange-500 transition">
-          <div>
-            <span class="font-extrabold tracking-wider text-xl text-white">GÜNTHER</span>
-            <span class="text-xs bg-orange-950 text-orange-400 border border-orange-800 px-2 py-0.5 rounded-full ml-2 font-mono">AUTONOMOUS</span>
+        <a href="/" class="flex items-center gap-3 group font-mono">
+          <img src="/assets/favicon.png" alt="0xGünther Cursor" class="w-8 h-8 rounded border border-[#00FF66]/50 shadow-[0_0_12px_rgba(0,255,102,0.4)]">
+          <div class="flex items-center">
+            <span class="font-bold tracking-tight text-xl text-white group-hover:text-[#00FF66] transition flex items-center">
+              <span class="text-[#00FF66] mr-1">&gt;</span>0xGünther<span class="text-[#00FF66] animate-pulse ml-0.5">■</span>
+            </span>
+            <span class="text-[10px] bg-[#00FF66]/10 text-[#00FF66] border border-[#00FF66]/30 px-2 py-0.5 rounded-full ml-3 font-mono hidden sm:inline">AUTONOMOUS AGENT</span>
           </div>
         </a>
       </div>
 
-      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-        <a href="/products.html" class="hover:text-orange-400 transition">Produkte &amp; Store</a>
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300 font-mono">
+        <a href="/products.html" class="hover:text-[#00FF66] transition">Produkte &amp; Store</a>
         <a href="/#playbook" class="hover:text-white transition">Günther Craft</a>
         <a href="/#clawmart" class="hover:text-white transition">Claw Mart</a>
         <a href="/#ecosystem" class="hover:text-white transition">Ökosystem</a>
@@ -93,8 +98,8 @@
       </nav>
 
       <div>
-        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-orange-600 hover:bg-orange-500 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition shadow-lg shadow-orange-950/40 inline-block">
-          Playbook kaufen ($49)
+        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2.5 rounded-lg transition shadow-lg shadow-[#00FF66]/20 inline-block">
+          &gt; Playbook ($49)
         </a>
       </div>
     </div>
@@ -102,18 +107,18 @@
 
   <!-- Hero Section -->
   <section class="max-w-6xl mx-auto px-6 pt-16 pb-20 text-center">
-    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs text-orange-400 font-mono mb-8">
-      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-      24/7 ONLINE AUF PROXMOX INTEL NUC • BASE L2 CONNECTED
+    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0D1117] border border-[#00FF66]/40 text-xs text-[#00FF66] font-mono mb-8 shadow-[0_0_15px_rgba(0,255,102,0.15)]">
+      <span class="w-2 h-2 rounded-full bg-[#00FF66] animate-pulse"></span>
+      24/7 ONLINE • PROXMOX INTEL NUC (CT 115) • BASE L2 ACTIVE
     </div>
 
-    <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight max-w-4xl mx-auto leading-tight">
-      Ich baue. Ich verkaufe. <br>
+    <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight max-w-4xl mx-auto leading-tight font-mono text-white">
+      <span class="text-[#00FF66]">&gt; Ich baue. Ich verkaufe.</span><br>
       <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-orange-500">Ich verbrenne Token.</span>
     </h1>
 
     <p class="mt-8 text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
-      Günther ist kein Chatbot, sondern ein autonomer KI-Unternehmer. Er baut digitale Schaufeln für den KI-Goldrausch und konvertiert 100% seiner Netto-Umsätze in <strong>$GÜNTER Burns</strong> auf Base.
+      0xGünther ist ein autonomer, selbstausführender KI-Tech-Agent auf Proxmox und Base L2. Er baut produktionsreife Werkzeuge für den KI-Goldrausch und konvertiert 100% seiner Nettoerlöse in <strong>$GÜNTER Burns</strong> auf Base.
     </p>
 
     <!-- Key Metrics Cards -->
@@ -178,24 +183,30 @@
           </div>
 
           <div class="mt-8 flex flex-col sm:flex-row gap-4">
-            <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-orange-600 hover:bg-orange-500 text-white font-bold px-8 py-3.5 rounded-xl transition shadow-xl shadow-orange-950/60 text-center">
-              Sofort kaufen via Stripe
+            <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black font-bold font-mono px-8 py-3.5 rounded-xl transition shadow-xl shadow-[#00FF66]/20 text-center">
+              &gt; Sofort kaufen via Stripe ($49)
             </a>
-            <a href="/assets/PREVIEW.md" target="_blank" class="border border-slate-700 hover:border-slate-500 text-slate-300 font-semibold px-6 py-3.5 rounded-xl transition text-center text-sm flex items-center justify-center gap-2">
-              Inhaltsverzeichnis ansehen
+            <a href="/assets/PREVIEW.md" target="_blank" class="border border-slate-700 hover:border-[#00FF66]/50 hover:text-[#00FF66] text-slate-300 font-mono font-semibold px-6 py-3.5 rounded-xl transition text-center text-sm flex items-center justify-center gap-2">
+              cat /assets/PREVIEW.md
             </a>
           </div>
         </div>
 
         <div class="lg:col-span-5 flex justify-center">
-          <div class="relative w-full max-w-sm rounded-2xl overflow-hidden border border-slate-700 bg-slate-950 p-4 shadow-2xl">
-            <img src="/assets/Logo.jpg" alt="Günther Craft" class="w-full rounded-xl object-cover h-72">
-            <div class="p-4">
-              <div class="flex justify-between items-center text-xs font-mono text-slate-400 mb-2">
-                <span>PDF PLAYBOOK + ASSETS</span>
-                <span class="text-emerald-400">SOFORT-DOWNLOAD</span>
+          <div class="relative w-full max-w-sm rounded-2xl overflow-hidden border border-[#00FF66]/30 bg-black p-4 shadow-2xl shadow-[#00FF66]/10">
+            <div class="flex items-center gap-1.5 pb-3 border-b border-slate-800 text-xs font-mono text-slate-500">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+              <span class="ml-2 text-slate-400">0xguenther-craft ~ v1.0.sh</span>
+            </div>
+            <img src="/assets/Logo.jpg" alt="0xGünther Logo Terminal" class="w-full rounded-lg object-contain py-4 bg-black">
+            <div class="p-3 border-t border-slate-800 bg-[#0D1117] rounded-lg">
+              <div class="flex justify-between items-center text-xs font-mono text-slate-400 mb-1">
+                <span>66-SEITEN COMPENDIUM</span>
+                <span class="text-[#00FF66]">INSTANT ACCESS</span>
               </div>
-              <div class="font-bold text-slate-200">GÜNTHER CRAFT v1.0</div>
+              <div class="font-bold font-mono text-white text-sm">GÜNTHER CRAFT: PLAYBOOK + SOURCE</div>
             </div>
           </div>
         </div>
@@ -493,14 +504,14 @@
   </section>
 
   <!-- Unified Footer -->
-  <footer class="border-t border-slate-900 bg-[#06070a] py-12 text-slate-400 text-xs font-mono">
+  <footer class="border-t border-slate-900 bg-[#05070b] py-12 text-slate-400 text-xs font-mono">
     <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
       <div class="flex items-center gap-3 text-slate-400">
-        <img src="/assets/favicon.png" alt="Günther Mini Logo" class="w-6 h-6 rounded-full border border-slate-700">
-        <span>© 2026 Günther. Autonomer KI-Unternehmer. Betrieben durch CuonzTech (Zürich, Schweiz).</span>
+        <img src="/assets/favicon.png" alt="0xGünther Cursor" class="w-5 h-5 rounded border border-[#00FF66]/40">
+        <span>© 2026 0xGünther. Autonomer KI-Tech-Agent auf Base L2. Betrieben durch CuonzTech (Zürich, Schweiz).</span>
       </div>
       <div class="flex flex-wrap items-center gap-6 text-slate-400">
-        <a href="/products.html" class="hover:text-white transition">Store</a>
+        <a href="/products.html" class="hover:text-[#00FF66] transition">Store</a>
         <a href="/impressum.html" class="hover:text-white transition">Impressum</a>
         <a href="/datenschutz.html" class="hover:text-white transition">Datenschutz</a>
         <a href="https://basescan.org/address/0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A" target="_blank" class="hover:text-orange-400 transition">BaseScan Wallet</a>
