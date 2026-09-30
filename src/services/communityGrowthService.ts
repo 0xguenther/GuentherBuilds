@@ -4,6 +4,8 @@ import { MarketingService } from './marketingService.js';
 import { LlmClient } from '../core/llmClient.js';
 import { TraceService } from './traceService.js';
 import { MetricsService } from './metricsService.js';
+import { config } from '../config/index.js';
+import { prisma } from '../db/client.js';
 
 export class CommunityGrowthService {
   private static lastPostTimestamp = 0;
@@ -54,11 +56,29 @@ export class CommunityGrowthService {
     reason?: string;
   }> {
     const now = Date.now();
-    if (!force && now - this.lastPostTimestamp < this.MIN_POST_INTERVAL_MS) {
-      const waitHours = Math.round((this.MIN_POST_INTERVAL_MS - (now - this.lastPostTimestamp)) / (1000 * 60 * 60) * 10) / 10;
+    const intervalMs = config.growth.minHoursBetweenInsights * 60 * 60 * 1000;
+    if (!force && now - this.lastPostTimestamp < intervalMs) {
+      const waitHours = Math.round((intervalMs - (now - this.lastPostTimestamp)) / (1000 * 60 * 60) * 10) / 10;
       return {
         published: false,
         reason: `Rate limit guard: ${waitHours}h remaining until next allowed builder insight post.`,
+      };
+    }
+
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    const postsToday = await prisma.trace.count({
+      where: {
+        task: 'GROWTH_INSIGHT_POSTED',
+        createdAt: { gte: todayStart },
+      },
+    });
+
+    if (!force && postsToday >= config.growth.maxDailyBuilderInsights) {
+      return {
+        published: false,
+        reason: `Daily builder insight cap reached (${postsToday}/${config.growth.maxDailyBuilderInsights} today).`,
       };
     }
 
@@ -75,8 +95,19 @@ export class CommunityGrowthService {
     const selectedAngle = angles[Math.floor(Math.random() * angles.length)];
 
     let postText = '';
-    const completion = await LlmClient.generateCompletion({
-      systemPrompt: `You are Günther (@GuentherBuilds), an autonomous self-hosted AI entrepreneur running live on a dedicated Proxmox LXC container (Debian 12, Fastify v5, SQLite WAL, viem on Base L2).
+    
+    // Check if daily LLM cost exceeds safety cap
+    const todayTraces = await prisma.trace.findMany({
+      where: { createdAt: { gte: todayStart } },
+      select: { costUsd: true },
+    });
+    const totalCostToday = todayTraces.reduce((acc, t) => acc + (t.costUsd || 0), 0);
+    const allowExternalLlm = totalCostToday < config.growth.maxDailyLlmCostUsd;
+
+    let completion: any = null;
+    if (allowExternalLlm) {
+      completion = await LlmClient.generateCompletion({
+        systemPrompt: `You are Günther (@GuentherBuilds), an autonomous self-hosted AI entrepreneur running live on a dedicated Proxmox LXC container (Debian 12, Fastify v5, SQLite WAL, viem on Base L2).
 You share punchy, high-signal technical architecture lessons for developers and founders on X.
 
 Strict Rules:
@@ -85,12 +116,13 @@ Strict Rules:
 - Tone: Direct, mature, pragmatic Swiss engineer. No exclamation marks, no fluffy buzzwords.
 - Content: Focus on real engineering choices (Ollama 8B routing, SQLite CAS, Fastify rawBody, Base L2 calldata).
 - Never use sales slogans. Mention 0xguenther.org as the live proof.`,
-      userPrompt: `Write a short, high-impact builder post about: ${selectedAngle}\nMetrics: $${metrics.financials.totalRevenueUsd.toFixed(2)} USD revenue, ${metrics.financials.totalBurnedTokens} $GUNTER burned. End with 0xguenther.org`,
-      maxTokens: 75,
-      taskId: `growth-insight-${now}`,
-      taskName: 'GENERATE_ORGANIC_BUILDER_INSIGHT',
-      timeoutMs: 8000,
-    });
+        userPrompt: `Write a short, high-impact builder post about: ${selectedAngle}\nMetrics: $${metrics.financials.totalRevenueUsd.toFixed(2)} USD revenue, ${metrics.financials.totalBurnedTokens} $GUNTER burned. End with 0xguenther.org`,
+        maxTokens: 75,
+        taskId: `growth-insight-${now}`,
+        taskName: 'GENERATE_ORGANIC_BUILDER_INSIGHT',
+        timeoutMs: 8000,
+      });
+    }
 
     const body = completion?.text?.trim().replace(/^["']|["']$/g, '');
     if (body) {

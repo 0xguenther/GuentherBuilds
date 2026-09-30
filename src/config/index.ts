@@ -57,4 +57,11 @@ export const config = {
     kumaPushUrl: process.env.KUMA_PUSH_URL || '',
     heartbeatIntervalMs: parseInt(process.env.HEARTBEAT_INTERVAL_MS || '60000', 10),
   },
+  growth: {
+    maxDailyBuilderInsights: parseInt(process.env.MAX_DAILY_BUILDER_INSIGHTS || '2', 10),
+    maxDailyReplies: parseInt(process.env.MAX_DAILY_REPLIES || '10', 10),
+    maxRepliesPerUserDaily: parseInt(process.env.MAX_REPLIES_PER_USER_DAILY || '2', 10),
+    minHoursBetweenInsights: parseInt(process.env.MIN_HOURS_BETWEEN_INSIGHTS || '6', 10),
+    maxDailyLlmCostUsd: parseFloat(process.env.MAX_DAILY_LLM_COST_USD || '1.50'),
+  },
 };

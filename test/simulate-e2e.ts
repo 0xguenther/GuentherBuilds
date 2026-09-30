@@ -142,9 +142,10 @@ async function runE2ETests() {
     // Test 4: Mention Handling & Brand Voice
     console.log('\n[Step 4] Testing X Mention Handling & Idempotency...');
     const testTweetId = `mention_${Date.now()}`;
+    const testAuthor = `builder_${Date.now().toString().slice(-6)}`;
     const mentionResult = await MarketingService.handleIncomingMention(
       testTweetId,
-      'ai_builder_99',
+      testAuthor,
       'Wie funktioniert euer Token Burn genau?'
     );
     assert(mentionResult !== undefined, 'Brand persona generated reply');
@@ -158,7 +159,7 @@ async function runE2ETests() {
     // Test duplicate mention
     const duplicateMention = await MarketingService.handleIncomingMention(
       testTweetId,
-      'ai_builder_99',
+      testAuthor,
       'Wie funktioniert euer Token Burn genau?'
     );
     assert(duplicateMention === undefined, 'Duplicate mention safely skipped');

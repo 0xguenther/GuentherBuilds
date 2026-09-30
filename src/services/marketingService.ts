@@ -4,6 +4,8 @@ import { TraceService } from './traceService.js';
 import { LlmClient } from '../core/llmClient.js';
 import { MetricsService } from './metricsService.js';
 import { guntherCharacter } from '../core/character.js';
+import { prisma } from '../db/client.js';
+import { config } from '../config/index.js';
 
 export class MarketingService {
   /**
@@ -45,6 +47,35 @@ export class MarketingService {
     const claimed = await MentionService.claimForReplying(tweetId);
     if (!claimed) {
       console.log(`[MarketingService] Mention ${tweetId} is already being replied to or replied. Skipping.`);
+      return;
+    }
+
+    // Safety Hard Caps: enforce daily budget and prevent bot-loops
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    const totalRepliesToday = await prisma.mention.count({
+      where: {
+        status: 'replied',
+        updatedAt: { gte: todayStart },
+      },
+    });
+
+    if (totalRepliesToday >= config.growth.maxDailyReplies) {
+      console.log(`[MarketingService] Daily reply cap reached (${totalRepliesToday}/${config.growth.maxDailyReplies}). Skipping mention ${tweetId}.`);
+      return;
+    }
+
+    const userRepliesToday = await prisma.mention.count({
+      where: {
+        author,
+        status: 'replied',
+        updatedAt: { gte: todayStart },
+      },
+    });
+
+    if (userRepliesToday >= config.growth.maxRepliesPerUserDaily) {
+      console.log(`[MarketingService] User @${author} reached daily interaction cap (${userRepliesToday}/${config.growth.maxRepliesPerUserDaily}). Skipping mention ${tweetId}.`);
       return;
     }
 
