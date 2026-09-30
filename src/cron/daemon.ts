@@ -1,6 +1,7 @@
 import { PaymentService } from '../services/paymentService.js';
 import { BurnService } from '../services/burnService.js';
 import { MarketingService } from '../services/marketingService.js';
+import { CommunityGrowthService } from '../services/communityGrowthService.js';
 import { TraceService } from '../services/traceService.js';
 import { checkDatabaseConnection } from '../db/client.js';
 import { config } from '../config/index.js';
@@ -59,6 +60,7 @@ export class GuntherDaemon {
       await this.reconcilePendingPayments();
       await this.emitHeartbeat();
       await this.checkDailyPulse();
+      await this.checkCommunityEngagement();
     } finally {
       this.isTickBusy = false;
     }
@@ -78,6 +80,21 @@ export class GuntherDaemon {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unknown pulse error';
       console.warn(`[Daemon] Daily market pulse skipped or delayed: ${msg}`);
+    }
+  }
+
+  /**
+   * Checks and engages in active community discussions on X (max 1 reply per 4 hours)
+   */
+  async checkCommunityEngagement() {
+    try {
+      const result = await CommunityGrowthService.runGrowthCycle();
+      if (result.mentionsProcessed > 0 || result.insightPublished) {
+        console.log(`[Daemon] Autonomous community growth tick: ${result.mentionsProcessed} mentions processed, insight published: ${result.insightPublished}`);
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown engagement error';
+      console.warn(`[Daemon] Community engagement check skipped: ${msg}`);
     }
   }
 

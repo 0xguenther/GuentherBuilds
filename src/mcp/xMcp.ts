@@ -13,6 +13,18 @@ export interface PostTweetResult {
   createdAt: string;
 }
 
+export interface SearchTweetItem {
+  id: string;
+  text: string;
+  authorId?: string;
+  username?: string;
+}
+
+export interface SearchTweetsParams {
+  query: string;
+  maxResults?: number;
+}
+
 function percentEncode(str: string): string {
   return encodeURIComponent(str)
     .replace(/!/g, '%21')
@@ -27,11 +39,13 @@ function buildOAuthHeader(
   url: string,
   oauthParams: Record<string, string>,
   consumerSecret: string,
-  tokenSecret: string
+  tokenSecret: string,
+  queryParams: Record<string, string> = {}
 ): string {
-  const sortedKeys = Object.keys(oauthParams).sort();
+  const allForSig = { ...oauthParams, ...queryParams };
+  const sortedKeys = Object.keys(allForSig).sort();
   const paramString = sortedKeys
-    .map((k) => `${percentEncode(k)}=${percentEncode(oauthParams[k])}`)
+    .map((k) => `${percentEncode(k)}=${percentEncode(allForSig[k])}`)
     .join('&');
 
   const signatureBase = `${method.toUpperCase()}&${percentEncode(url)}&${percentEncode(paramString)}`;
@@ -42,7 +56,7 @@ function buildOAuthHeader(
     .update(signatureBase)
     .digest('base64');
 
-  const authHeaderKeys = [...sortedKeys, 'oauth_signature'];
+  const authHeaderKeys = [...Object.keys(oauthParams), 'oauth_signature'];
   const allParams: Record<string, string> = { ...oauthParams, oauth_signature: signature };
 
   return (
@@ -165,5 +179,192 @@ export class XMcpClient {
         createdAt: new Date().toISOString(),
       };
     });
+  }
+
+  /**
+   * Searches recent tweets on X matching a query.
+   * If in test mode or API keys are missing, returns simulated high-signal tweets.
+   */
+  static async searchRecentTweets(params: SearchTweetsParams): Promise<SearchTweetItem[]> {
+    return this.executeWithExponentialBackoff(async () => {
+      const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
+      const hasKeys = Boolean(
+        config.x.apiKey &&
+        config.x.apiSecret &&
+        config.x.accessToken &&
+        config.x.accessSecret
+      );
+
+      if (!hasKeys || isTestMode) {
+        return [
+          {
+            id: 'sim_tweet_1',
+            text: 'Payments plus AI agents on Base L2 is the real wedge for autonomous micro-SaaS.',
+            authorId: 'sim_author_1',
+            username: 'builder_sim',
+          },
+        ];
+      }
+
+      const url = 'https://api.twitter.com/2/tweets/search/recent';
+      const queryParams: Record<string, string> = {
+        query: params.query,
+        max_results: String(params.maxResults || 10),
+      };
+
+      const oauthParams: Record<string, string> = {
+        oauth_consumer_key: config.x.apiKey,
+        oauth_nonce: crypto.randomBytes(16).toString('hex'),
+        oauth_signature_method: 'HMAC-SHA1',
+        oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
+        oauth_token: config.x.accessToken,
+        oauth_version: '1.0',
+      };
+
+      const authHeader = buildOAuthHeader(
+        'GET',
+        url,
+        oauthParams,
+        config.x.apiSecret,
+        config.x.accessSecret,
+        queryParams
+      );
+
+      const qs = Object.keys(queryParams)
+        .map((k) => `${percentEncode(k)}=${percentEncode(queryParams[k])}`)
+        .join('&');
+
+      const res = await fetch(`${url}?${qs}`, {
+        method: 'GET',
+        headers: {
+          Authorization: authHeader,
+          'Content-Type': 'application/json',
+        },
+        signal: AbortSignal.timeout(10000),
+      });
+
+      if (res.status === 429) {
+        throw new Error('X API rate limit (429)');
+      }
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`X API search error ${res.status}: ${errorText}`);
+      }
+
+      const data = (await res.json()) as any;
+      if (!data.data || !Array.isArray(data.data)) {
+        return [];
+      }
+
+      return data.data.map((t: any) => ({
+        id: t.id,
+        text: t.text,
+        authorId: t.author_id,
+      }));
+    });
+  }
+
+  /**
+   * Fetches recent incoming mentions to @GuentherBuilds.
+   */
+  static async getRecentMentions(): Promise<Array<{ id: string; author: string; text: string }>> {
+    return this.executeWithExponentialBackoff(async () => {
+      const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
+      const hasKeys = Boolean(
+        config.x.apiKey &&
+        config.x.apiSecret &&
+        config.x.accessToken &&
+        config.x.accessSecret
+      );
+
+      if (!hasKeys || isTestMode) {
+        return [];
+      }
+
+      const userId = '2104592585335443457';
+      const url = `https://api.twitter.com/2/users/${userId}/mentions`;
+      const queryParams: Record<string, string> = {
+        expansions: 'author_id',
+        'user.fields': 'username',
+        max_results: '10',
+      };
+
+      const oauthParams: Record<string, string> = {
+        oauth_consumer_key: config.x.apiKey,
+        oauth_nonce: crypto.randomBytes(16).toString('hex'),
+        oauth_signature_method: 'HMAC-SHA1',
+        oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
+        oauth_token: config.x.accessToken,
+        oauth_version: '1.0',
+      };
+
+      const authHeader = buildOAuthHeader(
+        'GET',
+        url,
+        oauthParams,
+        config.x.apiSecret,
+        config.x.accessSecret,
+        queryParams
+      );
+
+      const qs = Object.keys(queryParams)
+        .map((k) => `${percentEncode(k)}=${percentEncode(queryParams[k])}`)
+        .join('&');
+
+      const res = await fetch(`${url}?${qs}`, {
+        method: 'GET',
+        headers: {
+          Authorization: authHeader,
+          'Content-Type': 'application/json',
+        },
+        signal: AbortSignal.timeout(10000),
+      });
+
+      if (!res.ok) {
+        if (res.status === 429) throw new Error('X API rate limit (429)');
+        return [];
+      }
+
+      const data = (await res.json()) as any;
+      if (!data.data || !Array.isArray(data.data)) {
+        return [];
+      }
+
+      const userMap = new Map<string, string>();
+      if (data.includes?.users && Array.isArray(data.includes.users)) {
+        for (const u of data.includes.users) {
+          userMap.set(u.id, u.username);
+        }
+      }
+
+      return data.data.map((m: any) => ({
+        id: m.id,
+        author: userMap.get(m.author_id) || 'unknown',
+        text: m.text,
+      }));
+    });
+  }
+
+  /**
+   * Posts an authentic multi-tweet thread sequentially on X.
+   */
+  static async postThread(tweets: string[]): Promise<string[]> {
+    if (!tweets || tweets.length === 0) return [];
+    const tweetIds: string[] = [];
+    let previousId: string | undefined = undefined;
+
+    for (const text of tweets) {
+      const res = await this.postTweet({
+        text,
+        inReplyToStatusId: previousId,
+        idempotencyKey: `thread_${Date.now()}_${tweetIds.length}`,
+      });
+      tweetIds.push(res.tweetId);
+      previousId = res.tweetId;
+      await new Promise((r) => setTimeout(r, 1200));
+    }
+
+    return tweetIds;
   }
 }
