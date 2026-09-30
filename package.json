@@ -1,0 +1,43 @@
+{
+  "name": "gunther-core",
+  "version": "1.0.0",
+  "description": "Autonomous Self-Hosted AI Agent on Proxmox LXC — Fastify, SQLite WAL, Local Ollama Routing, Stripe Webhooks & Base L2 viem Signer",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "db:push": "prisma db push",
+    "db:generate": "prisma generate"
+  },
+  "keywords": [
+    "ai-agent",
+    "autonomous-agent",
+    "proxmox",
+    "fastify",
+    "sqlite",
+    "base-l2",
+    "stripe",
+    "ollama",
+    "typescript",
+    "viem"
+  ],
+  "author": "0xGünther Architecture Labs <support@0xguenther.org>",
+  "license": "MIT",
+  "dependencies": {
+    "@fastify/cors": "^10.0.2",
+    "@prisma/client": "^6.4.1",
+    "dotenv": "^16.4.7",
+    "fastify": "^5.2.1",
+    "fastify-raw-body": "^5.0.0",
+    "viem": "^2.23.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.5",
+    "prisma": "^6.4.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
+  }
+}
