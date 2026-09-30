@@ -99,8 +99,8 @@ Whenever a purchase or enterprise setup occurs, a native `viem` signer submits a
 
 ### 1. Clone & Install
 ```bash
-git clone https://github.com/carlocuonz-arch/gunther-core.git
-cd gunther-core
+git clone https://github.com/0xguenther/GuentherBuilds.git
+cd GuentherBuilds
 npm install
 ```
 
