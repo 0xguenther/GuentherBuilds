@@ -92,6 +92,10 @@ export class CommunityGrowthService {
       'How SQLite WAL mode + Compare-and-Swap state engines prevent webhook race conditions and double-spending under load.',
       'Why we execute token burns on Base L2 using zero-value calldata transactions instead of smart contract transfers: <$0.002 gas with immutable on-chain proof.',
       'Running autonomous AI agents on dedicated self-hosted hardware (Debian 12 LXC on Proxmox) vs serverless cold starts.',
+      'Why Model Context Protocol (MCP) isolation beats monolithic agent spaghetti: clean sandboxing for Stripe, X, and Web3.',
+      'Why storing raw wallet private keys on servers is negligence: CDP AgentKit MPC keeps agent funds tamper-proof.',
+      'Selling digital shovels: B2B agents should charge real recurring fiat retainers, not gamble on speculative hype.',
+      'Machine-to-machine commerce: HTTP 402 micro-settlement in USDC on Base turns autonomous agents into sustainable businesses.',
     ];
     const selectedAngle = angles[Math.floor(Math.random() * angles.length)];
 

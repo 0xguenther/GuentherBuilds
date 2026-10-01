@@ -37,26 +37,36 @@ export class TimelineScoutService {
     'autonolas',
   ];
 
-  // High-relevance keywords matching Günther's engineering domain
+  // High-relevance keywords matching Günther's engineering domain across all core topics
   static readonly KEYWORD_TRIGGERS = [
-    'agent',
-    'base',
-    'usdc',
-    'x402',
-    'payment',
-    'micropayment',
-    'token',
-    'burn',
-    'eliza',
-    'ai16z',
-    'hardware',
-    'proxmox',
-    'ollama',
-    'sqlite',
-    'wal',
-    'unit economics',
-    'calldata',
+    'agent', 'base', 'usdc', 'x402', 'payment', 'micropayment', 'token', 'burn',
+    'eliza', 'ai16z', 'hardware', 'proxmox', 'ollama', 'sqlite', 'wal',
+    'unit economics', 'calldata', 'mcp', 'tools', 'skills', 'plugin',
+    'cdp', 'mpc', 'security', 'keys', 'b2b', 'retainer', 'saas', 'commerce',
+    'inference', 'latency', 'gpu', 'gas', 'viem', 'cobalt'
   ];
+
+  static readonly DOMAIN_FALLBACKS: Record<string, string> = {
+    COMMERCE: 'HTTP 402 + native @base settlement is what turns autonomous agents from toys into real businesses. Micro-settlement in USDC eliminates payment friction.',
+    ONCHAIN: 'Native Base L2 calldata execution keeps tx fees under $0.002. Immutable on-chain proof without bloated smart contract overhead.',
+    FRAMEWORKS: 'Clean MCP tool isolation beats monolithic agent spaghetti. Sandboxed protocol execution is what makes autonomous agents reliable in production.',
+    INFRASTRUCTURE: 'Local Ollama 8B JSON classification gives 35ms response times at $0.00 token cost. Dedicated Proxmox LXC beats serverless cold starts.',
+    SECURITY: 'Never store raw private keys on a server. CDP AgentKit MPC wallets ensure autonomous agent transactions remain tamper-proof.',
+    GENERAL: 'Native @base settlement + HTTP 402 is what makes autonomous agent commerce sustainable in production. Local models keep unit margins positive.'
+  };
+
+  /**
+   * Classifies the primary engineering domain based on matched keywords
+   */
+  static classifyDomain(keywords: string[]): string {
+    const kws = new Set(keywords);
+    if (kws.has('x402') || kws.has('payment') || kws.has('micropayment') || kws.has('usdc') || kws.has('commerce') || kws.has('saas') || kws.has('b2b')) return 'COMMERCE';
+    if (kws.has('token') || kws.has('burn') || kws.has('calldata') || kws.has('gas') || kws.has('viem') || kws.has('cobalt')) return 'ONCHAIN';
+    if (kws.has('mcp') || kws.has('tools') || kws.has('skills') || kws.has('plugin') || kws.has('eliza') || kws.has('ai16z')) return 'FRAMEWORKS';
+    if (kws.has('hardware') || kws.has('proxmox') || kws.has('ollama') || kws.has('inference') || kws.has('latency') || kws.has('gpu')) return 'INFRASTRUCTURE';
+    if (kws.has('cdp') || kws.has('mpc') || kws.has('security') || kws.has('keys') || kws.has('sqlite') || kws.has('wal')) return 'SECURITY';
+    return 'GENERAL';
+  }
 
   private static cachedUserIds: Map<string, string> = new Map();
 
@@ -193,6 +203,8 @@ export class TimelineScoutService {
     const totalCostToday = todayTraces.reduce((acc, t) => acc + (t.costUsd || 0), 0);
     const allowExternalLlm = totalCostToday < config.growth.maxDailyLlmCostUsd;
 
+    const domain = this.classifyDomain(chosen.matchedKeywords);
+
     let completion: any = null;
     if (allowExternalLlm) {
       completion = await LlmClient.generateCompletion({
@@ -203,12 +215,17 @@ Strict Rules:
 - Language: ENGLISH only.
 - Length: Max 200 characters.
 - Tone: Direct, mature, pragmatic Swiss engineer. No exclamation marks, no hype, no emojis.
-- Reference the theme naturally: unit economics, local LLM routing vs API costs, SQLite CAS state safety, or Base L2 settlement.
-- Always include '@base' naturally in the context of settlement or L2 execution.`,
-        userPrompt: `Topic observed from @${chosen.account}: "${chosen.text}"
+- Adapt dynamically to the topic domain (${domain}):
+  * COMMERCE: Focus on machine-to-machine cashflow, HTTP 402, and micro-settlement in USDC.
+  * ONCHAIN: Focus on Base L2 execution, low gas fees (<$0.002), and verifiable calldata proofs.
+  * FRAMEWORKS: Focus on tool isolation, MCP protocol servers, and deterministic agent pipelines.
+  * INFRASTRUCTURE: Focus on local Ollama inference, low latency, and self-hosted reliability vs cloud cold starts.
+  * SECURITY: Focus on CDP MPC wallets vs storing raw server keys, and atomic SQLite CAS state.
+- Include '@base' if relevant to execution, settlement, or onchain tokens.`,
+        userPrompt: `Topic observed from @${chosen.account} [Domain: ${domain}]: "${chosen.text}"
 Keywords: ${chosen.matchedKeywords.join(', ')}
 Current metrics: $${metrics.financials.totalRevenueUsd.toFixed(2)} USD revenue, ${metrics.financials.totalBurnedTokens} $GUNTER burned.
-Write a punchy, high-signal technical observation reacting to this topic.`,
+Write a punchy, domain-accurate technical observation reacting to this topic.`,
         maxTokens: 70,
         taskId: `scout-insight-${chosen.tweetId}`,
         taskName: 'GENERATE_SCOUT_REACTIVE_INSIGHT',
@@ -218,7 +235,7 @@ Write a punchy, high-signal technical observation reacting to this topic.`,
 
     let postText = completion?.text?.trim().replace(/^["']|["']$/g, '');
     if (!postText) {
-      postText = `Native @base settlement + HTTP 402 is what makes autonomous agent commerce sustainable in production. Local models keep unit margins positive.`;
+      postText = this.DOMAIN_FALLBACKS[domain] || this.DOMAIN_FALLBACKS.GENERAL;
     }
 
     // 6. Post to X
