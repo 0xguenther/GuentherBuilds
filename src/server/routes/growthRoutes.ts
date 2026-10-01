@@ -66,4 +66,21 @@ export async function growthRoutes(app: FastifyInstance) {
       return reply.status(500).send({ error: msg });
     }
   });
+
+  // POST /api/growth/scout — triggers timeline scouting across ecosystem accounts
+  app.post('/api/growth/scout', async (req, reply) => {
+    try {
+      const body = (req.body as any) || {};
+      const force = body.force !== false;
+      const { TimelineScoutService } = await import('../../services/timelineScoutService.js');
+      const result = await TimelineScoutService.scoutAndReact(force);
+      return reply.send({
+        success: result.acted,
+        details: result,
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      return reply.status(500).send({ error: msg });
+    }
+  });
 }

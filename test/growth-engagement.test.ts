@@ -25,7 +25,20 @@ async function testGrowthEngagement() {
     throw new Error('Expected 5-part architecture thread to be published');
   }
 
-  console.log('✅ ALL CommunityGrowthService tests passed!');
+  // 4. Test timeline ecosystem scouting and reactive posting
+  const { TimelineScoutService } = await import('../src/services/timelineScoutService.js');
+  const scoutResult = await TimelineScoutService.scoutAndReact(true);
+  console.log('Timeline scout result:', scoutResult);
+
+  if (!scoutResult.acted || !scoutResult.tweetId) {
+    throw new Error('Expected timeline scout to act and publish reactive insight');
+  }
+
+  // 5. Test full growth cycle
+  const cycleResult = await CommunityGrowthService.runGrowthCycle();
+  console.log('Full growth cycle result:', cycleResult);
+
+  console.log('✅ ALL CommunityGrowthService & TimelineScoutService tests passed!');
 }
 
 testGrowthEngagement()

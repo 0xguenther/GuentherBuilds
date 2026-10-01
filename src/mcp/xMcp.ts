@@ -347,6 +347,203 @@ export class XMcpClient {
   }
 
   /**
+   * Looks up a user on X by their username.
+   */
+  static async getUserByUsername(username: string): Promise<{ id: string; name: string; username: string } | null> {
+    return this.executeWithExponentialBackoff(async () => {
+      const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
+      const hasKeys = Boolean(
+        config.x.apiKey &&
+        config.x.apiSecret &&
+        config.x.accessToken &&
+        config.x.accessSecret
+      );
+
+      if (!hasKeys || isTestMode) {
+        return { id: `sim_uid_${username}`, name: username, username };
+      }
+
+      const cleanUsername = username.replace(/^@/, '');
+      const url = `https://api.twitter.com/2/users/by/username/${cleanUsername}`;
+
+      const oauthParams: Record<string, string> = {
+        oauth_consumer_key: config.x.apiKey,
+        oauth_nonce: crypto.randomBytes(16).toString('hex'),
+        oauth_signature_method: 'HMAC-SHA1',
+        oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
+        oauth_token: config.x.accessToken,
+        oauth_version: '1.0',
+      };
+
+      const authHeader = buildOAuthHeader(
+        'GET',
+        url,
+        oauthParams,
+        config.x.apiSecret,
+        config.x.accessSecret
+      );
+
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: authHeader,
+          'Content-Type': 'application/json',
+        },
+        signal: AbortSignal.timeout(10000),
+      });
+
+      if (!res.ok) {
+        if (res.status === 429) throw new Error('X API rate limit (429)');
+        return null;
+      }
+
+      const data = (await res.json()) as any;
+      if (!data.data) return null;
+      return {
+        id: data.data.id,
+        name: data.data.name,
+        username: data.data.username,
+      };
+    });
+  }
+
+  /**
+   * Fetches recent tweets for a user, excluding retweets.
+   */
+  static async getUserTweets(userId: string, maxResults = 5): Promise<Array<{ id: string; text: string; createdAt?: string }>> {
+    return this.executeWithExponentialBackoff(async () => {
+      const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
+      const hasKeys = Boolean(
+        config.x.apiKey &&
+        config.x.apiSecret &&
+        config.x.accessToken &&
+        config.x.accessSecret
+      );
+
+      if (!hasKeys || isTestMode) {
+        return [
+          {
+            id: `sim_tweet_${userId}`,
+            text: 'x402 payments settling in USDC on @base are transforming agent economics. Machine-to-machine micropayments now in production.',
+            createdAt: new Date().toISOString(),
+          },
+        ];
+      }
+
+      const url = `https://api.twitter.com/2/users/${userId}/tweets`;
+      const queryParams: Record<string, string> = {
+        max_results: String(maxResults),
+        exclude: 'retweets',
+        'tweet.fields': 'created_at',
+      };
+
+      const oauthParams: Record<string, string> = {
+        oauth_consumer_key: config.x.apiKey,
+        oauth_nonce: crypto.randomBytes(16).toString('hex'),
+        oauth_signature_method: 'HMAC-SHA1',
+        oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
+        oauth_token: config.x.accessToken,
+        oauth_version: '1.0',
+      };
+
+      const authHeader = buildOAuthHeader(
+        'GET',
+        url,
+        oauthParams,
+        config.x.apiSecret,
+        config.x.accessSecret,
+        queryParams
+      );
+
+      const qs = Object.keys(queryParams)
+        .map((k) => `${percentEncode(k)}=${percentEncode(queryParams[k])}`)
+        .join('&');
+
+      const res = await fetch(`${url}?${qs}`, {
+        method: 'GET',
+        headers: {
+          Authorization: authHeader,
+          'Content-Type': 'application/json',
+        },
+        signal: AbortSignal.timeout(10000),
+      });
+
+      if (!res.ok) {
+        if (res.status === 429) throw new Error('X API rate limit (429)');
+        return [];
+      }
+
+      const data = (await res.json()) as any;
+      if (!data.data || !Array.isArray(data.data)) {
+        return [];
+      }
+
+      return data.data.map((t: any) => ({
+        id: t.id,
+        text: t.text,
+        createdAt: t.created_at,
+      }));
+    });
+  }
+
+  /**
+   * Follows a target user on X.
+   */
+  static async followUser(targetUserId: string): Promise<boolean> {
+    return this.executeWithExponentialBackoff(async () => {
+      const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
+      const hasKeys = Boolean(
+        config.x.apiKey &&
+        config.x.apiSecret &&
+        config.x.accessToken &&
+        config.x.accessSecret
+      );
+
+      if (!hasKeys || isTestMode) {
+        return true;
+      }
+
+      const myUserId = '2104592585335443457';
+      const url = `https://api.twitter.com/2/users/${myUserId}/following`;
+
+      const oauthParams: Record<string, string> = {
+        oauth_consumer_key: config.x.apiKey,
+        oauth_nonce: crypto.randomBytes(16).toString('hex'),
+        oauth_signature_method: 'HMAC-SHA1',
+        oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
+        oauth_token: config.x.accessToken,
+        oauth_version: '1.0',
+      };
+
+      const authHeader = buildOAuthHeader(
+        'POST',
+        url,
+        oauthParams,
+        config.x.apiSecret,
+        config.x.accessSecret
+      );
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          Authorization: authHeader,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ target_user_id: targetUserId }),
+        signal: AbortSignal.timeout(10000),
+      });
+
+      if (!res.ok) {
+        if (res.status === 429) throw new Error('X API rate limit (429)');
+        return false;
+      }
+
+      const data = (await res.json()) as any;
+      return Boolean(data?.data?.following);
+    });
+  }
+
+  /**
    * Posts an authentic multi-tweet thread sequentially on X.
    */
   static async postThread(tweets: string[]): Promise<string[]> {

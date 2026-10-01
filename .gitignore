@@ -11,4 +11,5 @@ yarn-error.log*
 Thumbs.db
 __pycache__/
 *.pyc
+scratch/
 

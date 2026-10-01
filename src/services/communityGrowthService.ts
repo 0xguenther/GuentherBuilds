@@ -6,6 +6,7 @@ import { TraceService } from './traceService.js';
 import { MetricsService } from './metricsService.js';
 import { config } from '../config/index.js';
 import { prisma } from '../db/client.js';
+import { TimelineScoutService } from './timelineScoutService.js';
 
 export class CommunityGrowthService {
   private static lastPostTimestamp = 0;
@@ -206,12 +207,14 @@ Strict Rules:
   /**
    * Main cycle executed periodically by the background daemon.
    */
-  static async runGrowthCycle(): Promise<{ mentionsProcessed: number; insightPublished: boolean }> {
+  static async runGrowthCycle(): Promise<{ mentionsProcessed: number; insightPublished: boolean; scoutActed: boolean }> {
     const mentionsProcessed = await this.processIncomingMentions();
     const insightResult = await this.publishBuilderInsight(false);
+    const scoutResult = await TimelineScoutService.scoutAndReact(false);
     return {
       mentionsProcessed,
       insightPublished: insightResult.published,
+      scoutActed: scoutResult.acted,
     };
   }
 }

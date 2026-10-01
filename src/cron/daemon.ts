@@ -89,8 +89,8 @@ export class GuntherDaemon {
   async checkCommunityEngagement() {
     try {
       const result = await CommunityGrowthService.runGrowthCycle();
-      if (result.mentionsProcessed > 0 || result.insightPublished) {
-        console.log(`[Daemon] Autonomous community growth tick: ${result.mentionsProcessed} mentions processed, insight published: ${result.insightPublished}`);
+      if (result.mentionsProcessed > 0 || result.insightPublished || result.scoutActed) {
+        console.log(`[Daemon] Autonomous community growth tick: ${result.mentionsProcessed} mentions processed, insight published: ${result.insightPublished}, scout acted: ${result.scoutActed}`);
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unknown engagement error';
