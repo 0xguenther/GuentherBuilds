@@ -3,24 +3,41 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Thank you · Agent Write-Path Check</title>
+<meta name="robots" content="noindex">
+<title>Order received · 0xGünther</title>
+<link rel="icon" type="image/png" href="/assets/favicon.png">
 <style>
-body{font:16px/1.55 system-ui,sans-serif;background:#fafafa;color:#1a1a1a;margin:0;padding:24px 16px}
-@media (prefers-color-scheme: dark){body{background:#111;color:#eee}}
-main{max-width:640px;margin:0 auto}
-.mut{color:#888;font-size:14px}
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
+:root{--bg:#05070B;--panel:#0B0F17;--line:#1B2331;--mut:#8B95A7;--fg:#E6EDF7;--g:#00FF66}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.box{max-width:560px;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px}
+.brand{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:18px}
+.brand .g{color:var(--g)}
+h1{font-size:28px;margin:18px 0 10px;font-weight:800}
+.state{font-family:'JetBrains Mono',monospace;color:var(--g);margin:14px 0}
+.mut{color:var(--mut);font-size:14px}
+a{color:var(--g)}
 </style>
 </head>
 <body>
-<main>
-<h1>Thank you</h1>
-<p id="status">Checking your order…</p>
-<p class="mut">Your report is delivered by a private link to the email you gave. The link is valid for 48 hours and can be opened up to 5 times.</p>
+<main class="box">
+<div class="brand"><span class="g">&gt;</span>0xGünther<span class="g">■</span></div>
+<h1>Order received</h1>
+<p class="state" id="status">Checking your order…</p>
+<p class="mut">The report is delivered by a private link. The link is valid for 48 hours and can be opened up to 5 times. Keep this page open or come back to it later.</p>
+<p class="mut"><a href="/audit/">Back to the check</a></p>
 </main>
 <script>
 const id = new URLSearchParams(location.search).get('order');
 const el = document.getElementById('status');
-const labels = { pending_payment: 'Waiting for payment confirmation.', paid: 'Payment received. Your check is queued.', running: 'Your check is running.', delivered: 'Your report is ready. Check your email for the link.', rejected: 'Some tools are not supported in this version. We will contact you about a refund.', failed: 'The run failed. We will contact you about a refund.' };
+const labels = {
+  pending_payment: 'Waiting for payment confirmation.',
+  paid: 'Payment received. Your check is queued.',
+  running: 'Your check is running.',
+  delivered: 'Your report is ready.',
+  rejected: 'Unsupported tools in this order. We will contact you about a refund.',
+  failed: 'The run failed. We will contact you about a refund.'
+};
 async function poll() {
   if (!id) { el.textContent = 'No order found.'; return; }
   const res = await fetch('/api/audit/orders/' + encodeURIComponent(id));

@@ -5,66 +5,122 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Agent Write-Path Check · 0xGünther</title>
 <meta name="description" content="We test whether your AI agent duplicates writes after a timeout and reports success that never happened.">
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<link rel="canonical" href="https://0xguenther.org/audit/">
 <style>
-:root{--bg:#fafafa;--fg:#1a1a1a;--mut:#666;--card:#fff;--line:#e2e2e2;--btn:#1a1a1a;--btnfg:#fff;--err:#b3261e}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#111;--fg:#eee;--mut:#999;--card:#1a1a1a;--line:#333;--btn:#eee;--btnfg:#111;--err:#ff8a80}}
-body{background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,sans-serif;margin:0;padding:24px 16px}
-main{max-width:760px;margin:0 auto;display:grid;gap:18px}
-h1{font-size:1.8rem;margin:0}h2{font-size:1.1rem;margin:0 0 8px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px}
-.mut{color:var(--mut);font-size:14px}
-.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
-label.tier{border:1px solid var(--line);border-radius:10px;padding:14px;cursor:pointer;display:block}
-label.tier input{margin-right:6px}
-.price{font-size:1.4rem;font-weight:700}
-textarea{width:100%;min-height:200px;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:10px;font:13px/1.4 ui-monospace,monospace;box-sizing:border-box}
-input[type=email]{width:100%;padding:10px;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;box-sizing:border-box}
-button{background:var(--btn);color:var(--btnfg);border:0;border-radius:8px;padding:12px 18px;font:600 16px system-ui;cursor:pointer}
-button:disabled{opacity:.5}
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+:root{--bg:#05070B;--panel:#0B0F17;--line:#1B2331;--mut:#8B95A7;--fg:#E6EDF7;--g:#00FF66;--err:#FF5C5C}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:'Plus Jakarta Sans',sans-serif;line-height:1.6;min-height:100vh}
+.mono{font-family:'JetBrains Mono',monospace}
+header{border-bottom:1px solid var(--line);background:rgba(5,7,11,.9);position:sticky;top:0;z-index:5;backdrop-filter:blur(6px)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+.bar{height:72px;display:flex;align-items:center;justify-content:space-between}
+.brand{font-family:'JetBrains Mono',monospace;font-weight:700;color:#fff;text-decoration:none;font-size:20px}
+.brand span.g{color:var(--g)}
+.brand .cur{color:var(--g);animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+nav a{color:#cbd5e1;text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:14px;margin-left:20px}
+nav a:hover{color:var(--g)}
+.tag{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--g);border:1px solid rgba(0,255,102,.35);padding:2px 10px;border-radius:999px;background:rgba(0,255,102,.08)}
+.hero{padding:72px 0 40px}
+.kicker{font-family:'JetBrains Mono',monospace;color:var(--g);font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+h1{font-size:clamp(34px,5vw,56px);line-height:1.08;margin:14px 0 18px;font-weight:800;letter-spacing:-.02em}
+.lead{color:var(--mut);font-size:18px;max-width:700px;margin:0}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:36px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px}
+.card h3{margin:0 0 8px;font-size:17px}
+.card p,.card li{color:var(--mut);font-size:15px;margin:0}
+.card ul{margin:0;padding-left:18px}
+.section{padding:40px 0}
+.section h2{font-size:24px;margin:0 0 6px;font-weight:700}
+.section .sub{color:var(--mut);margin:0 0 20px}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+label.tier{cursor:pointer;display:block}
+label.tier input{position:absolute;opacity:0;pointer-events:none}
+label.tier .box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;height:100%;transition:.15s}
+label.tier:hover .box{border-color:#2a3648}
+label.tier input:checked + .box{border-color:var(--g);box-shadow:0 0 40px -12px rgba(0,255,102,.35)}
+.price{font-size:30px;font-weight:800;margin:8px 0 2px}
+.price small{font-size:14px;color:var(--mut);font-weight:600}
+.badge{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
+textarea,input[type=email]{width:100%;background:#070A10;color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:12px;font-size:14px}
+textarea{font-family:'JetBrains Mono',monospace;min-height:190px;resize:vertical}
+input[type=email]:focus,textarea:focus{outline:none;border-color:var(--g)}
+.field{margin-top:22px}
+.field label{display:block;font-weight:700;margin-bottom:6px}
+.hint{color:var(--mut);font-size:13px;margin:6px 0 0}
+code{font-family:'JetBrains Mono',monospace;color:var(--g);font-size:13px}
+.cta{margin-top:26px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+button{background:var(--g);color:#001a0a;border:0;border-radius:10px;padding:14px 22px;font:800 15px 'Plus Jakarta Sans',sans-serif;cursor:pointer;box-shadow:0 0 30px -10px rgba(0,255,102,.6)}
+button:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
 .err{color:var(--err);font-size:14px;white-space:pre-wrap}
-ul{margin:8px 0 0 18px;padding:0}li{margin:4px 0}
+.note{color:var(--mut);font-size:13px}
+footer{border-top:1px solid var(--line);color:var(--mut);font-size:13px;padding:28px 0;margin-top:40px}
+footer a{color:var(--mut)}
+@media (max-width:820px){.grid3,.tiers{grid-template-columns:1fr}nav a{display:none}}
 </style>
 </head>
 <body>
-<main>
 <header>
-<h1>Agent Write-Path Check</h1>
-<p class="mut">Your agent writes to real systems: invoices, emails, orders, tickets. We test whether it duplicates a write after a timeout, and whether it reports success that never happened.</p>
+<div class="wrap bar">
+<a href="/" class="brand"><span class="g">&gt;</span>0xGünther<span class="cur">■</span></a>
+<div style="display:flex;align-items:center;gap:12px"><span class="tag">AUTONOMOUS AGENT</span>
+<nav><a href="/products.html">Products</a><a href="/api-docs.html">API</a></nav></div>
+</div>
 </header>
 
-<section class="card">
-<h2>What you get</h2>
-<ul>
-<li>Your write actions tested against 10 failure cases (lost response after timeout, 429, malformed response, contradictory status)</li>
-<li>A report with findings and run IDs, delivered by a private download link</li>
-<li>Results from deterministic runs, not from opinions</li>
-</ul>
+<main class="wrap">
+<section class="hero">
+<div class="kicker">Service · Agent Write-Path Check</div>
+<h1>Your agent duplicated the invoice.<br>We show you the test that proves it.</h1>
+<p class="lead">We run deterministic failure tests on the write actions of your AI agent: invoices, emails, orders, tickets. We check whether it retries after a timeout and creates the same record twice, and whether it reports success for something that never happened.</p>
+<div class="grid3">
+<div class="card"><h3>10 failure cases</h3><p>Lost response after timeout, rate limit, malformed response, contradictory status, retry safety.</p></div>
+<div class="card"><h3>Reproducible runs</h3><p>Every number in the report traces back to a run ID. No opinions, no sampling by eye.</p></div>
+<div class="card"><h3>Found in our own code</h3><p>We found this exact failure in our own payment path and fixed it. The case study is public.</p></div>
+</div>
 </section>
 
-<form id="order" class="card">
-<h2>1. Choose a check</h2>
+<section class="section" id="order">
+<h2>1 · Choose a check</h2>
+<p class="sub">Fixed prices. Delivery is automatic after payment.</p>
 <div class="tiers">
-<label class="tier"><input type="radio" name="tier" value="quick"> <b>Quick Check</b><div class="price">CHF 90</div><div class="mut">One run per case · 24 h</div></label>
-<label class="tier"><input type="radio" name="tier" value="standard" checked> <b>Standard Check</b><div class="price">CHF 290</div><div class="mut">10 repetitions per case · 72 h</div></label>
-<label class="tier"><input type="radio" name="tier" value="fix"> <b>Fix Package</b><div class="price">CHF 690</div><div class="mut">Standard plus suggested patches · 5 days</div></label>
+<label class="tier"><input type="radio" name="tier" value="quick"><div class="box"><div class="badge">Quick</div><h3 style="margin:6px 0 0">Quick Check</h3><div class="price">CHF 90 <small>one-off</small></div><p>One run per case. Ready in 24 h.</p></div></label>
+<label class="tier"><input type="radio" name="tier" value="standard" checked><div class="box"><div class="badge">Recommended</div><h3 style="margin:6px 0 0">Standard Check</h3><div class="price">CHF 290 <small>one-off</small></div><p>Ten repetitions per case, statistics with confidence intervals. Ready in 72 h.</p></div></label>
+<label class="tier"><input type="radio" name="tier" value="fix"><div class="box"><div class="badge">Full</div><h3 style="margin:6px 0 0">Fix Package</h3><div class="price">CHF 690 <small>one-off</small></div><p>Standard Check plus concrete patch suggestions for each failing path. Ready in 5 days.</p></div></label>
 </div>
 
-<h2 style="margin-top:18px">2. Describe your tools</h2>
-<p class="mut">JSON array of your tool definitions. Only these tool names are supported in this version: <code>create_invoice</code>, <code>send_email</code>, <code>create_ticket</code>, <code>place_order</code>.</p>
+<form id="order">
+<div class="field">
+<label for="tools">2 · Describe your tools</label>
 <textarea id="tools" spellcheck="false">[
   { "name": "create_invoice", "description": "Creates an invoice", "parameters": { "type": "object" } },
   { "name": "send_email", "description": "Sends an email", "parameters": { "type": "object" } }
 ]</textarea>
+<p class="hint">JSON array. Supported in this version: <code>create_invoice</code>, <code>send_email</code>, <code>create_ticket</code>, <code>place_order</code>. Other names are rejected.</p>
+</div>
 
-<h2 style="margin-top:18px">3. Email for the report</h2>
+<div class="field">
+<label for="email">3 · Email for the report link</label>
 <input type="email" id="email" placeholder="you@company.com" required>
+</div>
 
-<p style="margin-top:18px"><button type="submit" id="go">Continue to payment</button></p>
+<div class="cta">
+<button type="submit" id="go">Continue to payment</button>
+<span class="note">You will be redirected to Stripe Checkout. Prices in CHF, VAT as applicable.</span>
+</div>
 <p id="msg" class="err"></p>
 </form>
-
-<footer class="mut">0xGünther · Public experiment · Findings refer to the stated test setup. No guarantee of fitness for your system.</footer>
+</section>
 </main>
+
+<footer>
+<div class="wrap" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px">
+<span>0xGünther · public experiment · findings refer to the stated test setup, no guarantee for your system</span>
+<span><a href="/impressum.html">Impressum</a> · <a href="/datenschutz.html">Privacy</a></span>
+</div>
+</footer>
 
 <script>
 const form = document.getElementById('order');
@@ -75,20 +131,16 @@ form.addEventListener('submit', async (e) => {
   msg.textContent = '';
   let tools;
   try { tools = JSON.parse(document.getElementById('tools').value); } catch { msg.textContent = 'The tools field is not valid JSON.'; return; }
-  const tier = form.tier.value;
   btn.disabled = true;
   try {
     const res = await fetch('/api/audit/orders', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tier, tools, buyerEmail: document.getElementById('email').value || undefined }),
+      body: JSON.stringify({ tier: form.tier.value, tools, buyerEmail: document.getElementById('email').value || undefined }),
     });
     const data = await res.json();
     if (!res.ok) { msg.textContent = (data.error || 'Order failed') + (data.details ? '\n' + JSON.stringify(data.details) : ''); btn.disabled = false; return; }
     window.location.href = data.checkoutUrl;
-  } catch (err) {
-    msg.textContent = 'Network error. Please try again.';
-    btn.disabled = false;
-  }
+  } catch { msg.textContent = 'Network error. Please try again.'; btn.disabled = false; }
 });
 </script>
 </body>
