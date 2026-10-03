@@ -36,6 +36,9 @@ export class BurnService {
       return { skipped: true, txHash: current?.txHash };
     }
 
+    // Hash des bereits gesendeten Burns. Ab hier darf kein Fehler mehr zu "failed" führen.
+    let broadcastHash: string | undefined;
+
     try {
       // Calculation: Net revenue in Cents converted to Token Burn Units (e.g. 1000 tokens per dollar / 10 tokens per cent)
       const rateTokensPerCent = 10n; // Example rate: 10 GÜNTER per cent ($1 = 1,000 GÜNTER)
@@ -48,6 +51,8 @@ export class BurnService {
         amount: burnAmountUnits,
         referenceId: stripePaymentId,
       });
+
+      broadcastHash = txResult.txHash;
 
       // Update state in database with whole tokens (fits 64-bit SQLite integer)
       await PaymentService.markBurned(stripePaymentId, burnAmountWholeTokens, txResult.txHash);
@@ -66,6 +71,11 @@ export class BurnService {
       if (err instanceof BurnPendingError) {
         await PaymentService.markPending(stripePaymentId, err.txHash);
         return { pending: true, txHash: err.txHash };
+      }
+      // Burn ist auf der Chain: nicht auf failed setzen (würde erneutes Verbrennen erlauben).
+      if (broadcastHash) {
+        await PaymentService.markPending(stripePaymentId, broadcastHash);
+        return { pending: true, txHash: broadcastHash };
       }
       console.error(`[BurnService] Burn failed for ${stripePaymentId}:`, err);
       await PaymentService.markFailed(stripePaymentId, err.message || 'Unknown error');
