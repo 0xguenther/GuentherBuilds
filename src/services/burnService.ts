@@ -1,5 +1,5 @@
 import { PaymentService } from './paymentService.js';
-import { Web3McpClient } from '../mcp/web3Mcp.js';
+import { Web3McpClient, BurnPendingError } from '../mcp/web3Mcp.js';
 import { TraceService } from './traceService.js';
 
 export class BurnService {
@@ -11,6 +11,21 @@ export class BurnService {
     const payment = await PaymentService.getPaymentByStripeId(stripePaymentId);
     if (!payment) {
       throw new Error(`Payment with ID ${stripePaymentId} not found.`);
+    }
+
+    // Bereits gesendeter Burn: nur Bestätigung prüfen, niemals erneut senden.
+    if (payment.status === 'burning' && payment.txHash) {
+      const state = await Web3McpClient.getReceiptStatus(payment.txHash);
+      if (state === 'success') {
+        const amountWhole = BigInt(payment.amountCents) * 10n;
+        await PaymentService.markBurned(stripePaymentId, amountWhole, payment.txHash);
+        return { success: true, txHash: payment.txHash, burnAmount: amountWhole };
+      }
+      if (state === 'reverted') {
+        await PaymentService.markFailed(stripePaymentId, 'reverted on chain');
+        return { success: false, reason: 'REVERTED' };
+      }
+      return { pending: true, txHash: payment.txHash };
     }
 
     // Atomic CAS claim: only one concurrent process can transition to 'burning'
@@ -48,6 +63,10 @@ export class BurnService {
       console.log(`[BurnService] Successfully burned tokens for payment ${stripePaymentId}. Tx: ${txResult.txHash}`);
       return { success: true, txHash: txResult.txHash, burnAmount: burnAmountWholeTokens };
     } catch (err: any) {
+      if (err instanceof BurnPendingError) {
+        await PaymentService.markPending(stripePaymentId, err.txHash);
+        return { pending: true, txHash: err.txHash };
+      }
       console.error(`[BurnService] Burn failed for ${stripePaymentId}:`, err);
       await PaymentService.markFailed(stripePaymentId, err.message || 'Unknown error');
       

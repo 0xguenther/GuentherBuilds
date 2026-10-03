@@ -59,6 +59,14 @@ export class PaymentService {
     });
   }
 
+  /** Broadcast ist erfolgt: Hash sichern, Status bleibt 'burning'. */
+  static async markPending(stripePaymentId: string, txHash: string) {
+    return prisma.payment.update({
+      where: { stripePaymentId },
+      data: { status: 'burning', txHash },
+    });
+  }
+
   static async markBurned(stripePaymentId: string, burnAmount: bigint, txHash: string) {
     return prisma.payment.update({
       where: { stripePaymentId },
@@ -88,7 +96,7 @@ export class PaymentService {
   static async getPendingPayments() {
     return prisma.payment.findMany({
       where: {
-        status: { in: ['received', 'failed'] },
+        status: { in: ['received', 'failed', 'burning'] },
       },
       orderBy: { createdAt: 'asc' },
     });

@@ -16,6 +16,14 @@ export interface BurnTokenParams {
   referenceId: string;
 }
 
+/** Broadcast erfolgreich, Bestätigung ausstehend. Der Hash darf nicht verloren gehen. */
+export class BurnPendingError extends Error {
+  constructor(public readonly txHash: string) {
+    super('Burn broadcast, receipt pending: ' + txHash);
+    this.name = 'BurnPendingError';
+  }
+}
+
 export interface BurnTokenResult {
   txHash: string;
   blockNumber?: number;
@@ -49,6 +57,8 @@ export class Web3McpClient {
       try {
         return await fn();
       } catch (err: any) {
+        // Pending-Burn NICHT erneut senden: die Transaktion liegt bereits auf der Chain.
+        if (err instanceof BurnPendingError) throw err;
         if (attempt === maxRetries) throw err;
         console.warn(`[Web3Mcp] Attempt ${attempt} failed: ${err.message}. Retrying in ${delay}ms...`);
         await new Promise((resolve) => setTimeout(resolve, delay));
@@ -76,6 +86,21 @@ export class Web3McpClient {
    * Executes a token burn on Base L2 using native viem signer or simulated fallback.
    * Embeds cryptographic referenceId into on-chain calldata for immutable proof of burn.
    */
+  /** Prüft den Status eines bereits gesendeten Burns auf der Chain. */
+  static async getReceiptStatus(txHash: string): Promise<'success' | 'reverted' | 'pending'> {
+    if (!this.isLiveMode()) return 'success';
+    const isMainnet = config.web3.networkId === 'base' || config.web3.networkId.includes('mainnet');
+    const chain = isMainnet ? base : baseSepolia;
+    const rpcUrl = config.web3.rpcUrl || (isMainnet ? 'https://mainnet.base.org' : 'https://sepolia.base.org');
+    const publicClient = createPublicClient({ chain, transport: http(rpcUrl) });
+    try {
+      const r = await publicClient.getTransactionReceipt({ hash: txHash as Hash });
+      return r.status === 'reverted' ? 'reverted' : 'success';
+    } catch {
+      return 'pending';
+    }
+  }
+
   static async burnTokens(params: BurnTokenParams): Promise<BurnTokenResult> {
     return this.retryWithBackoff(async () => {
       // 1. Simulation fallback for tests, local dev, or missing credentials
@@ -157,10 +182,15 @@ export class Web3McpClient {
       }
 
       console.log(`[Web3Mcp] Transaction broadcasted. Waiting for confirmation: ${txHash}...`);
-      const receipt = await publicClient.waitForTransactionReceipt({
-        hash: txHash,
-        timeout: 30_000,
-      });
+      let receipt;
+      try {
+        receipt = await publicClient.waitForTransactionReceipt({
+          hash: txHash,
+          timeout: 30_000,
+        });
+      } catch {
+        throw new BurnPendingError(txHash);
+      }
 
       if (receipt.status === 'reverted') {
         throw new Error(`Transaction reverted on Base L2: ${txHash}`);
