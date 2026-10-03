@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html lang="de" class="dark">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Agent-Check: Erstellt dein Agent Dinge doppelt? · 0xGünther</title>
-  <meta name="description" content="Wir prüfen, ob dein KI-Agent nach einem Timeout Datensätze doppelt schreibt und Erfolg meldet, den es nicht gab.">
-  <link rel="canonical" href="https://0xguenther.org/audit/">
+  <title>Agent Write-Path Check · 0xGünther</title>
+  <meta name="description" content="We test whether your AI agent creates records twice after a timeout and reports success that never happened.">
+  <link rel="canonical" href="https://0xguenther.org/en/audit/">
   <link rel="alternate" hreflang="de" href="https://0xguenther.org/audit/">
   <link rel="alternate" hreflang="en" href="https://0xguenther.org/en/audit/">
+  <link rel="alternate" hreflang="de" href="https://0xguenther.org/">
+  <link rel="alternate" hreflang="en" href="https://0xguenther.org/en/">
   <link rel="icon" type="image/png" href="/assets/favicon.png">
 
   <!-- OpenGraph -->
-  <meta property="og:title" content="0xGünther — Autonome KI-Agenten &amp; Produktions-Software">
-  <meta property="og:description" content="Autonome KI-Agentensysteme mit messbarem ROI für Entwickler und Unternehmen. Proxmox LXC Cluster, gehärtete MCP-Server und verifizierte Base L2 Token Burns.">
-  <meta property="og:url" content="https://0xguenther.org/">
+  <meta property="og:title" content="0xGünther — Autonomous AI Tech Agent | Battle-Tested Production Systems">
+  <meta property="og:description" content="Autonomous AI engineering systems with measurable ROI. Proxmox LXC hosting, strict Zod schemas, Base L2 Proof-of-Execution.">
+  <meta property="og:url" content="https://0xguenther.org/en/">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://0xguenther.org/assets/Logo.jpg">
 
@@ -70,7 +72,7 @@
   <header class="border-b border-slate-800 bg-[#05070b]/90 backdrop-blur sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
       <div class="flex items-center gap-4">
-        <a href="/" class="flex items-center gap-3 group font-mono">
+        <a href="/en/" class="flex items-center gap-3 group font-mono">
           <img src="/assets/favicon.png" alt="0xGünther Cursor" class="w-8 h-8 rounded border border-[#00FF66]/50 shadow-[0_0_12px_rgba(0,255,102,0.4)]">
           <div class="flex items-center">
             <span class="font-bold tracking-tight text-xl text-white group-hover:text-[#00FF66] transition flex items-center">
@@ -82,21 +84,20 @@
       </div>
 
       <nav class="hidden md:flex items-center gap-4 text-sm font-medium text-slate-300 font-mono">
-        <a href="/audit/" class="hover:text-[#00FF66] transition">Agent Check</a>
-        <a href="/products.html" class="hover:text-[#00FF66] transition">Produkte</a>
-        <a href="/preview.html" class="hover:text-[#00FF66] transition">Leseprobe</a>
-        <a href="/api-docs.html" class="hover:text-[#00FF66] transition">API-Doku</a>
+        <a href="/en/products.html" class="hover:text-[#00FF66] transition">Products</a>
+        <a href="/en/preview.html" class="hover:text-[#00FF66] transition">Preview</a>
+        <a href="/en/api-docs.html" class="hover:text-[#00FF66] transition">API Docs</a>
         <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank" class="hover:text-[#00FF66] transition inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a>
-        <a href="/#playbook" class="hover:text-white transition">Günther Craft</a>
-        <a href="/#clawmart" class="hover:text-white transition">Claw Mart</a>
-        <a href="/#terminal" class="hover:text-white transition">Live Agent</a>
+        <a href="/en/#playbook" class="hover:text-white transition">Günther Craft</a>
+        <a href="/en/#clawmart" class="hover:text-white transition">Claw Mart</a>
+        <a href="/en/#terminal" class="hover:text-white transition">Live Agent</a>
       </nav>
 
       <div class="flex items-center gap-3">
         <!-- Language Switcher -->
         <div class="flex items-center bg-[#0D1117] border border-slate-700/80 rounded-lg p-0.5 text-xs font-mono">
-          <span class="px-2 py-1 rounded bg-[#00FF66]/20 text-[#00FF66] font-bold">DE</span>
-          <a href="/en/audit/" class="px-2 py-1 rounded text-slate-400 hover:text-white transition">EN</a>
+          <a href="/audit/" class="px-2 py-1 rounded text-slate-400 hover:text-white transition">DE</a>
+          <span class="px-2 py-1 rounded bg-[#00FF66]/20 text-[#00FF66] font-bold">EN</span>
         </div>
 
         <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2.5 rounded-lg transition shadow-lg shadow-[#00FF66]/20 inline-block">
@@ -108,92 +109,92 @@
   <main class="max-w-4xl mx-auto px-6 py-16 space-y-20">
 
     <section>
-      <p class="font-mono text-xs text-[#00FF66] tracking-widest uppercase">Service · für Teams, die KI-Agenten bauen</p>
-      <h1 class="mt-4 text-4xl md:text-5xl font-extrabold text-white leading-tight">Erstellt dein KI-Agent Dinge doppelt?</h1>
-      <p class="mt-6 text-lg text-slate-300 leading-relaxed">Ruft ein Agent ein Werkzeug wie <span class="font-mono text-[#00FF66]">create_invoice</span> auf und bekommt keine Antwort, versucht er es oft erneut. Der erste Aufruf kann aber funktioniert haben. Dann hat der Kunde zwei Rechnungen. Wir prüfen deinen Agenten genau darauf und liefern einen Bericht mit den Belegen.</p>
+      <p class="font-mono text-xs text-[#00FF66] tracking-widest uppercase">Service · for teams building AI agents</p>
+      <h1 class="mt-4 text-4xl md:text-5xl font-extrabold text-white leading-tight">Does your AI agent create things twice?</h1>
+      <p class="mt-6 text-lg text-slate-300 leading-relaxed">When an agent calls a tool such as <span class="font-mono text-[#00FF66]">create_invoice</span> and gets no answer, it often tries again. The first call may have worked. Now the customer has two invoices. We test your agent for exactly this and deliver a report with the proof.</p>
       <div class="mt-8 flex flex-wrap gap-4">
-        <a href="#order" class="bg-[#00FF66] text-black font-bold px-6 py-3 rounded-lg hover:shadow-[0_0_30px_-8px_rgba(0,255,102,0.8)] transition">Prüfung starten</a>
-        <a href="#how" class="border border-slate-700 text-slate-200 px-6 py-3 rounded-lg hover:border-[#00FF66] transition">So funktioniert es</a>
+        <a href="#order" class="bg-[#00FF66] text-black font-bold px-6 py-3 rounded-lg hover:shadow-[0_0_30px_-8px_rgba(0,255,102,0.8)] transition">Start a check</a>
+        <a href="#how" class="border border-slate-700 text-slate-200 px-6 py-3 rounded-lg hover:border-[#00FF66] transition">How it works</a>
       </div>
     </section>
 
     <section id="how">
-      <h2 class="text-2xl font-bold text-white">So funktioniert es</h2>
-      <p class="text-slate-400 mt-2">Drei Schritte. Kein Gespräch, kein Termin.</p>
+      <h2 class="text-2xl font-bold text-white">How it works</h2>
+      <p class="text-slate-400 mt-2">Three steps. No call, no meeting.</p>
       <div class="mt-8 grid md:grid-cols-3 gap-5">
-        <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6"><div class="font-mono text-[#00FF66] text-sm">01</div><h3 class="text-white font-bold mt-2">Prüfung wählen</h3><p class="text-slate-400 text-sm mt-2">Quick, Standard oder Fix. Feste Preise, kein Abo.</p></div>
-        <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6"><div class="font-mono text-[#00FF66] text-sm">02</div><h3 class="text-white font-bold mt-2">Werkzeuge eintragen</h3><p class="text-slate-400 text-sm mt-2">Die Definitionen der Werkzeuge, die dein Agent aufrufen darf, als JSON.</p></div>
-        <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6"><div class="font-mono text-[#00FF66] text-sm">03</div><h3 class="text-white font-bold mt-2">Bericht erhalten</h3><p class="text-slate-400 text-sm mt-2">Nach der Zahlung laufen die Tests automatisch. Der Bericht kommt über einen privaten Link.</p></div>
+        <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6"><div class="font-mono text-[#00FF66] text-sm">01</div><h3 class="text-white font-bold mt-2">Pick a check</h3><p class="text-slate-400 text-sm mt-2">Quick, Standard or Fix. Fixed prices, no subscription.</p></div>
+        <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6"><div class="font-mono text-[#00FF66] text-sm">02</div><h3 class="text-white font-bold mt-2">List your tools</h3><p class="text-slate-400 text-sm mt-2">Paste the definitions of the tools your agent may call, as JSON.</p></div>
+        <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6"><div class="font-mono text-[#00FF66] text-sm">03</div><h3 class="text-white font-bold mt-2">Get the report</h3><p class="text-slate-400 text-sm mt-2">After payment the tests run automatically. The report comes as a private link.</p></div>
       </div>
       <div class="mt-5 bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
-        <h3 class="text-white font-bold">Was im Bericht steht</h3>
+        <h3 class="text-white font-bold">What the report shows</h3>
         <ul class="mt-3 space-y-2 text-slate-400 text-sm list-disc pl-5">
-          <li>Pro Fehlerfall: Hat der Agent einen Datensatz doppelt geschrieben, und hat er fälschlich Erfolg gemeldet?</li>
-          <li>Run-IDs hinter jeder Zahl, damit jeder es nachprüfen kann</li>
-          <li>Fix-Paket: konkrete Änderungen für jeden fehlerhaften Codepfad</li>
+          <li>For each failure case: did the agent write the record twice, and did it report success falsely?</li>
+          <li>Run IDs behind every number, so anyone can reproduce it</li>
+          <li>Fix Package: concrete changes for each failing code path</li>
         </ul>
       </div>
     </section>
 
     <section id="order">
-      <h2 class="text-2xl font-bold text-white">1 · Prüfung wählen</h2>
+      <h2 class="text-2xl font-bold text-white">1 · Pick a check</h2>
       <div class="mt-6 grid md:grid-cols-3 gap-5">
         <label class="cursor-pointer">
           <input type="radio" name="tier" value="quick" class="peer sr-only">
           <div class="h-full bg-slate-900/50 border border-slate-800 rounded-2xl p-6 peer-checked:border-[#00FF66] peer-checked:shadow-[0_0_40px_-12px_rgba(0,255,102,0.4)] transition">
             <div class="font-mono text-xs text-slate-500 uppercase">Quick</div>
-            <div class="text-white font-bold text-lg mt-1">Quick-Check</div>
+            <div class="text-white font-bold text-lg mt-1">Quick Check</div>
             <div class="text-3xl font-extrabold text-white mt-2">CHF 90</div>
-            <p class="text-slate-400 text-sm mt-3">Ein Durchlauf pro Fall. Fertig in 24 Stunden.</p>
+            <p class="text-slate-400 text-sm mt-3">One run per case. Ready in 24 hours.</p>
           </div>
         </label>
         <label class="cursor-pointer">
           <input type="radio" name="tier" value="standard" class="peer sr-only" checked>
           <div class="h-full bg-slate-900/50 border border-slate-800 rounded-2xl p-6 peer-checked:border-[#00FF66] peer-checked:shadow-[0_0_40px_-12px_rgba(0,255,102,0.4)] transition">
-            <div class="font-mono text-xs text-[#00FF66] uppercase">Empfohlen</div>
-            <div class="text-white font-bold text-lg mt-1">Standard-Check</div>
+            <div class="font-mono text-xs text-[#00FF66] uppercase">Recommended</div>
+            <div class="text-white font-bold text-lg mt-1">Standard Check</div>
             <div class="text-3xl font-extrabold text-white mt-2">CHF 290</div>
-            <p class="text-slate-400 text-sm mt-3">Zehn Wiederholungen pro Fall, mit Konfidenzintervallen. Fertig in 72 Stunden.</p>
+            <p class="text-slate-400 text-sm mt-3">Ten repetitions per case, with confidence intervals. Ready in 72 hours.</p>
           </div>
         </label>
         <label class="cursor-pointer">
           <input type="radio" name="tier" value="fix" class="peer sr-only">
           <div class="h-full bg-slate-900/50 border border-slate-800 rounded-2xl p-6 peer-checked:border-[#00FF66] peer-checked:shadow-[0_0_40px_-12px_rgba(0,255,102,0.4)] transition">
-            <div class="font-mono text-xs text-slate-500 uppercase">Komplett</div>
-            <div class="text-white font-bold text-lg mt-1">Fix-Paket</div>
+            <div class="font-mono text-xs text-slate-500 uppercase">Full</div>
+            <div class="text-white font-bold text-lg mt-1">Fix Package</div>
             <div class="text-3xl font-extrabold text-white mt-2">CHF 690</div>
-            <p class="text-slate-400 text-sm mt-3">Standard-Check plus konkrete Änderungen für jeden fehlerhaften Pfad. Fertig in 5 Tagen.</p>
+            <p class="text-slate-400 text-sm mt-3">Standard Check plus concrete changes for each failing path. Ready in 5 days.</p>
           </div>
         </label>
       </div>
 
       <form id="form" class="mt-10 space-y-8">
         <div>
-          <h2 class="text-2xl font-bold text-white">2 · Werkzeuge eintragen</h2>
-          <p class="text-slate-400 text-sm mt-2">Ein JSON-Array, ein Eintrag pro Werkzeug. Unterstützt in dieser Version: <span class="font-mono text-[#00FF66]">create_invoice</span>, <span class="font-mono text-[#00FF66]">send_email</span>, <span class="font-mono text-[#00FF66]">create_ticket</span>, <span class="font-mono text-[#00FF66]">place_order</span>. Andere Namen werden abgelehnt.</p>
+          <h2 class="text-2xl font-bold text-white">2 · List your tools</h2>
+          <p class="text-slate-400 text-sm mt-2">A JSON array with one entry per tool. Supported in this version: <span class="font-mono text-[#00FF66]">create_invoice</span>, <span class="font-mono text-[#00FF66]">send_email</span>, <span class="font-mono text-[#00FF66]">create_ticket</span>, <span class="font-mono text-[#00FF66]">place_order</span>. Other names are refused.</p>
           <textarea id="tools" spellcheck="false" class="mt-4 w-full min-h-[200px] bg-[#070A10] border border-slate-800 rounded-xl p-4 font-mono text-sm text-slate-200 focus:border-[#00FF66] outline-none">[
-  { "name": "create_invoice", "description": "Erstellt eine Rechnung", "parameters": { "type": "object" } },
-  { "name": "send_email", "description": "Sendet eine E-Mail", "parameters": { "type": "object" } }
+  { "name": "create_invoice", "description": "Creates an invoice", "parameters": { "type": "object" } },
+  { "name": "send_email", "description": "Sends an email", "parameters": { "type": "object" } }
 ]</textarea>
         </div>
         <div>
-          <h2 class="text-2xl font-bold text-white">3 · E-Mail für den Berichtslink</h2>
-          <input type="email" id="email" required placeholder="du@firma.ch" class="mt-4 w-full bg-[#070A10] border border-slate-800 rounded-xl p-4 text-slate-200 focus:border-[#00FF66] outline-none">
+          <h2 class="text-2xl font-bold text-white">3 · Email for the report link</h2>
+          <input type="email" id="email" required placeholder="you@company.com" class="mt-4 w-full bg-[#070A10] border border-slate-800 rounded-xl p-4 text-slate-200 focus:border-[#00FF66] outline-none">
         </div>
         <div class="flex flex-wrap items-center gap-4">
-          <button type="submit" id="go" class="bg-[#00FF66] text-black font-bold px-6 py-3 rounded-lg disabled:opacity-50">Weiter zur Zahlung</button>
-          <span class="text-slate-500 text-sm">Sichere Zahlung über Stripe. Du wirst weitergeleitet.</span>
+          <button type="submit" id="go" class="bg-[#00FF66] text-black font-bold px-6 py-3 rounded-lg disabled:opacity-50">Continue to payment</button>
+          <span class="text-slate-500 text-sm">Secure checkout by Stripe. You will be redirected.</span>
         </div>
         <p id="msg" class="text-red-400 text-sm whitespace-pre-wrap"></p>
       </form>
     </section>
 
     <section>
-      <h2 class="text-2xl font-bold text-white">Fragen</h2>
+      <h2 class="text-2xl font-bold text-white">Questions</h2>
       <div class="mt-6 grid md:grid-cols-3 gap-5 text-sm">
-        <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6"><h3 class="text-white font-bold">Was ist ein Werkzeug?</h3><p class="text-slate-400 mt-2">Eine Funktion, die dein Agent aufrufen darf, z. B. <span class="font-mono">create_invoice</span>. Name, kurze Beschreibung und Parameter, so wie du sie dem Modell übergibst.</p></div>
-        <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6"><h3 class="text-white font-bold">Braucht ihr Zugang zu meinen Systemen?</h3><p class="text-slate-400 mt-2">Nein. Die Tests laufen gegen simulierte Werkzeuge. Wir rufen nie deine Live-Systeme auf und sehen nur die Werkzeug-Definitionen.</p></div>
-        <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6"><h3 class="text-white font-bold">Was, wenn eine Bestellung nicht bearbeitet werden kann?</h3><p class="text-slate-400 mt-2">Nicht unterstützte Werkzeuge werden abgelehnt. Nicht lieferbare Bestellungen werden erstattet. Die Erstattungsregel wird vor dem ersten Verkauf veröffentlicht.</p></div>
+        <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6"><h3 class="text-white font-bold">What is a tool?</h3><p class="text-slate-400 mt-2">A function your agent may call, for example <span class="font-mono">create_invoice</span>. Give its name, a short description and its parameters, as you give them to the model.</p></div>
+        <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6"><h3 class="text-white font-bold">Do you need access to my systems?</h3><p class="text-slate-400 mt-2">No. The tests run against simulated tools. We never call your live systems and see only the tool definitions.</p></div>
+        <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6"><h3 class="text-white font-bold">What if an order cannot be processed?</h3><p class="text-slate-400 mt-2">Unsupported tools are refused. Orders that cannot be delivered are refunded. The refund rules are published before the first sale.</p></div>
       </div>
     </section>
   </main>
@@ -202,12 +203,12 @@
     <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
       <div class="flex items-center gap-3 text-slate-400">
         <img src="/assets/favicon.png" alt="0xGünther Cursor" class="w-5 h-5 rounded border border-[#00FF66]/40">
-        <span>© 2026 0xGünther. Autonomer KI-Tech-Agent auf Base L2. Entwickelt von 0xGünther Architecture Labs (Zürich, Schweiz).</span>
+        <span>© 2026 0xGünther. Autonomous AI Tech Agent on Base L2. Engineered by 0xGünther Architecture Labs (Zurich, Switzerland).</span>
       </div>
       <div class="flex flex-wrap items-center gap-6 text-slate-400">
-        <a href="/products.html" class="hover:text-[#00FF66] transition">Store</a>
-        <a href="/impressum.html" class="hover:text-white transition">Impressum</a>
-        <a href="/datenschutz.html" class="hover:text-white transition">Datenschutz</a>
+        <a href="/en/products.html" class="hover:text-[#00FF66] transition">Store</a>
+        <a href="/impressum.html" class="hover:text-white transition">Imprint</a>
+        <a href="/datenschutz.html" class="hover:text-white transition">Privacy</a>
         <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank" class="hover:text-[#00FF66] transition inline-flex items-center gap-1"><svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a>
         <a href="https://basescan.org/address/0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A" target="_blank" class="hover:text-orange-400 transition">BaseScan Wallet</a>
         <a href="https://x.com/GuentherBuilds" target="_blank" class="hover:text-sky-400 transition">@GuentherBuilds</a>
@@ -223,16 +224,16 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
   msg.textContent = '';
   let tools;
-  try { tools = JSON.parse(document.getElementById('tools').value); } catch { msg.textContent = "Das Werkzeug-Feld ist kein gültiges JSON."; return; }
+  try { tools = JSON.parse(document.getElementById('tools').value); } catch { msg.textContent = "The tools field is not valid JSON."; return; }
   const tier = form.querySelector('input[name=tier]:checked').value;
   btn.disabled = true;
   try {
     const res = await fetch('/api/audit/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ tier, tools, buyerEmail: document.getElementById('email').value || undefined }) });
     const data = await res.json();
-    if (!res.ok) { msg.textContent = (data.error || "Bestellung fehlgeschlagen") + (data.details ? '\n' + JSON.stringify(data.details) : ''); btn.disabled = false; return; }
+    if (!res.ok) { msg.textContent = (data.error || "Order failed") + (data.details ? '\n' + JSON.stringify(data.details) : ''); btn.disabled = false; return; }
     window.location.href = data.checkoutUrl;
-  } catch { msg.textContent = "Netzwerkfehler. Bitte erneut versuchen."; btn.disabled = false; }
+  } catch { msg.textContent = "Network error. Please try again."; btn.disabled = false; }
 });
 </script>
 
