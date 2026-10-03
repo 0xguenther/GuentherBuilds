@@ -3,6 +3,7 @@ import { BurnService } from '../services/burnService.js';
 import { MarketingService } from '../services/marketingService.js';
 import { CommunityGrowthService } from '../services/communityGrowthService.js';
 import { TraceService } from '../services/traceService.js';
+import { AuditFulfillmentService } from '../services/auditFulfillmentService.js';
 import { checkDatabaseConnection } from '../db/client.js';
 import { config } from '../config/index.js';
 
@@ -61,6 +62,11 @@ export class GuntherDaemon {
       await this.emitHeartbeat();
       await this.checkDailyPulse();
       await this.checkCommunityEngagement();
+      try {
+        await AuditFulfillmentService.processPaidOrders();
+      } catch (err: unknown) {
+        console.error('[Daemon] Audit-Fulfilment fehlgeschlagen:', err instanceof Error ? err.message : err);
+      }
     } finally {
       this.isTickBusy = false;
     }

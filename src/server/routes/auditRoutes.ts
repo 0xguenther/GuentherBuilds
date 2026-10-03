@@ -1,6 +1,8 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { AuditOrderService, AUDIT_TIERS } from '../../services/auditOrderService.js';
+import { AuditFulfillmentService } from '../../services/auditFulfillmentService.js';
+import fs from 'fs';
 
 const OrderSchema = z.object({
   tier: z.enum(Object.keys(AUDIT_TIERS) as [string, ...string[]]),
@@ -34,5 +36,13 @@ export async function auditRoutes(fastify: FastifyInstance) {
     const order = await AuditOrderService.get(request.params.id);
     if (!order) return reply.status(404).send({ error: 'Bestellung nicht gefunden' });
     return reply.send({ id: order.id, tier: order.tier, status: order.status, createdAt: order.createdAt });
+  });
+
+  // Bericht herunterladen. Der Token ist die Berechtigung, Ablauf und Anzahl werden geprüft.
+  fastify.get('/api/audit/download/:token', async (request: FastifyRequest<{ Params: { token: string } }>, reply: FastifyReply) => {
+    const res = await AuditFulfillmentService.consumeDownload(request.params.token);
+    if (!res.ok) return reply.status(403).send({ error: res.reason });
+    reply.header('Content-Type', 'text/html; charset=utf-8');
+    return reply.send(fs.readFileSync(res.path, 'utf8'));
   });
 }
