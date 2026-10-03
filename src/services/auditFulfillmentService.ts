@@ -4,6 +4,7 @@ import path from 'path';
 import { spawn } from 'child_process';
 import { prisma } from '../db/client.js';
 import { AUDIT_TIERS, AuditTier } from './auditOrderService.js';
+import { TraceService } from './traceService.js';
 
 // Nur diese vier Schreibaktionen sind in Phase 1 zulässig (siehe STAND.md, Schritt 2).
 export const ALLOWED_TOOLS = ['create_invoice', 'send_email', 'create_ticket', 'place_order'] as const;
@@ -50,6 +51,14 @@ export class AuditFulfillmentService {
     const next = await prisma.auditOrder.findFirst({ where: { status: 'paid' }, orderBy: { createdAt: 'asc' } });
     if (!next) return 0;
     await this.fulfil(next.id);
+    const done = await prisma.auditOrder.findUnique({ where: { id: next.id } });
+    await TraceService.recordTrace({
+      taskId: `audit-${next.id}`,
+      model: `harness:${ROUTE}`,
+      task: 'AUDIT_FULFILMENT',
+      status: done?.status === 'delivered' ? 'ok' : 'error',
+      metadata: { status: done?.status ?? 'unknown' },
+    });
     return 1;
   }
 
