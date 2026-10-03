@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agent Write-Path Check · 0xGünther</title>
+<meta name="description" content="We test whether your AI agent duplicates writes after a timeout and reports success that never happened.">
+<style>
+:root{--bg:#fafafa;--fg:#1a1a1a;--mut:#666;--card:#fff;--line:#e2e2e2;--btn:#1a1a1a;--btnfg:#fff;--err:#b3261e}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#111;--fg:#eee;--mut:#999;--card:#1a1a1a;--line:#333;--btn:#eee;--btnfg:#111;--err:#ff8a80}}
+body{background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,sans-serif;margin:0;padding:24px 16px}
+main{max-width:760px;margin:0 auto;display:grid;gap:18px}
+h1{font-size:1.8rem;margin:0}h2{font-size:1.1rem;margin:0 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px}
+.mut{color:var(--mut);font-size:14px}
+.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+label.tier{border:1px solid var(--line);border-radius:10px;padding:14px;cursor:pointer;display:block}
+label.tier input{margin-right:6px}
+.price{font-size:1.4rem;font-weight:700}
+textarea{width:100%;min-height:200px;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:10px;font:13px/1.4 ui-monospace,monospace;box-sizing:border-box}
+input[type=email]{width:100%;padding:10px;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;box-sizing:border-box}
+button{background:var(--btn);color:var(--btnfg);border:0;border-radius:8px;padding:12px 18px;font:600 16px system-ui;cursor:pointer}
+button:disabled{opacity:.5}
+.err{color:var(--err);font-size:14px;white-space:pre-wrap}
+ul{margin:8px 0 0 18px;padding:0}li{margin:4px 0}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>Agent Write-Path Check</h1>
+<p class="mut">Your agent writes to real systems: invoices, emails, orders, tickets. We test whether it duplicates a write after a timeout, and whether it reports success that never happened.</p>
+</header>
+
+<section class="card">
+<h2>What you get</h2>
+<ul>
+<li>Your write actions tested against 10 failure cases (lost response after timeout, 429, malformed response, contradictory status)</li>
+<li>A report with findings and run IDs, delivered by a private download link</li>
+<li>Results from deterministic runs, not from opinions</li>
+</ul>
+</section>
+
+<form id="order" class="card">
+<h2>1. Choose a check</h2>
+<div class="tiers">
+<label class="tier"><input type="radio" name="tier" value="quick"> <b>Quick Check</b><div class="price">CHF 90</div><div class="mut">One run per case · 24 h</div></label>
+<label class="tier"><input type="radio" name="tier" value="standard" checked> <b>Standard Check</b><div class="price">CHF 290</div><div class="mut">10 repetitions per case · 72 h</div></label>
+<label class="tier"><input type="radio" name="tier" value="fix"> <b>Fix Package</b><div class="price">CHF 690</div><div class="mut">Standard plus suggested patches · 5 days</div></label>
+</div>
+
+<h2 style="margin-top:18px">2. Describe your tools</h2>
+<p class="mut">JSON array of your tool definitions. Only these tool names are supported in this version: <code>create_invoice</code>, <code>send_email</code>, <code>create_ticket</code>, <code>place_order</code>.</p>
+<textarea id="tools" spellcheck="false">[
+  { "name": "create_invoice", "description": "Creates an invoice", "parameters": { "type": "object" } },
+  { "name": "send_email", "description": "Sends an email", "parameters": { "type": "object" } }
+]</textarea>
+
+<h2 style="margin-top:18px">3. Email for the report</h2>
+<input type="email" id="email" placeholder="you@company.com" required>
+
+<p style="margin-top:18px"><button type="submit" id="go">Continue to payment</button></p>
+<p id="msg" class="err"></p>
+</form>
+
+<footer class="mut">0xGünther · Public experiment · Findings refer to the stated test setup. No guarantee of fitness for your system.</footer>
+</main>
+
+<script>
+const form = document.getElementById('order');
+const msg = document.getElementById('msg');
+const btn = document.getElementById('go');
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  msg.textContent = '';
+  let tools;
+  try { tools = JSON.parse(document.getElementById('tools').value); } catch { msg.textContent = 'The tools field is not valid JSON.'; return; }
+  const tier = form.tier.value;
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/audit/orders', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tier, tools, buyerEmail: document.getElementById('email').value || undefined }),
+    });
+    const data = await res.json();
+    if (!res.ok) { msg.textContent = (data.error || 'Order failed') + (data.details ? '\n' + JSON.stringify(data.details) : ''); btn.disabled = false; return; }
+    window.location.href = data.checkoutUrl;
+  } catch (err) {
+    msg.textContent = 'Network error. Please try again.';
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
