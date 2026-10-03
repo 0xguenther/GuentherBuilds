@@ -1,5 +1,22 @@
 import crypto from 'crypto';
 import { config } from '../config/index.js';
+import { prisma } from '../db/client.js';
+
+/** Kein Guthaben bei X (402). Kein Erfolg melden, der nicht stattgefunden hat. */
+export class XCreditDepletedError extends Error {
+  constructor() {
+    super('X API credits depleted (402)');
+    this.name = 'XCreditDepletedError';
+  }
+}
+
+/** Ergebnis unklar (Timeout, Netzwerk, 5xx). Nicht erneut senden, sonst droht ein Doppelpost. */
+export class XUnconfirmedError extends Error {
+  constructor(key: string) {
+    super(`X post result unconfirmed for key ${key}. Manuell prüfen, nicht automatisch erneut senden.`);
+    this.name = 'XUnconfirmedError';
+  }
+}
 
 export interface PostTweetParams {
   text: string;
@@ -143,41 +160,83 @@ export class XMcpClient {
         payload.reply = { in_reply_to_tweet_id: params.inReplyToStatusId };
       }
 
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: {
-          Authorization: authHeader,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(10000),
-      });
+      const claim = await XMcpClient.claimIdempotency(params.idempotencyKey);
+      if (claim.replay) return { ...claim.replay, text: params.text };
+
+      let res: Response;
+      try {
+        res = await fetch(url, {
+          method: 'POST',
+          headers: {
+            Authorization: authHeader,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(10000),
+        });
+      } catch {
+        throw new XUnconfirmedError(params.idempotencyKey ?? url);
+      }
 
       if (res.status === 429) {
+        await XMcpClient.finishIdempotency(claim.traceId, 'error');
         throw new Error('X API rate limit (429)');
       }
 
       if (res.status === 402) {
-        console.warn('[XMcp] X API credits depleted (402 Payment Required). Falling back to simulation mode.');
-        return {
-          tweetId: `sim_credit_depleted_${Date.now()}`,
-          text: params.text,
-          createdAt: new Date().toISOString(),
-        };
+        console.warn('[XMcp] X API credits depleted (402 Payment Required). Kein Post erstellt.');
+        await XMcpClient.finishIdempotency(claim.traceId, 'error');
+        throw new XCreditDepletedError();
       }
 
       if (!res.ok) {
+        if (res.status >= 500) throw new XUnconfirmedError(params.idempotencyKey ?? url);
         const errorText = await res.text();
+        await XMcpClient.finishIdempotency(claim.traceId, 'error');
         throw new Error(`X API error ${res.status}: ${errorText}`);
       }
 
       const data = (await res.json()) as any;
-      console.log(`[XMcp] Live Tweet posted successfully: ${data.data?.id}`);
+      const tweetId = data.data?.id || `live_${Date.now()}`;
+      await XMcpClient.finishIdempotency(claim.traceId, 'ok', tweetId);
+      console.log(`[XMcp] Live Tweet posted successfully: ${tweetId}`);
       return {
-        tweetId: data.data?.id || `live_${Date.now()}`,
+        tweetId,
         text: data.data?.text || params.text,
         createdAt: new Date().toISOString(),
       };
+    });
+  }
+
+  /** Prüft den Idempotenz-Schlüssel gegen die Trace-Tabelle. */
+  static async claimIdempotency(key?: string): Promise<{ replay?: PostTweetResult; traceId?: string }> {
+    if (!key) return {};
+    const taskId = `x-idem:${key}`;
+    const existing = await prisma.trace.findFirst({
+      where: { taskId, status: { in: ['ok', 'pending'] } },
+      orderBy: { createdAt: 'desc' },
+    });
+    if (existing?.status === 'ok') {
+      return {
+        replay: {
+          tweetId: existing.model.replace('tweet:', ''),
+          text: '',
+          createdAt: existing.createdAt.toISOString(),
+        },
+      };
+    }
+    if (existing?.status === 'pending') throw new XUnconfirmedError(key);
+    const row = await prisma.trace.create({
+      data: { taskId, model: 'x-pending', task: 'x-post', status: 'pending' },
+    });
+    return { traceId: row.id };
+  }
+
+  static async finishIdempotency(traceId: string | undefined, status: 'ok' | 'error', tweetId?: string) {
+    if (!traceId) return;
+    await prisma.trace.update({
+      where: { id: traceId },
+      data: { status, model: tweetId ? `tweet:${tweetId}` : 'x-failed' },
     });
   }
 
