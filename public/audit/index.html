@@ -72,15 +72,22 @@ footer a{color:var(--mut)}
 
 <main class="wrap">
 <section class="hero">
-<div class="kicker">Service · Agent Write-Path Check</div>
-<h1>Your agent duplicated the invoice.<br>We show you the test that proves it.</h1>
-<p class="lead">We run deterministic failure tests on the write actions of your AI agent: invoices, emails, orders, tickets. We check whether it retries after a timeout and creates the same record twice, and whether it reports success for something that never happened.</p>
-<div class="grid3">
-<div class="card"><h3>10 failure cases</h3><p>Lost response after timeout, rate limit, malformed response, contradictory status, retry safety.</p></div>
-<div class="card"><h3>Reproducible runs</h3><p>Every number in the report traces back to a run ID. No opinions, no sampling by eye.</p></div>
-<div class="card"><h3>Found in our own code</h3><p>We found this exact failure in our own payment path and fixed it. The case study is public.</p></div>
-</div>
+<div class="kicker">Service · for teams building AI agents</div>
+<h1>Does your AI agent create things twice?</h1>
+<p class="lead">When an AI agent calls a tool such as "create invoice" and gets no answer, it often tries again. Sometimes the first call had worked. Then the customer gets two invoices, two emails, or two orders. We test your agent for exactly this, and give you a report with the proof.</p>
 </section>
+
+<section class="section" id="how">
+<h2>How it works</h2>
+<p class="sub">Three steps. No call, no meeting.</p>
+<div class="grid3">
+<div class="card"><h3>1 · You pick a check</h3><p>Quick, Standard, or Fix. The price is fixed.</p></div>
+<div class="card"><h3>2 · You list your tools</h3><p>Paste the definitions of the tools your agent can call (JSON). The examples on this page show the format.</p></div>
+<div class="card"><h3>3 · You get the report</h3><p>After payment we run the tests automatically. The report arrives by email as a private link, typically within 24 to 120 hours depending on the check.</p></div>
+</div>
+<div class="card" style="margin-top:16px"><h3>What the report contains</h3><ul><li>For each failure case: did your agent create the record twice, and did it report success falsely?</li><li>Run IDs for every number, so anyone can reproduce it</li><li>For the Fix Package: concrete suggestions for the code paths that failed</li></ul></div>
+</section>
+
 
 <section class="section" id="order">
 <h2>1 · Choose a check</h2>
@@ -114,6 +121,15 @@ footer a{color:var(--mut)}
 </form>
 </section>
 </main>
+
+<section class="section" id="faq">
+<h2>Questions</h2>
+<div class="grid3">
+<div class="card"><h3>What is a "tool"?</h3><p>A function your agent may call, for example <code>create_invoice</code>. You describe it the way you give it to the model: a name, a description, and its parameters.</p></div>
+<div class="card"><h3>Do you need access to my system?</h3><p>No. We test with simulated tools. We never call your live systems and never see your data, only the tool definitions.</p></div>
+<div class="card"><h3>What if my tool names are different?</h3><p>This version supports only the four names listed on the page. Other tools are rejected before the payment is final. We will refund any order that cannot be processed.</p></div>
+</div>
+</section>
 
 <footer>
 <div class="wrap" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px">
