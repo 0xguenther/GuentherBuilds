@@ -9,6 +9,7 @@ import { b2bRoutes } from './routes/b2bRoutes.js';
 import { metricsRoutes } from './routes/metricsRoutes.js';
 import { redditRoutes } from './routes/redditRoutes.js';
 import { growthRoutes } from './routes/growthRoutes.js';
+import { auditRoutes } from './routes/auditRoutes.js';
 
 export async function buildApp() {
   const app = Fastify({
@@ -72,6 +73,7 @@ export async function buildApp() {
   await app.register(metricsRoutes);
   await app.register(redditRoutes);
   await app.register(growthRoutes);
+  await app.register(auditRoutes);
 
   return app;
 }

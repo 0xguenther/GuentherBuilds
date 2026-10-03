@@ -6,6 +6,7 @@ import { BurnService } from '../../services/burnService.js';
 import { MarketingService } from '../../services/marketingService.js';
 import { FulfillmentService } from '../../services/fulfillmentService.js';
 import { SkillFulfillmentService } from '../../services/skillFulfillmentService.js';
+import { AuditOrderService } from '../../services/auditOrderService.js';
 import { B2bService } from '../../services/b2bService.js';
 import { EventRouter } from '../../core/router.js';
 import { config } from '../../config/index.js';
@@ -62,6 +63,13 @@ export async function webhookRoutes(fastify: FastifyInstance) {
         fastify.log.info(`[Webhook] Valid checkout event received for payment ${paymentId}: ${amountCents} ${currency}`);
 
         const metadata = session.metadata || {};
+
+        // Branch: Write-Path-Check Bestellung (Standbein 2)
+        if (metadata.type === 'write_path_check' && metadata.auditOrderId) {
+          const paid = await AuditOrderService.markPaid(metadata.auditOrderId, paymentId);
+          fastify.log.info(`[Audit] Bestellung ${metadata.auditOrderId} bezahlt=${paid}`);
+          return reply.status(200).send({ received: true, auditOrderId: metadata.auditOrderId, newlyPaid: paid });
+        }
 
         // Branch: Claw Mart Skill Purchase
         if (metadata.type === 'skill_purchase' && metadata.skillId) {

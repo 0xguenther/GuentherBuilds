@@ -74,6 +74,7 @@ export class StripeMcpClient {
     metadata: Record<string, string>;
     successUrl: string;
     cancelUrl: string;
+    currency?: string;
   }): Promise<{ sessionId: string; sessionUrl: string }> {
     const stripe = this.getStripe();
     const session = await stripe.checkout.sessions.create({
@@ -82,7 +83,7 @@ export class StripeMcpClient {
       line_items: [
         {
           price_data: {
-            currency: 'usd',
+            currency: params.currency || 'usd',
             product_data: {
               name: params.title,
               description: params.description,
