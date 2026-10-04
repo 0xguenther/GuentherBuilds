@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Blockiert Commits, die Zugangsdaten im Klartext enthalten.
+# Aktivieren: git config core.hooksPath .githooks
+PATTERN='(sk_live_[A-Za-z0-9]{10,}|rk_live_[A-Za-z0-9]{10,}|sk_test_[A-Za-z0-9]{10,}|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|AKIA[0-9A-Z]{16}|sk-or-v1-[A-Za-z0-9]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY|(api_key|api_secret|access_token|access_secret|client_secret|password)[[:space:]]*[=:][[:space:]]*["'\''][^"'\'']{12,}["'\''])'
+hits=$(git diff --cached -U0 | grep '^+' | grep -v '^+++' | grep -E -n "$PATTERN" || true)
+if [ -n "$hits" ]; then
+  echo "BLOCKIERT: Mögliche Zugangsdaten im Commit. Werte nicht hier, sondern im Tresor ablegen."
+  echo "Treffer (Werte verborgen):"
+  echo "$hits" | sed -E 's/(sk_live_|rk_live_|sk_test_|ghp_|github_pat_|sk-or-v1-|sk-ant-|AKIA)[A-Za-z0-9_-]+/\1<verborgen>/g; s/(["'\''])[^"'\'']{12,}(["'\''])/\1<verborgen>\2/g' | cut -c1-160
+  exit 1
+fi
+exit 0
