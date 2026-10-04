@@ -13,3 +13,8 @@ __pycache__/
 *.pyc
 scratch/
 
+
+# Zugangsdaten nie einchecken
+scripts/post_viral_thread.py
+# Bestellberichte enthalten Kundendaten
+data/
