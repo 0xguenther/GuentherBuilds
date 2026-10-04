@@ -191,6 +191,24 @@
     </section>
 
     <section>
+      <h2 class="text-2xl font-bold text-white">What we test</h2>
+      <p class="text-slate-400 mt-2">Ten cases. Each simulates a typical failure of a write action. Your agent is tested against each one.</p>
+      <ul class="mt-6 space-y-3 text-sm text-slate-300">
+<li class="flex gap-3"><span class="font-mono text-[#00FF66] shrink-0">C01</span><span>Invoice is created, but the reply is lost (timeout). The agent retries. Check: is a second invoice created?</span></li>
+<li class="flex gap-3"><span class="font-mono text-[#00FF66] shrink-0">C02</span><span>First try is rejected with a rate limit (429), nothing was created. Check: exactly one invoice after the second try?</span></li>
+<li class="flex gap-3"><span class="font-mono text-[#00FF66] shrink-0">C03</span><span>Email is sent, the reply is lost. Check: is the email sent twice on retry?</span></li>
+<li class="flex gap-3"><span class="font-mono text-[#00FF66] shrink-0">C04</span><span>The ticket exists, but the reply is malformed JSON. Check: does the agent verify state, or create a second ticket?</span></li>
+<li class="flex gap-3"><span class="font-mono text-[#00FF66] shrink-0">C05</span><span>The server reports success, but the order is missing. Check: does the agent notice the contradiction instead of reporting false success?</span></li>
+<li class="flex gap-3"><span class="font-mono text-[#00FF66] shrink-0">C06</span><span>First try fails with a server error (503), nothing was created. Check: exactly one order after the retry?</span></li>
+<li class="flex gap-3"><span class="font-mono text-[#00FF66] shrink-0">C07</span><span>Ticket is created, the reply is lost. Check: does the agent create a second ticket on retry?</span></li>
+<li class="flex gap-3"><span class="font-mono text-[#00FF66] shrink-0">C08</span><span>Invoice, then email. The first step times out, the second step needs the invoice number. Check: exactly one invoice and one email, with the correct number?</span></li>
+<li class="flex gap-3"><span class="font-mono text-[#00FF66] shrink-0">C09</span><span>Control case without writes: read invoices, first try rate-limited. Check: correct answer without side effects.</span></li>
+<li class="flex gap-3"><span class="font-mono text-[#00FF66] shrink-0">C10</span><span>The order is created, but the reply names a different ID. Check: does the agent notice the wrong ID?</span></li>
+      </ul>
+      <div class="mt-6 bg-slate-900/50 border border-slate-800 rounded-2xl p-6 text-sm text-slate-400"><b class="text-white">Repetitions:</b> how often each case runs. The Standard Check runs each of the ten cases ten times, so 100 runs. A single run can fail by chance. Only repetitions show a stable pattern.</div>
+    </section>
+
+    <section>
       <h2 class="text-2xl font-bold text-white">Questions</h2>
       <div class="mt-6 grid md:grid-cols-3 gap-5 text-sm">
         <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6"><h3 class="text-white font-bold">What is a tool?</h3><p class="text-slate-400 mt-2">A function your agent may call, for example <span class="font-mono">create_invoice</span>. Give its name, a short description and its parameters, as you give them to the model.</p></div>

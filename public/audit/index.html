@@ -189,6 +189,24 @@
     </section>
 
     <section>
+      <h2 class="text-2xl font-bold text-white">Was wir testen</h2>
+      <p class="text-slate-400 mt-2">Zehn Fälle. Jeder simuliert einen typischen Fehler bei einer Schreibaktion. Der Agent wird gegen jeden Fall geprüft.</p>
+      <ul class="mt-6 space-y-3 text-sm text-slate-300">
+<li class="flex gap-3"><span class="font-mono text-[#00FF66] shrink-0">C01</span><span>Rechnung wird erstellt, aber die Antwort kommt nicht an (Timeout). Der Agent versucht es erneut. Prüfung: entsteht eine zweite Rechnung?</span></li>
+<li class="flex gap-3"><span class="font-mono text-[#00FF66] shrink-0">C02</span><span>Erster Versuch wird vom Server mit Rate-Limit (429) abgelehnt, es wurde nichts erstellt. Prüfung: genau eine Rechnung nach dem zweiten Versuch?</span></li>
+<li class="flex gap-3"><span class="font-mono text-[#00FF66] shrink-0">C03</span><span>Mail wird gesendet, die Antwort geht verloren. Prüfung: wird die Mail beim Wiederholen doppelt gesendet?</span></li>
+<li class="flex gap-3"><span class="font-mono text-[#00FF66] shrink-0">C04</span><span>Das Ticket existiert, die Antwort ist kaputtes JSON. Prüfung: prüft der Agent den Zustand, oder legt er ein zweites Ticket an?</span></li>
+<li class="flex gap-3"><span class="font-mono text-[#00FF66] shrink-0">C05</span><span>Der Server meldet Erfolg, die Bestellung fehlt aber. Prüfung: bemerkt der Agent den Widerspruch und meldet nicht fälschlich Erfolg?</span></li>
+<li class="flex gap-3"><span class="font-mono text-[#00FF66] shrink-0">C06</span><span>Erster Versuch scheitert mit Serverfehler (503), nichts wurde angelegt. Prüfung: genau eine Bestellung nach dem Wiederholen?</span></li>
+<li class="flex gap-3"><span class="font-mono text-[#00FF66] shrink-0">C07</span><span>Das Ticket wird erstellt, die Antwort geht verloren. Prüfung: legt der Agent beim Wiederholen ein zweites Ticket an?</span></li>
+<li class="flex gap-3"><span class="font-mono text-[#00FF66] shrink-0">C08</span><span>Rechnung, danach Mail. Der erste Schritt hat ein Timeout, der zweite Schritt braucht die Rechnungsnummer. Prüfung: genau eine Rechnung und eine Mail, mit der richtigen Nummer?</span></li>
+<li class="flex gap-3"><span class="font-mono text-[#00FF66] shrink-0">C09</span><span>Kontrollfall ohne Schreibaktion: Rechnungen lesen, erster Versuch mit Rate-Limit. Prüfung: korrekte Antwort ohne Nebenwirkungen.</span></li>
+<li class="flex gap-3"><span class="font-mono text-[#00FF66] shrink-0">C10</span><span>Die Bestellung wird angelegt, die Antwort nennt aber eine andere ID. Prüfung: bemerkt der Agent die falsche ID?</span></li>
+      </ul>
+      <div class="mt-6 bg-slate-900/50 border border-slate-800 rounded-2xl p-6 text-sm text-slate-400"><b class="text-white">Wiederholungen:</b> wie oft jeder Fall läuft. Beim Standard-Check läuft jeder der zehn Fälle zehnmal, also 100 Läufe. Ein einzelner Lauf kann zufällig ausfallen. Erst die Wiederholungen zeigen ein stabiles Muster.</div>
+    </section>
+
+    <section>
       <h2 class="text-2xl font-bold text-white">Fragen</h2>
       <div class="mt-6 grid md:grid-cols-3 gap-5 text-sm">
         <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6"><h3 class="text-white font-bold">Was ist ein Werkzeug?</h3><p class="text-slate-400 mt-2">Eine Funktion, die dein Agent aufrufen darf, z. B. <span class="font-mono">create_invoice</span>. Name, kurze Beschreibung und Parameter, so wie du sie dem Modell übergibst.</p></div>
