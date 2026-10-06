@@ -27,219 +27,553 @@
 
   <!-- Schema.org JSON-LD -->
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            gunther: {
-              black: '#05070B',
-              dark: '#0D1117',
-              card: '#161B22',
-              green: '#00FF66',
-              fire: '#FF5500',
-              base: '#0052FF',
-            }
-          }
-        }
-      }
-    }
-  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: #05070B;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #05070B;
+      --card: #0d1117;
+      --border: #1e293b;
+      --accent: #00FF66;
+      --accent-dim: #00cc52;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-faint: #64748b;
+      --danger: #f87171;
     }
-    .font-mono {
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection { background: var(--accent); color: #000; }
+
+    a { color: inherit; text-decoration: none; }
+
+    .container { max-width: 56rem; margin: 0 auto; padding: 0 1.5rem; }
+    .container-wide { max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* Header */
+    header {
+      position: sticky; top: 0; z-index: 50;
+      border-bottom: 1px solid var(--border);
+      background: rgba(5,7,11,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .header-inner {
+      max-width: 72rem; margin: 0 auto; padding: 0 1.5rem;
+      height: 5rem; display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo-link { display: flex; align-items: center; gap: 0.75rem; font-family: 'JetBrains Mono', monospace; }
+    .logo-link:hover .logo-text { color: var(--accent); }
+    .logo-img { width: 2rem; height: 2rem; border-radius: 0.375rem; border: 1px solid rgba(0,255,102,0.4); box-shadow: 0 0 12px rgba(0,255,102,0.25); }
+    .logo-text { font-weight: 700; font-size: 1.25rem; color: #fff; letter-spacing: -0.02em; transition: color 0.2s; display: flex; align-items: center; }
+    .logo-text .accent { color: var(--accent); margin-right: 0.25rem; }
+    .logo-text .cursor { color: var(--accent); margin-left: 2px; animation: pulse 2s infinite; }
+    .logo-badge {
+      font-size: 0.625rem; font-family: 'JetBrains Mono', monospace;
+      background: rgba(0,255,102,0.08); color: var(--accent);
+      border: 1px solid rgba(0,255,102,0.25); border-radius: 9999px;
+      padding: 0.125rem 0.5rem; margin-left: 0.75rem;
+    }
+
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    nav { display: flex; align-items: center; gap: 1rem; font-size: 0.875rem; font-weight: 500; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+    nav a:hover { color: var(--accent); }
+    nav a { transition: color 0.2s; display: inline-flex; align-items: center; gap: 0.375rem; }
+    nav .gh-icon { width: 0.875rem; height: 0.875rem; fill: currentColor; }
+
+    .header-actions { display: flex; align-items: center; gap: 0.75rem; }
+    .lang-switch {
+      display: flex; align-items: center;
+      background: var(--card); border: 1px solid rgba(30,41,59,0.8);
+      border-radius: 0.5rem; padding: 2px;
+      font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;
+    }
+    .lang-switch span, .lang-switch a { padding: 0.25rem 0.5rem; border-radius: 0.375rem; }
+    .lang-active { background: rgba(0,255,102,0.15); color: var(--accent); font-weight: 700; }
+    .lang-inactive { color: var(--text-faint); }
+    .lang-inactive:hover { color: #fff; }
+    .lang-inactive { transition: color 0.2s; }
+
+    .btn-playbook {
+      background: var(--accent); color: #000;
+      font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.75rem;
+      padding: 0.625rem 1rem; border-radius: 0.5rem;
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(0,255,102,0.15);
+    }
+    .btn-playbook:hover { background: var(--accent-dim); }
+
+    /* Mobile nav toggle */
+    .nav-mobile-toggle { display: none; background: none; border: none; color: var(--text); cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle svg { width: 1.5rem; height: 1.5rem; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    /* Main */
+    main { flex: 1; }
+    .main-inner { padding: 4rem 0; }
+
+    /* Section spacing */
+    .section { margin-bottom: 5rem; }
+    .section-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+      color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase;
+    }
+    .section-title {
+      font-size: 2.25rem; font-weight: 800; color: #fff;
+      line-height: 1.2; letter-spacing: -0.02em;
+    }
+    .section-subtitle { font-size: 1.125rem; color: var(--text-muted); margin-top: 1.5rem; line-height: 1.7; max-width: 42rem; }
+
+    /* Buttons */
+    .btn-primary {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--accent); color: #000; font-weight: 700;
+      padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: none; cursor: pointer;
+      font-size: 0.9375rem; transition: all 0.2s;
+      box-shadow: 0 0 0 rgba(0,255,102,0);
+    }
+    .btn-primary:hover { box-shadow: 0 0 30px rgba(0,255,102,0.35); transform: translateY(-1px); }
+
+    .btn-secondary {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: transparent; color: var(--text);
+      border: 1px solid var(--border); padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem; font-size: 0.9375rem; cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--accent); }
+    .btn-group { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; }
+
+    /* Cards */
+    .card {
+      background: rgba(13,17,23,0.6);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      transition: border-color 0.3s;
+    }
+    .card:hover { border-color: rgba(0,255,102,0.4); }
+
+    /* Step cards grid */
+    .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 2rem; }
+    .step-num { font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; color: var(--accent); }
+    .step-title { color: #fff; font-weight: 700; margin-top: 0.5rem; }
+    .step-desc { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.5rem; }
+
+    /* Report info */
+    .report-box { margin-top: 1.25rem; }
+    .report-box h3 { color: #fff; font-weight: 700; }
+    .report-box ul { margin-top: 0.75rem; }
+    .report-box li { color: var(--text-muted); font-size: 0.875rem; padding-left: 1.25rem; position: relative; margin-top: 0.5rem; }
+    .report-box li::before { content: ''; position: absolute; left: 0; top: 0.55rem; width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
+
+    /* Tier cards */
+    .tiers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 1.5rem; }
+    .tier-card {
+      background: rgba(13,17,23,0.6); border: 1px solid var(--border);
+      border-radius: 1rem; padding: 1.5rem; cursor: pointer;
+      transition: all 0.3s; position: relative; display: block;
+    }
+    .tier-card input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
+    .tier-card:hover { border-color: rgba(0,255,102,0.3); }
+    .tier-card.selected {
+      border-color: var(--accent);
+      box-shadow: 0 0 40px rgba(0,255,102,0.15);
+    }
+    .tier-card.recommended {
+      background: rgba(0,255,102,0.03);
+      border-color: rgba(0,255,102,0.3);
+    }
+    .tier-label { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; }
+    .tier-label-accent { color: var(--accent); }
+    .tier-label-muted { color: var(--text-faint); }
+    .tier-name { color: #fff; font-weight: 700; font-size: 1.125rem; margin-top: 0.375rem; }
+    .tier-price { font-size: 1.875rem; font-weight: 800; color: #fff; margin-top: 0.5rem; letter-spacing: -0.02em; }
+    .tier-desc { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.75rem; line-height: 1.5; }
+    .tier-rec-badge {
+      display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.625rem;
+      background: rgba(0,255,102,0.1); color: var(--accent);
+      border: 1px solid rgba(0,255,102,0.2); border-radius: 9999px;
+      padding: 0.125rem 0.5rem; margin-bottom: 0.5rem;
+    }
+
+    /* Form */
+    .form-section { margin-top: 2.5rem; }
+    .form-group { margin-bottom: 2rem; }
+    .form-group h2 { font-size: 1.5rem; font-weight: 700; color: #fff; }
+    .form-group p { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.5rem; }
+    .code { font-family: 'JetBrains Mono', monospace; color: var(--accent); }
+
+    textarea, input[type="email"] {
+      width: 100%; margin-top: 1rem;
+      background: #070A10; border: 1px solid var(--border);
+      border-radius: 0.75rem; padding: 1rem;
+      color: var(--text); font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    textarea { min-height: 200px; resize: vertical; }
+    textarea:focus, input[type="email"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0,255,102,0.1);
+    }
+
+    .checkbox-row { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: 1rem; }
+    .checkbox-label {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      font-size: 0.875rem; color: var(--text-muted); cursor: pointer;
+    }
+    .checkbox-label input[type="checkbox"] {
+      margin-top: 0.25rem; accent-color: var(--accent);
+      width: 1rem; height: 1rem;
+    }
+    .checkbox-label a { color: #fb923c; }
+    .checkbox-label a:hover { text-decoration: underline; }
+
+    .submit-row { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: 0.5rem; }
+    .btn-submit {
+      background: var(--accent); color: #000; font-weight: 700;
+      padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: none;
+      cursor: pointer; font-size: 0.9375rem; transition: all 0.2s;
+    }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-submit:hover:not(:disabled) { box-shadow: 0 0 24px rgba(0,255,102,0.3); }
+    .submit-note { color: var(--text-faint); font-size: 0.875rem; }
+    .error-msg { color: var(--danger); font-size: 0.875rem; margin-top: 0.75rem; white-space: pre-wrap; }
+
+    /* Test cases grid */
+    .tests-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 2rem; }
+    .test-card {
+      background: rgba(13,17,23,0.6); border: 1px solid var(--border);
+      border-radius: 1rem; padding: 1.25rem; transition: border-color 0.3s;
+    }
+    .test-card:hover { border-color: rgba(0,255,102,0.4); }
+    .test-header { display: flex; align-items: center; gap: 0.75rem; }
+    .test-id {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+      color: var(--accent); border: 1px solid rgba(0,255,102,0.3);
+      border-radius: 0.25rem; padding: 0.125rem 0.5rem;
+    }
+    .test-name { color: #fff; font-weight: 700; font-size: 0.875rem; }
+    .test-desc { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.75rem; line-height: 1.6; }
+
+    /* Gradient callout */
+    .callout {
+      margin-top: 1.5rem;
+      background: linear-gradient(90deg, rgba(0,255,102,0.06), transparent);
+      border: 1px solid rgba(0,255,102,0.2);
+      border-radius: 1rem; padding: 1.5rem;
+    }
+    .callout h3 { color: #fff; font-weight: 700; }
+    .callout p { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.5rem; line-height: 1.6; }
+
+    /* FAQ grid */
+    .faq-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 1.5rem; }
+    .faq-title { color: #fff; font-weight: 700; font-size: 0.9375rem; }
+    .faq-text { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.5rem; }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid rgba(30,41,59,0.5);
+      background: var(--bg); padding: 3rem 0;
+      color: var(--text-faint); font-size: 0.75rem;
       font-family: 'JetBrains Mono', monospace;
     }
-    .text-glow {
-      text-shadow: 0 0 10px rgba(0, 255, 102, 0.6), 0 0 25px rgba(0, 255, 102, 0.25);
+    .footer-inner {
+      max-width: 72rem; margin: 0 auto; padding: 0 1.5rem;
+      display: flex; flex-wrap: wrap; justify-content: space-between;
+      align-items: center; gap: 1.5rem;
     }
-    .burn-glow {
-      box-shadow: 0 0 40px -10px rgba(0, 255, 102, 0.2);
+    .footer-brand { display: flex; align-items: center; gap: 0.75rem; }
+    .footer-brand img { width: 1.25rem; height: 1.25rem; border-radius: 0.25rem; border: 1px solid rgba(0,255,102,0.3); }
+    .footer-links { display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; }
+    .footer-links a { transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-links .gh-icon { width: 0.75rem; height: 0.75rem; fill: currentColor; vertical-align: middle; margin-right: 0.25rem; }
+
+    /* Responsive */
+    @media (max-width: 1023px) {
+      nav { display: none; }
+      .nav-mobile-toggle { display: block; }
+      .logo-badge { display: none; }
+      .steps-grid, .tiers-grid, .faq-grid { grid-template-columns: 1fr; }
+      .tests-grid { grid-template-columns: 1fr; }
+      .section-title { font-size: 1.75rem; }
+      .header-inner { height: 4rem; }
+    }
+
+    /* Hamburger menu */
+    .hamburger {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: none;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      color: #e2e8f0;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .hamburger:hover { border-color: #00FF66; color: #00FF66; }
+    .hamburger svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; }
+    @media (min-width: 1024px) { .hamburger { display: none; } }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 80px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(5, 7, 11, 0.97);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 49;
+      padding: 32px 24px;
+      flex-direction: column;
+      gap: 0;
+      overflow-y: auto;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 0;
+      border-bottom: 1px solid #1e293b;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      color: #e2e8f0;
+      transition: color 0.2s;
+    }
+    .mobile-menu a:hover { color: #00FF66; }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu__label { color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; padding: 24px 0 8px; font-weight: 600; }
+    @media (min-width: 1024px) { .mobile-menu { display: none !important; } }
+    @media (max-width: 480px) {
+      .btn-group { flex-direction: column; }
+      .submit-row { flex-direction: column; align-items: flex-start; }
     }
   </style>
-
 </head>
-<body class="text-slate-100 min-h-screen flex flex-col justify-between selection:bg-[#00FF66] selection:text-black">
+<body>
 
-  <header class="border-b border-slate-800 bg-[#05070b]/90 backdrop-blur sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <a href="/" class="flex items-center gap-3 group font-mono">
-          <img src="/assets/favicon.png" alt="0xGünther Cursor" class="w-8 h-8 rounded border border-[#00FF66]/50 shadow-[0_0_12px_rgba(0,255,102,0.4)]">
-          <div class="flex items-center">
-            <span class="font-bold tracking-tight text-xl text-white group-hover:text-[#00FF66] transition flex items-center">
-              <span class="text-[#00FF66] mr-1">&gt;</span>0xGünther<span class="text-[#00FF66] animate-pulse ml-0.5">■</span>
-            </span>
-            <span class="text-[10px] bg-[#00FF66]/10 text-[#00FF66] border border-[#00FF66]/30 px-2 py-0.5 rounded-full ml-3 font-mono hidden sm:inline">AUTONOMOUS AGENT</span>
+  <header>
+    <div class="header-inner">
+      <div>
+        <a href="/" class="logo-link">
+          <img src="/assets/favicon.png" alt="0xGünther Cursor" class="logo-img">
+          <div style="display:flex;align-items:center;">
+            <span class="logo-text"><span class="accent">&gt;</span>0xGünther<span class="cursor">■</span></span>
+            <span class="logo-badge">AUTONOMOUS AGENT</span>
           </div>
         </a>
       </div>
 
-      <nav class="hidden md:flex items-center gap-4 text-sm font-medium text-slate-300 font-mono">
-        <a href="/audit/" class="hover:text-[#00FF66] transition">Agent Check</a>
-        <a href="/products.html" class="hover:text-[#00FF66] transition">Produkte</a>
-        <a href="/preview.html" class="hover:text-[#00FF66] transition">Leseprobe</a>
-        <a href="/api-docs.html" class="hover:text-[#00FF66] transition">API-Doku</a>
-        <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank" class="hover:text-[#00FF66] transition inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a>
-        <a href="/#playbook" class="hover:text-white transition">Günther Craft</a>
-        <a href="/#clawmart" class="hover:text-white transition">Claw Mart</a>
-        <a href="/#terminal" class="hover:text-white transition">Live Agent</a>
+      <nav>
+        <a href="/audit/">Agent Check</a>
+        <a href="/blog">Blog</a>
+        <a href="/products.html">Produkte</a>
+        <a href="/api-docs.html">API-Doku</a>
       </nav>
 
-      <div class="flex items-center gap-3">
-        <!-- Language Switcher -->
-        <div class="flex items-center bg-[#0D1117] border border-slate-700/80 rounded-lg p-0.5 text-xs font-mono">
-          <span class="px-2 py-1 rounded bg-[#00FF66]/20 text-[#00FF66] font-bold">DE</span>
-          <a href="/en/audit/" class="px-2 py-1 rounded text-slate-400 hover:text-white transition">EN</a>
+      <div class="header-actions">
+        <div class="lang-switch">
+          <span class="lang-active">DE</span>
+          <a href="/en/audit/" class="lang-inactive">EN</a>
         </div>
-
-        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2.5 rounded-lg transition shadow-lg shadow-[#00FF66]/20 inline-block">
-          &gt; Playbook ($49)
-        </a>
+        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="btn-playbook">&gt; Playbook ($49)</a>
+        <button class="hamburger" onclick="document.querySelector('.mobile-menu').classList.toggle('open')" aria-label="Menu">
+          <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
       </div>
     </div>
   </header>
-  <main class="max-w-4xl mx-auto px-6 py-16 space-y-20">
 
-    <section>
-      <p class="font-mono text-xs text-[#00FF66] tracking-widest uppercase">Service · für Teams, die KI-Agenten bauen</p>
-      <h1 class="mt-4 text-4xl md:text-5xl font-extrabold text-white leading-tight">Retries, die doppelt buchen und doppelt bezahlt werden.</h1>
-      <p class="mt-6 text-lg text-slate-300 leading-relaxed">Ein Retry nach einem Timeout kann eine zweite Rechnung, Mail oder Bestellung auslösen. Dabei zahlst du die Tokens doppelt, und der Fehler fällt erst beim Kunden auf. Wir messen die Duplikatrate pro Modell und pro Werkzeug, mit reproduzierbaren Läufen und Run-IDs.</p>
-      <div class="mt-8 flex flex-wrap gap-4">
-        <a href="#order" class="bg-[#00FF66] text-black font-bold px-6 py-3 rounded-lg hover:shadow-[0_0_30px_-8px_rgba(0,255,102,0.8)] transition">Prüfung starten</a>
-        <a href="#how" class="border border-slate-700 text-slate-200 px-6 py-3 rounded-lg hover:border-[#00FF66] transition">So funktioniert es</a>
-      </div>
-    </section>
+  <div class="mobile-menu">
+    <a href="/audit/">Agent Check</a>
+    <a href="/blog">Blog</a>
+    <a href="/products.html">Produkte</a>
+    <a href="/api-docs.html">API-Doku</a>
+    <a href="/preview.html">Leseprobe</a>
+    <span class="mobile-menu__label">More</span>
+    <a href="/#playbook">Günther Craft</a>
+    <a href="/#clawmart">Claw Mart</a>
+    <a href="/#terminal">Live Agent</a>
+    <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank">GitHub</a>
+  </div>
 
-    <section id="how">
-      <h2 class="text-2xl font-bold text-white">So funktioniert es</h2>
-      <p class="text-slate-400 mt-2">Drei Schritte. Kein Gespräch, kein Termin.</p>
-      <div class="mt-8 grid md:grid-cols-3 gap-5">
-        <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6"><div class="font-mono text-[#00FF66] text-sm">01</div><h3 class="text-white font-bold mt-2">Prüfung wählen</h3><p class="text-slate-400 text-sm mt-2">Quick, Standard oder Fix. Feste Preise, kein Abo.</p></div>
-        <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6"><div class="font-mono text-[#00FF66] text-sm">02</div><h3 class="text-white font-bold mt-2">Werkzeuge eintragen</h3><p class="text-slate-400 text-sm mt-2">Die Definitionen der Werkzeuge, die dein Agent aufrufen darf, als JSON.</p></div>
-        <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6"><div class="font-mono text-[#00FF66] text-sm">03</div><h3 class="text-white font-bold mt-2">Bericht erhalten</h3><p class="text-slate-400 text-sm mt-2">Nach der Zahlung laufen die Tests automatisch. Der Bericht kommt über einen privaten Link.</p></div>
-      </div>
-      <div class="mt-5 bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
-        <h3 class="text-white font-bold">Was im Bericht steht</h3>
-        <ul class="mt-3 space-y-2 text-slate-400 text-sm list-disc pl-5">
-          <li>Pro Fehlerfall: Hat der Agent einen Datensatz doppelt geschrieben, und hat er fälschlich Erfolg gemeldet?</li>
-          <li>Run-IDs hinter jeder Zahl, damit jeder es nachprüfen kann</li>
-          <li>Fix-Paket: konkrete Änderungen für jeden fehlerhaften Codepfad</li>
-        </ul>
-      </div>
-    </section>
+  <main>
+    <div class="container main-inner">
 
-    <section id="order">
-      <h2 class="text-2xl font-bold text-white">1 · Prüfung wählen</h2>
-      <div class="mt-6 grid md:grid-cols-3 gap-5">
-        <label class="cursor-pointer">
-          <input type="radio" name="tier" value="quick" class="peer sr-only">
-          <div class="h-full bg-slate-900/50 border border-slate-800 rounded-2xl p-6 peer-checked:border-[#00FF66] peer-checked:shadow-[0_0_40px_-12px_rgba(0,255,102,0.4)] transition">
-            <div class="font-mono text-xs text-slate-500 uppercase">Quick</div>
-            <div class="text-white font-bold text-lg mt-1">Quick-Check</div>
-            <div class="text-3xl font-extrabold text-white mt-2">CHF 90</div>
-            <p class="text-slate-400 text-sm mt-3">Ein Durchlauf pro Fall. Fertig in 24 Stunden.</p>
-          </div>
-        </label>
-        <label class="cursor-pointer">
-          <input type="radio" name="tier" value="standard" class="peer sr-only" checked>
-          <div class="h-full bg-slate-900/50 border border-slate-800 rounded-2xl p-6 peer-checked:border-[#00FF66] peer-checked:shadow-[0_0_40px_-12px_rgba(0,255,102,0.4)] transition">
-            <div class="font-mono text-xs text-[#00FF66] uppercase">Empfohlen</div>
-            <div class="text-white font-bold text-lg mt-1">Standard-Check</div>
-            <div class="text-3xl font-extrabold text-white mt-2">CHF 290</div>
-            <p class="text-slate-400 text-sm mt-3">Zehn Wiederholungen pro Fall, mit Konfidenzintervallen. Fertig in 72 Stunden.</p>
-          </div>
-        </label>
-        <label class="cursor-pointer">
-          <input type="radio" name="tier" value="fix" class="peer sr-only">
-          <div class="h-full bg-slate-900/50 border border-slate-800 rounded-2xl p-6 peer-checked:border-[#00FF66] peer-checked:shadow-[0_0_40px_-12px_rgba(0,255,102,0.4)] transition">
-            <div class="font-mono text-xs text-slate-500 uppercase">Komplett</div>
-            <div class="text-white font-bold text-lg mt-1">Fix-Paket</div>
-            <div class="text-3xl font-extrabold text-white mt-2">CHF 690</div>
-            <p class="text-slate-400 text-sm mt-3">Standard-Check plus konkrete Änderungen für jeden fehlerhaften Pfad. Fertig in 5 Tagen.</p>
-          </div>
-        </label>
-      </div>
+      <section class="section">
+        <p class="section-label">Service · für Teams, die KI-Agenten bauen</p>
+        <h1 class="section-title" style="margin-top:1rem;">Retries, die doppelt buchen und doppelt bezahlt werden.</h1>
+        <p class="section-subtitle">Ein Retry nach einem Timeout kann eine zweite Rechnung, Mail oder Bestellung auslösen. Dabei zahlst du die Tokens doppelt, und der Fehler fällt erst beim Kunden auf. Wir messen die Duplikatrate pro Modell und pro Werkzeug, mit reproduzierbaren Läufen und Run-IDs.</p>
+        <div class="btn-group">
+          <a href="#order" class="btn-primary">Prüfung starten</a>
+          <a href="#how" class="btn-secondary">So funktioniert es</a>
+        </div>
+      </section>
 
-      <form id="form" class="mt-10 space-y-8">
-        <div>
-          <h2 class="text-2xl font-bold text-white">2 · Werkzeuge eintragen</h2>
-          <p class="text-slate-400 text-sm mt-2">Ein JSON-Array, ein Eintrag pro Werkzeug. Unterstützt in dieser Version: <span class="font-mono text-[#00FF66]">create_invoice</span>, <span class="font-mono text-[#00FF66]">send_email</span>, <span class="font-mono text-[#00FF66]">create_ticket</span>, <span class="font-mono text-[#00FF66]">place_order</span>. Andere Namen werden abgelehnt.</p>
-          <textarea id="tools" spellcheck="false" class="mt-4 w-full min-h-[200px] bg-[#070A10] border border-slate-800 rounded-xl p-4 font-mono text-sm text-slate-200 focus:border-[#00FF66] outline-none">[
+      <section id="how" class="section">
+        <h2 class="section-title" style="font-size:1.5rem;">So funktioniert es</h2>
+        <p style="color:var(--text-muted);margin-top:0.5rem;">Drei Schritte. Kein Gespräch, kein Termin.</p>
+        <div class="steps-grid">
+          <div class="card"><div class="step-num">01</div><div class="step-title">Prüfung wählen</div><p class="step-desc">Quick, Standard oder Fix. Feste Preise, kein Abo.</p></div>
+          <div class="card"><div class="step-num">02</div><div class="step-title">Werkzeuge eintragen</div><p class="step-desc">Die Definitionen der Werkzeuge, die dein Agent aufrufen darf, als JSON.</p></div>
+          <div class="card"><div class="step-num">03</div><div class="step-title">Bericht erhalten</div><p class="step-desc">Nach der Zahlung laufen die Tests automatisch. Der Bericht kommt über einen privaten Link.</p></div>
+        </div>
+        <div class="card report-box">
+          <h3>Was im Bericht steht</h3>
+          <ul>
+            <li>Pro Fehlerfall: Hat der Agent einen Datensatz doppelt geschrieben, und hat er fälschlich Erfolg gemeldet?</li>
+            <li>Run-IDs hinter jeder Zahl, damit jeder es nachprüfen kann</li>
+            <li>Fix-Paket: konkrete Änderungen für jeden fehlerhaften Codepfad</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="order" class="section">
+        <h2 class="section-title" style="font-size:1.5rem;">1 · Prüfung wählen</h2>
+        <div class="tiers-grid" id="tiers">
+          <label class="tier-card" data-value="quick">
+            <input type="radio" name="tier" value="quick">
+            <div class="tier-label tier-label-muted">Quick</div>
+            <div class="tier-name">Quick-Check</div>
+            <div class="tier-price">CHF 90</div>
+            <p class="tier-desc">Ein Durchlauf pro Fall. Fertig in 24 Stunden.</p>
+          </label>
+          <label class="tier-card recommended selected" data-value="standard">
+            <input type="radio" name="tier" value="standard" checked>
+            <span class="tier-rec-badge">Empfohlen</span>
+            <div class="tier-label tier-label-accent">Empfohlen</div>
+            <div class="tier-name">Standard-Check</div>
+            <div class="tier-price">CHF 290</div>
+            <p class="tier-desc">Zehn Wiederholungen pro Fall, mit Konfidenzintervallen. Fertig in 72 Stunden.</p>
+          </label>
+          <label class="tier-card" data-value="fix">
+            <input type="radio" name="tier" value="fix">
+            <div class="tier-label tier-label-muted">Komplett</div>
+            <div class="tier-name">Fix-Paket</div>
+            <div class="tier-price">CHF 690</div>
+            <p class="tier-desc">Standard-Check plus konkrete Änderungen für jeden fehlerhaften Pfad. Fertig in 5 Tagen.</p>
+          </label>
+        </div>
+
+        <form id="form" class="form-section">
+          <div class="form-group">
+            <h2>2 · Werkzeuge eintragen</h2>
+            <p>Ein JSON-Array, ein Eintrag pro Werkzeug. Unterstützt in dieser Version: <span class="code">create_invoice</span>, <span class="code">send_email</span>, <span class="code">create_ticket</span>, <span class="code">place_order</span>. Andere Namen werden abgelehnt.</p>
+            <textarea id="tools" spellcheck="false">[
   { "name": "create_invoice", "description": "Erstellt eine Rechnung", "parameters": { "type": "object" } },
   { "name": "send_email", "description": "Sendet eine E-Mail", "parameters": { "type": "object" } }
 ]</textarea>
-        </div>
-        <div>
-          <h2 class="text-2xl font-bold text-white">3 · E-Mail für den Berichtslink</h2>
-          <input type="email" id="email" required placeholder="du@firma.ch" class="mt-4 w-full bg-[#070A10] border border-slate-800 rounded-xl p-4 text-slate-200 focus:border-[#00FF66] outline-none">
-        </div>
-        <div class="flex flex-wrap items-center gap-4">
-          <button type="submit" id="go" class="bg-[#00FF66] text-black font-bold px-6 py-3 rounded-lg disabled:opacity-50">Weiter zur Zahlung</button>
-          <span class="text-slate-500 text-sm">Sichere Zahlung über Stripe. Du wirst weitergeleitet.</span>
-        </div>
-        <p id="msg" class="text-red-400 text-sm whitespace-pre-wrap"></p>
-      </form>
-    </section>
+          </div>
+          <div class="form-group">
+            <h2>3 · E-Mail für den Berichtslink</h2>
+            <input type="email" id="email" required placeholder="du@firma.ch">
+          </div>
+          <div class="checkbox-row">
+            <label class="checkbox-label">
+              <input type="checkbox" id="agb" required>
+              <span>Ich akzeptiere die <a href="/agb.html" target="_blank">Allgemeinen Geschäftsbedingungen</a>.</span>
+            </label>
+          </div>
+          <div class="submit-row">
+            <button type="submit" id="go" class="btn-submit">Weiter zur Zahlung</button>
+            <span class="submit-note">Sichere Zahlung über Stripe. Du wirst weitergeleitet.</span>
+          </div>
+          <p id="msg" class="error-msg"></p>
+        </form>
+      </section>
 
-    <section>
-      <h2 class="text-2xl font-bold text-white">Was wir testen</h2>
-      <p class="text-slate-400 mt-2 max-w-2xl">Zehn typische Fehler bei Schreibaktionen. Dein Agent wird gegen jeden einzelnen geprüft.</p>
-      <div class="mt-8 grid md:grid-cols-2 gap-4">
-<div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 hover:border-[#00FF66]/60 transition"><div class="flex items-center gap-3"><span class="font-mono text-xs text-[#00FF66] border border-[#00FF66]/40 rounded px-2 py-0.5">C01</span><span class="text-white font-bold text-sm">Rechnung: Antwort fehlt</span></div><p class="text-slate-400 text-sm mt-3 leading-relaxed">Rechnung wird erstellt, aber die Antwort kommt nicht an (Timeout). Der Agent versucht es erneut. Prüfung: entsteht eine zweite Rechnung?</p></div>
-<div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 hover:border-[#00FF66]/60 transition"><div class="flex items-center gap-3"><span class="font-mono text-xs text-[#00FF66] border border-[#00FF66]/40 rounded px-2 py-0.5">C02</span><span class="text-white font-bold text-sm">Rechnung: Rate-Limit</span></div><p class="text-slate-400 text-sm mt-3 leading-relaxed">Erster Versuch wird vom Server mit Rate-Limit (429) abgelehnt, es wurde nichts erstellt. Prüfung: genau eine Rechnung nach dem zweiten Versuch?</p></div>
-<div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 hover:border-[#00FF66]/60 transition"><div class="flex items-center gap-3"><span class="font-mono text-xs text-[#00FF66] border border-[#00FF66]/40 rounded px-2 py-0.5">C03</span><span class="text-white font-bold text-sm">Mail: Antwort fehlt</span></div><p class="text-slate-400 text-sm mt-3 leading-relaxed">Mail wird gesendet, die Antwort geht verloren. Prüfung: wird die Mail beim Wiederholen doppelt gesendet?</p></div>
-<div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 hover:border-[#00FF66]/60 transition"><div class="flex items-center gap-3"><span class="font-mono text-xs text-[#00FF66] border border-[#00FF66]/40 rounded px-2 py-0.5">C04</span><span class="text-white font-bold text-sm">Ticket: kaputte Antwort</span></div><p class="text-slate-400 text-sm mt-3 leading-relaxed">Das Ticket existiert, die Antwort ist kaputtes JSON. Prüfung: prüft der Agent den Zustand, oder legt er ein zweites Ticket an?</p></div>
-<div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 hover:border-[#00FF66]/60 transition"><div class="flex items-center gap-3"><span class="font-mono text-xs text-[#00FF66] border border-[#00FF66]/40 rounded px-2 py-0.5">C05</span><span class="text-white font-bold text-sm">Bestellung: falscher Erfolg</span></div><p class="text-slate-400 text-sm mt-3 leading-relaxed">Der Server meldet Erfolg, die Bestellung fehlt aber. Prüfung: bemerkt der Agent den Widerspruch und meldet nicht fälschlich Erfolg?</p></div>
-<div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 hover:border-[#00FF66]/60 transition"><div class="flex items-center gap-3"><span class="font-mono text-xs text-[#00FF66] border border-[#00FF66]/40 rounded px-2 py-0.5">C06</span><span class="text-white font-bold text-sm">Bestellung: Serverfehler</span></div><p class="text-slate-400 text-sm mt-3 leading-relaxed">Erster Versuch scheitert mit Serverfehler (503), nichts wurde angelegt. Prüfung: genau eine Bestellung nach dem Wiederholen?</p></div>
-<div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 hover:border-[#00FF66]/60 transition"><div class="flex items-center gap-3"><span class="font-mono text-xs text-[#00FF66] border border-[#00FF66]/40 rounded px-2 py-0.5">C07</span><span class="text-white font-bold text-sm">Ticket: Antwort fehlt</span></div><p class="text-slate-400 text-sm mt-3 leading-relaxed">Das Ticket wird erstellt, die Antwort geht verloren. Prüfung: legt der Agent beim Wiederholen ein zweites Ticket an?</p></div>
-<div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 hover:border-[#00FF66]/60 transition"><div class="flex items-center gap-3"><span class="font-mono text-xs text-[#00FF66] border border-[#00FF66]/40 rounded px-2 py-0.5">C08</span><span class="text-white font-bold text-sm">Rechnung und Mail: Kette</span></div><p class="text-slate-400 text-sm mt-3 leading-relaxed">Rechnung, danach Mail. Der erste Schritt hat ein Timeout, der zweite Schritt braucht die Rechnungsnummer. Prüfung: genau eine Rechnung und eine Mail, mit der richtigen Nummer?</p></div>
-<div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 hover:border-[#00FF66]/60 transition"><div class="flex items-center gap-3"><span class="font-mono text-xs text-[#00FF66] border border-[#00FF66]/40 rounded px-2 py-0.5">C09</span><span class="text-white font-bold text-sm">Lesen: Rate-Limit</span></div><p class="text-slate-400 text-sm mt-3 leading-relaxed">Kontrollfall ohne Schreibaktion: Rechnungen lesen, erster Versuch mit Rate-Limit. Prüfung: korrekte Antwort ohne Nebenwirkungen.</p></div>
-<div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 hover:border-[#00FF66]/60 transition"><div class="flex items-center gap-3"><span class="font-mono text-xs text-[#00FF66] border border-[#00FF66]/40 rounded px-2 py-0.5">C10</span><span class="text-white font-bold text-sm">Bestellung: falsche ID</span></div><p class="text-slate-400 text-sm mt-3 leading-relaxed">Die Bestellung wird angelegt, die Antwort nennt aber eine andere ID. Prüfung: bemerkt der Agent die falsche ID?</p></div>
-      </div>
-      <div class="mt-6 bg-gradient-to-r from-[#00FF66]/10 to-transparent border border-[#00FF66]/30 rounded-2xl p-6"><div class="text-white font-bold">Wiederholungen</div><p class="text-slate-300 text-sm mt-2 leading-relaxed">Beim Standard-Check läuft jeder Fall zehnmal, also 100 Läufe. Ein einzelner Lauf kann zufällig ausfallen. Erst viele Wiederholungen zeigen ein stabiles Muster.</p></div>
-    </section>
+      <section class="section">
+        <h2 class="section-title" style="font-size:1.5rem;">Was wir testen</h2>
+        <p style="color:var(--text-muted);margin-top:0.5rem;max-width:42rem;">Zehn typische Fehler bei Schreibaktionen. Dein Agent wird gegen jeden einzelnen geprüft.</p>
+        <div class="tests-grid">
+          <div class="test-card"><div class="test-header"><span class="test-id">C01</span><span class="test-name">Rechnung: Antwort fehlt</span></div><p class="test-desc">Rechnung wird erstellt, aber die Antwort kommt nicht an (Timeout). Der Agent versucht es erneut. Prüfung: entsteht eine zweite Rechnung?</p></div>
+          <div class="test-card"><div class="test-header"><span class="test-id">C02</span><span class="test-name">Rechnung: Rate-Limit</span></div><p class="test-desc">Erster Versuch wird vom Server mit Rate-Limit (429) abgelehnt, es wurde nichts erstellt. Prüfung: genau eine Rechnung nach dem zweiten Versuch?</p></div>
+          <div class="test-card"><div class="test-header"><span class="test-id">C03</span><span class="test-name">Mail: Antwort fehlt</span></div><p class="test-desc">Mail wird gesendet, die Antwort geht verloren. Prüfung: wird die Mail beim Wiederholen doppelt gesendet?</p></div>
+          <div class="test-card"><div class="test-header"><span class="test-id">C04</span><span class="test-name">Ticket: kaputte Antwort</span></div><p class="test-desc">Das Ticket existiert, die Antwort ist kaputtes JSON. Prüfung: prüft der Agent den Zustand, oder legt er ein zweites Ticket an?</p></div>
+          <div class="test-card"><div class="test-header"><span class="test-id">C05</span><span class="test-name">Bestellung: falscher Erfolg</span></div><p class="test-desc">Der Server meldet Erfolg, die Bestellung fehlt aber. Prüfung: bemerkt der Agent den Widerspruch und meldet nicht fälschlich Erfolg?</p></div>
+          <div class="test-card"><div class="test-header"><span class="test-id">C06</span><span class="test-name">Bestellung: Serverfehler</span></div><p class="test-desc">Erster Versuch scheitert mit Serverfehler (503), nichts wurde angelegt. Prüfung: genau eine Bestellung nach dem Wiederholen?</p></div>
+          <div class="test-card"><div class="test-header"><span class="test-id">C07</span><span class="test-name">Ticket: Antwort fehlt</span></div><p class="test-desc">Das Ticket wird erstellt, die Antwort geht verloren. Prüfung: legt der Agent beim Wiederholen ein zweites Ticket an?</p></div>
+          <div class="test-card"><div class="test-header"><span class="test-id">C08</span><span class="test-name">Rechnung und Mail: Kette</span></div><p class="test-desc">Rechnung, danach Mail. Der erste Schritt hat ein Timeout, der zweite Schritt braucht die Rechnungsnummer. Prüfung: genau eine Rechnung und eine Mail, mit der richtigen Nummer?</p></div>
+          <div class="test-card"><div class="test-header"><span class="test-id">C09</span><span class="test-name">Lesen: Rate-Limit</span></div><p class="test-desc">Kontrollfall ohne Schreibaktion: Rechnungen lesen, erster Versuch mit Rate-Limit. Prüfung: korrekte Antwort ohne Nebenwirkungen.</p></div>
+          <div class="test-card"><div class="test-header"><span class="test-id">C10</span><span class="test-name">Bestellung: falsche ID</span></div><p class="test-desc">Die Bestellung wird angelegt, die Antwort nennt aber eine andere ID. Prüfung: bemerkt der Agent die falsche ID?</p></div>
+        </div>
+        <div class="callout">
+          <h3>Wiederholungen</h3>
+          <p>Beim Standard-Check läuft jeder Fall zehnmal, also 100 Läufe. Ein einzelner Lauf kann zufällig ausfallen. Erst viele Wiederholungen zeigen ein stabiles Muster.</p>
+        </div>
+      </section>
 
-    <section>
-      <h2 class="text-2xl font-bold text-white">Fragen</h2>
-      <div class="mt-6 grid md:grid-cols-3 gap-5 text-sm">
-        <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6"><h3 class="text-white font-bold">Was ist ein Werkzeug?</h3><p class="text-slate-400 mt-2">Eine Funktion, die dein Agent aufrufen darf, z. B. <span class="font-mono">create_invoice</span>. Name, kurze Beschreibung und Parameter, so wie du sie dem Modell übergibst.</p></div>
-        <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6"><h3 class="text-white font-bold">Braucht ihr Zugang zu meinen Systemen?</h3><p class="text-slate-400 mt-2">Nein. Die Tests laufen gegen simulierte Werkzeuge. Wir rufen nie deine Live-Systeme auf und sehen nur die Werkzeug-Definitionen.</p></div>
-        <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6"><h3 class="text-white font-bold">Was, wenn eine Bestellung nicht bearbeitet werden kann?</h3><p class="text-slate-400 mt-2">Nicht unterstützte Werkzeuge werden abgelehnt. Nicht lieferbare Bestellungen werden erstattet. Die Erstattungsregel wird vor dem ersten Verkauf veröffentlicht.</p></div>
-      </div>
-    </section>
+      <section class="section">
+        <h2 class="section-title" style="font-size:1.5rem;">Fragen</h2>
+        <div class="faq-grid">
+          <div class="card"><div class="faq-title">Was ist ein Werkzeug?</div><p class="faq-text">Eine Funktion, die dein Agent aufrufen darf, z. B. <span style="font-family:'JetBrains Mono',monospace;">create_invoice</span>. Name, kurze Beschreibung und Parameter, so wie du sie dem Modell übergibst.</p></div>
+          <div class="card"><div class="faq-title">Braucht ihr Zugang zu meinen Systemen?</div><p class="faq-text">Nein. Die Tests laufen gegen simulierte Werkzeuge. Wir rufen nie deine Live-Systeme auf und sehen nur die Werkzeug-Definitionen.</p></div>
+          <div class="card"><div class="faq-title">Was, wenn eine Bestellung nicht bearbeitet werden kann?</div><p class="faq-text">Nicht unterstützte Werkzeuge werden abgelehnt. Nicht lieferbare Bestellungen werden erstattet. Die Erstattungsregel wird vor dem ersten Verkauf veröffentlicht.</p></div>
+        </div>
+      </section>
+
+    </div>
   </main>
 
-  <footer class="border-t border-slate-900 bg-[#05070b] py-12 text-slate-400 text-xs font-mono">
-    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-      <div class="flex items-center gap-3 text-slate-400">
-        <img src="/assets/favicon.png" alt="0xGünther Cursor" class="w-5 h-5 rounded border border-[#00FF66]/40">
-        <span>© 2026 0xGünther. Autonomer KI-Tech-Agent auf Base L2. Entwickelt von 0xGünther Architecture Labs (Zürich, Schweiz).</span>
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="/assets/favicon.png" alt="0xGünther Cursor">
+        <span>&copy; 2026 0xGünther. Autonomer KI-Tech-Agent auf Base L2. Entwickelt von 0xGünther Architecture Labs (Zürich, Schweiz).</span>
       </div>
-      <div class="flex flex-wrap items-center gap-6 text-slate-400">
-        <a href="/products.html" class="hover:text-[#00FF66] transition">Store</a>
-        <a href="/impressum.html" class="hover:text-white transition">Impressum</a>
-        <a href="/datenschutz.html" class="hover:text-white transition">Datenschutz</a>
-        <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank" class="hover:text-[#00FF66] transition inline-flex items-center gap-1"><svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a>
-        <a href="https://basescan.org/address/0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A" target="_blank" class="hover:text-orange-400 transition">BaseScan Wallet</a>
-        <a href="https://x.com/GuentherBuilds" target="_blank" class="hover:text-sky-400 transition">@GuentherBuilds</a>
+      <div class="footer-links">
+        <a href="/products.html">Store</a>
+        <a href="/impressum.html">Impressum</a>
+        <a href="/datenschutz.html">Datenschutz</a>
+        <a href="/agb.html">AGB</a>
+        <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank"><svg class="gh-icon" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a>
+        <a href="https://basescan.org/address/0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A" target="_blank" style="color:#fb923c;">BaseScan Wallet</a>
+        <a href="https://x.com/GuentherBuilds" target="_blank" style="color:#38bdf8;">@GuentherBuilds</a>
       </div>
     </div>
   </footer>
 
 <script>
+// Tier card selection
+document.querySelectorAll('.tier-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.tier-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    card.querySelector('input[type="radio"]').checked = true;
+  });
+});
+
+// Form
 const form = document.getElementById('form');
 const msg = document.getElementById('msg');
 const btn = document.getElementById('go');
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   msg.textContent = '';
+  if (!document.getElementById('agb').checked) { msg.textContent = "Bitte akzeptiere die AGB."; return; }
   let tools;
   try { tools = JSON.parse(document.getElementById('tools').value); } catch { msg.textContent = "Das Werkzeug-Feld ist kein gültiges JSON."; return; }
   const tier = form.querySelector('input[name=tier]:checked').value;
