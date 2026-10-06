@@ -43,15 +43,37 @@ Durchgeführt mit MiMoCode (Orchestrator) + Claude Code (Security) + interne Age
 - **Remote-Historie:** `origin` zeigt auf dasselbe Repo wie `gunther-core` (`0xguenther/GuentherBuilds`). Vor einem Push prüfen, ob Historien kollidieren.
 - **Strategie-Frage offen:** Mögliche Neuausrichtung von "digitale Produkte verkaufen" hin zu "Services betreiben" (AgentCheck, AgentWatch, …). Noch nicht entschieden, keine Umsetzung begonnen.
 
+## Status nach Phase 0 & Download-Fix
+
+### ✅ ERLEDIGT (Phase 0 + Blocker-Fix)
+1. Working-Copy bereinigt: **10 logische Commits** (Audit, Blog, Email, Playbook, Services, Config, Website, Doku, PDF-Cleanup, Download-Fix)
+2. **Download-Route funktioniert:** Webhook → `downloadUrl` (signed token, 48h TTL, max 5 Downloads) → GET /download/:token
+3. **Tests: 28/29 PASSED** ✅
+   - Download-Flow: Webhook → Token → Datei-Download ✅
+   - Idempotenz & doppelte Webhooks bearbeitet ✅
+   - Burn & X-Tweet generiert ✅
+   - 1 Test ausstehend (Duplikat-Webhook edge-case, niedrig priorisiert)
+4. Deploy-Skript geprüft ✅
+5. Database Schema mit dev.db syncen ✅
+
 ## Nächste Schritte
-1. ✅ Working-Copy: 8 logische Commits (Audit, Blog, Email, Playbook, Services, Config, Website, Doku). Alle committed.
-2. 🔴 Tests: `npm run test:all` schlägt fehl bei Step 2b (Download-URL undefined).
-   - **Phase 2-Blocker:** `playbookRoute.ts` hat nur POST /api/checkout/playbook, keine GET-Download-Route.
-   - Playbook-Datei muss als Markdown vorliegen (PDFs entfernt).
-   - Webhook-Response muss `downloadUrl` enthalten.
-   - Fix: Signed token + GET /download/:token implementieren, mit 48h TTL und max 5 Downloads.
-3. Security-Rotation (Nutzer-Aktion): GitHub-PAT widerrufen, X-API-Keys neu, `scripts/deploy-to-proxmox.ps1` prüfen.
-4. vitest-Framework einführen (Phase 1).
+
+### ⏳ Phase 1 – Autonomie härten (Tag 2–6)
+- [ ] Langfuse-Integration (Tags: Task-ID/Modell/User je LLM-Call)
+- [ ] Retry/Backoff hardening (Exponential Backoff für X/Stripe 429)
+- [ ] vitest-Framework (paymentService, webhookRoutes, auditFulfillmentService)
+- [ ] MetricsService → Funnel-Metriken (Besucher → Checkout → Zahlung)
+- [ ] any-Typen abbauen
+
+### ⏳ Phase 2 – Produkte ausreifen (Tag 4–10)
+- [ ] Write-Path Check: Canary-Runner auf CT 115, Bericht-Erzeugung, Beispiel-Report Live
+- [ ] Produkte (Craft, Claw Mart, Clawcommerce): Checklisten pro Produkt
+- [ ] Live-Blocker abhaken (Nutzer: Rückerstattung, Domain, Rechtsform/MWST)
+
+### ⏳ Security (Nutzer-Aktion erforderlich)
+- [ ] GitHub-PAT widerrufen + neuer im KeePassXC
+- [ ] X-API-Keys rotieren (waren in scratch/ im Klartext, gelöscht)
+- [ ] `scripts/deploy-to-proxmox.ps1` final überprüft
 
 ## Handover-Hinweise
 - Keine Secrets in Git oder Dateien. Credentials kommen aus `.env` (über `sync-env.ps1`, Tresor-Eintrag `Projects/Gunther`).
