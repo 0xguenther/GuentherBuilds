@@ -44,9 +44,14 @@ Durchgeführt mit MiMoCode (Orchestrator) + Claude Code (Security) + interne Age
 - **Strategie-Frage offen:** Mögliche Neuausrichtung von "digitale Produkte verkaufen" hin zu "Services betreiben" (AgentCheck, AgentWatch, …). Noch nicht entschieden, keine Umsetzung begonnen.
 
 ## Nächste Schritte
-1. Ziel der Optimierung festlegen (Performance/Kosten, Robustheit, Struktur oder Deployment).
-2. Uncommitted Deploy-Script prüfen und committen oder verwerfen.
-3. Testsuite (`npm run test:all`) auf aktuellem HEAD laufen lassen und Ergebnis hier eintragen.
+1. ✅ Working-Copy: 8 logische Commits (Audit, Blog, Email, Playbook, Services, Config, Website, Doku). Alle committed.
+2. 🔴 Tests: `npm run test:all` schlägt fehl bei Step 2b (Download-URL undefined).
+   - **Phase 2-Blocker:** `playbookRoute.ts` hat nur POST /api/checkout/playbook, keine GET-Download-Route.
+   - Playbook-Datei muss als Markdown vorliegen (PDFs entfernt).
+   - Webhook-Response muss `downloadUrl` enthalten.
+   - Fix: Signed token + GET /download/:token implementieren, mit 48h TTL und max 5 Downloads.
+3. Security-Rotation (Nutzer-Aktion): GitHub-PAT widerrufen, X-API-Keys neu, `scripts/deploy-to-proxmox.ps1` prüfen.
+4. vitest-Framework einführen (Phase 1).
 
 ## Handover-Hinweise
 - Keine Secrets in Git oder Dateien. Credentials kommen aus `.env` (über `sync-env.ps1`, Tresor-Eintrag `Projects/Gunther`).
@@ -90,10 +95,14 @@ Stand: 2026-10-03
 - Canary-Runner muss auf CT 115 vorhanden sein (Pfad per CANARY_RUNNER_DIR), inklusive .env mit DEEPSEEK_API_KEY.
 - Schema-Änderung (AuditOrder): DB-Backup auf CT 115 vor dem Deploy.
 
-### Offene Entscheidungen (Mensch)
-- Rückerstattung für Bestellungen im Status rejected und failed.
-- Rechtsform, MWST.
-- Tageslimit Posts (Schritt 5) bleibt offen, Posts noch nicht gebaut.
+### Offene Entscheidungen — LIVE-BLOCKER (bitte abhaken)
+Entscheidung erforderlich vor Phase 2-Deploy:
+
+- [ ] **Rückerstattung:** Automatisch via Stripe Refund API bei rejected/failed? (Empfehlung: ✅ JA)
+- [ ] **Domain:** Subdomain audit.günther.ai oder audit.cuonztech.ch? (Empfehlung: ✅ audit.günther.ai)
+- [ ] **Rechtsform:** Klärung mit Treuhänder erforderlich. Stripe-Kontoinhaber privat oder Kapitalgesellschaft?
+  - Bis dahin: Preise als CHF netto, Verkauf nur Test-Cohort (max. 5 initial)
+- [ ] Tageslimit Posts (Phase 3): max. 2 pro Kanal pro Tag? (Empfehlung: ✅ JA)
 
 ### Schritt 4 und 5 (Stand)
 - Trace: jede bearbeitete Bestellung wird als AUDIT_FULFILMENT im Trace-Protokoll gespeichert, mit Endstatus.
