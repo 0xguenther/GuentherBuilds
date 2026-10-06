@@ -3,9 +3,19 @@ import path from 'path';
 
 dotenv.config();
 
+function parseIntSafe(value: string | undefined, fallback: number): number {
+  const parsed = parseInt(value || String(fallback), 10);
+  return isNaN(parsed) ? fallback : parsed;
+}
+
+function parseFloatSafe(value: string | undefined, fallback: number): number {
+  const parsed = parseFloat(value || String(fallback));
+  return isNaN(parsed) ? fallback : parsed;
+}
+
 export const config = {
   server: {
-    port: parseInt(process.env.PORT || '3000', 10),
+    port: parseIntSafe(process.env.PORT, 3000),
     host: process.env.HOST || '0.0.0.0',
     env: process.env.NODE_ENV || 'development',
   },
@@ -26,7 +36,7 @@ export const config = {
     cdpApiKeyPrivateKey: process.env.CDP_API_KEY_PRIVATE_KEY || '',
     gunterTokenAddress: process.env.GUNTER_TOKEN_ADDRESS || '0x0000000000000000000000000000000000000000',
     burnDestinationAddress: (process.env.BURN_DESTINATION_ADDRESS || '0x000000000000000000000000000000000000dEaD') as `0x${string}`,
-    maxGasFeePercentage: parseFloat(process.env.MAX_GAS_FEE_PERCENTAGE || '5.0'),
+    maxGasFeePercentage: parseFloatSafe(process.env.MAX_GAS_FEE_PERCENTAGE, 5.0),
   },
   x: {
     apiKey: process.env.X_API_KEY || '',
@@ -55,13 +65,13 @@ export const config = {
   },
   monitoring: {
     kumaPushUrl: process.env.KUMA_PUSH_URL || '',
-    heartbeatIntervalMs: parseInt(process.env.HEARTBEAT_INTERVAL_MS || '60000', 10),
+    heartbeatIntervalMs: parseIntSafe(process.env.HEARTBEAT_INTERVAL_MS, 60000),
   },
   growth: {
-    maxDailyBuilderInsights: parseInt(process.env.MAX_DAILY_BUILDER_INSIGHTS || '2', 10),
-    maxDailyReplies: parseInt(process.env.MAX_DAILY_REPLIES || '10', 10),
-    maxRepliesPerUserDaily: parseInt(process.env.MAX_REPLIES_PER_USER_DAILY || '2', 10),
-    minHoursBetweenInsights: parseInt(process.env.MIN_HOURS_BETWEEN_INSIGHTS || '6', 10),
-    maxDailyLlmCostUsd: parseFloat(process.env.MAX_DAILY_LLM_COST_USD || '1.50'),
+    maxDailyBuilderInsights: parseIntSafe(process.env.MAX_DAILY_BUILDER_INSIGHTS, 2),
+    maxDailyReplies: parseIntSafe(process.env.MAX_DAILY_REPLIES, 10),
+    maxRepliesPerUserDaily: parseIntSafe(process.env.MAX_REPLIES_PER_USER_DAILY, 2),
+    minHoursBetweenInsights: parseIntSafe(process.env.MIN_HOURS_BETWEEN_INSIGHTS, 6),
+    maxDailyLlmCostUsd: parseFloatSafe(process.env.MAX_DAILY_LLM_COST_USD, 1.50),
   },
 };

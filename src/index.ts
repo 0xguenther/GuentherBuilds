@@ -1,6 +1,6 @@
 import { buildApp } from './server/app.js';
 import { config } from './config/index.js';
-import { checkDatabaseConnection } from './db/client.js';
+import { checkDatabaseConnection, prisma } from './db/client.js';
 import { guntherDaemon } from './cron/daemon.js';
 import { skillService } from './services/skillService.js';
 
@@ -47,6 +47,7 @@ async function main() {
     console.log(`\n[Shutdown] Received ${signal}. Shutting down gracefully...`);
     guntherDaemon.stop();
     await app.close();
+    await prisma.$disconnect();
     console.log('[Shutdown] All services stopped. Goodbye.');
     process.exit(0);
   };
@@ -55,4 +56,7 @@ async function main() {
   process.on('SIGTERM', () => shutdown('SIGTERM'));
 }
 
-main();
+main().catch((err) => {
+  console.error('Fatal startup error:', err);
+  process.exit(1);
+});

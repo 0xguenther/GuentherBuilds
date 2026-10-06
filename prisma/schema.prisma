@@ -19,6 +19,7 @@ model Payment {
   amountCents  Int
   currency     String   @default("USD")
   status       String   @default("received") // received | calculating | burning | burned | failed
+  errorReason  String?  // Failure reason for debugging
   burnAmount   BigInt?
   txHash       String?  @unique
   downloadToken String? @unique
@@ -26,6 +27,9 @@ model Payment {
   downloadCount Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
 }
 
 // --- X (Twitter) Mentions ---
@@ -35,10 +39,13 @@ model Mention {
   tweetId   String   @unique
   author    String
   text      String
-  status    String   @default("seen") // seen | replying | replied | failed
+  status    String   @default("seen") // seen | replying | replied | failed | skipped
   replyId   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([status, updatedAt])
+  @@index([author])
 }
 
 // --- LLM / Observability Tracing Log ---
@@ -51,7 +58,12 @@ model Trace {
   costUsd    Float    @default(0)
   tokens     Int      @default(0)
   status     String   @default("ok") // ok | error
+  metadata   String?  // JSON string for flexible structured data
   createdAt  DateTime @default(now())
+
+  @@index([taskId])
+  @@index([createdAt])
+  @@index([task])
 }
 
 // --- Claw Mart: AI Skills & MCP Marketplace ---
@@ -167,4 +179,6 @@ model AuditOrder {
   downloadCount   Int       @default(0)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+
+  @@index([status])
 }
