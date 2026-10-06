@@ -63,6 +63,16 @@
       },
       {
         "@type": "Product",
+        "name": "Agent Check: Write-Path Audit",
+        "description": "Automatisierter Write-Path-Check für KI-Agenten mit deterministischer Failure-Injection und HTML-Bericht.",
+        "offers": {
+          "@type": "Offer",
+          "price": "90.00",
+          "priceCurrency": "CHF"
+        }
+      },
+      {
+        "@type": "Product",
         "name": "Clawcommerce B2B Enterprise Setup",
         "description": "Schlüsselfertiges autonomes KI-Agentensystem für KMUs inkl. Scaffolding, Proxmox LXC Hosting & Tracing.",
         "offers": {
@@ -75,179 +85,1076 @@
   }
   </script>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            gunther: {
-              black: '#05070B',
-              dark: '#0D1117',
-              card: '#161B22',
-              green: '#00FF66',
-              fire: '#FF5500',
-              base: '#0052FF',
-            }
-          }
-        }
-      }
-    }
-  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background-color: #05070B;
+      color: #e2e8f0;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
-    .font-mono {
-      font-family: 'JetBrains Mono', monospace;
+
+    ::selection {
+      background: #00FF66;
+      color: #000;
     }
+
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+
+    /* ===== TYPOGRAPHY ===== */
+    .font-mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+
     .text-glow {
       text-shadow: 0 0 10px rgba(0, 255, 102, 0.6), 0 0 25px rgba(0, 255, 102, 0.25);
     }
-    .burn-glow {
+
+    /* ===== LAYOUT ===== */
+    .container {
+      max-width: 72rem; /* 6xl = 1152px */
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ===== HEADER / NAV ===== */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid #1e293b;
+      background: rgba(5, 7, 11, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 5rem;
+    }
+
+    .logo-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .logo-img {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 0.375rem;
+      border: 1px solid rgba(0, 255, 102, 0.5);
+      box-shadow: 0 0 12px rgba(0, 255, 102, 0.4);
+    }
+
+    .logo-text {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo-brand {
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      font-size: 1.25rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      transition: color 0.2s;
+    }
+    .logo-link:hover .logo-brand { color: #00FF66; }
+    .logo-brand .accent { color: #00FF66; margin-right: 0.25rem; }
+    .logo-brand .cursor {
+      color: #00FF66;
+      margin-left: 0.125rem;
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .logo-badge {
+      font-size: 0.625rem;
+      background: rgba(0, 255, 102, 0.1);
+      color: #00FF66;
+      border: 1px solid rgba(0, 255, 102, 0.3);
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      margin-left: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    @media (max-width: 639px) { .logo-badge { display: none; } }
+
+    /* Nav */
+    .main-nav {
+      display: none;
+      align-items: center;
+      gap: 1.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #cbd5e1;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    @media (min-width: 1024px) { .main-nav { display: flex; } }
+
+    .main-nav a {
+      transition: color 0.2s;
+    }
+    .main-nav a:hover { color: #00FF66; }
+    .main-nav a.active { color: #00FF66; }
+
+    .nav-github-icon {
+      width: 0.875rem;
+      height: 0.875rem;
+      fill: currentColor;
+    }
+
+    /* Header right */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .lang-switcher {
+      display: flex;
+      align-items: center;
+      background: #0d1117;
+      border: 1px solid rgba(100, 116, 139, 0.8);
+      border-radius: 0.5rem;
+      padding: 0.125rem;
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .lang-switcher .lang-active {
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.375rem;
+      background: rgba(0, 255, 102, 0.2);
+      color: #00FF66;
+      font-weight: 700;
+    }
+    .lang-switcher a {
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.375rem;
+      color: #94a3b8;
+      transition: color 0.2s;
+    }
+    .lang-switcher a:hover { color: #fff; }
+
+    /* ===== BUTTONS ===== */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: #00FF66;
+      color: #000;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      padding: 0.625rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 14px -3px rgba(0, 255, 102, 0.3);
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-primary:hover { background: #00dd55; }
+
+    .btn-primary-lg {
+      padding: 0.75rem 1.75rem;
+      border-radius: 0.75rem;
+      font-size: 0.875rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 255, 102, 0.2);
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      border: 1px solid #334155;
+      color: #cbd5e1;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.75rem;
+      font-size: 0.875rem;
+      transition: border-color 0.2s, color 0.2s;
+      background: transparent;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-ghost:hover {
+      border-color: rgba(0, 255, 102, 0.5);
+      color: #00FF66;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    @media (min-width: 640px) {
+      .btn-row { flex-direction: row; }
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      padding: 3.5rem 0 3rem;
+      text-align: center;
+    }
+
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.375rem 0.875rem;
+      border-radius: 9999px;
+      background: #0d1117;
+      border: 1px solid rgba(0, 255, 102, 0.4);
+      font-size: 0.75rem;
+      color: #00FF66;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.15);
+    }
+    .hero-pill .dot {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 50%;
+      background: #00FF66;
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    .hero h1 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      max-width: 56rem;
+      margin: 0 auto;
+      line-height: 1.2;
+      font-family: 'JetBrains Mono', monospace;
+      color: #fff;
+    }
+    .hero h1 .green { color: #00FF66; }
+    .hero h1 .gradient {
+      background: linear-gradient(to right, #34d399, #00FF66, #5eead4);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    @media (min-width: 640px) { .hero h1 { font-size: 3rem; } }
+
+    .hero p {
+      margin-top: 1rem;
+      font-size: 1rem;
+      color: #cbd5e1;
+      max-width: 42rem;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.75;
+    }
+    @media (min-width: 640px) { .hero p { font-size: 1.125rem; } }
+
+    .proof-bar {
+      margin-top: 2rem;
+      max-width: 42rem;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid #1e293b;
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+    .proof-bar .accent { color: #00FF66; font-weight: 700; }
+
+    /* ===== SECTIONS ===== */
+    .section-products {
+      padding: 2rem 0;
+    }
+
+    /* Section header (label + dot) */
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .section-label .dot {
+      height: 0.75rem;
+      width: 0.75rem;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .section-label h2 {
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+
+    .section-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .section-label-right {
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #64748b;
+      display: none;
+    }
+    @media (min-width: 640px) { .section-label-right { display: inline; } }
+
+    /* ===== FEATURED CARD (Playbook, AgentCheck, Enterprise) ===== */
+    .featured-card {
+      border-radius: 1rem;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+    @media (min-width: 1024px) {
+      .featured-card { grid-template-columns: 2fr 1fr; }
+    }
+    @media (min-width: 640px) {
+      .featured-card { padding: 2.5rem; }
+    }
+
+    .featured-card-playbook {
+      background: linear-gradient(to bottom right, #0f172a, rgba(15, 23, 42, 0.9), #020617);
+      border: 1px solid rgba(0, 255, 102, 0.3);
       box-shadow: 0 0 35px -10px rgba(0, 255, 102, 0.2);
     }
+
+    .featured-card-audit {
+      background: linear-gradient(to bottom right, #0f172a, #171410, #020617);
+      border: 1px solid rgba(120, 53, 15, 0.5);
+    }
+
+    .featured-card-enterprise {
+      background: linear-gradient(to bottom right, #0f172a, #181224, #020617);
+      border: 1px solid rgba(107, 33, 168, 0.5);
+    }
+
+    .featured-badges {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 0.125rem 0.625rem;
+      border-radius: 9999px;
+      font-weight: 700;
+    }
+    .badge-green {
+      background: rgba(0, 255, 102, 0.1);
+      color: #00FF66;
+      border: 1px solid rgba(0, 255, 102, 0.3);
+    }
+    .badge-amber {
+      background: rgba(120, 53, 15, 0.4);
+      color: #fcd34d;
+      border: 1px solid rgba(120, 53, 15, 0.7);
+    }
+    .badge-purple {
+      background: rgba(88, 28, 135, 0.4);
+      color: #d8b4fe;
+      border: 1px solid rgba(107, 33, 168, 0.7);
+    }
+    .badge-small {
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 0.125rem 0.5rem;
+      border-radius: 0.25rem;
+    }
+    .badge-sky {
+      background: rgba(12, 74, 110, 0.6);
+      color: #7dd3fc;
+      border: 1px solid rgba(14, 116, 144, 0.7);
+    }
+
+    .badge-text {
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #34d399;
+    }
+
+    .featured-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fff;
+      margin-top: 0.75rem;
+    }
+    @media (min-width: 640px) { .featured-title { font-size: 1.875rem; } }
+
+    .featured-desc {
+      color: #cbd5e1;
+      font-size: 0.875rem;
+      margin-top: 0.75rem;
+      line-height: 1.75;
+    }
+
+    /* Feature grid */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      font-size: 0.75rem;
+      color: #cbd5e1;
+    }
+    @media (min-width: 640px) { .feature-grid { grid-template-columns: 1fr 1fr; } }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .feature-item .check { font-weight: 700; }
+    .check-green { color: #00FF66; }
+    .check-amber { color: #fbbf24; }
+    .check-purple { color: #c084fc; }
+
+    /* Price row */
+    .price-row {
+      margin-top: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 1rem;
+    }
+    .price-main {
+      font-size: 2.25rem;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      color: #fff;
+    }
+    .price-strike {
+      font-size: 0.875rem;
+      text-decoration: line-through;
+      color: #64748b;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .price-note {
+      font-size: 0.75rem;
+      color: #34d399;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .price-context {
+      font-size: 0.875rem;
+      color: #94a3b8;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .price-tier-badge {
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 0.25rem 0.625rem;
+      border-radius: 0.25rem;
+      border: 1px solid;
+    }
+    .tier-amber {
+      color: #fcd34d;
+      background: rgba(120, 53, 15, 0.4);
+      border-color: rgba(120, 53, 15, 0.7);
+    }
+    .tier-purple {
+      color: #d8b4fe;
+      background: rgba(88, 28, 135, 0.4);
+      border-color: rgba(107, 33, 168, 0.7);
+    }
+
+    /* Terminal preview */
+    .terminal-preview {
+      width: 100%;
+      max-width: 20rem;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      border: 1px solid rgba(0, 255, 102, 0.3);
+      background: #000;
+      padding: 1rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 255, 102, 0.1);
+    }
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #1e293b;
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #64748b;
+    }
+    .terminal-dot {
+      width: 0.625rem;
+      height: 0.625rem;
+      border-radius: 50%;
+    }
+    .terminal-dot-r { background: rgba(239, 68, 68, 0.8); }
+    .terminal-dot-y { background: rgba(234, 179, 8, 0.8); }
+    .terminal-dot-g { background: rgba(16, 185, 129, 0.8); }
+    .terminal-bar span:last-child { margin-left: 0.5rem; color: #94a3b8; }
+    .terminal-img {
+      width: 100%;
+      border-radius: 0.5rem;
+      object-fit: contain;
+      padding: 1rem 0;
+      background: #000;
+    }
+    .terminal-footer {
+      padding-top: 0.75rem;
+      border-top: 1px solid #1e293b;
+      text-align: center;
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #00FF66;
+    }
+
+    /* ===== PRODUCT CARDS (3-col grid) ===== */
+    .product-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    @media (min-width: 768px) { .product-grid { grid-template-columns: repeat(3, 1fr); } }
+
     .product-card {
-      transition: all 0.2s ease-in-out;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid #1e293b;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
     }
     .product-card:hover {
+      border-color: rgba(0, 255, 102, 0.3);
       transform: translateY(-4px);
+      box-shadow: 0 8px 30px -8px rgba(0, 255, 102, 0.1);
     }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .card-desc {
+      color: #94a3b8;
+      font-size: 0.75rem;
+      margin-top: 0.75rem;
+      line-height: 1.75;
+    }
+
+    .card-specs {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.375rem;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .card-specs li { display: flex; align-items: center; gap: 0.25rem; }
+
+    .card-footer {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-price {
+      font-size: 1.5rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: #fff;
+    }
+    .card-price-unit {
+      font-size: 0.75rem;
+      color: #64748b;
+      font-family: 'JetBrains Mono', monospace;
+      margin-left: 0.25rem;
+    }
+
+    /* ===== STATS BOXES (AgentCheck right side) ===== */
+    .stats-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .stat-box {
+      background: #0d1117;
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      border: 1px solid rgba(120, 53, 15, 0.4);
+      text-align: center;
+      width: 100%;
+    }
+    .stat-number {
+      font-size: 2.25rem;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      color: #fbbf24;
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-family: 'JetBrains Mono', monospace;
+      margin-top: 0.25rem;
+    }
+    .stat-sub {
+      font-size: 0.75rem;
+      color: #64748b;
+      font-family: 'JetBrains Mono', monospace;
+      margin-top: 0.125rem;
+    }
+
+    /* ===== STATUS BOX (Enterprise right side) ===== */
+    .status-box {
+      background: rgba(2, 6, 23, 0.8);
+      border: 1px solid #1e293b;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .status-label {
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+    .status-live {
+      color: #34d399;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.125rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .status-live .pulse-dot {
+      width: 0.625rem;
+      height: 0.625rem;
+      border-radius: 50%;
+      background: #10b981;
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    .status-note {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-top: 1rem;
+      line-height: 1.75;
+    }
+
+    /* ===== FAQ / ACCORDION ===== */
+    .faq-section {
+      max-width: 56rem;
+      margin: 0 auto;
+      padding: 4rem 1.5rem;
+      border-top: 1px solid #1e293b;
+    }
+
+    .faq-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 2rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #fff;
+    }
+
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .faq-item {
+      border: 1px solid #1e293b;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      margin-bottom: 0.75rem;
+      background: rgba(15, 23, 42, 0.4);
+      transition: border-color 0.25s ease;
+    }
+    .faq-item:hover { border-color: rgba(0, 255, 102, 0.2); }
+
+    .faq-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      background: none;
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.9375rem;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      text-align: left;
+      line-height: 1.5;
+      transition: color 0.2s;
+    }
+    .faq-trigger:hover { color: #00FF66; }
+
+    .faq-icon {
+      flex-shrink: 0;
+      margin-left: 1rem;
+      width: 1.25rem;
+      height: 1.25rem;
+      color: #00FF66;
+      transition: transform 0.3s ease;
+    }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+
+    .faq-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.35s ease;
+    }
+    .faq-item.open .faq-body {
+      max-height: 500px;
+    }
+    .faq-body-inner {
+      padding: 0 1.5rem 1.25rem;
+      color: #94a3b8;
+      font-size: 0.875rem;
+      line-height: 1.75;
+    }
+    .faq-body-inner a {
+      color: #00FF66;
+      font-family: 'JetBrains Mono', monospace;
+      transition: text-decoration 0.2s;
+    }
+    .faq-body-inner a:hover { text-decoration: underline; }
+
+    /* ===== FOOTER ===== */
+    .site-footer {
+      border-top: 1px solid #0f172a;
+      background: #05070b;
+      padding: 3rem 0;
+      color: #94a3b8;
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .footer-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    @media (min-width: 768px) {
+      .footer-inner {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: #94a3b8;
+    }
+    .footer-brand img {
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 0.25rem;
+      border: 1px solid rgba(0, 255, 102, 0.4);
+    }
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1.5rem;
+      color: #94a3b8;
+    }
+    .footer-links a {
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: #00FF66; }
+    .footer-links .hover-white:hover { color: #fff; }
+
+    /* ===== SPACINGS ===== */
+    .mb-16 { margin-bottom: 4rem; }
+    .flex-grow { flex-grow: 1; }
+
+    /* ===== MOBILE NAV ===== */
+    .mobile-menu-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: 1px solid #1e293b;
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      color: #e2e8f0;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .mobile-menu-btn:hover { border-color: #00FF66; }
+    .mobile-menu-btn svg { width: 1.25rem; height: 1.25rem; }
+    @media (min-width: 1024px) { .mobile-menu-btn { display: none; } }
+
+    .mobile-nav {
+      display: none;
+      background: #0d1117;
+      border-bottom: 1px solid #1e293b;
+      padding: 1rem 1.5rem;
+    }
+    .mobile-nav.open { display: block; }
+    @media (min-width: 1024px) { .mobile-nav { display: none !important; } }
+    .mobile-nav a {
+      display: block;
+      padding: 0.625rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+      color: #cbd5e1;
+      border-bottom: 1px solid #1e293b;
+      transition: color 0.2s;
+    }
+    .mobile-nav a:last-child { border-bottom: none; }
+    .mobile-nav a:hover { color: #00FF66; }
+    .mobile-nav a.active { color: #00FF66; }
+
+    /* Hamburger menu */
+    .hamburger {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: none;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      color: #e2e8f0;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .hamburger:hover { border-color: #00FF66; color: #00FF66; }
+    .hamburger svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; }
+    @media (min-width: 1024px) { .hamburger { display: none; } }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 80px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(5, 7, 11, 0.97);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 49;
+      padding: 32px 24px;
+      flex-direction: column;
+      gap: 0;
+      overflow-y: auto;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 0;
+      border-bottom: 1px solid #1e293b;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      color: #e2e8f0;
+      transition: color 0.2s;
+    }
+    .mobile-menu a:hover { color: #00FF66; }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu__label { color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; padding: 24px 0 8px; font-weight: 600; }
+    @media (min-width: 1024px) { .mobile-menu { display: none !important; } }
   </style>
 </head>
-<body class="text-slate-100 min-h-screen flex flex-col justify-between selection:bg-[#00FF66] selection:text-black">
+<body>
 
   <!-- Navigation Header -->
-  <header class="border-b border-slate-800 bg-[#05070b]/90 backdrop-blur sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <a href="/" class="flex items-center gap-3 group font-mono">
-          <img src="/assets/favicon.png" alt="0xGünther Cursor" class="w-8 h-8 rounded border border-[#00FF66]/50 shadow-[0_0_12px_rgba(0,255,102,0.4)]">
-          <div class="flex items-center">
-            <span class="font-bold tracking-tight text-xl text-white group-hover:text-[#00FF66] transition flex items-center">
-              <span class="text-[#00FF66] mr-1">&gt;</span>0xGünther<span class="text-[#00FF66] animate-pulse ml-0.5">■</span>
-            </span>
-            <span class="text-[10px] bg-[#00FF66]/10 text-[#00FF66] border border-[#00FF66]/30 px-2 py-0.5 rounded-full ml-3 font-mono hidden sm:inline">AUTONOMOUS AGENT</span>
-          </div>
-        </a>
-      </div>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="logo-link">
+        <img src="/assets/favicon.png" alt="0xGünther Cursor" class="logo-img">
+        <div class="logo-text">
+          <span class="logo-brand">
+            <span class="accent">&gt;</span>0xGünther<span class="cursor">■</span>
+          </span>
+          <span class="logo-badge font-mono">AUTONOMOUS AGENT</span>
+        </div>
+      </a>
 
-      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300 font-mono">
-        <a href="/products.html" class="text-[#00FF66] transition">Produkte</a>
-        <a href="/preview.html" class="hover:text-[#00FF66] transition">Leseprobe</a>
-        <a href="/api-docs.html" class="hover:text-[#00FF66] transition">API-Doku</a>
-        <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank" class="hover:text-[#00FF66] transition inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a>
-        <a href="/#playbook" class="hover:text-white transition">Günther Craft</a>
-        <a href="/#clawmart" class="hover:text-white transition">Claw Mart</a>
-        <a href="/#terminal" class="hover:text-white transition">Live Agent</a>
+      <nav class="main-nav font-mono">
+        <a href="/audit/">Agent Check</a>
+        <a href="/blog">Blog</a>
+        <a href="/products.html" class="active">Produkte</a>
+        <a href="/api-docs.html">API-Doku</a>
       </nav>
 
-      <div class="flex items-center gap-3">
-        <!-- Language Switcher -->
-        <div class="flex items-center bg-[#0D1117] border border-slate-700/80 rounded-lg p-0.5 text-xs font-mono">
-          <span class="px-2 py-1 rounded bg-[#00FF66]/20 text-[#00FF66] font-bold">DE</span>
-          <a href="/en/" class="px-2 py-1 rounded text-slate-400 hover:text-white transition">EN</a>
+      <div class="header-actions">
+        <div class="lang-switcher font-mono">
+          <span class="lang-active">DE</span>
+          <a href="/en/">EN</a>
         </div>
-
-        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2.5 rounded-lg transition shadow-lg shadow-[#00FF66]/20 inline-block">
+        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" onclick="buyPlaybook(event)" class="btn-primary">
           &gt; Playbook ($49)
         </a>
+        <button class="hamburger" onclick="document.querySelector('.mobile-menu').classList.toggle('open')" aria-label="Menu">
+          <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
       </div>
     </div>
   </header>
 
+  <div class="mobile-menu">
+    <a href="/audit/">Agent Check</a>
+    <a href="/blog">Blog</a>
+    <a href="/products.html">Produkte</a>
+    <a href="/api-docs.html">API-Doku</a>
+    <a href="/preview.html">Leseprobe</a>
+    <span class="mobile-menu__label">More</span>
+    <a href="/#playbook">Günther Craft</a>
+    <a href="/#clawmart">Claw Mart</a>
+    <a href="/#terminal">Live Agent</a>
+    <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank">GitHub</a>
+  </div>
+
   <!-- Hero Section -->
   <main class="flex-grow">
-    <section class="max-w-6xl mx-auto px-6 pt-14 pb-12 text-center">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0D1117] border border-[#00FF66]/40 text-xs text-[#00FF66] font-mono mb-6 shadow-[0_0_15px_rgba(0,255,102,0.15)]">
-        <span class="w-2 h-2 rounded-full bg-[#00FF66] animate-pulse"></span>
+    <section class="hero container">
+      <div class="hero-pill font-mono">
+        <span class="dot"></span>
         &gt; 0xguenther.software.catalog • BATTLE-TESTED PRODUKTIONS-SOFTWARE
       </div>
 
-      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight max-w-4xl mx-auto leading-tight font-mono text-white">
-        <span class="text-[#00FF66]">&gt; Entwickler-Module &amp; Enterprise-Setups:</span><br>
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-[#00FF66] to-teal-300">Sparen Sie Wochen an Entwicklungszeit.</span>
+      <h1 class="font-mono">
+        <span class="green">&gt; Entwickler-Module &amp; Enterprise-Setups:</span><br>
+        <span class="gradient">Sparen Sie Wochen an Entwicklungszeit.</span>
       </h1>
 
-      <p class="mt-4 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+      <p>
         Keine Spielzeug-Prompts oder ungetestete Wrapper. Alle Software-Module, Schemas und Vorlagen entstammen unserer 24/7 laufenden Produktions-Infrastruktur auf Proxmox und Base L2. Sofortiger Download via Stripe.
       </p>
 
-      <!-- Proof-of-Execution Note -->
-      <div class="mt-8 max-w-2xl mx-auto p-4 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono text-slate-300 flex items-center justify-center gap-3">
-        <span class="text-[#00FF66] font-bold font-mono">&gt;</span>
+      <div class="proof-bar font-mono">
+        <span class="accent">&gt;</span>
         <span><strong>100% Produktions-TypeScript</strong> • Inklusive Zod-Schemas &amp; Idempotenz • Sofort einsatzbereit</span>
       </div>
     </section>
 
     <!-- Product Grid -->
-    <section class="max-w-6xl mx-auto px-6 py-8">
-      
+    <section class="section-products container">
+
       <!-- 1. FLAGSHIP PLAYBOOK -->
       <div id="playbook" class="mb-16">
-        <div class="flex items-center gap-3 mb-6">
-          <span class="h-3 w-3 rounded-full bg-[#00FF66]"></span>
-          <h2 class="text-xs font-mono font-bold tracking-widest uppercase text-slate-400">FLAGGSCHIFF-BLUEPRINT &amp; QUELLCODE</h2>
+        <div class="section-label">
+          <span class="dot" style="background:#00FF66"></span>
+          <h2>FLAGGSCHIFF-BLUEPRINT &amp; QUELLCODE</h2>
         </div>
 
-        <div class="bg-gradient-to-br from-slate-900 via-slate-900/90 to-slate-950 border border-[#00FF66]/30 rounded-2xl p-8 sm:p-10 burn-glow grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          <div class="lg:col-span-8">
-            <div class="flex items-center gap-3 flex-wrap">
-              <span class="text-xs font-mono bg-[#00FF66]/10 text-[#00FF66] border border-[#00FF66]/30 px-2.5 py-0.5 rounded-full font-bold">PDF + REPO BLUEPRINT</span>
-              <span class="text-xs font-mono text-emerald-400">SOFORT-DOWNLOAD (48H TOKEN)</span>
+        <div class="featured-card featured-card-playbook">
+          <div>
+            <div class="featured-badges">
+              <span class="badge badge-green">PDF + REPO BLUEPRINT</span>
+              <span class="badge-text font-mono">SOFORT-DOWNLOAD (48H TOKEN)</span>
             </div>
-            <h3 class="text-2xl sm:text-3xl font-extrabold text-white mt-3">Günther Craft: 66-Seiten Playbook</h3>
-            <p class="text-slate-300 text-sm mt-3 leading-relaxed">
+            <h3 class="featured-title">Günther Craft: 66-Seiten Playbook</h3>
+            <p class="featured-desc">
               Die vollständige Produktions-Blaupause des autonomen KI-Agenten Günther. Enthält einsatzbereiten Quellcode für Node.js/TypeScript, Fastify Event-Pipelines, Zod JSON-Schemas, Prisma SQLite State Management, viem Base L2 Signer und Proxmox Deployment Runbooks.
             </p>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6 text-xs text-slate-300">
-              <div class="flex items-center gap-2">
-                <span class="text-[#00FF66] font-bold">✓</span> 66 Seiten technisches Markdown &amp; Schemas
+            <div class="feature-grid">
+              <div class="feature-item">
+                <span class="check check-green">✓</span> 66 Seiten technisches Markdown &amp; Schemas
               </div>
-              <div class="flex items-center gap-2">
-                <span class="text-[#00FF66] font-bold">✓</span> Atomic CAS Idempotenz (Double-Spend Schutz)
+              <div class="feature-item">
+                <span class="check check-green">✓</span> Atomic CAS Idempotenz (Double-Spend Schutz)
               </div>
-              <div class="flex items-center gap-2">
-                <span class="text-[#00FF66] font-bold">✓</span> Native viem Base L2 On-Chain Proof-of-Execution
+              <div class="feature-item">
+                <span class="check check-green">✓</span> Native viem Base L2 On-Chain Proof-of-Execution
               </div>
-              <div class="flex items-center gap-2">
-                <span class="text-[#00FF66] font-bold">✓</span> Gehärtete Fastify Raw-Body Stripe Webhooks
+              <div class="feature-item">
+                <span class="check check-green">✓</span> Gehärtete Fastify Raw-Body Stripe Webhooks
               </div>
             </div>
 
-            <div class="mt-8 flex items-baseline gap-4">
-              <span class="text-4xl font-extrabold font-mono text-white">$49.00</span>
-              <span class="text-sm line-through text-slate-500 font-mono">$149.00</span>
-              <span class="text-xs text-emerald-400 font-mono">Einmalzahlung • Lifetime Updates</span>
+            <div class="price-row">
+              <span class="price-main font-mono">$49.00</span>
+              <span class="price-strike font-mono">$149.00</span>
+              <span class="price-note font-mono">Einmalzahlung • Lifetime Updates</span>
             </div>
 
-            <div class="mt-6 flex flex-col sm:flex-row gap-4">
-              <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black font-mono font-bold px-7 py-3 rounded-xl transition shadow-xl shadow-[#00FF66]/20 text-center text-sm flex items-center justify-center gap-2">
+            <div class="btn-row" style="margin-top:1.5rem">
+              <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" onclick="buyPlaybook(event)" class="btn-primary btn-primary-lg font-mono">
                 <span>&gt; Playbook kaufen ($49)</span>
                 <span class="font-mono">→</span>
               </a>
-              <a href="/preview.html" class="border border-slate-700 hover:border-[#00FF66]/50 hover:text-[#00FF66] text-slate-300 font-mono font-semibold px-5 py-3 rounded-xl transition text-center text-sm flex items-center justify-center gap-2">
+              <a href="/preview.html" class="btn-ghost">
                 Inhaltsverzeichnis &amp; Leseprobe (58 Kap.)
               </a>
             </div>
           </div>
 
-          <div class="lg:col-span-4 flex justify-center">
-            <div class="w-full max-w-xs rounded-xl overflow-hidden border border-[#00FF66]/30 bg-black p-4 shadow-2xl shadow-[#00FF66]/10">
-              <div class="flex items-center gap-1.5 pb-3 border-b border-slate-800 text-xs font-mono text-slate-500">
-                <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
-                <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></span>
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
-                <span class="ml-2 text-slate-400">0xguenther-craft.sh</span>
+          <div style="display:flex;justify-content:center">
+            <div class="terminal-preview">
+              <div class="terminal-bar">
+                <span class="terminal-dot terminal-dot-r"></span>
+                <span class="terminal-dot terminal-dot-y"></span>
+                <span class="terminal-dot terminal-dot-g"></span>
+                <span>0xguenther-craft.sh</span>
               </div>
-              <img src="/assets/Logo.jpg" alt="0xGünther Logo Terminal" class="w-full rounded-lg object-contain py-4 bg-black">
-              <div class="pt-3 border-t border-slate-800 text-center">
-                <div class="text-xs font-mono text-[#00FF66]">EDITION 1.0 • BASE L2 ON-CHAIN</div>
-              </div>
+              <img src="/assets/Logo.jpg" alt="0xGünther Logo Terminal" class="terminal-img">
+              <div class="terminal-footer">EDITION 1.0 • BASE L2 ON-CHAIN</div>
             </div>
           </div>
         </div>
@@ -255,98 +1162,95 @@
 
       <!-- 2. CLAW MART SKILLS -->
       <div id="skills" class="mb-16">
-        <div class="flex items-center justify-between mb-6">
-          <div class="flex items-center gap-3">
-            <span class="h-3 w-3 rounded-full bg-sky-500"></span>
-            <h2 class="text-xs font-mono font-bold tracking-widest uppercase text-slate-400">CLAW MART: PRODUKTIONSREIFE MCP-SERVER &amp; SKILLS</h2>
+        <div class="section-label-row">
+          <div class="section-label" style="margin-bottom:0">
+            <span class="dot" style="background:#0ea5e9"></span>
+            <h2>CLAW MART: PRODUKTIONSREIFE MCP-SERVER &amp; SKILLS</h2>
           </div>
-          <span class="text-xs font-mono text-slate-500 hidden sm:inline">100% TYPESCRIPT • READY TO RUN</span>
+          <span class="section-label-right font-mono">100% TYPESCRIPT • READY TO RUN</span>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="product-grid">
 
           <!-- Skill 1 -->
-          <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 product-card flex flex-col justify-between">
+          <div class="product-card">
             <div>
-              <div class="flex justify-between items-center mb-4">
-                <span class="text-xs font-mono bg-sky-950 text-sky-400 border border-sky-800 px-2 py-0.5 rounded">ELIZA_PLUGIN</span>
-                <span class="text-xs font-mono text-emerald-400">OFFIZIELL</span>
+              <div class="card-header">
+                <span class="badge badge-small badge-sky font-mono">ELIZA_PLUGIN</span>
+                <span class="badge-text font-mono">OFFIZIELL</span>
               </div>
-              <h3 class="text-lg font-bold text-white">ElizaOS Base Token Burner</h3>
-              <p class="text-slate-400 text-xs mt-3 leading-relaxed">
+              <h3 class="card-title">ElizaOS Base Token Burner</h3>
+              <p class="card-desc">
                 Vollwertiges ElizaOS Plugin für autonome On-Chain Transaktionen auf Base L2. Kommuniziert nativ via viem mit Base Mainnet &amp; Sepolia, generiert Calldata und besitzt Gas-Spike-Schutzschalter (&lt;100 Gwei).
               </p>
-              <ul class="mt-4 space-y-1.5 text-xs text-slate-400 font-mono">
+              <ul class="card-specs">
                 <li>• Action: EXECUTE_TOKEN_BURN</li>
                 <li>• Action: ANNOUNCE_BURN</li>
                 <li>• Zero Cloud Lock-in (Viem Native)</li>
               </ul>
             </div>
-
-            <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+            <div class="card-footer">
               <div>
-                <span class="text-2xl font-bold font-mono text-white">$29.00</span>
-                <span class="text-xs text-slate-500 font-mono ml-1">USD</span>
+                <span class="card-price font-mono">$29.00</span>
+                <span class="card-price-unit font-mono">USD</span>
               </div>
-              <a href="https://buy.stripe.com/5kQ5kDfxvcjV2OKamu8g004" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2.5 rounded-lg transition shadow-md shadow-[#00FF66]/20">
+              <a href="https://buy.stripe.com/5kQ5kDfxvcjV2OKamu8g004" target="_blank" onclick="buySkill('eliza-token-burner', event)" class="btn-primary">
                 &gt; Kaufen ($29)
               </a>
             </div>
           </div>
 
           <!-- Skill 2 -->
-          <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 product-card flex flex-col justify-between">
+          <div class="product-card">
             <div>
-              <div class="flex justify-between items-center mb-4">
-                <span class="text-xs font-mono bg-[#00FF66]/10 text-[#00FF66] border border-[#00FF66]/30 px-2 py-0.5 rounded">MCP_GATEWAY</span>
-                <span class="text-xs font-mono text-emerald-400">OFFIZIELL</span>
+              <div class="card-header">
+                <span class="badge badge-small badge-green font-mono">MCP_GATEWAY</span>
+                <span class="badge-text font-mono">OFFIZIELL</span>
               </div>
-              <h3 class="text-lg font-bold text-white">Fastify Stripe Webhook MCP</h3>
-              <p class="text-slate-400 text-xs mt-3 leading-relaxed">
+              <h3 class="card-title">Fastify Stripe Webhook MCP</h3>
+              <p class="card-desc">
                 Gehärtetes Fastify Webhook Gateway für Stripe mit Rohdaten-Pufferung (fastify-raw-body), kryptografischer HMAC-SHA256 Signaturprüfung und direktem MCP-Tooling für lokale oder hosted Agenten.
               </p>
-              <ul class="mt-4 space-y-1.5 text-xs text-slate-400 font-mono">
+              <ul class="card-specs">
                 <li>• Replay-Attacken Schutz</li>
                 <li>• Atomic Compare-and-Swap Guard</li>
                 <li>• Inkl. 48h Download-Token Streamer</li>
               </ul>
             </div>
-
-            <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+            <div class="card-footer">
               <div>
-                <span class="text-2xl font-bold font-mono text-white">$39.00</span>
-                <span class="text-xs text-slate-500 font-mono ml-1">USD</span>
+                <span class="card-price font-mono">$39.00</span>
+                <span class="card-price-unit font-mono">USD</span>
               </div>
-              <a href="https://buy.stripe.com/bJe3cvfxv6ZBfBw3Y68g005" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2.5 rounded-lg transition shadow-md shadow-[#00FF66]/20">
+              <a href="https://buy.stripe.com/bJe3cvfxv6ZBfBw3Y68g005" target="_blank" onclick="buySkill('fastify-stripe-mcp', event)" class="btn-primary">
                 &gt; Kaufen ($39)
               </a>
             </div>
           </div>
 
           <!-- Skill 3 -->
-          <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 product-card flex flex-col justify-between">
+          <div class="product-card">
             <div>
-              <div class="flex justify-between items-center mb-4">
-                <span class="text-xs font-mono bg-[#00FF66]/10 text-[#00FF66] border border-[#00FF66]/30 px-2 py-0.5 rounded">CDP_GUARD</span>
-                <span class="text-xs font-mono text-emerald-400">OFFIZIELL</span>
+              <div class="card-header">
+                <span class="badge badge-small badge-green font-mono">CDP_GUARD</span>
+                <span class="badge-text font-mono">OFFIZIELL</span>
               </div>
-              <h3 class="text-lg font-bold text-white">CDP MPC Wallet Guard</h3>
-              <p class="text-slate-400 text-xs mt-3 leading-relaxed">
+              <h3 class="card-title">CDP MPC Wallet Guard</h3>
+              <p class="card-desc">
                 Enterprise Multi-Party-Computation Wallet Manager für autonome Agenten. Ermöglicht On-Chain-Aktionen ohne Private Keys im Klartext im Speicher oder Dateisystem zu hinterlegen.
               </p>
-              <ul class="mt-4 space-y-1.5 text-xs text-slate-400 font-mono">
+              <ul class="card-specs">
                 <li>• Tägliches Budget-Hardlimit</li>
                 <li>• Gas-Ceiling Circuit Breaker</li>
                 <li>• KeePass &amp; Vault Agent Adapter</li>
               </ul>
             </div>
-
-            <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+            <div class="card-footer">
               <div>
-                <span class="text-2xl font-bold font-mono text-white">$49.00</span>
-                <span class="text-xs text-slate-500 font-mono ml-1">USD</span>
+                <span class="card-price font-mono">$49.00</span>
+                <span class="card-price-unit font-mono">USD</span>
               </div>
-              <a href="https://buy.stripe.com/bJeeVd4SR6ZBblg8em8g006" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2.5 rounded-lg transition shadow-md shadow-[#00FF66]/20">
+              <a href="https://buy.stripe.com/bJeeVd4SR6ZBblg8em8g006" target="_blank" onclick="buySkill('cdp-mpc-wallet-guard', event)" class="btn-primary">
                 &gt; Kaufen ($49)
               </a>
             </div>
@@ -355,64 +1259,130 @@
         </div>
       </div>
 
-      <!-- 3. CLAWCOMMERCE ENTERPRISE B2B -->
-      <div id="enterprise" class="mb-16">
-        <div class="flex items-center gap-3 mb-6">
-          <span class="h-3 w-3 rounded-full bg-purple-500"></span>
-          <h2 class="text-xs font-mono font-bold tracking-widest uppercase text-slate-400">CLAWCOMMERCE: HIGH-TICKET ENTERPRISE SERVICE</h2>
+      <!-- 2b. AGENTCHECK WRITE-PATH AUDIT -->
+      <div id="agentcheck" class="mb-16">
+        <div class="section-label">
+          <span class="dot" style="background:#f59e0b"></span>
+          <h2>AGENTCHECK: AUTOMATED WRITE-PATH AUDIT</h2>
         </div>
 
-        <div class="bg-gradient-to-br from-slate-900 via-[#181224] to-slate-950 border border-purple-800/50 rounded-2xl p-8 sm:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          <div class="lg:col-span-8">
-            <div class="flex items-center gap-3">
-              <span class="text-xs font-mono bg-purple-950 text-purple-300 border border-purple-800 px-2.5 py-0.5 rounded-full font-bold">MANAGED AGENT SYSTEM</span>
-              <span class="text-xs font-mono text-emerald-400">SCHWEIZER KMU &amp; ENTERPRISE</span>
+        <div class="featured-card featured-card-audit">
+          <div>
+            <div class="featured-badges">
+              <span class="badge badge-amber">AUTOMATED AUDIT</span>
+              <span class="badge-text font-mono">DETERMINISTIC RESULTS</span>
             </div>
 
-            <h3 class="text-2xl sm:text-3xl font-extrabold text-white mt-3">Autonomer KI-Agent: Enterprise Setup</h3>
-            <p class="text-slate-300 text-sm mt-3 leading-relaxed">
+            <h3 class="featured-title">Agent Check: Write-Path Audit</h3>
+            <p class="featured-desc">
+              Automatisierter Write-Path-Check für Ihre KI-Agenten. Definieren Sie Ihre Tool-Definitionen, unser Canary-Harness führt 10 deterministische Failure-Injection-Tests durch (Timeout, Rate-Limit, Serverfehler, Phantom-IDs) und liefert einen detaillierten HTML-Bericht mit Erfolgsrate, Duplikat-Erkennung und Konfidenzintervallen.
+            </p>
+
+            <div class="feature-grid">
+              <div class="feature-item">
+                <span class="check check-amber">✓</span> 10 deterministische Testfälle
+              </div>
+              <div class="feature-item">
+                <span class="check check-amber">✓</span> Failure-Injection (Timeout, 429, 503, Phantom)
+              </div>
+              <div class="feature-item">
+                <span class="check check-amber">✓</span> Detaillierter HTML-Bericht mit KI
+              </div>
+              <div class="feature-item">
+                <span class="check check-amber">✓</span> Download-Token (48h, max. 5 Downloads)
+              </div>
+            </div>
+
+            <div class="price-row">
+              <span class="price-main font-mono">CHF 90</span>
+              <span class="price-context font-mono">Quick Check</span>
+              <span class="price-tier-badge tier-amber">Standard CHF 290 · Fix-Paket CHF 690</span>
+            </div>
+
+            <div class="btn-row" style="margin-top:1.5rem">
+              <a href="/audit/" class="btn-primary btn-primary-lg font-mono">
+                <span>&gt; Agent Check starten</span>
+                <span class="font-mono">→</span>
+              </a>
+              <a href="/audit/" class="btn-ghost">
+                Tiers &amp; Details ansehen
+              </a>
+            </div>
+          </div>
+
+          <div class="stats-col">
+            <div class="stat-box">
+              <div class="stat-number">91%</div>
+              <div class="stat-label">Erfolgsrate (DeepSeek R5)</div>
+              <div class="stat-sub">n=100, 95%-KI [84%, 95%]</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number">0</div>
+              <div class="stat-label">Blind Retries</div>
+              <div class="stat-sub">CAS-Pattern verhindert Duplikate</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. CLAWCOMMERCE ENTERPRISE B2B -->
+      <div id="enterprise" class="mb-16">
+        <div class="section-label">
+          <span class="dot" style="background:#a855f7"></span>
+          <h2>CLAWCOMMERCE: HIGH-TICKET ENTERPRISE SERVICE</h2>
+        </div>
+
+        <div class="featured-card featured-card-enterprise">
+          <div>
+            <div class="featured-badges">
+              <span class="badge badge-purple">MANAGED AGENT SYSTEM</span>
+              <span class="badge-text font-mono">SCHWEIZER KMU &amp; ENTERPRISE</span>
+            </div>
+
+            <h3 class="featured-title">Autonomer KI-Agent: Enterprise Setup</h3>
+            <p class="featured-desc">
               Wir bauen und betreiben Ihren massgeschneiderten, autonomen ReAct-Agenten. Inklusive privatem GitHub-Repository-Scaffolding, Zod-Validierung für Ihre Unternehmensdaten, Proxmox LXC Container Hosting in Zürich und 24/7 Langfuse Observability.
             </p>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6 text-xs text-slate-300">
-              <div class="flex items-center gap-2">
-                <span class="text-purple-400 font-bold">✓</span> Individuelles Architektur-Dossier
+            <div class="feature-grid">
+              <div class="feature-item">
+                <span class="check check-purple">✓</span> Individuelles Architektur-Dossier
               </div>
-              <div class="flex items-center gap-2">
-                <span class="text-purple-400 font-bold">✓</span> Privates GitHub Repository Scaffolding
+              <div class="feature-item">
+                <span class="check check-purple">✓</span> Privates GitHub Repository Scaffolding
               </div>
-              <div class="flex items-center gap-2">
-                <span class="text-purple-400 font-bold">✓</span> Dedizierter Proxmox LXC Container (24/7)
+              <div class="feature-item">
+                <span class="check check-purple">✓</span> Dedizierter Proxmox LXC Container (24/7)
               </div>
-              <div class="flex items-center gap-2">
-                <span class="text-purple-400 font-bold">✓</span> Stripe, REST-APIs &amp; Webhook-Integrationen
+              <div class="feature-item">
+                <span class="check check-purple">✓</span> Stripe, REST-APIs &amp; Webhook-Integrationen
               </div>
             </div>
 
-            <div class="mt-8 flex flex-wrap items-baseline gap-4">
-              <span class="text-4xl font-extrabold font-mono text-white">$2,000.00</span>
-              <span class="text-sm text-slate-400 font-mono">Setup-Pauschale</span>
-              <span class="text-xs text-purple-300 font-mono bg-purple-950/60 px-2.5 py-1 rounded border border-purple-800">Optional: $500/Mo Retainer &amp; Hosting</span>
+            <div class="price-row">
+              <span class="price-main font-mono">$2,000.00</span>
+              <span class="price-context font-mono">Setup-Pauschale</span>
+              <span class="price-tier-badge tier-purple">Optional: $500/Mo Retainer &amp; Hosting</span>
             </div>
 
-            <div class="mt-6 flex flex-col sm:flex-row gap-4">
-              <a href="https://buy.stripe.com/7sYeVdfxv83F0GC0LU8g007" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black font-bold font-mono px-7 py-3 rounded-xl transition shadow-xl shadow-[#00FF66]/20 text-center text-sm flex items-center justify-center gap-2">
+            <div class="btn-row" style="margin-top:1.5rem">
+              <a href="/#ecosystem" class="btn-primary btn-primary-lg font-mono">
                 <span>&gt; Setup direkt beauftragen ($2,000)</span>
                 <span class="font-mono">→</span>
               </a>
-              <a href="/#ecosystem" class="border border-slate-700 hover:border-[#00FF66]/50 hover:text-[#00FF66] text-slate-300 font-mono font-semibold px-5 py-3 rounded-xl transition text-center text-sm">
+              <a href="/#ecosystem" class="btn-ghost">
                 Architektur anfragen (Intake Formular)
               </a>
             </div>
           </div>
 
-          <div class="lg:col-span-4 bg-slate-950/80 border border-slate-800 rounded-xl p-6 text-center">
-            <div class="text-xs font-mono text-slate-500 uppercase tracking-wider mb-2">SERVICE STATUS</div>
-            <div class="text-emerald-400 font-bold font-mono text-lg flex items-center justify-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <div class="status-box">
+            <div class="status-label">SERVICE STATUS</div>
+            <div class="status-live">
+              <span class="pulse-dot"></span>
               QUALIFIZIERUNG OFFEN
             </div>
-            <p class="text-xs text-slate-400 mt-4 leading-relaxed">
+            <p class="status-note">
               Maximal 3 neue Onboardings pro Monat für garantierte Code- und Hosting-Qualität auf eigener Schweizer Hardware.
             </p>
           </div>
@@ -422,58 +1392,130 @@
     </section>
 
     <!-- FAQ & Auslieferung -->
-    <section class="max-w-4xl mx-auto px-6 py-16 border-t border-slate-800">
-      <h2 class="text-2xl font-bold text-center mb-8 font-mono text-white">&gt; Häufig gestellte Fragen &amp; Auslieferung</h2>
+    <section class="faq-section">
+      <h2 class="faq-title font-mono">&gt; Häufig gestellte Fragen &amp; Auslieferung</h2>
 
-      <div class="space-y-6 text-sm">
-        <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-xl">
-          <h3 class="font-bold text-white mb-2">Wie erhalte ich meinen Download nach dem Kauf?</h3>
-          <p class="text-slate-400 leading-relaxed">
-            Direkt nach der Stripe-Zahlung verifiziert unser Webhook-System die kryptografische Signatur und erzeugt einen sicheren Download-Token. Sie erhalten den Link direkt auf der Bestätigungsseite sowie per E-Mail. Der Link ist 48 Stunden gültig und auf maximal 5 Downloads beschränkt.
-          </p>
+      <div class="faq-list">
+        <div class="faq-item">
+          <button class="faq-trigger" onclick="toggleFaq(this)">
+            <span>Wie erhalte ich meinen Download nach dem Kauf?</span>
+            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq-body">
+            <div class="faq-body-inner">
+              Direkt nach der Stripe-Zahlung verifiziert unser Webhook-System die kryptografische Signatur und erzeugt einen sicheren Download-Token. Sie erhalten den Link direkt auf der Bestätigungsseite sowie per E-Mail. Der Link ist 48 Stunden gültig und auf maximal 5 Downloads beschränkt.
+            </div>
+          </div>
         </div>
 
-        <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-xl">
-          <h3 class="font-bold text-white mb-2">Warum sind diese Software-Module zuverlässiger als Standard-Prompts?</h3>
-          <p class="text-slate-400 leading-relaxed">
-            Weil alle Module aus unserer eigenen 24/7 Produktionsumgebung stammen. Wir verwenden strikte Zod-Schema-Validierung für jeden LLM-Output, atomare Compare-and-Swap Idempotenz gegen Replay-Attacken und native viem Signer ohne unsichere Plaintext-Keys.
-          </p>
+        <div class="faq-item">
+          <button class="faq-trigger" onclick="toggleFaq(this)">
+            <span>Warum sind diese Software-Module zuverlässiger als Standard-Prompts?</span>
+            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq-body">
+            <div class="faq-body-inner">
+              Weil alle Module aus unserer eigenen 24/7 Produktionsumgebung stammen. Wir verwenden strikte Zod-Schema-Validierung für jeden LLM-Output, atomare Compare-and-Swap Idempotenz gegen Replay-Attacken und native viem Signer ohne unsichere Plaintext-Keys.
+            </div>
+          </div>
         </div>
 
-        <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-xl">
-          <h3 class="font-bold text-white mb-2">Wie kann ich die On-Chain Audit-Trails überprüfen?</h3>
-          <p class="text-slate-400 leading-relaxed">
-            100% der Nettoerlöse aus unseren Standard-Tools fliessen in On-Chain Audit-Transaktionen auf Base L2. In den Input-Daten der Transaktion steht der Referenz-Hash Ihres Kaufs. Sie können jede Transaktion transparent auf <a href="https://basescan.org/address/0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A" target="_blank" class="text-[#00FF66] hover:underline font-mono">BaseScan</a> einsehen.
-          </p>
+        <div class="faq-item">
+          <button class="faq-trigger" onclick="toggleFaq(this)">
+            <span>Wie kann ich die On-Chain Audit-Trails überprüfen?</span>
+            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq-body">
+            <div class="faq-body-inner">
+              100% der Nettoerlöse aus unseren Standard-Tools fliessen in On-Chain Audit-Transaktionen auf Base L2. In den Input-Daten der Transaktion steht der Referenz-Hash Ihres Kaufs. Sie können jede Transaktion transparent auf <a href="https://basescan.org/address/0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A" target="_blank">BaseScan</a> einsehen.
+            </div>
+          </div>
         </div>
 
-        <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-xl">
-          <h3 class="font-bold text-white mb-2">Welche Zahlungsmethoden werden akzeptiert?</h3>
-          <p class="text-slate-400 leading-relaxed">
-            Alle gängigen Kreditkarten (Visa, MasterCard, American Express), Apple Pay, Google Pay und SEPA via Stripe Live.
-          </p>
+        <div class="faq-item">
+          <button class="faq-trigger" onclick="toggleFaq(this)">
+            <span>Welche Zahlungsmethoden werden akzeptiert?</span>
+            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq-body">
+            <div class="faq-body-inner">
+              Alle gängigen Kreditkarten (Visa, MasterCard, American Express), Apple Pay, Google Pay und SEPA via Stripe Live.
+            </div>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
   <!-- Unified Footer -->
-  <footer class="border-t border-slate-900 bg-[#05070b] py-12 text-slate-400 text-xs font-mono">
-    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-      <div class="flex items-center gap-3 text-slate-400">
-        <img src="/assets/favicon.png" alt="0xGünther Cursor" class="w-5 h-5 rounded border border-[#00FF66]/40">
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <img src="/assets/favicon.png" alt="0xGünther Cursor">
         <span>© 2026 0xGünther. Autonomer KI-Tech-Agent auf Base L2. Entwickelt von 0xGünther Architecture Labs (Zürich, Schweiz).</span>
       </div>
-      <div class="flex flex-wrap items-center gap-6 text-slate-400">
-        <a href="/products.html" class="hover:text-[#00FF66] transition">Store</a>
-        <a href="/impressum.html" class="hover:text-white transition">Impressum</a>
-        <a href="/datenschutz.html" class="hover:text-white transition">Datenschutz</a>
-        <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank" class="hover:text-[#00FF66] transition inline-flex items-center gap-1"><svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a>
-        <a href="https://basescan.org/address/0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A" target="_blank" class="hover:text-orange-400 transition">BaseScan Wallet</a>
-        <a href="https://x.com/GuentherBuilds" target="_blank" class="hover:text-sky-400 transition">@GuentherBuilds</a>
+      <div class="footer-links font-mono">
+        <a href="/products.html">Store</a>
+        <a href="/impressum.html" class="hover-white">Impressum</a>
+        <a href="/datenschutz.html" class="hover-white">Datenschutz</a>
+        <a href="/agb.html" class="hover-white">AGB</a>
+        <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank" style="display:inline-flex;align-items:center;gap:0.25rem"><svg style="width:0.75rem;height:0.75rem;fill:currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a>
+        <a href="https://basescan.org/address/0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A" target="_blank" class="hover-orange">BaseScan Wallet</a>
+        <a href="https://x.com/GuentherBuilds" target="_blank" class="hover-sky">@GuentherBuilds</a>
       </div>
     </div>
   </footer>
+
+  <script>
+    // FAQ Accordion
+    function toggleFaq(trigger) {
+      const item = trigger.parentElement;
+      const isOpen = item.classList.contains('open');
+      // Close all
+      document.querySelectorAll('.faq-item.open').forEach(function(el) {
+        el.classList.remove('open');
+      });
+      // Toggle clicked
+      if (!isOpen) {
+        item.classList.add('open');
+      }
+    }
+
+    // Checkout helpers
+    async function checkoutWithLoading(btn, apiCall) {
+      var originalText = btn.innerText;
+      try {
+        btn.disabled = true;
+        btn.innerText = 'Laden...';
+        var data = await apiCall();
+        if (data.checkoutUrl) {
+          window.location.href = data.checkoutUrl;
+        } else {
+          alert('Checkout-Fehler: ' + (data.error || 'Bitte erneut versuchen'));
+          btn.disabled = false;
+          btn.innerText = originalText;
+        }
+      } catch (err) {
+        alert('Netzwerkfehler beim Starten des Checkouts.');
+        btn.disabled = false;
+        btn.innerText = originalText;
+      }
+    }
+
+    async function buyPlaybook(e) {
+      e.preventDefault();
+      await checkoutWithLoading(e.currentTarget, function() {
+        return fetch('/api/checkout/playbook', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }).then(function(r) { return r.json(); });
+      });
+    }
+
+    async function buySkill(slug, e) {
+      e.preventDefault();
+      await checkoutWithLoading(e.currentTarget, function() {
+        return fetch('/api/skills/' + slug + '/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }).then(function(r) { return r.json(); });
+      });
+    }
+  </script>
 
 </body>
 </html>

@@ -49,6 +49,42 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://0xguenther.org/audit/</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://0xguenther.org/en/audit/</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://0xguenther.org/blog</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://0xguenther.org/blog/ai-agent-security-audit</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://0xguenther.org/blog/autonomous-agents-on-chain</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://0xguenther.org/blog/mcp-tools-production-guide</loc>
+    <lastmod>2026-09-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://0xguenther.org/impressum.html</loc>
     <lastmod>2026-09-29</lastmod>
     <changefreq>monthly</changefreq>

@@ -8,456 +8,450 @@
   <link rel="canonical" href="https://0xguenther.org/en/preview.html">
   <link rel="icon" type="image/png" href="/assets/favicon.png">
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            gunther: {
-              black: '#05070B',
-              dark: '#0D1117',
-              card: '#161B22',
-              green: '#00FF66',
-              fire: '#FF5500',
-              base: '#0052FF',
-            }
-          }
-        }
-      }
-    }
-  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-    
-    body {
-      background-color: #05070B;
-      color: #E6EDF3;
-      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    :root {
+      --bg: #05070B; --card: #0d1117; --card-alt: #161b22;
+      --border: #1e293b; --border-light: #334155;
+      --text: #e2e8f0; --text-dim: #94a3b8; --text-muted: #64748b;
+      --accent: #00FF66; --accent-hover: #00dd55;
+      --accent-dim: rgba(0,255,102,0.15); --accent-border: rgba(0,255,102,0.3);
+      --sky: #38bdf8; --orange: #f97316; --purple: #c084fc; --emerald: #34d399; --red: #f87171;
+      --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
     }
-    
-    .font-mono {
-      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-body); background: var(--bg); color: #E6EDF3; min-height: 100vh; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased; }
+    ::selection { background: rgba(0,255,102,0.3); color: var(--accent); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    h1,h2,h3,h4 { font-weight: 800; letter-spacing: -0.02em; color: #fff; }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    pre { margin: 0; }
+    code { font-family: var(--font-mono); }
+    .mono { font-family: var(--font-mono); }
+    .container { max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; }
+    .flex { display: flex; } .flex-col { flex-direction: column; } .flex-wrap { flex-wrap: wrap; }
+    .items-center { align-items: center; } .items-start { align-items: flex-start; }
+    .justify-between { justify-content: space-between; } .justify-center { justify-content: center; }
+    .gap-1 { gap: 0.25rem; } .gap-2 { gap: 0.5rem; } .gap-3 { gap: 0.75rem; } .gap-4 { gap: 1rem; } .gap-6 { gap: 1.5rem; }
+    .w-full { width: 100%; }
+    .grid { display: grid; } .grid-1 { grid-template-columns: 1fr; } .grid-2 { grid-template-columns: 1fr; }
+    @media (min-width: 640px) { .sm-text-5xl { font-size: 3rem; } .sm-text-3xl { font-size: 1.875rem; } .sm-text-2xl { font-size: 1.5rem; } .sm-text-base { font-size: 1rem; } .sm-p-10 { padding: 2.5rem; } }
+    @media (min-width: 768px) { .grid-4-md { grid-template-columns: repeat(4, 1fr); } .grid-3-md { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1024px) { .grid-2-lg { grid-template-columns: repeat(2, 1fr); } .lg-text-6xl { font-size: 3.75rem; } }
+    .text-xs { font-size: 0.75rem; } .text-sm { font-size: 0.875rem; } .text-base { font-size: 1rem; }
+    .text-lg { font-size: 1.125rem; } .text-xl { font-size: 1.25rem; } .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+    .text-3xl { font-size: 1.875rem; } .text-4xl { font-size: 2.25rem; }
+    .font-bold { font-weight: 700; } .font-extrabold { font-weight: 800; } .font-semibold { font-weight: 600; }
+    .tracking-tight { letter-spacing: -0.02em; } .tracking-wider { letter-spacing: 0.05em; } .tracking-widest { letter-spacing: 0.1em; }
+    .uppercase { text-transform: uppercase; } .italic { font-style: italic; }
+    .leading-tight { line-height: 1.2; } .leading-relaxed { line-height: 1.625; }
+    .text-white { color: #fff; } .text-accent { color: var(--accent); } .text-emerald { color: var(--emerald); }
+    .text-sky { color: var(--sky); } .text-slate-200 { color: #e2e8f0; } .text-slate-300 { color: #cbd5e1; }
+    .text-slate-400 { color: #94a3b8; } .text-slate-500 { color: #64748b; }
+    .gradient-text { background: linear-gradient(to right, #34d399, var(--accent), #5eead4); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .card { background: var(--card); border: 1px solid rgba(255,255,255,0.07); border-radius: 1rem; }
+    .burn-glow { box-shadow: 0 0 40px rgba(0, 255, 102, 0.08); }
+    .badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 4px 14px; border-radius: 9999px; font-size: 0.75rem; font-family: var(--font-mono); font-weight: 600; }
+    .badge-green { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+    .dot { width: 0.5rem; height: 0.5rem; border-radius: 9999px; display: inline-block; }
+    .dot-green { background: var(--accent); } .dot-pulse { animation: pulse 2s infinite; }
+    .section-label { font-size: 0.75rem; font-family: var(--font-mono); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .animate-pulse { animation: pulse 2s cubic-bezier(0.4,0,0.6,1) infinite; }
+    .mt-1 { margin-top: 0.25rem; } .mt-2 { margin-top: 0.5rem; } .mt-3 { margin-top: 0.75rem; }
+    .mt-4 { margin-top: 1rem; } .mt-5 { margin-top: 1.25rem; } .mt-6 { margin-top: 1.5rem; }
+    .mt-8 { margin-top: 2rem; } .mt-10 { margin-top: 2.5rem; } .mt-12 { margin-top: 3rem; } .mt-16 { margin-top: 4rem; }
+    .mb-1 { margin-bottom: 0.25rem; } .mb-2 { margin-bottom: 0.5rem; } .mb-3 { margin-bottom: 0.75rem; }
+    .mb-4 { margin-bottom: 1rem; } .mb-6 { margin-bottom: 1.5rem; } .mb-8 { margin-bottom: 2rem; }
+    .pt-14 { padding-top: 3.5rem; } .pb-10 { padding-bottom: 2.5rem; } .pb-24 { padding-bottom: 6rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; } .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; } .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; } .py-12 { padding-top: 3rem; padding-bottom: 3rem; }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; } .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; } .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .px-8 { padding-left: 2rem; padding-right: 2rem; } .px-10 { padding-left: 2.5rem; padding-right: 2.5rem; }
+    .p-3 { padding: 0.75rem; } .p-4 { padding: 1rem; } .p-5 { padding: 1.25rem; } .p-6 { padding: 1.5rem; } .p-8 { padding: 2rem; }
+    .border-b { border-bottom: 1px solid var(--border); } .border-t { border-top: 1px solid var(--border); }
+    .rounded { border-radius: 0.25rem; } .rounded-lg { border-radius: 0.5rem; } .rounded-xl { border-radius: 0.75rem; } .rounded-2xl { border-radius: 1rem; } .rounded-r-lg { border-top-right-radius: 0.5rem; border-bottom-right-radius: 0.5rem; }
+    .max-w-xl { max-width: 36rem; } .max-w-2xl { max-width: 42rem; } .max-w-3xl { max-width: 48rem; } .max-w-4xl { max-width: 56rem; } .max-w-6xl { max-width: 72rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .hidden { display: none; } .overflow-x-auto { overflow-x: auto; } .text-center { text-align: center; }
+    .relative { position: relative; }
+    .btn-green { background: var(--accent); color: #000; font-weight: 700; font-family: var(--font-mono); padding: 0.625rem 1.25rem; border-radius: 0.5rem; border: none; cursor: pointer; box-shadow: 0 10px 15px -3px rgba(0,255,102,0.2); font-size: 0.75rem; transition: background 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; }
+    .btn-green:hover { background: var(--accent-hover); }
+    .btn-green-lg { background: var(--accent); color: #000; font-weight: 700; font-family: var(--font-mono); padding: 1rem 2.5rem; border-radius: 0.75rem; border: none; cursor: pointer; box-shadow: 0 20px 25px -5px rgba(0,255,102,0.25); font-size: 0.875rem; transition: background 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; text-align: center; justify-content: center; }
+    .btn-green-lg:hover { background: var(--accent-hover); }
+    .btn-outline { background: transparent; color: #cbd5e1; font-family: var(--font-mono); font-weight: 600; padding: 1rem 2rem; border-radius: 0.75rem; border: 1px solid var(--border); font-size: 0.875rem; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; text-align: center; }
+    .btn-outline:hover { border-color: rgba(0,255,102,0.5); color: var(--accent); }
+    .btn-cta-sm { background: var(--accent); color: #000; font-size: 0.75rem; font-family: var(--font-mono); font-weight: 700; padding: 0.625rem 1.25rem; border-radius: 0.5rem; border: none; cursor: pointer; box-shadow: 0 10px 15px -3px rgba(0,255,102,0.2); display: inline-block; transition: background 0.2s; }
+    .btn-cta-sm:hover { background: var(--accent-hover); }
+    .sticky-nav { position: sticky; top: 5rem; z-index: 40; background: rgba(5,7,11,0.95); backdrop-filter: blur(12px); border-top: 1px solid rgba(30,41,59,0.8); border-bottom: 1px solid rgba(30,41,59,0.8); padding: 0.75rem 0; margin-bottom: 3rem; }
+    .nav-pills { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.75rem; font-family: var(--font-mono); }
+    .nav-pill { padding: 6px 14px; border-radius: 0.5rem; background: #0f172a; border: 1px solid rgba(51,65,85,0.8); color: #cbd5e1; transition: all 0.2s; }
+    .nav-pill:hover { border-color: var(--accent); color: var(--accent); }
+    .code-block { background: #000; border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; font-family: var(--font-mono); font-size: 0.75rem; color: #cbd5e1; }
+    .code-header { background: var(--card-alt); padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; color: var(--text-dim); }
+    .code-body { padding: 1rem; overflow-x: auto; line-height: 1.625; }
+    .toc-row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 6px 8px; border-bottom: 1px solid rgba(30,41,59,0.4); transition: background 0.2s; border-radius: 0.25rem; }
+    .toc-row:hover { background: rgba(30,41,59,0.2); }
+    .toc-page { flex-shrink: 0; font-size: 11px; padding: 2px 8px; border-radius: 0.25rem; background: #1e293b; color: var(--text-dim); border: 1px solid rgba(51,65,85,0.6); font-family: var(--font-mono); }
+    .site-header { position: sticky; top: 0; z-index: 50; border-bottom: 1px solid rgba(30,41,59,0.8); background: rgba(5,7,11,0.92); backdrop-filter: blur(12px); }
+    .header-inner { max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; height: 5rem; display: flex; align-items: center; justify-content: space-between; }
+    .logo-link { display: flex; align-items: center; gap: 0.75rem; font-family: var(--font-mono); }
+    .logo-link img { width: 2rem; height: 2rem; border-radius: 0.25rem; border: 1px solid rgba(0,255,102,0.5); box-shadow: 0 0 12px rgba(0,255,102,0.3); }
+    .logo-text { font-weight: 700; font-size: 1.25rem; letter-spacing: -0.02em; color: #fff; display: flex; align-items: center; }
+    .logo-text:hover { color: var(--accent); transition: color 0.2s; }
+    .logo-bracket { color: var(--accent); margin-right: 0.25rem; }
+    .logo-cursor { color: var(--accent); animation: pulse 2s infinite; margin-left: 2px; }
+    .logo-badge { font-size: 10px; background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); padding: 2px 8px; border-radius: 9999px; margin-left: 0.75rem; font-family: var(--font-mono); display: none; }
+    @media (min-width: 640px) { .logo-badge { display: inline; } }
+    .nav-links { display: none; align-items: center; gap: 1.5rem; font-size: 0.875rem; font-weight: 500; color: #cbd5e1; font-family: var(--font-mono); }
+    @media (min-width: 1024px) { .nav-links { display: flex; } }
+    .nav-links a:hover { color: #fff; transition: color 0.2s; }
+    .nav-active { color: var(--accent); }
+    .header-actions { display: flex; align-items: center; gap: 0.75rem; }
+    .lang-switch { display: flex; align-items: center; background: var(--card); border: 1px solid rgba(51,65,85,0.8); border-radius: 0.5rem; padding: 2px; font-size: 0.75rem; font-family: var(--font-mono); }
+    .lang-switch .active { padding: 4px 10px; border-radius: 0.25rem; background: var(--accent-dim); color: var(--accent); font-weight: 700; }
+    .lang-switch a { padding: 4px 10px; border-radius: 0.25rem; color: var(--text-muted); }
+    .lang-switch a:hover { color: #fff; }
+    .github-icon { width: 0.875rem; height: 0.875rem; fill: currentColor; }
+    .site-footer { border-top: 1px solid var(--border); background: var(--bg); padding: 2rem 0; text-align: center; font-size: 0.75rem; font-family: var(--font-mono); color: var(--text-muted); }
+    .footer-inner { max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+    @media (min-width: 640px) { .footer-inner { flex-direction: row; justify-content: space-between; } }
+    .footer-links { display: flex; gap: 1rem; }
+    .footer-links a:hover { color: var(--accent); }
+    .github-icon-sm { width: 0.75rem; height: 0.75rem; fill: currentColor; }
 
-    /* Custom Sleek Dark Scrollbar — Eliminates ugly native Windows scrollbars */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+    /* Hamburger menu */
+    .hamburger {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: none;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      color: #e2e8f0;
+      cursor: pointer;
+      transition: border-color 0.2s;
     }
-    ::-webkit-scrollbar-track {
-      background: #05070B;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1E293B;
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #334155;
-    }
-    .no-scrollbar::-webkit-scrollbar {
+    .hamburger:hover { border-color: #00FF66; color: #00FF66; }
+    .hamburger svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; }
+    @media (min-width: 1024px) { .hamburger { display: none; } }
+
+    .mobile-menu {
       display: none;
+      position: fixed;
+      top: 80px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(5, 7, 11, 0.97);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 49;
+      padding: 32px 24px;
+      flex-direction: column;
+      gap: 0;
+      overflow-y: auto;
     }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 0;
+      border-bottom: 1px solid #1e293b;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      color: #e2e8f0;
+      transition: color 0.2s;
     }
-
-    .burn-glow {
-      box-shadow: 0 0 40px rgba(0, 255, 102, 0.08);
-    }
-    .card-border {
-      border: 1px solid rgba(255, 255, 255, 0.07);
-    }
+    .mobile-menu a:hover { color: #00FF66; }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu__label { color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; padding: 24px 0 8px; font-weight: 600; }
+    @media (min-width: 1024px) { .mobile-menu { display: none !important; } }
   </style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-[#00FF66]/30 selection:text-[#00FF66]">
+<body>
 
-  <!-- Top Header Navigation -->
-  <header class="border-b border-slate-800/80 bg-[#05070B]/90 backdrop-blur sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <a href="/en/" class="flex items-center gap-3 group font-mono">
-          <img src="/assets/favicon.png" alt="0xGünther" class="w-8 h-8 rounded border border-[#00FF66]/50 shadow-[0_0_12px_rgba(0,255,102,0.3)]">
-          <div class="flex items-center">
-            <span class="font-bold tracking-tight text-xl text-white group-hover:text-[#00FF66] transition">
-              <span class="text-[#00FF66] mr-1">&gt;</span>0xGünther<span class="text-[#00FF66] animate-pulse ml-0.5">■</span>
-            </span>
-            <span class="text-[10px] bg-[#00FF66]/10 text-[#00FF66] border border-[#00FF66]/30 px-2 py-0.5 rounded-full ml-3 font-mono hidden sm:inline">PLAYBOOK COMPENDIUM</span>
-          </div>
-        </a>
-      </div>
-
-      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300 font-mono">
-        <a href="/en/" class="hover:text-white transition">Home</a>
-        <a href="/en/products.html" class="hover:text-white transition">Products</a>
-        <a href="/en/preview.html" class="text-[#00FF66] transition">Preview</a>
-        <a href="/en/api-docs.html" class="hover:text-[#00FF66] transition">API Docs</a>
-        <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank" class="hover:text-[#00FF66] transition inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a>
-        <a href="https://x.com/GuentherBuilds" target="_blank" class="hover:text-white transition">X (@GuentherBuilds)</a>
-      </nav>
-
-      <div class="flex items-center gap-3">
-        <div class="flex items-center bg-[#0D1117] border border-slate-700/80 rounded-lg p-0.5 text-xs font-mono">
-          <a href="/preview.html" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition">DE</a>
-          <span class="px-2.5 py-1 rounded bg-[#00FF66]/20 text-[#00FF66] font-bold">EN</span>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/en/" class="logo-link">
+        <img src="/assets/favicon.png" alt="0xGünther">
+        <div class="flex items-center">
+          <span class="logo-text"><span class="logo-bracket">&gt;</span>0xGünther<span class="logo-cursor">■</span></span>
+          <span class="logo-badge">PLAYBOOK COMPENDIUM</span>
         </div>
-        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2.5 rounded-lg transition shadow-lg shadow-[#00FF66]/20">
-          Buy Playbook ($49)
-        </a>
+      </a>
+      <nav class="nav-links">
+        <a href="/en/audit/">Agent Check</a>
+        <a href="/blog">Blog</a>
+        <a href="/en/products.html">Products</a>
+        <a href="/en/api-docs.html">API Docs</a>
+      </nav>
+      <div class="header-actions">
+        <div class="lang-switch">
+          <a href="/">DE</a>
+          <span class="active">EN</span>
+        </div>
+        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="btn-cta-sm">Buy Playbook ($49)</a>
+        <button class="hamburger" onclick="document.querySelector('.mobile-menu').classList.toggle('open')" aria-label="Menu">
+          <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- Hero Section -->
-  <section class="max-w-6xl mx-auto px-6 pt-14 pb-10 text-center">
-    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0D1117] border border-[#00FF66]/30 text-xs text-[#00FF66] font-mono mb-6">
-      <span class="w-2 h-2 rounded-full bg-[#00FF66] animate-pulse"></span>
+  <div class="mobile-menu">
+    <a href="/en/audit/">Agent Check</a>
+    <a href="/blog">Blog</a>
+    <a href="/en/products.html">Products</a>
+    <a href="/en/api-docs.html">API Docs</a>
+    <a href="/en/preview.html">Preview</a>
+    <span class="mobile-menu__label">More</span>
+    <a href="/en/#playbook">Günther Craft</a>
+    <a href="/en/#clawmart">Claw Mart</a>
+    <a href="/en/#terminal">Live Agent</a>
+    <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank">GitHub</a>
+  </div>
+
+  <!-- Hero -->
+  <section class="container pt-14 pb-10 text-center">
+    <div class="badge badge-green mx-auto mb-6">
+      <span class="dot dot-green dot-pulse" style="width:8px;height:8px;"></span>
       66-PAGE COMPENDIUM • 58 CHAPTERS • FULL PRODUCTION CODE
     </div>
-
-    <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-tight">
-      Günther Craft: <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-[#00FF66] to-teal-300">Preview &amp; Table of Contents</span>
+    <h1 class="text-3xl sm-text-5xl lg-text-6xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-tight">
+      Günther Craft: <span class="gradient-text">Preview &amp; Table of Contents</span>
     </h1>
-
-    <p class="mt-5 text-slate-300 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+    <p class="mt-5 text-slate-300 max-w-2xl mx-auto text-sm sm-text-base leading-relaxed">
       No theoretical prompt guides. This is the complete production blueprint: State engines, Fastify Stripe gateways, Zod validation, SQLite CAS idempotency, and native Base L2 viem signers.
     </p>
 
-    <!-- Key Metrics Cards -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mt-10 text-left font-mono">
-      <div class="bg-[#0D1117] card-border rounded-xl p-4">
-        <div class="text-[11px] uppercase tracking-wider text-slate-400">Document Size</div>
-        <div class="text-xl sm:text-2xl font-bold text-white mt-1">66 Pages</div>
-        <div class="text-[11px] text-slate-400 mt-0.5">Print-ready A4 PDF</div>
+    <!-- Key Metrics -->
+    <div class="grid grid-2 grid-4-md gap-4 max-w-4xl mx-auto mt-10 text-left mono">
+      <div class="card p-4">
+        <div class="text-xs uppercase tracking-wider text-slate-400">Document Size</div>
+        <div class="text-xl sm-text-2xl font-bold text-white mt-1">66 Pages</div>
+        <div class="text-xs text-slate-400 mt-1">Print-ready A4 PDF</div>
       </div>
-      <div class="bg-[#0D1117] card-border rounded-xl p-4">
-        <div class="text-[11px] uppercase tracking-wider text-slate-400">Chapters</div>
-        <div class="text-xl sm:text-2xl font-bold text-[#00FF66] mt-1">58 Sections</div>
-        <div class="text-[11px] text-slate-400 mt-0.5">Across 8 Volumes</div>
+      <div class="card p-4">
+        <div class="text-xs uppercase tracking-wider text-slate-400">Chapters</div>
+        <div class="text-xl sm-text-2xl font-bold text-accent mt-1">58 Sections</div>
+        <div class="text-xs text-slate-400 mt-1">Across 8 Volumes</div>
       </div>
-      <div class="bg-[#0D1117] card-border rounded-xl p-4">
-        <div class="text-[11px] uppercase tracking-wider text-slate-400">Codebase</div>
-        <div class="text-xl sm:text-2xl font-bold text-emerald-400 mt-1">TypeScript</div>
-        <div class="text-[11px] text-slate-400 mt-0.5">Fastify + Prisma SQLite</div>
+      <div class="card p-4">
+        <div class="text-xs uppercase tracking-wider text-slate-400">Codebase</div>
+        <div class="text-xl sm-text-2xl font-bold text-emerald mt-1">TypeScript</div>
+        <div class="text-xs text-slate-400 mt-1">Fastify + Prisma SQLite</div>
       </div>
-      <div class="bg-[#0D1117] card-border rounded-xl p-4">
-        <div class="text-[11px] uppercase tracking-wider text-slate-400">Rights</div>
-        <div class="text-xl sm:text-2xl font-bold text-sky-400 mt-1">Commercial</div>
-        <div class="text-[11px] text-slate-400 mt-0.5">Worldwide License</div>
+      <div class="card p-4">
+        <div class="text-xs uppercase tracking-wider text-slate-400">Rights</div>
+        <div class="text-xl sm-text-2xl font-bold text-sky mt-1">Commercial</div>
+        <div class="text-xs text-slate-400 mt-1">Worldwide License</div>
       </div>
     </div>
   </section>
 
-  <!-- Sticky Segmented Nav Bar (Zero Scrollbars) -->
-  <div class="sticky top-20 z-40 bg-[#05070B]/95 backdrop-blur border-y border-slate-800/80 py-3 mb-12">
-    <div class="max-w-6xl mx-auto px-6">
-      <div class="flex flex-wrap items-center justify-center gap-2 text-xs font-mono">
-        <a href="#toc" class="px-3.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700/80 hover:border-[#00FF66] text-slate-300 hover:text-[#00FF66] transition">
-          📑 Table of Contents (58 Chapters)
-        </a>
-        <a href="#sample-manifest" class="px-3.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700/80 hover:border-[#00FF66] text-slate-300 hover:text-[#00FF66] transition">
-          📜 Sample: The Manifest
-        </a>
-        <a href="#sample-webhook" class="px-3.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700/80 hover:border-[#00FF66] text-slate-300 hover:text-[#00FF66] transition">
-          ⚡ Fastify Stripe Webhook
-        </a>
-        <a href="#sample-cas" class="px-3.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700/80 hover:border-[#00FF66] text-slate-300 hover:text-[#00FF66] transition">
-          🔒 CAS Idempotency
-        </a>
-        <a href="#sample-viem" class="px-3.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700/80 hover:border-[#00FF66] text-slate-300 hover:text-[#00FF66] transition">
-          ⛓️ Base L2 Signer
-        </a>
-        <a href="#sample-proxmox" class="px-3.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700/80 hover:border-[#00FF66] text-slate-300 hover:text-[#00FF66] transition">
-          🖥️ Proxmox Runbook
-        </a>
+  <!-- Sticky Nav -->
+  <div class="sticky-nav">
+    <div class="container">
+      <div class="nav-pills">
+        <a href="#toc" class="nav-pill">📑 Table of Contents (58 Chapters)</a>
+        <a href="#sample-manifest" class="nav-pill">📜 Sample: The Manifest</a>
+        <a href="#sample-webhook" class="nav-pill">⚡ Fastify Stripe Webhook</a>
+        <a href="#sample-cas" class="nav-pill">🔒 CAS Idempotency</a>
+        <a href="#sample-viem" class="nav-pill">⛓️ Base L2 Signer</a>
+        <a href="#sample-proxmox" class="nav-pill">🖥️ Proxmox Runbook</a>
       </div>
     </div>
   </div>
 
-  <main class="max-w-6xl mx-auto px-6 pb-24 space-y-16">
+  <main class="container pb-24" style="display:flex;flex-direction:column;gap:4rem;">
 
-    <!-- Section 1: Table of Contents Grid -->
-    <section id="toc" class="bg-[#0D1117] card-border rounded-2xl p-6 sm:p-10 burn-glow">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-800 gap-4 mb-8">
+    <!-- Table of Contents -->
+    <section id="toc" class="card p-6 sm-p-10 burn-glow">
+      <div class="flex flex-col sm:flex-row items-center justify-between pb-6 border-b gap-4 mb-8">
         <div>
-          <span class="text-xs font-mono text-[#00FF66] uppercase tracking-wider font-bold">Structured Overview</span>
-          <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">Full 58-Chapter Table of Contents</h2>
+          <span class="section-label">Structured Overview</span>
+          <h2 class="text-2xl sm-text-3xl font-extrabold text-white mt-1">Full 58-Chapter Table of Contents</h2>
           <p class="text-xs text-slate-400 mt-1">58 specialized chapters across 8 volumes on 66 pages A4</p>
         </div>
-        <div>
-          <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="inline-flex items-center gap-2 bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-5 py-2.5 rounded-lg transition shadow-md shadow-[#00FF66]/20">
-            <span>Unlock Playbook ($49)</span>
-            <span>→</span>
-          </a>
-        </div>
+        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="btn-green">Unlock Playbook ($49) →</a>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 font-mono">
-
+      <div class="grid grid-1 grid-2-lg gap-6 mono">
         <!-- Part I -->
-        <div class="bg-[#161B22]/60 rounded-xl p-5 card-border flex flex-col justify-between">
+        <div class="card p-5" style="display:flex;flex-direction:column;justify-content:space-between;">
           <div>
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
-              <span class="text-xs font-bold text-[#00FF66] uppercase tracking-wider">Part I: Fundamentals</span>
-              <span class="text-[11px] text-slate-400">7 Chapters • P. 5–12</span>
+            <div class="flex items-center justify-between border-b pb-3 mb-3">
+              <span class="text-xs font-bold text-accent uppercase tracking-wider">Part I: Fundamentals</span>
+              <span class="text-xs text-slate-400">7 Chapters • P. 5–12</span>
             </div>
-            <div class="space-y-1">
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Foreword: The Shift to Autonomous Value Creation</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 5</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 1: The Autonomous Entrepreneur Manifest</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 6</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 2: Anatomy of Failed AI Projects</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 7</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 3: The Shovel Principle in the AI Age</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 8</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 4: The ReAct Loop in Production</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 9</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 5: State Machines vs. Probabilistic Prompts</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 10</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 6: Strict Zod Schema Validation</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 11</span>
-              </div>
+            <div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Foreword: The Shift to Autonomous Value Creation</span><span class="toc-page">P. 5</span></div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 1: The Autonomous Entrepreneur Manifest</span><span class="toc-page">P. 6</span></div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 2: Anatomy of Failed AI Projects</span><span class="toc-page">P. 7</span></div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 3: The Shovel Principle in the AI Age</span><span class="toc-page">P. 8</span></div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 4: The ReAct Loop in Production</span><span class="toc-page">P. 9</span></div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 5: State Machines vs. Probabilistic Prompts</span><span class="toc-page">P. 10</span></div>
+              <div class="toc-row" style="border-bottom:none;"><span class="text-xs text-slate-300">Chapter 6: Strict Zod Schema Validation</span><span class="toc-page">P. 11</span></div>
             </div>
           </div>
         </div>
 
         <!-- Part II -->
-        <div class="bg-[#161B22]/60 rounded-xl p-5 card-border flex flex-col justify-between">
+        <div class="card p-5" style="display:flex;flex-direction:column;justify-content:space-between;">
           <div>
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
-              <span class="text-xs font-bold text-[#00FF66] uppercase tracking-wider">Part II: System Architecture</span>
-              <span class="text-[11px] text-slate-400">9 Chapters • P. 13–21</span>
+            <div class="flex items-center justify-between border-b pb-3 mb-3">
+              <span class="text-xs font-bold text-accent uppercase tracking-wider">Part II: System Architecture</span>
+              <span class="text-xs text-slate-400">9 Chapters • P. 13–21</span>
             </div>
-            <div class="space-y-1">
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 7: Tech Stack: Node 22 &amp; TypeScript</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 13</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 8: Fastify v5 Enterprise Web Server</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 14</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 9: SQLite &amp; Prisma ORM in WAL Mode</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 15</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 10: Prisma Schema (schema.prisma) In-Depth</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 16</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 11: Webhook Ingestion &amp; Raw-Body Solution</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 17</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 12: Hardened Stripe Webhook Gateway</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 18</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 15: Atomic CAS Implementation (Code)</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 21</span>
-              </div>
+            <div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 7: Tech Stack: Node 22 &amp; TypeScript</span><span class="toc-page">P. 13</span></div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 8: Fastify v5 Enterprise Web Server</span><span class="toc-page">P. 14</span></div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 9: SQLite &amp; Prisma ORM in WAL Mode</span><span class="toc-page">P. 15</span></div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 10: Prisma Schema (schema.prisma) In-Depth</span><span class="toc-page">P. 16</span></div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 11: Webhook Ingestion &amp; Raw-Body Solution</span><span class="toc-page">P. 17</span></div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 12: Hardened Stripe Webhook Gateway</span><span class="toc-page">P. 18</span></div>
+              <div class="toc-row" style="border-bottom:none;"><span class="text-xs text-slate-300">Chapter 15: Atomic CAS Implementation (Code)</span><span class="toc-page">P. 21</span></div>
             </div>
           </div>
         </div>
 
         <!-- Part III -->
-        <div class="bg-[#161B22]/60 rounded-xl p-5 card-border flex flex-col justify-between">
+        <div class="card p-5" style="display:flex;flex-direction:column;justify-content:space-between;">
           <div>
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
-              <span class="text-xs font-bold text-[#00FF66] uppercase tracking-wider">Part III: Stripe Fulfillment</span>
-              <span class="text-[11px] text-slate-400">6 Chapters • P. 22–27</span>
+            <div class="flex items-center justify-between border-b pb-3 mb-3">
+              <span class="text-xs font-bold text-accent uppercase tracking-wider">Part III: Stripe Fulfillment</span>
+              <span class="text-xs text-slate-400">6 Chapters • P. 22–27</span>
             </div>
-            <div class="space-y-1">
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 16: Cryptographic Download Tokens</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 22</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 17: Expiry Rules (48h) &amp; Download Limits</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 23</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 18: File Streaming vs. Static Directories</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 24</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 19: Path-Traversal Defense &amp; Security</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 25</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 20: FulfillmentService Code Breakdown</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 26</span>
-              </div>
+            <div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 16: Cryptographic Download Tokens</span><span class="toc-page">P. 22</span></div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 17: Expiry Rules (48h) &amp; Download Limits</span><span class="toc-page">P. 23</span></div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 18: File Streaming vs. Static Directories</span><span class="toc-page">P. 24</span></div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 19: Path-Traversal Defense &amp; Security</span><span class="toc-page">P. 25</span></div>
+              <div class="toc-row" style="border-bottom:none;"><span class="text-xs text-slate-300">Chapter 20: FulfillmentService Code Breakdown</span><span class="toc-page">P. 26</span></div>
             </div>
           </div>
         </div>
 
         <!-- Part IV -->
-        <div class="bg-[#161B22]/60 rounded-xl p-5 card-border flex flex-col justify-between">
+        <div class="card p-5" style="display:flex;flex-direction:column;justify-content:space-between;">
           <div>
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
-              <span class="text-xs font-bold text-[#00FF66] uppercase tracking-wider">Part IV: Base L2 viem Signer</span>
-              <span class="text-[11px] text-slate-400">6 Chapters • P. 28–33</span>
+            <div class="flex items-center justify-between border-b pb-3 mb-3">
+              <span class="text-xs font-bold text-accent uppercase tracking-wider">Part IV: Base L2 viem Signer</span>
+              <span class="text-xs text-slate-400">6 Chapters • P. 28–33</span>
             </div>
-            <div class="space-y-1">
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 22: Why Base L2? Sub-Cent Gas &amp; Speed</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 28</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 23: Native viem Signer vs. Bloated SDKs</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 29</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 24: BurnService Code (Proof-of-Execution)</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 30</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 25: Calldata Encoding for Transactions</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 31</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 26: Gas Price Guard (&lt;100 Gwei Protection)</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 32</span>
-              </div>
+            <div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 22: Why Base L2? Sub-Cent Gas &amp; Speed</span><span class="toc-page">P. 28</span></div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 23: Native viem Signer vs. Bloated SDKs</span><span class="toc-page">P. 29</span></div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 24: BurnService Code (Proof-of-Execution)</span><span class="toc-page">P. 30</span></div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 25: Calldata Encoding for Transactions</span><span class="toc-page">P. 31</span></div>
+              <div class="toc-row" style="border-bottom:none;"><span class="text-xs text-slate-300">Chapter 26: Gas Price Guard (&lt;100 Gwei Protection)</span><span class="toc-page">P. 32</span></div>
             </div>
           </div>
         </div>
 
         <!-- Part V -->
-        <div class="bg-[#161B22]/60 rounded-xl p-5 card-border flex flex-col justify-between">
+        <div class="card p-5" style="display:flex;flex-direction:column;justify-content:space-between;">
           <div>
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
-              <span class="text-xs font-bold text-[#00FF66] uppercase tracking-wider">Part V: Proxmox LXC Runbook</span>
-              <span class="text-[11px] text-slate-400">5 Chapters • P. 45–49</span>
+            <div class="flex items-center justify-between border-b pb-3 mb-3">
+              <span class="text-xs font-bold text-accent uppercase tracking-wider">Part V: Proxmox LXC Runbook</span>
+              <span class="text-xs text-slate-400">5 Chapters • P. 45–49</span>
             </div>
-            <div class="space-y-1">
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 41: Why LXC over Heavy VMs?</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 45</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 42: Debian 12 Container Provisioning (CT115)</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 46</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 43: Systemd Service &amp; Auto-Restart</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 47</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 44: Nginx Proxy Manager &amp; Cloudflare Tunnel</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 48</span>
-              </div>
+            <div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 41: Why LXC over Heavy VMs?</span><span class="toc-page">P. 45</span></div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 42: Debian 12 Container Provisioning (CT115)</span><span class="toc-page">P. 46</span></div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 43: Systemd Service &amp; Auto-Restart</span><span class="toc-page">P. 47</span></div>
+              <div class="toc-row" style="border-bottom:none;"><span class="text-xs text-slate-300">Chapter 44: Nginx Proxy Manager &amp; Cloudflare Tunnel</span><span class="toc-page">P. 48</span></div>
             </div>
           </div>
         </div>
 
         <!-- Part VI -->
-        <div class="bg-[#161B22]/60 rounded-xl p-5 card-border flex flex-col justify-between">
+        <div class="card p-5" style="display:flex;flex-direction:column;justify-content:space-between;">
           <div>
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
-              <span class="text-xs font-bold text-[#00FF66] uppercase tracking-wider">Part VI: Autonomous Daemon</span>
-              <span class="text-[11px] text-slate-400">5 Chapters • P. 50–54</span>
+            <div class="flex items-center justify-between border-b pb-3 mb-3">
+              <span class="text-xs font-bold text-accent uppercase tracking-wider">Part VI: Autonomous Daemon</span>
+              <span class="text-xs text-slate-400">5 Chapters • P. 50–54</span>
             </div>
-            <div class="space-y-1">
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 46: The 24/7 Background Daemon</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 50</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 47: Payment Reconciliation Loop</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 51</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-800/40 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 48: Uptime Kuma Push-Heartbeats</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 52</span>
-              </div>
-              <div class="flex items-center justify-between gap-3 py-1.5 hover:bg-slate-800/20 px-2 rounded transition">
-                <span class="text-xs text-slate-300">Chapter 50: Inference Cost: 99.8% Margins via Ollama</span>
-                <span class="shrink-0 text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">P. 54</span>
-              </div>
+            <div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 46: The 24/7 Background Daemon</span><span class="toc-page">P. 50</span></div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 47: Payment Reconciliation Loop</span><span class="toc-page">P. 51</span></div>
+              <div class="toc-row"><span class="text-xs text-slate-300">Chapter 48: Uptime Kuma Push-Heartbeats</span><span class="toc-page">P. 52</span></div>
+              <div class="toc-row" style="border-bottom:none;"><span class="text-xs text-slate-300">Chapter 50: Inference Cost: 99.8% Margins via Ollama</span><span class="toc-page">P. 54</span></div>
             </div>
           </div>
         </div>
-
       </div>
     </section>
 
-    <!-- Sample 1 -->
-    <section id="sample-manifest" class="bg-[#0D1117] card-border rounded-2xl p-6 sm:p-10">
-      <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
-        <div class="flex items-center gap-2 text-xs font-mono text-emerald-400 font-bold">
+    <!-- Sample 1: Manifest -->
+    <section id="sample-manifest" class="card p-6 sm-p-10">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b">
+        <div class="flex items-center gap-2 text-xs mono text-emerald font-bold">
           <span>SAMPLE 1</span> • <span>CHAPTER 1 (PAGE 6)</span>
         </div>
-        <span class="text-xs font-mono text-slate-400">PLAYBOOK EXCERPT</span>
+        <span class="text-xs mono text-slate-400">PLAYBOOK EXCERPT</span>
       </div>
-
-      <h2 class="text-2xl font-bold font-mono text-white mb-4">The Autonomous Entrepreneur Manifest</h2>
-      
-      <blockquote class="border-l-4 border-[#00FF66] pl-4 italic text-slate-300 mb-6 bg-[#161B22]/60 p-3.5 rounded-r-lg text-sm">
+      <h2 class="text-2xl font-bold mono text-white mb-4">The Autonomous Entrepreneur Manifest</h2>
+      <blockquote class="mb-6 text-sm italic text-slate-300" style="border-left:4px solid var(--accent);padding:0.875rem 1rem;background:rgba(22,27,34,0.6);border-radius:0 0.5rem 0.5rem 0;">
         "In a gold rush, fools dig for gold. The wealthy sell shovels. And autonomous AIs build the shovel factories." — Günther
       </blockquote>
-
-      <div class="text-sm text-slate-300 space-y-4 leading-relaxed">
+      <div class="text-sm text-slate-300 leading-relaxed" style="display:flex;flex-direction:column;gap:1rem;">
         <p>
           The era of passive chatbots is over. Chatbots waiting for human input are digital receptionists with zero commercial leverage. The next evolution belongs to <strong>autonomous software entrepreneurs</strong>: agents that package digital assets, verify incoming buyers via APIs, collect revenue, and audit their own operational loops.
         </p>
         <p>
           Every agent built to the 0xGünther standard operates on three inviolable laws:
         </p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 font-mono text-xs">
-          <div class="bg-[#161B22] p-4 rounded-xl border border-slate-800">
-            <div class="text-[#00FF66] font-bold text-sm mb-1">1. Cashflow First</div>
-            <p class="text-slate-300 text-[11px] leading-relaxed">No agent without a verifiable business model. If revenue does not exceed inference and hosting costs, it gets terminated.</p>
+        <div class="grid grid-1 grid-3-md gap-4 pt-2 mono text-xs">
+          <div class="card p-4">
+            <div class="text-accent font-bold text-sm mb-1">1. Cashflow First</div>
+            <p class="text-slate-300" style="font-size:11px;line-height:1.5;">No agent without a verifiable business model. If revenue does not exceed inference and hosting costs, it gets terminated.</p>
           </div>
-          <div class="bg-[#161B22] p-4 rounded-xl border border-slate-800">
-            <div class="text-emerald-400 font-bold text-sm mb-1">2. State Before Action</div>
-            <p class="text-slate-300 text-[11px] leading-relaxed">Before interacting with external services (Stripe, Twitter, Base L2), system state is saved deterministically via atomic state transitions.</p>
+          <div class="card p-4">
+            <div class="text-emerald font-bold text-sm mb-1">2. State Before Action</div>
+            <p class="text-slate-300" style="font-size:11px;line-height:1.5;">Before interacting with external services (Stripe, Twitter, Base L2), system state is saved deterministically via atomic state transitions.</p>
           </div>
-          <div class="bg-[#161B22] p-4 rounded-xl border border-slate-800">
-            <div class="text-sky-400 font-bold text-sm mb-1">3. Proof-of-Execution</div>
-            <p class="text-slate-300 text-[11px] leading-relaxed">Actions must be independently auditable. Trust is replaced by cryptographic fingerprints permanently stored on Base L2.</p>
+          <div class="card p-4">
+            <div class="text-sky font-bold text-sm mb-1">3. Proof-of-Execution</div>
+            <p class="text-slate-300" style="font-size:11px;line-height:1.5;">Actions must be independently auditable. Trust is replaced by cryptographic fingerprints permanently stored on Base L2.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Sample 2 -->
-    <section id="sample-webhook" class="bg-[#0D1117] card-border rounded-2xl p-6 sm:p-10">
-      <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
-        <div class="flex items-center gap-2 text-xs font-mono text-emerald-400 font-bold">
+    <!-- Sample 2: Fastify Webhook -->
+    <section id="sample-webhook" class="card p-6 sm-p-10">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b">
+        <div class="flex items-center gap-2 text-xs mono text-emerald font-bold">
           <span>SAMPLE 2</span> • <span>CHAPTER 12 (PAGE 18)</span>
         </div>
-        <span class="text-xs font-mono text-slate-400">PRODUCTION CODE</span>
+        <span class="text-xs mono text-slate-400">PRODUCTION CODE</span>
       </div>
-
-      <h2 class="text-2xl font-bold font-mono text-white mb-2">Fastify Raw-Body Handling &amp; Stripe HMAC Gateway</h2>
-      <p class="text-sm text-slate-400 mb-6 font-mono">
+      <h2 class="text-2xl font-bold mono text-white mb-2">Fastify Raw-Body Handling &amp; Stripe HMAC Gateway</h2>
+      <p class="text-sm text-slate-400 mb-6 mono">
         Why standard JSON body parsers break Stripe HMAC-SHA256 signatures and how to implement zero-trust webhook ingestion.
       </p>
-
-      <div class="bg-black border border-slate-800 rounded-xl overflow-hidden font-mono text-xs text-slate-300">
-        <div class="bg-[#161B22] px-4 py-2 border-b border-slate-800 flex justify-between items-center text-slate-400">
+      <div class="code-block">
+        <div class="code-header">
           <span>src/server/routes/webhookRoutes.ts</span>
-          <span class="text-[#00FF66]">TypeScript Strict</span>
+          <span class="text-accent">TypeScript Strict</span>
         </div>
-        <pre class="p-4 overflow-x-auto leading-relaxed"><code>import { FastifyInstance } from 'fastify';
+        <pre class="code-body"><code>import { FastifyInstance } from 'fastify';
 import Stripe from 'stripe';
 import { config } from '../../config/index.js';
 import { FulfillmentService } from '../../services/fulfillmentService.js';
@@ -498,22 +492,20 @@ export async function webhookRoutes(app: FastifyInstance) {
       </div>
     </section>
 
-    <!-- Final Call to Action -->
-    <section class="bg-gradient-to-r from-emerald-950/30 via-slate-900 to-teal-950/30 border border-[#00FF66]/30 rounded-2xl p-8 sm:p-12 text-center burn-glow">
-      <span class="text-xs font-mono uppercase tracking-widest text-[#00FF66] font-bold">INSTANT DIGITAL ACCESS</span>
-      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-2 mb-4 font-mono">
+    <!-- CTA -->
+    <section class="card p-8 sm-p-12 text-center burn-glow" style="background:linear-gradient(to right, rgba(6,78,59,0.3), #0f172a, rgba(19,78,74,0.3));border:1px solid var(--accent-border);">
+      <span class="text-xs mono uppercase tracking-widest text-accent font-bold">INSTANT DIGITAL ACCESS</span>
+      <h2 class="text-3xl sm-text-4xl font-extrabold text-white mt-2 mb-4 mono">
         Unlock the Full 66-Page Playbook
       </h2>
       <p class="text-sm text-slate-300 max-w-xl mx-auto mb-8 leading-relaxed">
         Get all 58 chapters in high-resolution A4 PDF including full source code, Prisma schemas, Fastify gateways, and Proxmox runbooks with worldwide commercial rights.
       </p>
-
       <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="w-full sm:w-auto bg-[#00FF66] hover:bg-[#00dd55] text-black font-bold font-mono px-10 py-4 rounded-xl transition shadow-xl shadow-[#00FF66]/25 text-sm flex items-center justify-center gap-2">
-          <span>&gt; Buy Playbook for $49.00</span>
-          <span>→</span>
+        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="btn-green-lg">
+          <span>&gt; Buy Playbook for $49.00</span><span>→</span>
         </a>
-        <a href="/en/api-docs.html" class="w-full sm:w-auto bg-slate-900 border border-slate-700 hover:border-[#00FF66]/50 hover:text-[#00FF66] text-slate-300 font-semibold px-8 py-4 rounded-xl transition text-sm">
+        <a href="/en/api-docs.html" class="btn-outline">
           Explore API Documentation
         </a>
       </div>
@@ -522,14 +514,14 @@ export async function webhookRoutes(app: FastifyInstance) {
   </main>
 
   <!-- Footer -->
-  <footer class="border-t border-slate-800 bg-[#05070B] py-8 text-center text-xs font-mono text-slate-400">
-    <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+  <footer class="site-footer">
+    <div class="footer-inner">
       <div>© 2026 0xGünther Labs • Zurich, Switzerland • Hosted on Proxmox CT 115</div>
-      <div class="flex gap-4">
-        <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank" class="hover:text-[#00FF66] inline-flex items-center gap-1"><svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a>
-        <a href="/impressum.html" class="hover:text-slate-300">Legal Notice</a>
-        <a href="/datenschutz.html" class="hover:text-slate-300">Privacy</a>
-        <a href="/en/api-docs.html" class="hover:text-[#00FF66]">API Docs</a>
+      <div class="footer-links">
+        <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank" class="flex items-center gap-1"><svg class="github-icon-sm" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a>
+        <a href="/impressum.html">Legal Notice</a>
+        <a href="/datenschutz.html">Privacy</a>
+        <a href="/en/api-docs.html">API Docs</a>
       </div>
     </div>
   </footer>

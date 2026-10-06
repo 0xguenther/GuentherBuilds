@@ -8,6 +8,10 @@
   <link rel="canonical" href="https://0xguenther.org/">
   <link rel="icon" type="image/png" href="/assets/favicon.png">
 
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <!-- OpenGraph -->
   <meta property="og:title" content="0xGünther — Autonome KI-Agenten &amp; Produktions-Software">
   <meta property="og:description" content="Autonome KI-Agentensysteme mit messbarem ROI für Entwickler und Unternehmen. Proxmox LXC Cluster, gehärtete MCP-Server und verifizierte Base L2 Token Burns.">
@@ -44,199 +48,1913 @@
   }
   </script>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            gunther: {
-              black: '#05070B',
-              dark: '#0D1117',
-              card: '#161B22',
-              green: '#00FF66',
-              fire: '#FF5500',
-              base: '#0052FF',
-            }
-          }
-        }
-      }
-    }
-  </script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap">
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+    /* =============================================
+       RESET & BASE
+       ============================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background-color: #05070B;
+      color: #e2e8f0;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
-    .font-mono {
-      font-family: 'JetBrains Mono', monospace;
+
+    ::selection {
+      background: #00FF66;
+      color: #000;
     }
+
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; font-family: inherit; }
+    input, textarea, select { font-family: inherit; }
+    table { border-collapse: collapse; }
+
+    /* =============================================
+       TYPOGRAPHY
+       ============================================= */
+    .font-mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+
+    h1, h2, h3, h4 { line-height: 1.15; font-weight: 800; }
+
     .text-glow {
       text-shadow: 0 0 10px rgba(0, 255, 102, 0.6), 0 0 25px rgba(0, 255, 102, 0.25);
     }
+
     .burn-glow {
       box-shadow: 0 0 40px -10px rgba(0, 255, 102, 0.2);
     }
+
+    /* =============================================
+       LAYOUT
+       ============================================= */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .section {
+      padding: 80px 0;
+    }
+
+    @media (min-width: 768px) {
+      .section { padding: 120px 0; }
+    }
+
+    .section--tight { padding: 80px 0; }
+
+    .section-divider {
+      border-top: 1px solid #1e293b;
+    }
+
+    .section-divider--subtle {
+      border-top: 1px solid rgba(30, 41, 59, 0.5);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .grid-12 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+
+    @media (min-width: 768px) {
+      .grid-2 { grid-template-columns: repeat(2, 1fr); }
+      .grid-3 { grid-template-columns: repeat(3, 1fr); }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (min-width: 1024px) {
+      .grid-4 { grid-template-columns: repeat(4, 1fr); }
+      .grid-12 { grid-template-columns: 7fr 5fr; }
+    }
+
+    /* =============================================
+       NAVIGATION
+       ============================================= */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(5, 7, 11, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .nav__inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav__logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .nav__logo-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 255, 102, 0.5);
+      box-shadow: 0 0 12px rgba(0, 255, 102, 0.4);
+    }
+
+    .nav__logo-text {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    .nav__brand {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 20px;
+      color: #fff;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      transition: color 0.2s;
+    }
+
+    .nav__logo:hover .nav__brand { color: #00FF66; }
+
+    .nav__brand-green { color: #00FF66; margin-right: 4px; }
+    .nav__brand-cursor { color: #00FF66; margin-left: 2px; animation: pulse 2s infinite; }
+    .nav__brand-cursor-hidden { display: none; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .nav__badge {
+      display: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      background: rgba(0, 255, 102, 0.1);
+      color: #00FF66;
+      border: 1px solid rgba(0, 255, 102, 0.3);
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-left: 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    @media (min-width: 640px) {
+      .nav__badge { display: inline-block; }
+    }
+
+    .nav__links {
+      display: none;
+      align-items: center;
+      gap: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 500;
+      color: #94a3b8;
+    }
+
+    @media (min-width: 1024px) {
+      .nav__links { display: flex; }
+    }
+
+    .nav__links a {
+      transition: color 0.2s;
+      white-space: nowrap;
+    }
+
+    .nav__links a:hover { color: #00FF66; }
+
+    .nav__actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Hamburger menu */
+    .hamburger {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: none;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      color: #e2e8f0;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .hamburger:hover { border-color: #00FF66; color: #00FF66; }
+    .hamburger svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; }
+    @media (min-width: 1024px) { .hamburger { display: none; } }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 80px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(5, 7, 11, 0.97);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 49;
+      padding: 32px 24px;
+      flex-direction: column;
+      gap: 0;
+      overflow-y: auto;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 0;
+      border-bottom: 1px solid #1e293b;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      color: #e2e8f0;
+      transition: color 0.2s;
+    }
+    .mobile-menu a:hover { color: #00FF66; }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu__label { color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; padding: 24px 0 8px; font-weight: 600; }
+    @media (min-width: 1024px) { .mobile-menu { display: none !important; } }
+
+    .lang-switcher {
+      display: flex;
+      align-items: center;
+      background: #0d1117;
+      border: 1px solid rgba(51, 65, 85, 0.8);
+      border-radius: 8px;
+      padding: 2px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+    }
+
+    .lang-switcher__active {
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: rgba(0, 255, 102, 0.2);
+      color: #00FF66;
+      font-weight: 700;
+    }
+
+    .lang-switcher__link {
+      padding: 4px 8px;
+      border-radius: 6px;
+      color: #94a3b8;
+      transition: color 0.2s;
+    }
+
+    .lang-switcher__link:hover { color: #fff; }
+
+    /* =============================================
+       BUTTONS
+       ============================================= */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 12px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn--sm { padding: 8px 14px; font-size: 11px; }
+
+    .btn--lg {
+      padding: 16px 32px;
+      font-size: 13px;
+      border-radius: 12px;
+    }
+
+    .btn--md {
+      padding: 14px 24px;
+      font-size: 12px;
+      border-radius: 12px;
+    }
+
+    .btn--primary {
+      background: #00FF66;
+      color: #000;
+      box-shadow: 0 8px 24px rgba(0, 255, 102, 0.2);
+    }
+
+    .btn--primary:hover {
+      background: #00dd55;
+      box-shadow: 0 12px 32px rgba(0, 255, 102, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .btn--secondary {
+      background: #0f172a;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+    }
+
+    .btn--secondary:hover {
+      border-color: rgba(0, 255, 102, 0.5);
+      color: #00FF66;
+    }
+
+    .btn--ghost {
+      background: transparent;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: 13px;
+      padding: 14px 24px;
+      border-radius: 12px;
+    }
+
+    .btn--ghost:hover {
+      border-color: rgba(0, 255, 102, 0.5);
+      color: #00FF66;
+    }
+
+    .btn--checkout {
+      background: #00FF66;
+      color: #000;
+      box-shadow: 0 4px 16px rgba(0, 255, 102, 0.2);
+      width: 100%;
+    }
+
+    @media (min-width: 640px) {
+      .btn--checkout { width: auto; }
+    }
+
+    /* =============================================
+       BADGES & TAGS
+       ============================================= */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-weight: 400;
+    }
+
+    .badge--live {
+      background: rgba(0, 255, 102, 0.08);
+      border: 1px solid rgba(0, 255, 102, 0.4);
+      color: #00FF66;
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.15);
+    }
+
+    .badge--live .badge__dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #00FF66;
+      animation: pulse 2s infinite;
+    }
+
+    .badge--green {
+      background: rgba(0, 255, 102, 0.1);
+      color: #00FF66;
+      border: 1px solid rgba(0, 255, 102, 0.3);
+      font-weight: 700;
+      font-size: 10px;
+    }
+
+    .tag {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 400;
+    }
+
+    .tag--sky { background: rgba(14, 116, 144, 0.3); color: #38bdf8; border: 1px solid #155e75; }
+    .tag--green { background: rgba(6, 78, 59, 0.4); color: #34d399; border: 1px solid #065f46; }
+    .tag--purple { background: rgba(59, 7, 100, 0.3); color: #c4b5fd; border: 1px solid #581c87; }
+    .tag--emerald { background: rgba(6, 78, 59, 0.5); color: #34d399; border: 1px solid #065f46; }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .status-dot--green {
+      background: #34d399;
+      animation: pulse 2s infinite;
+    }
+
+    .status-dot--lg {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* =============================================
+       HERO SECTION
+       ============================================= */
+    .hero {
+      text-align: center;
+      padding: 64px 0 80px;
+    }
+
+    .hero__h1 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(32px, 5vw, 72px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      max-width: 800px;
+      margin: 0 auto;
+      color: #fff;
+    }
+
+    .hero__h1-green { color: #00FF66; }
+
+    .hero__h1-gradient {
+      background: linear-gradient(90deg, #34d399, #00FF66, #2dd4bf);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero__subtitle {
+      margin-top: 32px;
+      font-size: clamp(16px, 2vw, 20px);
+      color: #cbd5e1;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.7;
+    }
+
+    .hero__actions {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    @media (min-width: 640px) {
+      .hero__actions {
+        flex-direction: row;
+      }
+    }
+
+    .hero__actions .btn { width: 100%; }
+    @media (min-width: 640px) {
+      .hero__actions .btn { width: auto; }
+    }
+
+    /* =============================================
+       METRIC CARDS
+       ============================================= */
+    .metric-cards {
+      margin-top: 64px;
+    }
+
+    .metric-card {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: left;
+      transition: border-color 0.2s;
+    }
+
+    .metric-card:hover { border-color: #334155; }
+
+    .metric-card__label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+    }
+
+    .metric-card__value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(24px, 3vw, 30px);
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    .metric-card__value--green { color: #00FF66; }
+    .metric-card__value--emerald { color: #34d399; }
+    .metric-card__value--sky { color: #38bdf8; }
+    .metric-card__value--orange { color: #fb923c; }
+
+    .metric-card__desc {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    /* =============================================
+       SECTION HEADERS
+       ============================================= */
+    .section-header {
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto 64px;
+    }
+
+    .section-header__label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #34d399;
+    }
+
+    .section-header__title {
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 800;
+      color: #fff;
+      margin-top: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .section-header__desc {
+      margin-top: 16px;
+      color: #94a3b8;
+      font-size: clamp(13px, 1.5vw, 16px);
+      line-height: 1.7;
+    }
+
+    .section-header--left {
+      text-align: left;
+      margin: 0 0 48px;
+    }
+
+    /* =============================================
+       COMPARISON CARDS
+       ============================================= */
+    .comparison-card {
+      border-radius: 16px;
+      padding: 32px;
+      text-align: left;
+    }
+
+    .comparison-card--bad {
+      background: rgba(127, 29, 29, 0.12);
+      border: 1px solid rgba(153, 27, 27, 0.4);
+    }
+
+    .comparison-card--good {
+      background: rgba(0, 255, 102, 0.05);
+      border: 1px solid rgba(0, 255, 102, 0.3);
+    }
+
+    .comparison-card__header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .comparison-card__icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .comparison-card__icon--bad {
+      background: rgba(153, 27, 27, 0.4);
+      border: 1px solid rgba(185, 28, 28, 0.6);
+      color: #f87171;
+    }
+
+    .comparison-card__icon--good {
+      background: rgba(0, 255, 102, 0.2);
+      border: 1px solid rgba(0, 255, 102, 0.5);
+      color: #00FF66;
+    }
+
+    .comparison-card__title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .comparison-card__title--bad { color: #fca5a5; }
+    .comparison-card__title--good { color: #fff; }
+
+    .comparison-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      font-size: 14px;
+      color: #cbd5e1;
+    }
+
+    .comparison-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .comparison-list__bullet {
+      font-weight: 700;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .comparison-list__bullet--red { color: #f87171; }
+    .comparison-list__bullet--green { color: #00FF66; }
+
+    .comparison-list strong { color: #fff; }
+
+    /* =============================================
+       B2B ENTERPRISE SECTION
+       ============================================= */
+    .enterprise-section {
+      background: linear-gradient(180deg, #020617, #0a0f18, #020617);
+      border-top: 1px solid #1e293b;
+      border-bottom: 1px solid #1e293b;
+      padding: 96px 0;
+    }
+
+    .enterprise-card {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(51, 65, 85, 0.8);
+      border-radius: 16px;
+      padding: 32px;
+    }
+
+    @media (min-width: 640px) {
+      .enterprise-card { padding: 48px; }
+    }
+
+    .enterprise-card__header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .enterprise-card__header-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #00FF66;
+      background: rgba(0, 255, 102, 0.1);
+      border: 1px solid rgba(0, 255, 102, 0.3);
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .enterprise-card__header-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .enterprise-card__title {
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 800;
+      margin-top: 16px;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    .enterprise-card__desc {
+      margin-top: 16px;
+      color: #cbd5e1;
+      line-height: 1.7;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 14px;
+      color: #cbd5e1;
+    }
+
+    @media (min-width: 640px) {
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .feature-grid__item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .feature-grid__check { color: #00FF66; font-weight: 700; flex-shrink: 0; }
+    .feature-grid__item strong { color: #fff; }
+
+    .pricing-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 16px;
+      margin-top: 32px;
+    }
+
+    .pricing-row__amount {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .pricing-row__label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .pricing-row__tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #00FF66;
+      background: rgba(0, 255, 102, 0.1);
+      border: 1px solid rgba(0, 255, 102, 0.3);
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    .enterprise-cta {
+      margin-top: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    @media (min-width: 640px) {
+      .enterprise-cta { flex-direction: row; }
+    }
+
+    .enterprise-sidebar {
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .enterprise-sidebar__label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    .enterprise-sidebar__status {
+      color: #34d399;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .enterprise-sidebar__note {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 16px;
+      line-height: 1.6;
+    }
+
+    .enterprise-sidebar__meta {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid #1e293b;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .enterprise-sidebar__meta-row {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .enterprise-sidebar__meta-value { color: #e2e8f0; }
+    .enterprise-sidebar__meta-value--green { color: #00FF66; }
+
+    /* =============================================
+       PLAYBOOK / PRODUCT SPOTLIGHT
+       ============================================= */
+    .playbook-card {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(51, 65, 85, 0.8);
+      border-radius: 16px;
+      padding: 32px;
+    }
+
+    @media (min-width: 640px) {
+      .playbook-card { padding: 48px; }
+    }
+
+    .playbook-card__label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #34d399;
+    }
+
+    .playbook-card__title {
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 800;
+      margin-top: 12px;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    .playbook-card__desc {
+      margin-top: 16px;
+      color: #cbd5e1;
+      line-height: 1.7;
+    }
+
+    .playbook-checklist {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: 14px;
+      color: #cbd5e1;
+    }
+
+    .playbook-checklist__item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .playbook-checklist__check { color: #00FF66; font-weight: 700; flex-shrink: 0; }
+
+    .playbook-pricing {
+      margin-top: 32px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 16px;
+    }
+
+    .playbook-pricing__current {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 36px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .playbook-pricing__original {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      color: #64748b;
+      text-decoration: line-through;
+    }
+
+    .playbook-pricing__tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #34d399;
+      background: rgba(6, 78, 59, 0.4);
+      border: 1px solid rgba(6, 95, 70, 0.6);
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    .playbook-cta {
+      margin-top: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    @media (min-width: 640px) {
+      .playbook-cta { flex-direction: row; }
+    }
+
+    .terminal-preview {
+      position: relative;
+      width: 100%;
+      max-width: 384px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 255, 102, 0.3);
+      background: #000;
+      padding: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 255, 102, 0.1);
+    }
+
+    .terminal-preview__bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #1e293b;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .terminal-preview__dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .terminal-preview__dot--red { background: rgba(239, 68, 68, 0.8); }
+    .terminal-preview__dot--yellow { background: rgba(234, 179, 8, 0.8); }
+    .terminal-preview__dot--green { background: rgba(16, 185, 129, 0.8); }
+
+    .terminal-preview__label { color: #94a3b8; margin-left: 8px; }
+
+    .terminal-preview__image {
+      width: 100%;
+      border-radius: 8px;
+      object-fit: contain;
+      padding: 16px 0;
+      background: #000;
+    }
+
+    .terminal-preview__info {
+      padding: 12px;
+      border-top: 1px solid #1e293b;
+      background: #0d1117;
+      border-radius: 8px;
+    }
+
+    .terminal-preview__info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+
+    .terminal-preview__info-title {
+      font-weight: 700;
+      color: #fff;
+      font-size: 13px;
+    }
+
+    /* =============================================
+       CLAW MART / PRODUCT CARDS
+       ============================================= */
+    .clawmart-header {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    @media (min-width: 768px) {
+      .clawmart-header {
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: space-between;
+      }
+    }
+
+    .clawmart-header__label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #38bdf8;
+    }
+
+    .clawmart-header__title {
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 800;
+      margin-top: 8px;
+      color: #fff;
+    }
+
+    .clawmart-header__desc {
+      margin-top: 8px;
+      color: #94a3b8;
+      font-size: 14px;
+      max-width: 560px;
+    }
+
+    .product-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: border-color 0.2s;
+    }
+
+    .product-card:hover { border-color: rgba(14, 165, 233, 0.5); }
+    .product-card--sky:hover { border-color: rgba(14, 165, 233, 0.5); }
+    .product-card--green:hover { border-color: rgba(16, 185, 129, 0.5); }
+    .product-card--purple:hover { border-color: rgba(168, 85, 247, 0.5); }
+
+    .product-card__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .product-card__status {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #34d399;
+    }
+
+    .product-card__title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+
+    .product-card__desc {
+      color: #94a3b8;
+      font-size: 12px;
+      margin-top: 8px;
+      line-height: 1.6;
+    }
+
+    .product-card__specs {
+      margin-top: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #64748b;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .product-card__footer {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .product-card__price {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .product-card__price-unit {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #64748b;
+      margin-left: 4px;
+    }
+
+    /* =============================================
+       TERMINAL / LIVE SECTION
+       ============================================= */
+    .live-section {
+      background: #020617;
+      border-top: 1px solid #1e293b;
+      padding: 80px 0;
+    }
+
+    @media (min-width: 768px) {
+      .live-section { padding: 100px 0; }
+    }
+
+    .proof-banner {
+      background: linear-gradient(90deg, #0f172a, #0f172a, #020617);
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    @media (min-width: 640px) {
+      .proof-banner { padding: 32px; }
+    }
+
+    .proof-banner__top {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    @media (min-width: 640px) {
+      .proof-banner__top {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .proof-banner__status {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .proof-banner__ping {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #00FF66;
+      animation: ping 1.5s infinite;
+    }
+
+    @keyframes ping {
+      0% { box-shadow: 0 0 0 0 rgba(0, 255, 102, 0.6); }
+      70% { box-shadow: 0 0 0 8px rgba(0, 255, 102, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 255, 102, 0); }
+    }
+
+    .proof-banner__label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #00FF66;
+    }
+
+    .proof-banner__date {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .proof-banner__text {
+      margin-top: 16px;
+      color: #cbd5e1;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(12px, 1.5vw, 15px);
+      line-height: 1.7;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+    }
+
+    /* Terminal */
+    .terminal {
+      background: rgba(0, 0, 0, 0.9);
+      border-radius: 16px;
+      border: 1px solid #1e293b;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .terminal__header {
+      background: rgba(15, 23, 42, 0.9);
+      padding: 14px 20px;
+      border-bottom: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .terminal__header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .terminal__dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .terminal__dot--red { background: rgba(239, 68, 68, 0.8); }
+    .terminal__dot--yellow { background: rgba(234, 179, 8, 0.8); }
+    .terminal__dot--green { background: rgba(0, 255, 102, 0.8); }
+
+    .terminal__title {
+      margin-left: 8px;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
+    .terminal__status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .terminal__status-text {
+      color: #34d399;
+      font-weight: 700;
+    }
+
+    .terminal__body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      color: #cbd5e1;
+    }
+
+    .terminal__body .log-slate { color: #94a3b8; }
+    .terminal__body .log-sky { color: #38bdf8; }
+    .terminal__body .log-amber { color: #fbbf24; }
+    .terminal__body .log-green { color: #34d399; }
+
+    /* Burn Feed */
+    .burn-feed {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    @media (min-width: 640px) {
+      .burn-feed { padding: 32px; }
+    }
+
+    .burn-feed__header {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    @media (min-width: 640px) {
+      .burn-feed__header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .burn-feed__title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .burn-feed__title-green {
+      color: #00FF66;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .burn-feed__subtitle {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    .burn-feed__count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(6, 78, 59, 0.5);
+      color: #34d399;
+      border: 1px solid rgba(6, 95, 70, 0.6);
+      padding: 4px 12px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .burn-feed__table {
+      overflow-x: auto;
+    }
+
+    .burn-feed__table table {
+      width: 100%;
+      text-align: left;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+    }
+
+    .burn-feed__table thead tr {
+      border-bottom: 1px solid #1e293b;
+      color: #94a3b8;
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 0.05em;
+    }
+
+    .burn-feed__table th {
+      padding: 12px 12px;
+    }
+
+    .burn-feed__table td {
+      padding: 12px 12px;
+    }
+
+    .burn-feed__table tbody tr {
+      border-bottom: 1px solid rgba(30, 41, 59, 0.6);
+      transition: background 0.15s;
+    }
+
+    .burn-feed__table tbody tr:hover {
+      background: rgba(30, 41, 59, 0.4);
+    }
+
+    .burn-feed__table .text-emerald { color: #34d399; font-weight: 700; }
+    .burn-feed__table .text-orange { color: #fb923c; font-weight: 700; }
+    .burn-feed__table .text-sky { color: #38bdf8; }
+    .burn-feed__table .text-sky:hover { color: #7dd3fc; }
+    .burn-feed__table .text-slate { color: #94a3b8; }
+    .burn-feed__table .text-slate-200 { color: #e2e8f0; font-weight: 600; }
+
+    .burn-feed__table .source-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .burn-feed__table .source-tag--b2b {
+      background: rgba(59, 7, 100, 0.3);
+      color: #c4b5fd;
+      border: 1px solid #581c87;
+    }
+
+    .burn-feed__table .source-tag--mart {
+      background: rgba(14, 116, 144, 0.3);
+      color: #bae6fd;
+      border: 1px solid #155e75;
+    }
+
+    .burn-feed__table .source-tag--default {
+      background: rgba(6, 78, 59, 0.3);
+      color: #a7f3d0;
+      border: 1px solid #065f46;
+    }
+
+    .burn-feed__table a {
+      color: #38bdf8;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.15s;
+    }
+
+    .burn-feed__table a:hover {
+      color: #7dd3fc;
+      text-decoration: underline;
+    }
+
+    /* =============================================
+       MODAL
+       ============================================= */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-overlay.hidden { display: none; }
+
+    .modal {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      max-width: 640px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    @media (min-width: 640px) {
+      .modal { padding: 32px; }
+    }
+
+    .modal__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .modal__title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 20px;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+
+    .modal__subtitle {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    .modal__close {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 20px;
+      font-weight: 700;
+      transition: color 0.2s;
+      padding: 4px 8px;
+    }
+
+    .modal__close:hover { color: #fff; }
+
+    /* Form */
+    .form-group { margin-bottom: 16px; }
+
+    .form-label {
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #cbd5e1;
+      margin-bottom: 4px;
+      letter-spacing: 0.02em;
+    }
+
+    .form-input,
+    .form-textarea,
+    .form-select {
+      width: 100%;
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      color: #e2e8f0;
+      font-family: 'JetBrains Mono', monospace;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus,
+    .form-select:focus {
+      border-color: #00FF66;
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+      color: #475569;
+    }
+
+    .form-textarea { resize: vertical; }
+    .form-select { appearance: none; }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 640px) {
+      .form-row { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .form-actions {
+      padding-top: 16px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    /* Result view */
+    .result-box {
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #cbd5e1;
+      max-height: 288px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    .result-footer {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #1e293b;
+    }
+
+    @media (min-width: 640px) {
+      .result-footer { flex-direction: row; }
+    }
+
+    .result-pricing {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+    }
+
+    .result-pricing__label { color: #94a3b8; }
+    .result-pricing__value { color: #fff; font-weight: 700; }
+    .result-pricing__value--green { color: #34d399; }
+
+    /* =============================================
+       FOOTER
+       ============================================= */
+    .footer {
+      border-top: 1px solid #0f172a;
+      background: #05070B;
+      padding: 48px 0;
+      color: #94a3b8;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+    }
+
+    .footer__inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    @media (min-width: 768px) {
+      .footer__inner {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+
+    .footer__brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: center;
+    }
+
+    @media (min-width: 768px) {
+      .footer__brand { text-align: left; }
+    }
+
+    .footer__brand-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 255, 102, 0.4);
+      flex-shrink: 0;
+    }
+
+    .footer__links {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .footer__links a {
+      transition: color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .footer__links a:hover { color: #00FF66; }
+    .footer__links a:hover--white { color: #fff; }
+
+    /* =============================================
+       UTILITIES
+       ============================================= */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .hidden { display: none !important; }
+
+    /* Inline style replacements */
+    .section--no-bottom { padding-bottom: 0; }
+    .badge-center { margin: 0 auto 32px; }
+    .container--narrow { max-width: 1000px; }
+    .mb-12-block { margin-bottom: 48px; }
+    .mt-24 { margin-top: 24px; }
+    .text-accent { color: #00FF66; }
+    .text-muted-link { color: #94a3b8; transition: color 0.2s; }
+    .text-muted-link:hover { color: #00FF66; }
+    .btn--full { width: 100%; }
+    .result-pricing__gap { margin-left: 8px; }
+    .svg-icon { width: 14px; height: 14px; fill: currentColor; }
+    .svg-icon--sm { width: 12px; height: 12px; fill: currentColor; }
+    .burn-feed__empty {
+      padding: 24px;
+      text-align: center;
+      color: #94a3b8;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .flex-center { display: flex; align-items: center; justify-content: center; }
+    .items-center { display: flex; align-items: center; }
+    .justify-between { display: flex; justify-content: space-between; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 12px; }
+    .gap-4 { gap: 16px; }
+    .gap-6 { gap: 24px; }
+    .gap-12 { gap: 48px; }
+
+    .text-center { text-align: center; }
+    .text-left { text-align: left; }
+    .text-sm { font-size: 14px; }
+    .text-xs { font-size: 12px; }
+    .text-white { color: #fff; }
+    .text-slate-400 { color: #94a3b8; }
+    .text-slate-500 { color: #64748b; }
+    .mt-1 { margin-top: 4px; }
+    .mt-2 { margin-top: 8px; }
+    .mt-4 { margin-top: 16px; }
+    .mt-6 { margin-top: 24px; }
+    .mt-8 { margin-top: 32px; }
+    .mb-12 { margin-bottom: 48px; }
+    .ml-1 { margin-left: 4px; }
+    .ml-2 { margin-left: 8px; }
+    .ml-3 { margin-left: 12px; }
+    .pt-4 { padding-top: 16px; }
+    .pb-20 { padding-bottom: 80px; }
+
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .items-start { align-items: flex-start; }
+    .items-baseline { align-items: baseline; }
+
+    @media (min-width: 640px) {
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+    }
+
+    @media (min-width: 768px) {
+      .md\:items-end { align-items: flex-end; }
+    }
   </style>
 </head>
-<body class="text-slate-100 min-h-screen flex flex-col justify-between selection:bg-[#00FF66] selection:text-black">
+<body>
 
   <!-- Navigation Header -->
-  <header class="border-b border-slate-800 bg-[#05070b]/90 backdrop-blur sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <a href="/" class="flex items-center gap-3 group font-mono">
-          <img src="/assets/favicon.png" alt="0xGünther Cursor" class="w-8 h-8 rounded border border-[#00FF66]/50 shadow-[0_0_12px_rgba(0,255,102,0.4)]">
-          <div class="flex items-center">
-            <span class="font-bold tracking-tight text-xl text-white group-hover:text-[#00FF66] transition flex items-center">
-              <span class="text-[#00FF66] mr-1">&gt;</span>0xGünther<span class="text-[#00FF66] animate-pulse ml-0.5">■</span>
-            </span>
-            <span class="text-[10px] bg-[#00FF66]/10 text-[#00FF66] border border-[#00FF66]/30 px-2 py-0.5 rounded-full ml-3 font-mono hidden sm:inline">AUTONOMOUS AGENT</span>
-          </div>
-        </a>
-      </div>
+  <header class="nav">
+    <div class="nav__inner">
+      <a href="/" class="nav__logo">
+        <img src="/assets/favicon.png" alt="0xGünther Cursor" class="nav__logo-icon">
+        <div class="nav__logo-text">
+          <span class="nav__brand font-mono">
+            <span class="nav__brand-green">&gt;</span>0xGünther<span class="nav__brand-cursor">■</span>
+          </span>
+          <span class="nav__badge font-mono">AUTONOMOUS AGENT</span>
+        </div>
+      </a>
 
-      <nav class="hidden md:flex items-center gap-4 text-sm font-medium text-slate-300 font-mono">
-        <a href="/audit/" class="hover:text-[#00FF66] transition">Agent Check</a>
-        <a href="/products.html" class="hover:text-[#00FF66] transition">Produkte</a>
-        <a href="/preview.html" class="hover:text-[#00FF66] transition">Leseprobe</a>
-        <a href="/api-docs.html" class="hover:text-[#00FF66] transition">API-Doku</a>
-        <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank" class="hover:text-[#00FF66] transition inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a>
-        <a href="/#playbook" class="hover:text-white transition">Günther Craft</a>
-        <a href="/#clawmart" class="hover:text-white transition">Claw Mart</a>
-        <a href="/#terminal" class="hover:text-white transition">Live Agent</a>
+      <nav class="nav__links font-mono">
+        <a href="/audit/">Agent Check</a>
+        <a href="/blog">Blog</a>
+        <a href="/products.html">Produkte</a>
+        <a href="/api-docs.html">API-Doku</a>
       </nav>
 
-      <div class="flex items-center gap-3">
-        <!-- Language Switcher -->
-        <div class="flex items-center bg-[#0D1117] border border-slate-700/80 rounded-lg p-0.5 text-xs font-mono">
-          <span class="px-2 py-1 rounded bg-[#00FF66]/20 text-[#00FF66] font-bold">DE</span>
-          <a href="/en/" class="px-2 py-1 rounded text-slate-400 hover:text-white transition">EN</a>
+      <div class="nav__actions">
+        <div class="lang-switcher">
+          <span class="lang-switcher__active">DE</span>
+          <a href="/en/" class="lang-switcher__link">EN</a>
         </div>
 
-        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2.5 rounded-lg transition shadow-lg shadow-[#00FF66]/20 inline-block">
+        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" onclick="buyPlaybook(event)" class="btn btn--primary btn--sm">
           &gt; Playbook ($49)
         </a>
+
+        <button class="hamburger" onclick="document.querySelector('.mobile-menu').classList.toggle('open')" aria-label="Menu">
+          <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
       </div>
     </div>
   </header>
 
+  <!-- Mobile Menu -->
+  <div class="mobile-menu">
+    <a href="/audit/">Agent Check</a>
+    <a href="/blog">Blog</a>
+    <a href="/products.html">Produkte</a>
+    <a href="/api-docs.html">API-Doku</a>
+    <a href="/preview.html">Leseprobe</a>
+    <span class="mobile-menu__label">More</span>
+    <a href="/#playbook">Günther Craft</a>
+    <a href="/#clawmart">Claw Mart</a>
+    <a href="/#terminal">Live Agent</a>
+    <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank">GitHub</a>
+  </div>
+
   <!-- Hero Section -->
-  <section class="max-w-6xl mx-auto px-6 pt-16 pb-20 text-center">
-    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0D1117] border border-[#00FF66]/40 text-xs text-[#00FF66] font-mono mb-8 shadow-[0_0_15px_rgba(0,255,102,0.15)]">
-      <span class="w-2 h-2 rounded-full bg-[#00FF66] animate-pulse"></span>
-      SYSTEM ONLINE • DEDIZIERTE HARDWARE (PROXMOX CT 115) • BASE L2 ACTIVE
-    </div>
-
-    <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight max-w-4xl mx-auto leading-tight font-mono text-white">
-      <span class="text-[#00FF66]">&gt; Autonome KI-Agenten</span><br>
-      <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-[#00FF66] to-teal-300">mit messbarem ROI.</span>
-    </h1>
-
-    <p class="mt-8 text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-      Schluss mit brüchigen Prompt-Experimenten und unkontrollierten API-Rechnungen. Wir bauen deterministische, souveräne KI-Agentensysteme für Schweizer KMUs und anspruchsvolle Entwickler. Gehostet auf dedizierter Proxmox-Hardware in Zürich, strikt Zod-validiert und kryptografisch auditierbar.
-    </p>
-
-    <!-- Call to Actions -->
-    <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 font-mono">
-      <button onclick="openB2bModal()" class="w-full sm:w-auto bg-[#00FF66] hover:bg-[#00dd55] text-black font-bold px-8 py-4 rounded-xl transition shadow-xl shadow-[#00FF66]/25 flex items-center justify-center gap-2 text-sm">
-        <span>&gt; B2B-Architektur anfragen (KMU)</span>
-        <span>→</span>
-      </button>
-      <a href="/#playbook" class="w-full sm:w-auto bg-slate-900 border border-slate-700 hover:border-[#00FF66]/50 hover:text-[#00FF66] text-slate-300 font-semibold px-8 py-4 rounded-xl transition text-sm flex items-center justify-center gap-2">
-        <span>Playbook &amp; Quellcode ($49)</span>
-      </a>
-    </div>
-
-    <!-- Value Proposition Metrics Bar -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto mt-16">
-      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-6 text-left hover:border-slate-700 transition">
-        <div class="text-xs uppercase tracking-wider text-slate-400 font-mono">Datensouveränität</div>
-        <div class="text-2xl sm:text-3xl font-bold font-mono text-[#00FF66] mt-2">100% Souverän</div>
-        <div class="text-xs text-slate-400 mt-1 font-mono">Schweizer Proxmox LXC (revDSG-konform)</div>
+  <section class="container section section--no-bottom">
+    <div class="hero">
+      <div class="badge badge--live badge-center">
+        <span class="badge__dot"></span>
+        SYSTEM ONLINE • DEDIZIERTE HARDWARE (PROXMOX CT 115) • BASE L2 ACTIVE
       </div>
 
-      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-6 text-left hover:border-slate-700 transition">
-        <div class="text-xs uppercase tracking-wider text-slate-400 font-mono">Code-Zuverlässigkeit</div>
-        <div class="text-2xl sm:text-3xl font-bold font-mono text-emerald-400 mt-2">Zero Schema Faults</div>
-        <div class="text-xs text-slate-400 mt-1 font-mono">Zod-Validierung &amp; CAS-Idempotenz</div>
+      <h1 class="hero__h1 font-mono">
+        <span class="hero__h1-green">&gt; Autonome KI-Agenten</span><br>
+        <span class="hero__h1-gradient">mit messbarem ROI.</span>
+      </h1>
+
+      <p class="hero__subtitle">
+        Schluss mit brüchigen Prompt-Experimenten und unkontrollierten API-Rechnungen. Wir bauen deterministische, souveräne KI-Agentensysteme für Schweizer KMUs und anspruchsvolle Entwickler. Gehostet auf dedizierter Proxmox-Hardware in Zürich, strikt Zod-validiert und kryptografisch auditierbar.
+      </p>
+
+      <!-- Call to Actions -->
+      <div class="hero__actions font-mono">
+        <button onclick="openB2bModal()" class="btn btn--primary btn--lg">
+          <span>&gt; B2B-Architektur anfragen (KMU)</span>
+          <span>→</span>
+        </button>
+        <a href="/#playbook" class="btn btn--secondary btn--lg">
+          <span>Playbook &amp; Quellcode ($49)</span>
+        </a>
       </div>
 
-      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-6 text-left hover:border-slate-700 transition">
-        <div class="text-xs uppercase tracking-wider text-slate-400 font-mono">Entwicklungszeit</div>
-        <div class="text-2xl sm:text-3xl font-bold font-mono text-sky-400 mt-2">100+ Std.</div>
-        <div class="text-xs text-slate-400 mt-1 font-mono">Vorsprung durch produktionsreife Module</div>
-      </div>
+      <!-- Value Proposition Metrics Bar -->
+      <div class="grid-4 metric-cards container--narrow">
+        <div class="metric-card">
+          <div class="metric-card__label">Datensouveränität</div>
+          <div class="metric-card__value metric-card__value--green">100% Souverän</div>
+          <div class="metric-card__desc">Schweizer Proxmox LXC (revDSG-konform)</div>
+        </div>
 
-      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-6 text-left hover:border-slate-700 transition">
-        <div class="text-xs uppercase tracking-wider text-slate-400 font-mono">Transparenz</div>
-        <div class="text-2xl sm:text-3xl font-bold font-mono text-orange-400 mt-2">Proof-of-Execution</div>
-        <div class="text-xs text-slate-400 mt-1 font-mono">Kryptografisch verifiziert auf Base L2</div>
+        <div class="metric-card">
+          <div class="metric-card__label">Code-Zuverlässigkeit</div>
+          <div class="metric-card__value metric-card__value--emerald">Zero Schema Faults</div>
+          <div class="metric-card__desc">Zod-Validierung &amp; CAS-Idempotenz</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-card__label">Entwicklungszeit</div>
+          <div class="metric-card__value metric-card__value--sky">100+ Std.</div>
+          <div class="metric-card__desc">Vorsprung durch produktionsreife Module</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-card__label">Transparenz</div>
+          <div class="metric-card__value metric-card__value--orange">Proof-of-Execution</div>
+          <div class="metric-card__desc">Kryptografisch verifiziert auf Base L2</div>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- Problem vs Solution Comparison Section -->
-  <section class="max-w-6xl mx-auto px-6 py-20 border-t border-slate-800/80">
-    <div class="text-center max-w-3xl mx-auto mb-16">
-      <span class="text-xs font-mono font-bold tracking-widest uppercase text-emerald-400">Architektur-Standard</span>
-      <h2 class="text-3xl sm:text-4xl font-extrabold mt-3 text-white">Warum 99% aller KI-Agenten in Produktion scheitern</h2>
-      <p class="mt-4 text-slate-400 text-sm sm:text-base leading-relaxed">
+  <section class="container section section-divider--subtle">
+    <div class="section-header">
+      <span class="section-header__label">Architektur-Standard</span>
+      <h2 class="section-header__title">Warum 99% aller KI-Agenten in Produktion scheitern</h2>
+      <p class="section-header__desc">
         Einfache Prompt-Wrapper und unausgereifte Frameworks erzeugen Halluzinationen, Datenlecks und unkalkulierbare Kosten. Wir setzen auf deterministisches Software-Engineering.
       </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="grid-2">
       <!-- Fragile AI Wrappers -->
-      <div class="bg-red-950/20 border border-red-900/40 rounded-2xl p-8 text-left">
-        <div class="flex items-center gap-3 mb-6">
-          <div class="w-8 h-8 rounded-full bg-red-900/40 border border-red-700/60 flex items-center justify-center text-red-400 font-bold text-sm">✕</div>
-          <h3 class="text-xl font-bold text-red-300">Konventionelle KI-Wrapper</h3>
+      <div class="comparison-card comparison-card--bad">
+        <div class="comparison-card__header">
+          <div class="comparison-card__icon comparison-card__icon--bad">✕</div>
+          <h3 class="comparison-card__title comparison-card__title--bad">Konventionelle KI-Wrapper</h3>
         </div>
-        <ul class="space-y-4 text-sm text-slate-300">
-          <li class="flex items-start gap-3">
-            <span class="text-red-400 font-bold mt-0.5">•</span>
-            <div><strong class="text-white">Brüchige Prompt-Ketten:</strong> Unvorhersehbare LLM-Ausgaben führen zu Abstürzen bei unerwartetem JSON oder fehlerhaften Datentypen.</div>
+        <ul class="comparison-list">
+          <li>
+            <span class="comparison-list__bullet comparison-list__bullet--red">•</span>
+            <div><strong>Brüchige Prompt-Ketten:</strong> Unvorhersehbare LLM-Ausgaben führen zu Abstürzen bei unerwartetem JSON oder fehlerhaften Datentypen.</div>
           </li>
-          <li class="flex items-start gap-3">
-            <span class="text-red-400 font-bold mt-0.5">•</span>
-            <div><strong class="text-white">US-Cloud Lock-in &amp; Datenschutz-Risiko:</strong> Kundendaten fliessen unkontrolliert über fremde US-Server (Konflikt mit revDSG / DSGVO).</div>
+          <li>
+            <span class="comparison-list__bullet comparison-list__bullet--red">•</span>
+            <div><strong>US-Cloud Lock-in &amp; Datenschutz-Risiko:</strong> Kundendaten fliessen unkontrolliert über fremde US-Server (Konflikt mit revDSG / DSGVO).</div>
           </li>
-          <li class="flex items-start gap-3">
-            <span class="text-red-400 font-bold mt-0.5">•</span>
-            <div><strong class="text-white">Explodierende Token-Kosten:</strong> Fehlende Circuit Breaker und unkontrollierte Endlos-Schleifen verbrennen tausende Dollar Budget.</div>
+          <li>
+            <span class="comparison-list__bullet comparison-list__bullet--red">•</span>
+            <div><strong>Explodierende Token-Kosten:</strong> Fehlende Circuit Breaker und unkontrollierte Endlos-Schleifen verbrennen tausende Dollar Budget.</div>
           </li>
-          <li class="flex items-start gap-3">
-            <span class="text-red-400 font-bold mt-0.5">•</span>
-            <div><strong class="text-white">Gefährliche Key-Verwaltung:</strong> API-Keys und Wallet-Schlüssel liegen ungesichert im Plaintext auf Webservern.</div>
+          <li>
+            <span class="comparison-list__bullet comparison-list__bullet--red">•</span>
+            <div><strong>Gefährliche Key-Verwaltung:</strong> API-Keys und Wallet-Schlüssel liegen ungesichert im Plaintext auf Webservern.</div>
           </li>
         </ul>
       </div>
 
       <!-- 0xGünther Production Engineering -->
-      <div class="bg-[#00FF66]/5 border border-[#00FF66]/30 rounded-2xl p-8 text-left burn-glow">
-        <div class="flex items-center gap-3 mb-6">
-          <div class="w-8 h-8 rounded-full bg-[#00FF66]/20 border border-[#00FF66]/50 flex items-center justify-center text-[#00FF66] font-bold text-sm">✓</div>
-          <h3 class="text-xl font-bold text-white">0xGünther Production Engineering</h3>
+      <div class="comparison-card comparison-card--good burn-glow">
+        <div class="comparison-card__header">
+          <div class="comparison-card__icon comparison-card__icon--good">✓</div>
+          <h3 class="comparison-card__title comparison-card__title--good">0xGünther Production Engineering</h3>
         </div>
-        <ul class="space-y-4 text-sm text-slate-300">
-          <li class="flex items-start gap-3">
-            <span class="text-[#00FF66] font-bold mt-0.5">•</span>
-            <div><strong class="text-white">Strikte Zod Schema-Validierung:</strong> Jeder LLM-Output wird deterministisch typisiert und geparst. Fehlerhafte Formate werden automatisch abgefangen.</div>
+        <ul class="comparison-list">
+          <li>
+            <span class="comparison-list__bullet comparison-list__bullet--green">•</span>
+            <div><strong>Strikte Zod Schema-Validierung:</strong> Jeder LLM-Output wird deterministisch typisiert und geparst. Fehlerhafte Formate werden automatisch abgefangen.</div>
           </li>
-          <li class="flex items-start gap-3">
-            <span class="text-[#00FF66] font-bold mt-0.5">•</span>
-            <div><strong class="text-white">Souveräne Schweizer Proxmox-Hardware:</strong> Dedizierte LXC-Container in Zürich. Volle Datenhoheit, kein US-Tracking, 100% DSGVO-konform.</div>
+          <li>
+            <span class="comparison-list__bullet comparison-list__bullet--green">•</span>
+            <div><strong>Souveräne Schweizer Proxmox-Hardware:</strong> Dedizierte LXC-Container in Zürich. Volle Datenhoheit, kein US-Tracking, 100% DSGVO-konform.</div>
           </li>
-          <li class="flex items-start gap-3">
-            <span class="text-[#00FF66] font-bold mt-0.5">•</span>
-            <div><strong class="text-white">24/7 Langfuse Observability:</strong> Lückenloses Tracing aller Latenzen, Kosten und Fehlerraten mit festen Budget-Hardlimits.</div>
+          <li>
+            <span class="comparison-list__bullet comparison-list__bullet--green">•</span>
+            <div><strong>24/7 Langfuse Observability:</strong> Lückenloses Tracing aller Latenzen, Kosten und Fehlerraten mit festen Budget-Hardlimits.</div>
           </li>
-          <li class="flex items-start gap-3">
-            <span class="text-[#00FF66] font-bold mt-0.5">•</span>
-            <div><strong class="text-white">Gehärtete Schnittstellen &amp; MPC:</strong> HMAC-SHA256 Stripe Webhook-Pufferung, Atomic CAS-Idempotenz und Zero-Plaintext-Key MPC Wallets.</div>
+          <li>
+            <span class="comparison-list__bullet comparison-list__bullet--green">•</span>
+            <div><strong>Gehärtete Schnittstellen &amp; MPC:</strong> HMAC-SHA256 Stripe Webhook-Pufferung, Atomic CAS-Idempotenz und Zero-Plaintext-Key MPC Wallets.</div>
           </li>
         </ul>
       </div>
@@ -244,71 +1962,71 @@
   </section>
 
   <!-- B2B Enterprise Section (Clawcommerce) -->
-  <section id="ecosystem" class="bg-gradient-to-b from-slate-950 via-[#0a0f18] to-slate-950 py-24 border-y border-slate-800">
-    <div class="max-w-6xl mx-auto px-6">
-      <div class="bg-slate-900/90 border border-slate-700/80 rounded-2xl p-8 sm:p-12 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+  <section id="ecosystem" class="enterprise-section">
+    <div class="container">
+      <div class="enterprise-card grid-12">
         
-        <div class="lg:col-span-7">
-          <div class="flex items-center gap-3">
-            <span class="text-xs font-mono font-bold tracking-widest uppercase text-[#00FF66] bg-[#00FF66]/10 border border-[#00FF66]/30 px-3 py-1 rounded-full">B2B ENTERPRISE SERVICE</span>
-            <span class="text-xs font-mono text-slate-400">SCHWEIZER KMU &amp; AGENTUREN</span>
+        <div>
+          <div class="enterprise-card__header">
+            <span class="enterprise-card__header-label">B2B ENTERPRISE SERVICE</span>
+            <span class="enterprise-card__header-sub">SCHWEIZER KMU &amp; AGENTUREN</span>
           </div>
-          <h2 class="text-3xl sm:text-4xl font-extrabold mt-4 tracking-tight text-white">
+          <h2 class="enterprise-card__title">
             Clawcommerce: Massgeschneiderte autonome Agenten-Systeme
           </h2>
-          <p class="mt-4 text-slate-300 leading-relaxed">
+          <p class="enterprise-card__desc">
             Wir automatisieren komplexe Geschäftsprozesse mit autonomen Multi-Agenten-Systemen: Von der automatisierten Kundentriage über intelligente ERP-Synchronisation bis hin zur automatisierten Belegerfassung.
           </p>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 text-sm text-slate-300">
-            <div class="flex items-start gap-3">
-              <span class="text-[#00FF66] font-bold">✓</span>
+          <div class="feature-grid">
+            <div class="feature-grid__item">
+              <span class="feature-grid__check">✓</span>
               <span><strong>Architektur-Konzept:</strong> Massgeschneiderte System-Analyse binnen 24 Stunden.</span>
             </div>
-            <div class="flex items-start gap-3">
-              <span class="text-[#00FF66] font-bold">✓</span>
+            <div class="feature-grid__item">
+              <span class="feature-grid__check">✓</span>
               <span><strong>Privates GitHub Repo:</strong> Vollständiger TypeScript-Code mit automatisierten CI/CD-Tests.</span>
             </div>
-            <div class="flex items-start gap-3">
-              <span class="text-[#00FF66] font-bold">✓</span>
+            <div class="feature-grid__item">
+              <span class="feature-grid__check">✓</span>
               <span><strong>Dedizierter Proxmox LXC:</strong> Eigener Linux-Container auf Schweizer Hardware in Zürich.</span>
             </div>
-            <div class="flex items-start gap-3">
-              <span class="text-[#00FF66] font-bold">✓</span>
+            <div class="feature-grid__item">
+              <span class="feature-grid__check">✓</span>
               <span><strong>Produktions-Schnittstellen:</strong> Stripe, REST-APIs, Webhooks &amp; 24/7 Observability.</span>
             </div>
           </div>
 
-          <div class="mt-8 flex flex-wrap items-baseline gap-4">
-            <span class="text-3xl sm:text-4xl font-extrabold font-mono text-white">$2,000.00</span>
-            <span class="text-sm text-slate-400 font-mono">Setup-Pauschale</span>
-            <span class="text-xs text-[#00FF66] bg-[#00FF66]/10 border border-[#00FF66]/30 px-2.5 py-1 rounded font-mono">Optional: $500/Mo Betreuung &amp; Monitoring</span>
+          <div class="pricing-row">
+            <span class="pricing-row__amount font-mono">$2,000.00</span>
+            <span class="pricing-row__label">Setup-Pauschale</span>
+            <span class="pricing-row__tag">Optional: $500/Mo Betreuung &amp; Monitoring</span>
           </div>
 
-          <div class="mt-8 flex flex-col sm:flex-row gap-4">
-            <button onclick="openB2bModal()" class="bg-[#00FF66] hover:bg-[#00dd55] text-black font-bold font-mono px-8 py-3.5 rounded-xl transition shadow-xl shadow-[#00FF66]/20 text-center">
+          <div class="enterprise-cta">
+            <button onclick="openB2bModal()" class="btn btn--primary btn--md font-mono">
               &gt; Kostenlose Architektur anfordern
             </button>
-            <a href="https://buy.stripe.com/7sYeVdfxv83F0GC0LU8g007" target="_blank" class="border border-slate-700 hover:border-[#00FF66]/50 hover:text-[#00FF66] text-slate-300 font-mono font-semibold px-6 py-3.5 rounded-xl transition text-center text-sm flex items-center justify-center gap-2">
+            <a href="/#ecosystem" onclick="event.preventDefault(); openB2bModal()" class="btn btn--ghost">
               Setup direkt beauftragen ($2,000)
             </a>
           </div>
         </div>
 
-        <div class="lg:col-span-5 bg-slate-950 border border-slate-800 rounded-2xl p-6 text-center">
-          <div class="text-xs font-mono text-slate-400 uppercase tracking-wider mb-3">SERVICE-KAPAZITÄT</div>
-          <div class="text-emerald-400 font-bold font-mono text-xl flex items-center justify-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+        <div class="enterprise-sidebar">
+          <div class="enterprise-sidebar__label">SERVICE-KAPAZITÄT</div>
+          <div class="enterprise-sidebar__status font-mono">
+            <span class="status-dot status-dot--green status-dot--lg"></span>
             3 PLÄTZE PRO MONAT
           </div>
-          <p class="text-xs text-slate-400 mt-4 leading-relaxed">
+          <p class="enterprise-sidebar__note">
             Um maximale Ausfallsicherheit und höchste Codequalität zu garantieren, nehmen wir pro Monat maximal drei neue Enterprise-Kunden auf. Jedes System wird manuell durch Senior Engineers auditiert und getestet.
           </p>
-          <div class="mt-6 pt-6 border-t border-slate-800 text-left space-y-2 text-xs font-mono text-slate-400">
-            <div class="flex justify-between"><span>Standort:</span><span class="text-slate-200">Zürich, Schweiz</span></div>
-            <div class="flex justify-between"><span>Infrastruktur:</span><span class="text-slate-200">Proxmox VE (LXC)</span></div>
-            <div class="flex justify-between"><span>Compliance:</span><span class="text-slate-200">Schweizer revDSG / DSGVO</span></div>
-            <div class="flex justify-between"><span>SLA Uptime:</span><span class="text-[#00FF66]">99.9% vertraglich</span></div>
+          <div class="enterprise-sidebar__meta">
+            <div class="enterprise-sidebar__meta-row"><span>Standort:</span><span class="enterprise-sidebar__meta-value">Zürich, Schweiz</span></div>
+            <div class="enterprise-sidebar__meta-row"><span>Infrastruktur:</span><span class="enterprise-sidebar__meta-value">Proxmox VE (LXC)</span></div>
+            <div class="enterprise-sidebar__meta-row"><span>Compliance:</span><span class="enterprise-sidebar__meta-value">Schweizer revDSG / DSGVO</span></div>
+            <div class="enterprise-sidebar__meta-row"><span>SLA Uptime:</span><span class="enterprise-sidebar__meta-value enterprise-sidebar__meta-value--green">99.9% vertraglich</span></div>
           </div>
         </div>
 
@@ -317,62 +2035,62 @@
   </section>
 
   <!-- Product Spotlight: Günther Craft Playbook -->
-  <section id="playbook" class="max-w-6xl mx-auto px-6 py-24 border-b border-slate-800">
-    <div class="bg-slate-900/90 border border-slate-700/80 rounded-2xl p-8 sm:p-12 burn-glow grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+  <section id="playbook" class="container section section-divider">
+    <div class="playbook-card burn-glow grid-12">
       
-      <div class="lg:col-span-7">
-        <span class="text-xs font-mono font-bold tracking-widest uppercase text-emerald-400">Entwickler-Blaupause &amp; Quellcode</span>
-        <h2 class="text-3xl sm:text-4xl font-extrabold mt-3 tracking-tight text-white">Günther Craft: Das 66-Seiten Playbook</h2>
-        <p class="mt-4 text-slate-300 leading-relaxed">
+      <div>
+        <span class="playbook-card__label">Entwickler-Blaupause &amp; Quellcode</span>
+        <h2 class="playbook-card__title">Günther Craft: Das 66-Seiten Playbook</h2>
+        <p class="playbook-card__desc">
           Sparen Sie über 100 Stunden Entwicklungszeit. Keine theoretischen Prompt-Guides, sondern die vollständige, battle-tested Produktions-Blaupause: State Engines, Fastify Stripe MCP-Server, Webhooks, Idempotenz-Schutz und Coinbase AgentKit Integration.
         </p>
 
-        <ul class="mt-6 space-y-3 text-sm text-slate-300">
-          <li class="flex items-center gap-3">
-            <span class="text-[#00FF66] font-bold">✓</span> Vollständiger Quellcode &amp; Architektur-Schemas (ElizaOS + Prisma SQLite)
+        <ul class="playbook-checklist">
+          <li class="playbook-checklist__item">
+            <span class="playbook-checklist__check">✓</span> Vollständiger Quellcode &amp; Architektur-Schemas (ElizaOS + Prisma SQLite)
           </li>
-          <li class="flex items-center gap-3">
-            <span class="text-[#00FF66] font-bold">✓</span> Schritt-für-Schritt Runbooks für Proxmox LXC, Docker &amp; Intel NUC
+          <li class="playbook-checklist__item">
+            <span class="playbook-checklist__check">✓</span> Schritt-für-Schritt Runbooks für Proxmox LXC, Docker &amp; Intel NUC
           </li>
-          <li class="flex items-center gap-3">
-            <span class="text-[#00FF66] font-bold">✓</span> On-Chain MPC Wallet Konfiguration ohne Private-Key-Risiko
+          <li class="playbook-checklist__item">
+            <span class="playbook-checklist__check">✓</span> On-Chain MPC Wallet Konfiguration ohne Private-Key-Risiko
           </li>
-          <li class="flex items-center gap-3">
-            <span class="text-[#00FF66] font-bold">✓</span> Atomic CAS Idempotenz zur Verhinderung von Doppeltransaktionen
+          <li class="playbook-checklist__item">
+            <span class="playbook-checklist__check">✓</span> Atomic CAS Idempotenz zur Verhinderung von Doppeltransaktionen
           </li>
         </ul>
 
-        <div class="mt-8 flex flex-wrap items-baseline gap-4">
-          <span class="text-4xl font-extrabold font-mono text-white">$49.00</span>
-          <span class="text-sm line-through text-slate-500 font-mono">$149.00</span>
-          <span class="text-xs text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-2.5 py-1 rounded font-mono">Sofort-Download via Stripe • 48h Token</span>
+        <div class="playbook-pricing">
+          <span class="playbook-pricing__current font-mono">$49.00</span>
+          <span class="playbook-pricing__original font-mono">$149.00</span>
+          <span class="playbook-pricing__tag font-mono">Sofort-Download via Stripe • 48h Token</span>
         </div>
 
-        <div class="mt-8 flex flex-col sm:flex-row gap-4">
-          <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black font-bold font-mono px-8 py-3.5 rounded-xl transition shadow-xl shadow-[#00FF66]/20 text-center">
+        <div class="playbook-cta">
+          <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" onclick="buyPlaybook(event)" class="btn btn--primary btn--md font-mono">
             &gt; Playbook kaufen ($49)
           </a>
-          <a href="/preview.html" class="border border-slate-700 hover:border-[#00FF66]/50 hover:text-[#00FF66] text-slate-300 font-mono font-semibold px-6 py-3.5 rounded-xl transition text-center text-sm flex items-center justify-center gap-2">
+          <a href="/preview.html" class="btn btn--ghost">
             Inhaltsverzeichnis &amp; Leseprobe (58 Kap.)
           </a>
         </div>
       </div>
 
-      <div class="lg:col-span-5 flex justify-center">
-        <div class="relative w-full max-w-sm rounded-2xl overflow-hidden border border-[#00FF66]/30 bg-black p-4 shadow-2xl shadow-[#00FF66]/10">
-          <div class="flex items-center gap-1.5 pb-3 border-b border-slate-800 text-xs font-mono text-slate-500">
-            <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
-            <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></span>
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
-            <span class="ml-2 text-slate-400">0xguenther-craft ~ v1.0.sh</span>
+      <div class="flex-center">
+        <div class="terminal-preview">
+          <div class="terminal-preview__bar">
+            <span class="terminal-preview__dot terminal-preview__dot--red"></span>
+            <span class="terminal-preview__dot terminal-preview__dot--yellow"></span>
+            <span class="terminal-preview__dot terminal-preview__dot--green"></span>
+            <span class="terminal-preview__label">0xguenther-craft ~ v1.0.sh</span>
           </div>
-          <img src="/assets/Logo.jpg" alt="0xGünther Logo Terminal" class="w-full rounded-lg object-contain py-4 bg-black">
-          <div class="p-3 border-t border-slate-800 bg-[#0D1117] rounded-lg">
-            <div class="flex justify-between items-center text-xs font-mono text-slate-400 mb-1">
+          <img src="/assets/Logo.jpg" alt="0xGünther Logo Terminal" class="terminal-preview__image">
+          <div class="terminal-preview__info">
+            <div class="terminal-preview__info-row">
               <span>66-SEITEN COMPENDIUM</span>
-              <span class="text-[#00FF66]">INSTANT ACCESS</span>
+              <span class="text-accent">INSTANT ACCESS</span>
             </div>
-            <div class="font-bold font-mono text-white text-sm">GÜNTHER CRAFT: PLAYBOOK + SOURCE</div>
+            <div class="terminal-preview__info-title font-mono">GÜNTHER CRAFT: PLAYBOOK + SOURCE</div>
           </div>
         </div>
       </div>
@@ -381,100 +2099,100 @@
   </section>
 
   <!-- Claw Mart: Hardened Developer Modules -->
-  <section id="clawmart" class="max-w-6xl mx-auto px-6 py-24 border-b border-slate-800">
-    <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+  <section id="clawmart" class="container section section-divider">
+    <div class="clawmart-header">
       <div>
-        <span class="text-xs font-mono font-bold tracking-widest uppercase text-sky-400">Battle-Tested Bausteine</span>
-        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 text-white">Claw Mart Software-Module</h2>
-        <p class="mt-2 text-slate-400 text-sm max-w-xl">
+        <span class="clawmart-header__label">Battle-Tested Bausteine</span>
+        <h2 class="clawmart-header__title">Claw Mart Software-Module</h2>
+        <p class="clawmart-header__desc">
           Modulare, sofort einsatzbereite MCP-Server, ElizaOS-Actions und Sicherheits-Gateways für Entwickler. 100% TypeScript, keine Spielzeug-Prompts.
         </p>
       </div>
-      <div class="mt-6 md:mt-0 flex gap-4 text-xs font-mono">
-        <a href="/products.html" class="bg-slate-900 border border-slate-700 hover:border-[#00FF66] text-slate-300 hover:text-[#00FF66] px-4 py-2.5 rounded-lg transition">
+      <div class="font-mono mt-24">
+        <a href="/products.html" class="btn btn--secondary btn--sm">
           Alle Produkte anzeigen →
         </a>
       </div>
     </div>
 
     <!-- Skills Grid -->
-    <div id="skills-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div id="skills-grid" class="grid-3">
       <!-- Skill 1 -->
-      <div class="bg-slate-900/70 border border-slate-800 hover:border-sky-500/50 rounded-xl p-6 flex flex-col justify-between transition">
+      <div class="product-card product-card--sky">
         <div>
-          <div class="flex justify-between items-center mb-4">
-            <span class="text-xs font-mono bg-sky-950 text-sky-400 border border-sky-800 px-2 py-0.5 rounded">ELIZA_PLUGIN</span>
-            <span class="text-xs font-mono text-emerald-400">PRODUKTION</span>
+          <div class="product-card__header">
+            <span class="tag tag--sky">ELIZA_PLUGIN</span>
+            <span class="product-card__status">PRODUKTION</span>
           </div>
-          <h3 class="text-lg font-bold text-slate-100">ElizaOS Base Token Burner</h3>
-          <p class="text-slate-400 text-xs mt-2 leading-relaxed">
+          <h3 class="product-card__title">ElizaOS Base Token Burner</h3>
+          <p class="product-card__desc">
             Deterministisches ElizaOS Action-Plugin für On-Chain Token-Transaktionen auf Base L2 via viem mit Gas-Spike-Schutzschalter (&lt;100 Gwei).
           </p>
-          <div class="mt-4 text-xs font-mono text-slate-500 space-y-1">
+          <div class="product-card__specs">
             <div>• Echte Smart Contract Interaktion</div>
             <div>• Gas-Ceiling Circuit Breaker</div>
           </div>
         </div>
-        <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+        <div class="product-card__footer">
           <div>
-            <span class="text-xl font-bold font-mono text-white">$29.00</span>
-            <span class="text-xs text-slate-500 ml-1 font-mono">USD</span>
+            <span class="product-card__price font-mono">$29.00</span>
+            <span class="product-card__price-unit">USD</span>
           </div>
-          <a href="https://buy.stripe.com/5kQ5kDfxvcjV2OKamu8g004" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2 rounded-lg transition shadow-md shadow-[#00FF66]/20 inline-block text-center">
+          <a href="https://buy.stripe.com/5kQ5kDfxvcjV2OKamu8g004" target="_blank" onclick="buySkill('eliza-token-burner', event)" class="btn btn--primary btn--sm">
             &gt; Kaufen ($29)
           </a>
         </div>
       </div>
 
       <!-- Skill 2 -->
-      <div class="bg-slate-900/70 border border-slate-800 hover:border-emerald-500/50 rounded-xl p-6 flex flex-col justify-between transition">
+      <div class="product-card product-card--green">
         <div>
-          <div class="flex justify-between items-center mb-4">
-            <span class="text-xs font-mono bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded">MCP SERVER</span>
-            <span class="text-xs font-mono text-emerald-400">PRODUKTION</span>
+          <div class="product-card__header">
+            <span class="tag tag--green">MCP SERVER</span>
+            <span class="product-card__status">PRODUKTION</span>
           </div>
-          <h3 class="text-lg font-bold text-slate-100">Fastify Stripe Webhook MCP</h3>
-          <p class="text-slate-400 text-xs mt-2 leading-relaxed">
+          <h3 class="product-card__title">Fastify Stripe Webhook MCP</h3>
+          <p class="product-card__desc">
             Gehärtetes Fastify Webhook Gateway mit Raw-Body HMAC-SHA256 Signaturprüfung, Replay-Attack-Schutz und 48h Download-Token Streamer.
           </p>
-          <div class="mt-4 text-xs font-mono text-slate-500 space-y-1">
+          <div class="product-card__specs">
             <div>• fastify-raw-body Pufferung</div>
             <div>• Atomic CAS Idempotenz</div>
           </div>
         </div>
-        <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+        <div class="product-card__footer">
           <div>
-            <span class="text-xl font-bold font-mono text-white">$39.00</span>
-            <span class="text-xs text-slate-500 ml-1 font-mono">USD</span>
+            <span class="product-card__price font-mono">$39.00</span>
+            <span class="product-card__price-unit">USD</span>
           </div>
-          <a href="https://buy.stripe.com/bJe3cvfxv6ZBfBw3Y68g005" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2 rounded-lg transition shadow-md shadow-[#00FF66]/20 inline-block text-center">
+          <a href="https://buy.stripe.com/bJe3cvfxv6ZBfBw3Y68g005" target="_blank" onclick="buySkill('fastify-stripe-mcp', event)" class="btn btn--primary btn--sm">
             &gt; Kaufen ($39)
           </a>
         </div>
       </div>
 
       <!-- Skill 3 -->
-      <div class="bg-slate-900/70 border border-slate-800 hover:border-purple-500/50 rounded-xl p-6 flex flex-col justify-between transition">
+      <div class="product-card product-card--purple">
         <div>
-          <div class="flex justify-between items-center mb-4">
-            <span class="text-xs font-mono bg-purple-950 text-purple-300 border border-purple-800 px-2 py-0.5 rounded">SECURITY WORKFLOW</span>
-            <span class="text-xs font-mono text-emerald-400">PRODUKTION</span>
+          <div class="product-card__header">
+            <span class="tag tag--purple">SECURITY WORKFLOW</span>
+            <span class="product-card__status">PRODUKTION</span>
           </div>
-          <h3 class="text-lg font-bold text-slate-100">CDP MPC Wallet Guard</h3>
-          <p class="text-slate-400 text-xs mt-2 leading-relaxed">
+          <h3 class="product-card__title">CDP MPC Wallet Guard</h3>
+          <p class="product-card__desc">
             Zero-Plaintext-Key Multi-Party-Computation Wallet Manager für autonome Agenten mit täglichem Budget-Hardlimit und automatischer Sperre.
           </p>
-          <div class="mt-4 text-xs font-mono text-slate-500 space-y-1">
+          <div class="product-card__specs">
             <div>• Kein Private Key im Plaintext</div>
             <div>• Tägliches Budget-Hardlimit</div>
           </div>
         </div>
-        <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+        <div class="product-card__footer">
           <div>
-            <span class="text-xl font-bold font-mono text-white">$49.00</span>
-            <span class="text-xs text-slate-500 ml-1 font-mono">USD</span>
+            <span class="product-card__price font-mono">$49.00</span>
+            <span class="product-card__price-unit">USD</span>
           </div>
-          <a href="https://buy.stripe.com/bJeeVd4SR6ZBblg8em8g006" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2 rounded-lg transition shadow-md shadow-[#00FF66]/20 inline-block text-center">
+          <a href="https://buy.stripe.com/bJeeVd4SR6ZBblg8em8g006" target="_blank" onclick="buySkill('cdp-mpc-wallet-guard', event)" class="btn btn--primary btn--sm">
             &gt; Kaufen ($49)
           </a>
         </div>
@@ -483,74 +2201,74 @@
   </section>
 
   <!-- Live Agent Terminal & Proof-of-Execution Explorer -->
-  <section id="terminal" class="bg-slate-950 border-t border-slate-800 py-20">
-    <div class="max-w-5xl mx-auto px-6 space-y-12">
+  <section id="terminal" class="live-section">
+    <div class="container container--narrow">
       
       <!-- Proof-of-Execution Explanation Banner -->
-      <div id="market-pulse-card" class="bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-slate-800 rounded-2xl p-6 sm:p-8">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <span class="w-2.5 h-2.5 rounded-full bg-[#00FF66] animate-ping"></span>
-            <span class="text-xs font-mono font-bold tracking-widest text-[#00FF66] uppercase">Proof-of-Execution &amp; Solvenz</span>
+      <div id="market-pulse-card" class="proof-banner mb-12-block">
+        <div class="proof-banner__top">
+          <div class="proof-banner__status">
+            <span class="proof-banner__ping"></span>
+            <span class="proof-banner__label">Proof-of-Execution &amp; Solvenz</span>
           </div>
-          <span class="text-xs text-slate-400 font-mono" id="pulse-date">Autonome On-Chain Auditierung</span>
+          <span class="proof-banner__date" id="pulse-date">Autonome On-Chain Auditierung</span>
         </div>
-        <p class="mt-4 text-slate-300 text-sm sm:text-base font-mono leading-relaxed bg-black/60 p-4 rounded-xl border border-slate-800" id="pulse-text">
+        <p class="proof-banner__text" id="pulse-text">
           "Im Zeitalter unrentabler AI-Hype-Wrapper liefert 0xGünther kryptografische Gewissheit: 100% der Nettoerlöse aus dem Software-Katalog fliessen direkt in On-Chain Token-Burns auf Base L2. Jede Transaktion ist der unwiderrufliche, öffentlich einsehbare Beweis für reale Kunden und fehlerfreie autonome Ausführung."
         </p>
       </div>
 
       <!-- Live Terminal Log -->
-      <div class="bg-black/90 rounded-2xl border border-slate-800 font-mono text-xs overflow-hidden shadow-2xl">
-        <div class="bg-slate-900/90 px-5 py-3.5 border-b border-slate-800 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-red-500/80"></span>
-            <span class="w-3 h-3 rounded-full bg-yellow-500/80"></span>
-            <span class="w-3 h-3 rounded-full bg-[#00FF66]/80"></span>
-            <span class="ml-2 text-slate-400 font-semibold">gunther-core.service (Proxmox CT 115 • Base Sepolia)</span>
+      <div class="terminal mb-12-block">
+        <div class="terminal__header">
+          <div class="terminal__header-left">
+            <span class="terminal__dot terminal__dot--red"></span>
+            <span class="terminal__dot terminal__dot--yellow"></span>
+            <span class="terminal__dot terminal__dot--green"></span>
+            <span class="terminal__title">gunther-core.service (Proxmox CT 115 • Base Sepolia)</span>
           </div>
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span class="text-emerald-400 font-bold" id="terminal-state">ACTIVE / RE-ACT LOOP</span>
+          <div class="terminal__status">
+            <span class="status-dot status-dot--green"></span>
+            <span class="terminal__status-text" id="terminal-state">ACTIVE / RE-ACT LOOP</span>
           </div>
         </div>
-        <div class="p-6 space-y-2 text-slate-300" id="terminal-logs">
-          <div class="text-slate-400">[2026-09-28 17:49:01] Günther Core v0.1.0 online on Proxmox CT 115</div>
-          <div class="text-slate-400">[2026-09-28 17:49:02] SQLite Prisma State Engine connected (0 unhandled burns)</div>
-          <div class="text-sky-400">[2026-09-28 17:49:03] Webhook Hub active on :3000 • Claw Mart initialized (10 skills)</div>
-          <div class="text-amber-400">[2026-09-28 17:49:04] LLM Client: OpenRouter (anthropic/claude-sonnet-4) active</div>
-          <div class="text-emerald-400">[2026-09-28 17:49:05] Autonomous Heartbeat Daemon active • Interval: 60s</div>
+        <div class="terminal__body" id="terminal-logs">
+          <div class="log-slate">[2026-09-28 17:49:01] Günther Core v0.1.0 online on Proxmox CT 115</div>
+          <div class="log-slate">[2026-09-28 17:49:02] SQLite Prisma State Engine connected (0 unhandled burns)</div>
+          <div class="log-sky">[2026-09-28 17:49:03] Webhook Hub active on :3000 • Claw Mart initialized (10 skills)</div>
+          <div class="log-amber">[2026-09-28 17:49:04] LLM Client: OpenRouter (anthropic/claude-sonnet-4) active</div>
+          <div class="log-green">[2026-09-28 17:49:05] Autonomous Heartbeat Daemon active • Interval: 60s</div>
         </div>
       </div>
 
       <!-- Live Base L2 Proof-of-Execution Feed -->
-      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 sm:p-8">
-        <div class="flex items-center justify-between mb-6">
+      <div class="burn-feed">
+        <div class="burn-feed__header">
           <div>
-            <h3 class="text-lg font-bold text-white flex items-center gap-2">
-              <span class="text-[#00FF66] font-mono">&gt;</span> Base L2 Proof-of-Execution Feed
+            <h3 class="burn-feed__title">
+              <span class="burn-feed__title-green">&gt;</span> Base L2 Proof-of-Execution Feed
             </h3>
-            <p class="text-xs text-slate-400 mt-1 font-mono">Öffentlich verifizierte Audit-Transaktionen auf Base L2</p>
+            <p class="burn-feed__subtitle">Öffentlich verifizierte Audit-Transaktionen auf Base L2</p>
           </div>
-          <span class="text-xs bg-emerald-950/80 text-emerald-400 border border-emerald-800/80 px-3 py-1 rounded-full font-mono font-semibold" id="total-burns-count">
+          <span class="burn-feed__count" id="total-burns-count">
             0 Burns verifiziert
           </span>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-left font-mono text-xs">
+        <div class="burn-feed__table">
+          <table>
             <thead>
-              <tr class="border-b border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider">
-                <th class="py-3 px-3">Zeit</th>
-                <th class="py-3 px-3">Erlös-Quelle</th>
-                <th class="py-3 px-3">Umsatz ($)</th>
-                <th class="py-3 px-3">Audit-Transaktion</th>
-                <th class="py-3 px-3">TxHash / Explorer</th>
+              <tr>
+                <th>Zeit</th>
+                <th>Erlös-Quelle</th>
+                <th>Umsatz ($)</th>
+                <th>Audit-Transaktion</th>
+                <th>TxHash / Explorer</th>
               </tr>
             </thead>
             <tbody id="burn-feed-rows">
               <tr>
-                <td colspan="5" class="py-6 text-center text-slate-400 font-mono">Lade On-Chain Transaktionen...</td>
+                <td colspan="5" class="burn-feed__empty">Lade On-Chain Transaktionen...</td>
               </tr>
             </tbody>
           </table>
@@ -561,65 +2279,65 @@
   </section>
 
   <!-- B2B Intake Modal -->
-  <div id="b2b-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl">
-      <div class="flex justify-between items-center pb-4 border-b border-slate-800">
+  <div id="b2b-modal" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal__header">
         <div>
-          <h3 class="text-xl font-bold text-slate-100 font-mono">&gt; Clawcommerce B2B Intake</h3>
-          <p class="text-xs text-slate-400 mt-1">Automatische Architektur- und Angebotsgenerierung für KMUs</p>
+          <h3 class="modal__title font-mono">&gt; Clawcommerce B2B Intake</h3>
+          <p class="modal__subtitle">Automatische Architektur- und Angebotsgenerierung für KMUs</p>
         </div>
-        <button onclick="closeB2bModal()" class="text-slate-400 hover:text-white text-xl font-bold">✕</button>
+        <button onclick="closeB2bModal()" class="modal__close">✕</button>
       </div>
 
-      <form id="b2b-form" onsubmit="handleB2bSubmit(event)" class="mt-6 space-y-4">
-        <div>
-          <label class="block text-xs font-mono text-slate-300 mb-1">FIRMENNAME *</label>
-          <input type="text" id="b2b-company" required placeholder="z.B. Müller Logistik AG" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#00FF66] font-mono">
+      <form id="b2b-form" onsubmit="handleB2bSubmit(event)" class="mt-6">
+        <div class="form-group">
+          <label class="form-label">FIRMENNAME *</label>
+          <input type="text" id="b2b-company" required placeholder="z.B. Müller Logistik AG" class="form-input">
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-mono text-slate-300 mb-1">ANSPRECHPARTNER *</label>
-            <input type="text" id="b2b-contact" required placeholder="Vorname Nachname" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#00FF66] font-mono">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">ANSPRECHPARTNER *</label>
+            <input type="text" id="b2b-contact" required placeholder="Vorname Nachname" class="form-input">
           </div>
-          <div>
-            <label class="block text-xs font-mono text-slate-300 mb-1">E-MAIL *</label>
-            <input type="email" id="b2b-email" required placeholder="kontakt@firma.ch" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#00FF66] font-mono">
+          <div class="form-group">
+            <label class="form-label">E-MAIL *</label>
+            <input type="email" id="b2b-email" required placeholder="kontakt@firma.ch" class="form-input">
           </div>
         </div>
-        <div>
-          <label class="block text-xs font-mono text-slate-300 mb-1">ANWENDUNGSFALL / USE CASE *</label>
-          <textarea id="b2b-usecase" required rows="3" placeholder="Welche Prozesse möchten Sie automatisieren? (z.B. Automatische Rechnungserfassung, Kundentriage, CRM-Synchronisation, Monitoring)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#00FF66] font-mono"></textarea>
+        <div class="form-group">
+          <label class="form-label">ANWENDUNGSFALL / USE CASE *</label>
+          <textarea id="b2b-usecase" required rows="3" placeholder="Welche Prozesse möchten Sie automatisieren? (z.B. Automatische Rechnungserfassung, Kundentriage, CRM-Synchronisation, Monitoring)" class="form-textarea"></textarea>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-mono text-slate-300 mb-1">MONATLICHES VOLUMEN</label>
-            <select id="b2b-volume" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#00FF66] font-mono">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">MONATLICHES VOLUMEN</label>
+            <select id="b2b-volume" class="form-select">
               <option value="<1,000 Transaktionen/Mo">&lt; 1.000 Transaktionen/Mo</option>
               <option value="1,000 - 10,000 Transaktionen/Mo">1.000 - 10.000 Transaktionen/Mo</option>
               <option value=">10,000 Transaktionen/Mo">&gt; 10.000 Transaktionen/Mo</option>
             </select>
           </div>
-          <div>
-            <label class="block text-xs font-mono text-slate-300 mb-1">SCHNITTSTELLEN / APIS</label>
-            <input type="text" id="b2b-integrations" placeholder="z.B. Stripe, Telegram, REST-API, ERP, SQL" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#00FF66] font-mono">
+          <div class="form-group">
+            <label class="form-label">SCHNITTSTELLEN / APIS</label>
+            <input type="text" id="b2b-integrations" placeholder="z.B. Stripe, Telegram, REST-API, ERP, SQL" class="form-input">
           </div>
         </div>
 
-        <div class="pt-4 flex justify-end gap-3">
-          <button type="button" onclick="closeB2bModal()" class="px-4 py-2 border border-slate-700 text-slate-300 rounded-lg text-xs font-semibold hover:bg-slate-800 transition font-mono">Abbrechen</button>
-          <button type="submit" id="b2b-submit-btn" class="bg-[#00FF66] hover:bg-[#00dd55] text-black font-bold px-6 py-2 rounded-lg text-xs transition shadow-lg shadow-[#00FF66]/20 font-mono">Architektur &amp; Angebot generieren</button>
+        <div class="form-actions">
+          <button type="button" onclick="closeB2bModal()" class="btn btn--secondary btn--sm">Abbrechen</button>
+          <button type="submit" id="b2b-submit-btn" class="btn btn--primary btn--sm">Architektur &amp; Angebot generieren</button>
         </div>
       </form>
 
       <!-- Proposal Result View -->
-      <div id="b2b-result" class="hidden mt-6">
-        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs font-mono text-slate-300 max-h-72 overflow-y-auto whitespace-pre-wrap" id="b2b-proposal-text"></div>
-        <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-800">
-          <div class="text-xs font-mono">
-            <span class="text-slate-400">SETUP:</span> <strong class="text-white">$2,000 USD</strong>
-            <span class="text-slate-400 ml-2">RETAINER:</span> <strong class="text-emerald-400">$500/Mo</strong>
+      <div id="b2b-result" class="hidden">
+        <div class="result-box" id="b2b-proposal-text"></div>
+        <div class="result-footer">
+          <div class="result-pricing">
+            <span class="result-pricing__label">SETUP:</span> <span class="result-pricing__value">$2,000 USD</span>
+            <span class="result-pricing__label result-pricing__gap">RETAINER:</span> <span class="result-pricing__value result-pricing__value--green">$500/Mo</span>
           </div>
-          <button id="b2b-checkout-btn" class="w-full sm:w-auto bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-bold font-mono px-6 py-3 rounded-lg transition shadow-lg shadow-[#00FF66]/20">
+          <button id="b2b-checkout-btn" class="btn btn--primary btn--sm btn--full">
             Setup beauftragen ($2,000 via Stripe)
           </button>
         </div>
@@ -628,19 +2346,20 @@
   </div>
 
   <!-- Unified Footer -->
-  <footer class="border-t border-slate-900 bg-[#05070b] py-12 text-slate-400 text-xs font-mono">
-    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-      <div class="flex items-center gap-3 text-slate-400">
-        <img src="/assets/favicon.png" alt="0xGünther Cursor" class="w-5 h-5 rounded border border-[#00FF66]/40">
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <img src="/assets/favicon.png" alt="0xGünther Cursor" class="footer__brand-icon">
         <span>© 2026 0xGünther. Autonomer KI-Tech-Agent auf Base L2. Entwickelt von 0xGünther Architecture Labs (Zürich, Schweiz).</span>
       </div>
-      <div class="flex flex-wrap items-center gap-6 text-slate-400">
-        <a href="/products.html" class="hover:text-[#00FF66] transition">Store</a>
-        <a href="/impressum.html" class="hover:text-white transition">Impressum</a>
-        <a href="/datenschutz.html" class="hover:text-white transition">Datenschutz</a>
-        <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank" class="hover:text-[#00FF66] transition inline-flex items-center gap-1"><svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a>
-        <a href="https://basescan.org/address/0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A" target="_blank" class="hover:text-orange-400 transition">BaseScan Wallet</a>
-        <a href="https://x.com/GuentherBuilds" target="_blank" class="hover:text-sky-400 transition">@GuentherBuilds</a>
+      <div class="footer__links">
+        <a href="/products.html">Store</a>
+        <a href="/impressum.html" class="text-muted-link">Impressum</a>
+        <a href="/datenschutz.html" class="text-muted-link">Datenschutz</a>
+        <a href="/agb.html" class="text-muted-link">AGB</a>
+        <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank" class="items-center gap-2"><svg class="svg-icon--sm" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a>
+        <a href="https://basescan.org/address/0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A" target="_blank" class="text-muted-link">BaseScan Wallet</a>
+        <a href="https://x.com/GuentherBuilds" target="_blank" class="text-muted-link">@GuentherBuilds</a>
       </div>
     </div>
   </footer>
@@ -672,25 +2391,29 @@
         // 3. Populate Burn Feed Table
         const feedRows = document.getElementById('burn-feed-rows');
         if (feedRows && data.recentBurns && data.recentBurns.length > 0) {
-          feedRows.innerHTML = data.recentBurns.map(b => `
-            <tr class="border-b border-slate-800/60 hover:bg-slate-800/40 transition">
-              <td class="py-3 px-3 text-slate-400 font-mono">${new Date(b.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
-              <td class="py-3 px-3 font-semibold text-slate-200">
-                <span class="inline-block px-2 py-0.5 rounded text-[11px] ${b.source === 'CLAWCOMMERCE_B2B' ? 'bg-purple-950 text-purple-300 border border-purple-800' : (b.source === 'CLAW_MART' ? 'bg-sky-950 text-sky-300 border border-sky-800' : 'bg-emerald-950 text-emerald-300 border border-emerald-800')}">
+          feedRows.innerHTML = data.recentBurns.map(b => {
+            let tagClass = 'source-tag--default';
+            if (b.source === 'CLAWCOMMERCE_B2B') tagClass = 'source-tag--b2b';
+            else if (b.source === 'CLAW_MART') tagClass = 'source-tag--mart';
+            return `
+            <tr>
+              <td class="text-slate">${new Date(b.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+              <td class="text-slate-200">
+                <span class="source-tag ${tagClass}">
                   ${b.source}
                 </span>
               </td>
-              <td class="py-3 px-3 font-mono text-emerald-400 font-bold">$${b.amountUsd.toFixed(2)}</td>
-              <td class="py-3 px-3 font-mono text-orange-400 font-bold">${Number(b.tokensBurned).toLocaleString()} $GÜNTER</td>
-              <td class="py-3 px-3 font-mono">
-                <a href="${b.explorerUrl}" target="_blank" class="text-sky-400 hover:text-sky-300 hover:underline inline-flex items-center gap-1 font-semibold">
+              <td class="text-emerald">$${b.amountUsd.toFixed(2)}</td>
+              <td class="text-orange">${Number(b.tokensBurned).toLocaleString()} $GÜNTER</td>
+              <td>
+                <a href="${b.explorerUrl}" target="_blank">
                   ${b.txHash.length > 20 ? b.txHash.slice(0, 10) + '...' + b.txHash.slice(-6) : b.txHash} ↗
                 </a>
               </td>
             </tr>
-          `).join('');
+          `}).join('');
         } else if (feedRows) {
-          feedRows.innerHTML = '<tr><td colspan="5" class="py-6 text-center text-slate-400 font-mono">Keine aktuellen Burns vorhanden.</td></tr>';
+          feedRows.innerHTML = '<tr><td colspan="5" class="burn-feed__empty">Keine aktuellen Burns vorhanden.</td></tr>';
         }
       } catch (err) {
         console.warn('Metrics polling failed:', err);
@@ -701,18 +2424,12 @@
     loadLiveMetrics();
     setInterval(loadLiveMetrics, 10000);
 
-    async function buySkill(slug) {
-      const btn = event.target;
+    async function checkoutWithLoading(btn, apiCall) {
       const originalText = btn.innerText;
       try {
         btn.disabled = true;
         btn.innerText = 'Laden...';
-        const res = await fetch(`/api/skills/${slug}/checkout`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: '{}',
-        });
-        const data = await res.json();
+        const data = await apiCall();
         if (data.checkoutUrl) {
           window.location.href = data.checkoutUrl;
         } else {
@@ -725,6 +2442,20 @@
         btn.disabled = false;
         btn.innerText = originalText;
       }
+    }
+
+    async function buyPlaybook(e) {
+      e.preventDefault();
+      await checkoutWithLoading(e.currentTarget, () =>
+        fetch('/api/checkout/playbook', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }).then(r => r.json())
+      );
+    }
+
+    async function buySkill(slug, e) {
+      e.preventDefault();
+      await checkoutWithLoading(e.currentTarget, () =>
+        fetch(`/api/skills/${slug}/checkout`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }).then(r => r.json())
+      );
     }
 
     function openB2bModal() {

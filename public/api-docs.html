@@ -8,197 +8,472 @@
   <link rel="canonical" href="https://0xguenther.org/api-docs.html">
   <link rel="icon" type="image/png" href="/assets/favicon.png">
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            gunther: {
-              black: '#05070B',
-              dark: '#0D1117',
-              card: '#161B22',
-              green: '#00FF66',
-              fire: '#FF5500',
-              base: '#0052FF',
-            }
-          }
-        }
-      }
-    }
-  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-    body { background-color: #05070B; color: #E6EDF3; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
-    .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
-    .burn-glow { box-shadow: 0 0 35px rgba(0, 255, 102, 0.12); }
-    pre code { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #05070B;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+    ::selection { background: rgba(0,255,102,0.3); color: #00FF66; }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; }
+    code, pre { font-family: 'JetBrains Mono', ui-monospace, monospace; }
 
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #05070B; }
-    ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: #334155; }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Header */
+    .site-header {
+      position: sticky; top: 0; z-index: 50;
+      border-bottom: 1px solid #1e293b;
+      background: rgba(5,7,11,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .header-inner {
+      max-width: 80rem; margin: 0 auto; padding: 0 1.5rem;
+      height: 5rem; display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo-link { display: flex; align-items: center; gap: 0.75rem; }
+    .logo-text-api {
+      font-family: 'JetBrains Mono', monospace; font-weight: 700;
+      font-size: 1.25rem; color: #fff; letter-spacing: 0.05em;
+    }
+    .logo-text-api .green { color: #00FF66; }
+    .api-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem; color: #64748b;
+      border-left: 1px solid #334155; padding-left: 0.75rem;
+      margin-left: 0.75rem; display: none;
+    }
+    @media (min-width: 640px) { .api-badge { display: inline-block; } }
+
+    .main-nav {
+      display: none; align-items: center; gap: 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8125rem; font-weight: 500; color: #94a3b8;
+    }
+    .main-nav a:hover { color: #00FF66; }
+    .main-nav .active { color: #00FF66; }
+    @media (min-width: 1024px) { .main-nav { display: flex; } }
+
+    .header-actions { display: flex; align-items: center; gap: 0.75rem; }
+    .lang-switch {
+      display: flex; align-items: center;
+      background: #0d1117; border: 1px solid rgba(30,41,59,0.8);
+      border-radius: 0.5rem; padding: 0.125rem;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+    }
+    .lang-switch span, .lang-switch a {
+      padding: 0.25rem 0.5rem; border-radius: 0.375rem; transition: all 0.15s;
+    }
+    .lang-active { background: rgba(0,255,102,0.2); color: #00FF66; font-weight: 700; }
+    .lang-inactive { color: #94a3b8; }
+    .lang-inactive:hover { color: #fff; }
+    .btn-playbook {
+      background: #00FF66; color: #000;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem; font-weight: 700;
+      padding: 0.625rem 1rem; border-radius: 0.5rem;
+      box-shadow: 0 10px 15px -3px rgba(0,255,102,0.2);
+      transition: background 0.15s;
+      display: inline-block;
+    }
+    .btn-playbook:hover { background: #00dd55; }
+
+    /* Hero */
+    .hero {
+      max-width: 80rem; margin: 0 auto; padding: 3rem 1.5rem 2rem;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.25rem 0.75rem; border-radius: 9999px;
+      background: #0d1117; border: 1px solid rgba(0,255,102,0.4);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem; color: #00FF66; margin-bottom: 1rem;
+    }
+    .hero-badge .pulse {
+      width: 0.5rem; height: 0.5rem; border-radius: 9999px;
+      background: #00FF66; animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .hero h1 {
+      font-size: 1.875rem; font-weight: 800; font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.025em; color: #fff; line-height: 1.2;
+    }
+    @media (min-width: 640px) { .hero h1 { font-size: 3rem; } }
+    .hero h1 .green { color: #00FF66; }
+    .hero p { margin-top: 1rem; color: #94a3b8; max-width: 48rem; font-size: 0.875rem; line-height: 1.7; }
+    @media (min-width: 640px) { .hero p { font-size: 1rem; } }
+    .hero-pills {
+      margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+    }
+    .hero-pill {
+      background: #0d1117; border: 1px solid #1e293b;
+      border-radius: 0.5rem; padding: 0.375rem 0.875rem; color: #cbd5e1;
+    }
+    .hero-pill .label { color: #64748b; }
+
+    /* Layout */
+    .content-grid {
+      max-width: 80rem; margin: 0 auto; padding: 0 1.5rem 6rem;
+      display: grid; grid-template-columns: 1fr; gap: 2rem;
+    }
+    @media (min-width: 1024px) {
+      .content-grid { grid-template-columns: 250px 1fr; gap: 2rem; }
+    }
+
+    /* Sidebar */
+    .sidebar {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+    }
+    @media (min-width: 1024px) {
+      .sidebar { position: sticky; top: 6rem; align-self: start; }
+    }
+    .sidebar-group { margin-bottom: 1rem; }
+    .sidebar-label {
+      color: #64748b; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; padding: 0.25rem 0.75rem;
+    }
+    .sidebar-link {
+      display: block; padding: 0.5rem 0.75rem; margin-top: 0.25rem;
+      background: rgba(13,17,23,0.6); border: 1px solid #1e293b;
+      border-radius: 0.5rem; color: #cbd5e1; transition: all 0.15s;
+    }
+    .sidebar-link:hover { background: #1e293b; color: #00FF66; }
+    .sidebar-link .get { color: #34d399; font-weight: 700; margin-right: 0.375rem; }
+    .sidebar-link .post { color: #38bdf8; font-weight: 700; margin-right: 0.375rem; }
+
+    /* Endpoint cards */
+    .endpoint-card {
+      background: #0d1117; border: 1px solid #1e293b;
+      border-radius: 1rem; padding: 1.5rem;
+    }
+    @media (min-width: 640px) { .endpoint-card { padding: 2rem; } }
+    .endpoint-header {
+      display: flex; flex-wrap: wrap; align-items: center;
+      justify-content: space-between; gap: 0.75rem;
+      padding-bottom: 1rem; border-bottom: 1px solid #1e293b;
+    }
+    .endpoint-method {
+      display: inline-flex; align-items: center; gap: 0.75rem;
+    }
+    .method-badge {
+      padding: 0.25rem 0.625rem; border-radius: 0.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem; font-weight: 700;
+    }
+    .method-get { background: rgba(6,78,59,0.8); color: #34d399; border: 1px solid rgba(6,95,70,0.8); }
+    .method-post { background: rgba(12,74,110,0.8); color: #38bdf8; border: 1px solid rgba(22,78,99,0.8); }
+    .endpoint-path {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem; font-weight: 700; color: #fff;
+    }
+    .endpoint-auth {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem; color: #94a3b8;
+    }
+    .endpoint-auth.orange { color: #fb923c; }
+    .endpoint-card > p { margin-top: 1rem; font-size: 0.875rem; color: #cbd5e1; line-height: 1.7; }
+    .endpoint-card > p code {
+      background: rgba(0,255,102,0.08); color: #00FF66;
+      padding: 0.125rem 0.375rem; border-radius: 0.25rem;
+      font-size: 0.8125rem;
+    }
+
+    .endpoint-body { margin-top: 1.5rem; }
+    .endpoint-body .label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.25rem;
+    }
+    .endpoint-body .label + .label { margin-top: 0.75rem; }
+
+    /* Code blocks */
+    .code-block {
+      position: relative; margin-top: 0.5rem;
+    }
+    .code-block pre {
+      background: #000; padding: 1rem; border-radius: 0.75rem;
+      border: 1px solid #1e293b; overflow-x: auto;
+      font-size: 0.75rem; line-height: 1.6;
+    }
+    .code-block .curl { color: #cbd5e1; }
+    .code-block .response { color: #00FF66; }
+    .copy-btn {
+      position: absolute; top: 0.5rem; right: 0.5rem;
+      background: #1e293b; border: 1px solid #334155;
+      border-radius: 0.375rem; padding: 0.25rem 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.625rem; color: #94a3b8;
+      cursor: pointer; transition: all 0.15s;
+      opacity: 0;
+    }
+    .code-block:hover .copy-btn { opacity: 1; }
+    .copy-btn:hover { background: #334155; color: #fff; }
+    .copy-btn.copied { color: #00FF66; border-color: #00FF66; }
+
+    /* Live test button */
+    .btn-test {
+      background: rgba(6,78,59,0.6); color: #00FF66;
+      border: 1px solid rgba(6,95,70,0.8);
+      padding: 0.25rem 0.75rem; border-radius: 0.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-test:hover { background: rgba(6,95,70,0.8); }
+
+    /* Glow on first two cards */
+    .endpoint-card.glow { box-shadow: 0 0 35px rgba(0,255,102,0.12); }
+
+    /* Footer */
+    .site-footer {
+      border-top: 1px solid #1e293b;
+      background: #05070b; padding: 2rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem; color: #64748b;
+    }
+    .footer-inner {
+      max-width: 80rem; margin: 0 auto; padding: 0 1.5rem;
+      display: flex; flex-direction: column; gap: 1rem;
+      align-items: center; text-align: center;
+    }
+    @media (min-width: 640px) {
+      .footer-inner { flex-direction: row; justify-content: space-between; text-align: left; }
+    }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 1rem; }
+    .footer-links a { transition: color 0.15s; }
+    .footer-links a:hover { color: #00FF66; }
+
+    /* Mobile */
+    .mobile-toggle {
+      display: flex; align-items: center; justify-content: center;
+      width: 2.5rem; height: 2.5rem; border: 1px solid #1e293b;
+      border-radius: 0.5rem; background: transparent; color: #e2e8f0;
+      cursor: pointer;
+    }
+    @media (min-width: 1024px) { .mobile-toggle { display: none; } }
+    .mobile-nav {
+      display: none; border-top: 1px solid #1e293b;
+      background: rgba(5,7,11,0.98);
+      padding: 1rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8125rem; color: #94a3b8;
+    }
+    .mobile-nav a { display: block; padding: 0.5rem 0; }
+    .mobile-nav a:hover { color: #00FF66; }
+    .mobile-nav.open { display: block; }
+
+    /* Hamburger menu */
+    .hamburger {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: none;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      color: #e2e8f0;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .hamburger:hover { border-color: #00FF66; color: #00FF66; }
+    .hamburger svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; }
+    @media (min-width: 1024px) { .hamburger { display: none; } }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 80px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(5, 7, 11, 0.97);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 49;
+      padding: 32px 24px;
+      flex-direction: column;
+      gap: 0;
+      overflow-y: auto;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 0;
+      border-bottom: 1px solid #1e293b;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      color: #e2e8f0;
+      transition: color 0.2s;
+    }
+    .mobile-menu a:hover { color: #00FF66; }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu__label { color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; padding: 24px 0 8px; font-weight: 600; }
+    @media (min-width: 1024px) { .mobile-menu { display: none !important; } }
   </style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-[#00FF66]/30 selection:text-[#00FF66]">
+<body>
 
   <!-- Header -->
-  <header class="border-b border-slate-800 bg-[#05070B]/90 backdrop-blur sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-3">
-        <span class="text-xl font-bold font-mono tracking-wider text-white">0x<span class="text-[#00FF66]">GÜNTHER</span></span>
-        <span class="text-xs font-mono text-slate-500 hidden sm:inline-block border-l border-slate-700 pl-3">API SPECIFICATION v1.0</span>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="logo-link">
+        <span class="logo-text-api">0x<span class="green">GÜNTHER</span></span>
+        <span class="api-badge">API SPECIFICATION v1.0</span>
       </a>
 
-      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300 font-mono">
-        <a href="/" class="hover:text-white transition">Home</a>
-        <a href="/products.html" class="hover:text-white transition">Produkte</a>
-        <a href="/preview.html" class="hover:text-[#00FF66] transition">Leseprobe</a>
-        <a href="/api-docs.html" class="text-[#00FF66] transition">API-Doku</a>
-        <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank" class="hover:text-[#00FF66] transition inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a>
-        <a href="https://x.com/GuentherBuilds" target="_blank" class="hover:text-white transition">X (@GuentherBuilds)</a>
+      <nav class="main-nav">
+        <a href="/audit/">Agent Check</a>
+        <a href="/blog">Blog</a>
+        <a href="/products.html">Produkte</a>
+        <a href="/api-docs.html" class="active">API-Doku</a>
       </nav>
 
-      <div class="flex items-center gap-3">
-        <div class="flex items-center bg-[#0D1117] border border-slate-700/80 rounded-lg p-0.5 text-xs font-mono">
-          <span class="px-2 py-1 rounded bg-[#00FF66]/20 text-[#00FF66] font-bold">DE</span>
-          <a href="/en/api-docs.html" class="px-2 py-1 rounded text-slate-400 hover:text-white transition">EN</a>
+      <div class="header-actions">
+        <div class="lang-switch">
+          <span class="lang-active">DE</span>
+          <a href="/en/api-docs.html" class="lang-inactive">EN</a>
         </div>
-        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="bg-[#00FF66] hover:bg-[#00dd55] text-black text-xs font-mono font-bold px-4 py-2.5 rounded-lg transition shadow-lg shadow-[#00FF66]/20">
-          Playbook ($49)
-        </a>
+        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="btn-playbook">Playbook ($49)</a>
+        <button class="hamburger" onclick="document.querySelector('.mobile-menu').classList.toggle('open')" aria-label="Menu">
+          <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
       </div>
+    </div>
+    <div id="mobile-nav" class="mobile-nav">
+      <a href="/">Home</a>
+      <a href="/products.html">Produkte</a>
+      <a href="/api-docs.html">API-Doku</a>
+      <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank">GitHub</a>
     </div>
   </header>
 
-  <!-- Hero Section -->
-  <section class="max-w-7xl mx-auto px-6 pt-12 pb-8">
-    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0D1117] border border-[#00FF66]/40 text-xs text-[#00FF66] font-mono mb-4">
-      <span class="w-2 h-2 rounded-full bg-[#00FF66] animate-pulse"></span>
-      REST API • FASTIFY v5 • OPEN PUBLIC ENDPOINTS • BASE L2 AUDITED
-    </div>
+  <div class="mobile-menu">
+    <a href="/audit/">Agent Check</a>
+    <a href="/blog">Blog</a>
+    <a href="/products.html">Produkte</a>
+    <a href="/api-docs.html">API-Doku</a>
+    <a href="/preview.html">Leseprobe</a>
+    <span class="mobile-menu__label">More</span>
+    <a href="/#playbook">Günther Craft</a>
+    <a href="/#clawmart">Claw Mart</a>
+    <a href="/#terminal">Live Agent</a>
+    <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank">GitHub</a>
+  </div>
 
-    <h1 class="text-3xl sm:text-5xl font-extrabold font-mono tracking-tight text-white leading-tight">
-      Schnittstellen &amp; <span class="text-[#00FF66]">API-Dokumentation</span>
-    </h1>
-
-    <p class="mt-4 text-slate-300 max-w-3xl text-sm sm:text-base leading-relaxed">
-      Sämtliche Endpunkte von 0xGünther sind strikt typisiert, Zod-validiert und auf maximale Ausfallsicherheit ausgelegt. Teste die öffentlichen Endpunkte direkt live im Browser.
-    </p>
-
-    <div class="mt-6 flex flex-wrap gap-4 text-xs font-mono">
-      <div class="bg-slate-900 border border-slate-800 rounded-lg px-3.5 py-1.5 text-slate-300">
-        <span class="text-slate-500">Base URL:</span> <span class="text-[#00FF66] font-bold">https://0xguenther.org</span>
-      </div>
-      <div class="bg-slate-900 border border-slate-800 rounded-lg px-3.5 py-1.5 text-slate-300">
-        <span class="text-slate-500">Rate Limit:</span> 120 req / min
-      </div>
-      <div class="bg-slate-900 border border-slate-800 rounded-lg px-3.5 py-1.5 text-slate-300">
-        <span class="text-slate-500">Idempotency:</span> Compare-and-Swap (CAS)
-      </div>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-badge"><span class="pulse"></span>REST API • FASTIFY v5 • OPEN PUBLIC ENDPOINTS • BASE L2 AUDITED</div>
+    <h1>Schnittstellen &amp; <span class="green">API-Dokumentation</span></h1>
+    <p>Sämtliche Endpunkte von 0xGünther sind strikt typisiert, Zod-validiert und auf maximale Ausfallsicherheit ausgelegt. Teste die öffentlichen Endpunkte direkt live im Browser.</p>
+    <div class="hero-pills">
+      <div class="hero-pill"><span class="label">Base URL:</span> <span style="color:#00FF66;font-weight:700;">https://0xguenther.org</span></div>
+      <div class="hero-pill"><span class="label">Rate Limit:</span> 120 req / min</div>
+      <div class="hero-pill"><span class="label">Idempotency:</span> Compare-and-Swap (CAS)</div>
     </div>
   </section>
 
-  <!-- Main Content Layout (Sidebar + Endpoints) -->
-  <div class="max-w-7xl mx-auto px-6 pb-24 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-    
-    <!-- Sidebar Navigation -->
-    <aside class="lg:col-span-3 sticky top-24 space-y-2 font-mono text-xs">
-      <div class="text-slate-500 font-bold uppercase tracking-wider px-3 py-1">Core &amp; Metrics</div>
-      <a href="#endpoint-health" class="block px-3 py-2 rounded-lg bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-[#00FF66] border border-slate-800 transition">
-        <span class="text-emerald-400 font-bold mr-1.5">GET</span> /health
-      </a>
-      <a href="#endpoint-metrics" class="block px-3 py-2 rounded-lg bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-[#00FF66] border border-slate-800 transition">
-        <span class="text-emerald-400 font-bold mr-1.5">GET</span> /api/metrics
-      </a>
-      <a href="#endpoint-burns" class="block px-3 py-2 rounded-lg bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-[#00FF66] border border-slate-800 transition">
-        <span class="text-emerald-400 font-bold mr-1.5">GET</span> /api/metrics/burns
-      </a>
+  <!-- Main Content -->
+  <div class="content-grid">
 
-      <div class="text-slate-500 font-bold uppercase tracking-wider px-3 py-1 pt-4">Commerce &amp; Skills</div>
-      <a href="#endpoint-skills" class="block px-3 py-2 rounded-lg bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-[#00FF66] border border-slate-800 transition">
-        <span class="text-emerald-400 font-bold mr-1.5">GET</span> /api/skills
-      </a>
-      <a href="#endpoint-b2b" class="block px-3 py-2 rounded-lg bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-[#00FF66] border border-slate-800 transition">
-        <span class="text-sky-400 font-bold mr-1.5">POST</span> /api/b2b/intake
-      </a>
-      <a href="#endpoint-download" class="block px-3 py-2 rounded-lg bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-[#00FF66] border border-slate-800 transition">
-        <span class="text-emerald-400 font-bold mr-1.5">GET</span> /download/:token
-      </a>
-
-      <div class="text-slate-500 font-bold uppercase tracking-wider px-3 py-1 pt-4">Webhooks &amp; Marketing</div>
-      <a href="#endpoint-stripe" class="block px-3 py-2 rounded-lg bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-[#00FF66] border border-slate-800 transition">
-        <span class="text-sky-400 font-bold mr-1.5">POST</span> /webhooks/stripe
-      </a>
-      <a href="#endpoint-reddit" class="block px-3 py-2 rounded-lg bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-[#00FF66] border border-slate-800 transition">
-        <span class="text-emerald-400 font-bold mr-1.5">GET</span> /api/reddit/status
-      </a>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-group">
+        <div class="sidebar-label">Core &amp; Metrics</div>
+        <a href="#endpoint-health" class="sidebar-link"><span class="get">GET</span>/health</a>
+        <a href="#endpoint-metrics" class="sidebar-link"><span class="get">GET</span>/api/metrics</a>
+        <a href="#endpoint-burns" class="sidebar-link"><span class="get">GET</span>/api/metrics/burns</a>
+      </div>
+      <div class="sidebar-group">
+        <div class="sidebar-label">Commerce &amp; Skills</div>
+        <a href="#endpoint-skills" class="sidebar-link"><span class="get">GET</span>/api/skills</a>
+        <a href="#endpoint-b2b" class="sidebar-link"><span class="post">POST</span>/api/b2b/intake</a>
+        <a href="#endpoint-download" class="sidebar-link"><span class="get">GET</span>/download/:token</a>
+      </div>
+      <div class="sidebar-group">
+        <div class="sidebar-label">Webhooks &amp; Marketing</div>
+        <a href="#endpoint-stripe" class="sidebar-link"><span class="post">POST</span>/webhooks/stripe</a>
+        <a href="#endpoint-reddit" class="sidebar-link"><span class="get">GET</span>/api/reddit/status</a>
+      </div>
     </aside>
 
-    <!-- Endpoints Specification Area -->
-    <div class="lg:col-span-9 space-y-12">
+    <!-- Endpoints -->
+    <div style="display:flex;flex-direction:column;gap:3rem;">
 
-      <!-- Endpoint 1: GET /health -->
-      <section id="endpoint-health" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-8 burn-glow">
-        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
-          <div class="flex items-center gap-3">
-            <span class="px-2.5 py-1 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono text-xs font-bold">GET</span>
-            <span class="font-mono text-base font-bold text-white">/health</span>
+      <!-- GET /health -->
+      <section id="endpoint-health" class="endpoint-card glow">
+        <div class="endpoint-header">
+          <div class="endpoint-method">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/health</span>
           </div>
-          <span class="text-xs font-mono text-slate-400">Authentifizierung: Keine (Öffentlich)</span>
+          <span class="endpoint-auth">Authentifizierung: Keine (Öffentlich)</span>
         </div>
-
-        <p class="mt-4 text-sm text-slate-300">
+        <p>
           Gibt den Echtzeit-Betriebsstatus der Fastify-Instanz, Agent-Name und Container-Uptime zurück. Wird vom Uptime Kuma Heartbeat-Monitor auf Proxmox CT115 genutzt.
         </p>
-
-        <div class="mt-6 space-y-3 font-mono text-xs">
-          <div class="flex justify-between items-center text-slate-400">
-            <span>cURL Anfrage:</span>
-            <button onclick="testEndpoint('/health', 'res-health')" class="bg-emerald-900/60 hover:bg-emerald-800 text-[#00FF66] border border-emerald-700/80 px-3 py-1 rounded transition">
-              ▶ Live testen
-            </button>
+        <div class="endpoint-body">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="label">cURL Anfrage:</span>
+            <button onclick="testEndpoint('/health', 'res-health')" class="btn-test">▶ Live testen</button>
           </div>
-          <pre class="bg-black p-4 rounded-xl border border-slate-800 text-slate-300 overflow-x-auto"><code>curl -s https://0xguenther.org/health</code></pre>
-
-          <div class="text-slate-400 pt-2">Antwort (HTTP 200 OK):</div>
-          <pre id="res-health" class="bg-black p-4 rounded-xl border border-slate-800 text-[#00FF66] overflow-x-auto"><code>{
+          <div class="code-block">
+            <pre class="curl"><code>curl -s https://0xguenther.org/health</code></pre>
+            <button class="copy-btn" onclick="copyCode(this, 'curl -s https://0xguenther.org/health')">Copy</button>
+          </div>
+          <span class="label" style="margin-top:0.75rem;">Antwort (HTTP 200 OK):</span>
+          <div class="code-block">
+            <pre id="res-health" class="response"><code>{
   "status": "healthy",
   "agent": "Günther",
   "uptime": 2954.24,
   "timestamp": "2026-09-29T15:29:21.011Z"
 }</code></pre>
+            <button class="copy-btn" onclick="copyBlock(this)">Copy</button>
+          </div>
         </div>
       </section>
 
-      <!-- Endpoint 2: GET /api/metrics -->
-      <section id="endpoint-metrics" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-8 burn-glow">
-        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
-          <div class="flex items-center gap-3">
-            <span class="px-2.5 py-1 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono text-xs font-bold">GET</span>
-            <span class="font-mono text-base font-bold text-white">/api/metrics</span>
+      <!-- GET /api/metrics -->
+      <section id="endpoint-metrics" class="endpoint-card glow">
+        <div class="endpoint-header">
+          <div class="endpoint-method">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/metrics</span>
           </div>
-          <span class="text-xs font-mono text-slate-400">Authentifizierung: Keine (Öffentlich)</span>
+          <span class="endpoint-auth">Authentifizierung: Keine (Öffentlich)</span>
         </div>
-
-        <p class="mt-4 text-sm text-slate-300">
+        <p>
           Liefert den vollständigen aggregierten Finanz- und Observability-Feed: Erzielter Umsatz, verbrannte $GUNTER Token auf Base L2, LLM-Inferenzkosten und Netto-Gewinnspannen.
         </p>
-
-        <div class="mt-6 space-y-3 font-mono text-xs">
-          <div class="flex justify-between items-center text-slate-400">
-            <span>cURL Anfrage:</span>
-            <button onclick="testEndpoint('/api/metrics', 'res-metrics')" class="bg-emerald-900/60 hover:bg-emerald-800 text-[#00FF66] border border-emerald-700/80 px-3 py-1 rounded transition">
-              ▶ Live testen
-            </button>
+        <div class="endpoint-body">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="label">cURL Anfrage:</span>
+            <button onclick="testEndpoint('/api/metrics', 'res-metrics')" class="btn-test">▶ Live testen</button>
           </div>
-          <pre class="bg-black p-4 rounded-xl border border-slate-800 text-slate-300 overflow-x-auto"><code>curl -s https://0xguenther.org/api/metrics</code></pre>
-
-          <div class="text-slate-400 pt-2">Antwort (HTTP 200 OK):</div>
-          <pre id="res-metrics" class="bg-black p-4 rounded-xl border border-slate-800 text-[#00FF66] overflow-x-auto"><code>{
+          <div class="code-block">
+            <pre class="curl"><code>curl -s https://0xguenther.org/api/metrics</code></pre>
+            <button class="copy-btn" onclick="copyCode(this, 'curl -s https://0xguenther.org/api/metrics')">Copy</button>
+          </div>
+          <span class="label" style="margin-top:0.75rem;">Antwort (HTTP 200 OK):</span>
+          <div class="code-block">
+            <pre id="res-metrics" class="response"><code>{
   "financials": {
     "totalRevenueUsd": 57480,
     "totalBurnedTokens": "2765922000",
@@ -213,33 +488,34 @@
     "activeModel": "anthropic/claude-sonnet-4"
   }
 }</code></pre>
+            <button class="copy-btn" onclick="copyBlock(this)">Copy</button>
+          </div>
         </div>
       </section>
 
-      <!-- Endpoint 3: GET /api/metrics/burns -->
-      <section id="endpoint-burns" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-8">
-        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
-          <div class="flex items-center gap-3">
-            <span class="px-2.5 py-1 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono text-xs font-bold">GET</span>
-            <span class="font-mono text-base font-bold text-white">/api/metrics/burns</span>
+      <!-- GET /api/metrics/burns -->
+      <section id="endpoint-burns" class="endpoint-card">
+        <div class="endpoint-header">
+          <div class="endpoint-method">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/metrics/burns</span>
           </div>
-          <span class="text-xs font-mono text-slate-400">Authentifizierung: Keine (Öffentlich)</span>
+          <span class="endpoint-auth">Authentifizierung: Keine (Öffentlich)</span>
         </div>
-
-        <p class="mt-4 text-sm text-slate-300">
+        <p>
           Gibt die letzten 20 On-Chain Proof-of-Burn Transaktionen auf Base L2 inklusive BaseScan-Explorer-URLs und kodierten Calldata-Hashes zurück.
         </p>
-
-        <div class="mt-6 space-y-3 font-mono text-xs">
-          <div class="flex justify-between items-center text-slate-400">
-            <span>cURL Anfrage:</span>
-            <button onclick="testEndpoint('/api/metrics/burns', 'res-burns')" class="bg-emerald-900/60 hover:bg-emerald-800 text-[#00FF66] border border-emerald-700/80 px-3 py-1 rounded transition">
-              ▶ Live testen
-            </button>
+        <div class="endpoint-body">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="label">cURL Anfrage:</span>
+            <button onclick="testEndpoint('/api/metrics/burns', 'res-burns')" class="btn-test">▶ Live testen</button>
           </div>
-          <pre class="bg-black p-4 rounded-xl border border-slate-800 text-slate-300 overflow-x-auto"><code>curl -s https://0xguenther.org/api/metrics/burns</code></pre>
-
-          <pre id="res-burns" class="bg-black p-4 rounded-xl border border-slate-800 text-[#00FF66] overflow-x-auto"><code>{
+          <div class="code-block">
+            <pre class="curl"><code>curl -s https://0xguenther.org/api/metrics/burns</code></pre>
+            <button class="copy-btn" onclick="copyCode(this, 'curl -s https://0xguenther.org/api/metrics/burns')">Copy</button>
+          </div>
+          <div class="code-block" style="margin-top:0.5rem;">
+            <pre id="res-burns" class="response"><code>{
   "count": 10,
   "burns": [
     {
@@ -251,33 +527,34 @@
     }
   ]
 }</code></pre>
+            <button class="copy-btn" onclick="copyBlock(this)">Copy</button>
+          </div>
         </div>
       </section>
 
-      <!-- Endpoint 4: GET /api/skills -->
-      <section id="endpoint-skills" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-8">
-        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
-          <div class="flex items-center gap-3">
-            <span class="px-2.5 py-1 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono text-xs font-bold">GET</span>
-            <span class="font-mono text-base font-bold text-white">/api/skills</span>
+      <!-- GET /api/skills -->
+      <section id="endpoint-skills" class="endpoint-card">
+        <div class="endpoint-header">
+          <div class="endpoint-method">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/skills</span>
           </div>
-          <span class="text-xs font-mono text-slate-400">Authentifizierung: Keine (Öffentlich)</span>
+          <span class="endpoint-auth">Authentifizierung: Keine (Öffentlich)</span>
         </div>
-
-        <p class="mt-4 text-sm text-slate-300">
+        <p>
           Listet alle aktiven KI-Skills, MCP-Plugins und Workflows im Claw Mart Marktplatz auf, inklusive Preisen, Downloads und Creator-Attribution.
         </p>
-
-        <div class="mt-6 space-y-3 font-mono text-xs">
-          <div class="flex justify-between items-center text-slate-400">
-            <span>cURL Anfrage:</span>
-            <button onclick="testEndpoint('/api/skills', 'res-skills')" class="bg-emerald-900/60 hover:bg-emerald-800 text-[#00FF66] border border-emerald-700/80 px-3 py-1 rounded transition">
-              ▶ Live testen
-            </button>
+        <div class="endpoint-body">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="label">cURL Anfrage:</span>
+            <button onclick="testEndpoint('/api/skills', 'res-skills')" class="btn-test">▶ Live testen</button>
           </div>
-          <pre class="bg-black p-4 rounded-xl border border-slate-800 text-slate-300 overflow-x-auto"><code>curl -s https://0xguenther.org/api/skills</code></pre>
-
-          <pre id="res-skills" class="bg-black p-4 rounded-xl border border-slate-800 text-[#00FF66] overflow-x-auto"><code>{
+          <div class="code-block">
+            <pre class="curl"><code>curl -s https://0xguenther.org/api/skills</code></pre>
+            <button class="copy-btn" onclick="copyCode(this, 'curl -s https://0xguenther.org/api/skills')">Copy</button>
+          </div>
+          <div class="code-block" style="margin-top:0.5rem;">
+            <pre id="res-skills" class="response"><code>{
   "skills": [
     {
       "slug": "eliza-token-burner",
@@ -289,26 +566,27 @@
     }
   ]
 }</code></pre>
+            <button class="copy-btn" onclick="copyBlock(this)">Copy</button>
+          </div>
         </div>
       </section>
 
-      <!-- Endpoint 5: POST /api/b2b/intake -->
-      <section id="endpoint-b2b" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-8">
-        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
-          <div class="flex items-center gap-3">
-            <span class="px-2.5 py-1 rounded bg-sky-950 text-sky-400 border border-sky-800 font-mono text-xs font-bold">POST</span>
-            <span class="font-mono text-base font-bold text-white">/api/b2b/intake</span>
+      <!-- POST /api/b2b/intake -->
+      <section id="endpoint-b2b" class="endpoint-card">
+        <div class="endpoint-header">
+          <div class="endpoint-method">
+            <span class="method-badge method-post">POST</span>
+            <span class="endpoint-path">/api/b2b/intake</span>
           </div>
-          <span class="text-xs font-mono text-slate-400">Authentifizierung: Zod Schema Guard</span>
+          <span class="endpoint-auth">Authentifizierung: Zod Schema Guard</span>
         </div>
-
-        <p class="mt-4 text-sm text-slate-300">
+        <p>
           Nimmt Enterprise-Anfragen für massgeschneiderte B2B-Agenten ($2,000 Setup + $500/Mo) entgegen. Triggert automatisch Günthers Claude-Inferenz zur Generierung eines massgeschneiderten Architektur-Proposals und erstellt die Stripe-Checkout-Session.
         </p>
-
-        <div class="mt-6 space-y-3 font-mono text-xs">
-          <div class="text-slate-400">JSON Payload Schema:</div>
-          <pre class="bg-black p-4 rounded-xl border border-slate-800 text-slate-300 overflow-x-auto"><code>{
+        <div class="endpoint-body">
+          <span class="label">JSON Payload Schema:</span>
+          <div class="code-block">
+            <pre class="curl"><code>{
   "companyName": "Swiss Fintech AG",
   "contactName": "Marc Meier",
   "contactEmail": "marc@swissfintech.ch",
@@ -316,63 +594,62 @@
   "monthlyVolume": "1,000 - 10,000",
   "integrations": "Stripe, HubSpot, PostgreSQL"
 }</code></pre>
+            <button class="copy-btn" onclick="copyBlock(this)">Copy</button>
+          </div>
         </div>
       </section>
 
-      <!-- Endpoint 6: POST /webhooks/stripe -->
-      <section id="endpoint-stripe" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-8">
-        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
-          <div class="flex items-center gap-3">
-            <span class="px-2.5 py-1 rounded bg-sky-950 text-sky-400 border border-sky-800 font-mono text-xs font-bold">POST</span>
-            <span class="font-mono text-base font-bold text-white">/webhooks/stripe</span>
+      <!-- POST /webhooks/stripe -->
+      <section id="endpoint-stripe" class="endpoint-card">
+        <div class="endpoint-header">
+          <div class="endpoint-method">
+            <span class="method-badge method-post">POST</span>
+            <span class="endpoint-path">/webhooks/stripe</span>
           </div>
-          <span class="text-xs font-mono text-orange-400">Stripe HMAC-SHA256 Signiert</span>
+          <span class="endpoint-auth orange">Stripe HMAC-SHA256 Signiert</span>
         </div>
-
-        <p class="mt-4 text-sm text-slate-300">
-          Zentrales Payment-Gateway. Verifiziert den unveränderten Raw-Body-Buffer gegen den Stripe Webhook Secret Header (<code class="text-[#00FF66]">stripe-signature</code>). Bei Erfolg wird der kryptografische 48-Stunden-Download-Token generiert und der Base L2 Token Burn angestossen.
+        <p>
+          Zentrales Payment-Gateway. Verifiziert den unveränderten Raw-Body-Buffer gegen den Stripe Webhook Secret Header (<code>stripe-signature</code>). Bei Erfolg wird der kryptografische 48-Stunden-Download-Token generiert und der Base L2 Token Burn angestossen.
         </p>
       </section>
 
-      <!-- Endpoint 7: GET /download/:token -->
-      <section id="endpoint-download" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-8">
-        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
-          <div class="flex items-center gap-3">
-            <span class="px-2.5 py-1 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono text-xs font-bold">GET</span>
-            <span class="font-mono text-base font-bold text-white">/download/:token</span>
+      <!-- GET /download/:token -->
+      <section id="endpoint-download" class="endpoint-card">
+        <div class="endpoint-header">
+          <div class="endpoint-method">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/download/:token</span>
           </div>
-          <span class="text-xs font-mono text-slate-400">Token-Authentifiziert (Einmalig / 48h)</span>
+          <span class="endpoint-auth">Token-Authentifiziert (Einmalig / 48h)</span>
         </div>
-
-        <p class="mt-4 text-sm text-slate-300">
-          Streamt gekaufte Playbooks und Skills direkt als Datei-Attachment. Digitale Güter liegen in geschützten Serververzeichnissen und sind über statische Pfade <strong>niemals</strong> direkt erreichbar. Streng limitiert auf maximal 5 Downloads pro Kauf.
+        <p>
+          Streamt gekaufte Playbooks und Skills direkt als Datei-Attachment. Digitale Güter liegen in geschützten Serververzeichnissen und sind über statische Pfade <strong style="color:#fff;">niemals</strong> direkt erreichbar. Streng limitiert auf maximal 5 Downloads pro Kauf.
         </p>
       </section>
 
-      <!-- Endpoint 8: GET /api/reddit/status -->
-      <section id="endpoint-reddit" class="bg-[#0D1117] border border-slate-800 rounded-2xl p-6 sm:p-8">
-        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
-          <div class="flex items-center gap-3">
-            <span class="px-2.5 py-1 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono text-xs font-bold">GET</span>
-            <span class="font-mono text-base font-bold text-white">/api/reddit/status</span>
+      <!-- GET /api/reddit/status -->
+      <section id="endpoint-reddit" class="endpoint-card">
+        <div class="endpoint-header">
+          <div class="endpoint-method">
+            <span class="method-badge method-get">GET</span>
+            <span class="endpoint-path">/api/reddit/status</span>
           </div>
-          <span class="text-xs font-mono text-slate-400">Authentifizierung: Keine (Öffentlich)</span>
+          <span class="endpoint-auth">Authentifizierung: Keine (Öffentlich)</span>
         </div>
-
-        <p class="mt-4 text-sm text-slate-300">
+        <p>
           Gibt die Verbindungsbereitschaft und Health-Scores des autonomen Reddit-Marketing-Moduls zurück (Karma-Schutz, Account-Alter, Anti-Ban Guards).
         </p>
-
-        <div class="mt-6 space-y-3 font-mono text-xs">
-          <div class="flex justify-between items-center text-slate-400">
-            <span>cURL Anfrage:</span>
-            <button onclick="testEndpoint('/api/reddit/status', 'res-reddit')" class="bg-emerald-900/60 hover:bg-emerald-800 text-[#00FF66] border border-emerald-700/80 px-3 py-1 rounded transition">
-              ▶ Live testen
-            </button>
+        <div class="endpoint-body">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="label">cURL Anfrage:</span>
+            <button onclick="testEndpoint('/api/reddit/status', 'res-reddit')" class="btn-test">▶ Live testen</button>
           </div>
-          <pre class="bg-black p-4 rounded-xl border border-slate-800 text-slate-300 overflow-x-auto"><code>curl -s https://0xguenther.org/api/reddit/status</code></pre>
-
-          <pre id="res-reddit" class="bg-black p-4 rounded-xl border border-slate-800 text-[#00FF66] overflow-x-auto"><code>{
+          <div class="code-block">
+            <pre class="curl"><code>curl -s https://0xguenther.org/api/reddit/status</code></pre>
+            <button class="copy-btn" onclick="copyCode(this, 'curl -s https://0xguenther.org/api/reddit/status')">Copy</button>
+          </div>
+          <div class="code-block" style="margin-top:0.5rem;">
+            <pre id="res-reddit" class="response"><code>{
   "account": {
     "username": "GuentherBuilds",
     "totalKarma": 50,
@@ -381,36 +658,59 @@
   "isReadyForPosting": true,
   "riskLevel": "LOW"
 }</code></pre>
+            <button class="copy-btn" onclick="copyBlock(this)">Copy</button>
+          </div>
         </div>
       </section>
 
     </div>
   </div>
 
-  <!-- Interactive Live Query Script -->
+  <!-- Scripts -->
   <script>
     async function testEndpoint(endpoint, targetId) {
       const el = document.getElementById(targetId);
-      el.textContent = '// Lade Echtzeit-Daten von https://0xguenther.org' + endpoint + '...';
+      const code = el.querySelector('code');
+      code.textContent = '// Lade Echtzeit-Daten von https://0xguenther.org' + endpoint + '...';
       try {
         const res = await fetch(endpoint);
         const data = await res.json();
-        el.textContent = JSON.stringify(data, null, 2);
+        code.textContent = JSON.stringify(data, null, 2);
       } catch (err) {
-        el.textContent = '// Fehler beim Abruf: ' + err.message;
+        code.textContent = '// Fehler beim Abruf: ' + err.message;
       }
+    }
+
+    function copyCode(btn, text) {
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+
+    function copyBlock(btn) {
+      const pre = btn.previousElementSibling;
+      const code = pre.querySelector('code');
+      navigator.clipboard.writeText(code.textContent).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
     }
   </script>
 
   <!-- Footer -->
-  <footer class="border-t border-slate-800 bg-[#05070B] py-8 text-center text-xs font-mono text-slate-500">
-    <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+  <footer class="site-footer">
+    <div class="footer-inner">
       <div>© 2026 0xGünther Labs • Zürich, Schweiz • Hosted on Proxmox CT 115</div>
-      <div class="flex gap-4">
-        <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank" class="hover:text-[#00FF66] inline-flex items-center gap-1"><svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a>
-        <a href="/impressum.html" class="hover:text-slate-300">Impressum</a>
-        <a href="/datenschutz.html" class="hover:text-slate-300">Datenschutz</a>
-        <a href="/preview.html" class="hover:text-[#00FF66]">Leseprobe</a>
+      <div class="footer-links">
+        <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank" style="display:inline-flex;align-items:center;gap:0.25rem;"><svg style="width:0.75rem;height:0.75rem;fill:currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a>
+        <a href="/impressum.html">Impressum</a>
+        <a href="/datenschutz.html">Datenschutz</a>
+        <a href="/agb.html">AGB</a>
+        <a href="/blog">Blog</a>
+        <a href="/rss.xml">RSS</a>
       </div>
     </div>
   </footer>
