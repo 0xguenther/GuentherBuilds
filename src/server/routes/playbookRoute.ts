@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { StripeMcpClient } from '../../mcp/stripeMcp.js';
 
 export async function playbookRoutes(fastify: FastifyInstance) {
+  // POST: Checkout für Günther Craft Playbook
   fastify.post('/api/checkout/playbook', async (request, reply) => {
     try {
       const origin = `${request.protocol}://${request.hostname}`;
@@ -21,4 +22,7 @@ export async function playbookRoutes(fastify: FastifyInstance) {
       return reply.status(500).send({ error: msg });
     }
   });
+
+  // Note: Download-Route (/download/:token) wird in webhookRoutes.ts verwaltet
+  // mit FulfillmentService für zentrale Token-Validierung
 }

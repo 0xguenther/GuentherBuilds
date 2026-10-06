@@ -1,0 +1,24 @@
+=== GÜNTHER: LIVE-BLOCKER DEFAULTS (zur Entscheidung) ===
+
+### 1. RÜCKERSTATTUNG bei rejected/failed Bestellungen
+   DEFAULT: ✅ Automatisch via Stripe Refund API
+   - Fee: Keine, Stripe behält 2% + Chargebacks
+   - Geloggt: AUDIT_FULFILMENT Trace mit Status + Refund-ID
+   - Timing: Sofort nach rejected (gescheiterte Tool-Validierung) oder nach failed (Harness-Crash)
+   - Empfehlung: Ja — baut Vertrauen auf, kostet <3% pro Refund
+
+### 2. DOMAIN für /audit Verkaufsseite
+   DEFAULT: ✅ Subdomain der Firmen-Domain (z.B. audit.günther.ai oder check.günther.ai)
+   - Schneller (DNS, keine neue Domain-Registration)
+   - Vertrauenswürdiger als neue Domain
+   - HTTPS sofort via bestehender Cert
+   - Alternativen: audit.cuonztech.ch (noch vertrauenswürdiger) oder neue Domain (kostet Zeit)
+
+### 3. RECHTSFORM & MEHRWERTSTEUER
+   DEFAULT: ⏳ Klärung mit Treuhänder empfohlen, bis dahin:
+   - Preise als "CHF netto" ausweisen (nicht "CHF inkl. MWST")
+   - Verkauf zunächst auf Test-Cohort beschränken (z.B. 5 Bestellungen für Dokumentation)
+   - Stripe-Kontoinhaber: deine CH-Einzelfirma oder neu zu gründende Kapitalgesellschaft?
+   - Hinweis: Stripe braucht Rechtsform für Payouts. Aktuell: Live-Key `rk_live_*`, aber Zahlungen gehen zu privat? → Klären!
+
+ENTSCHEIDUNG: Nutzer gibt Go/No-Go pro Punkt in STAND.md ein.

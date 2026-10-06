@@ -53,6 +53,7 @@ async function runE2ETests() {
         object: {
           id: `cs_${Date.now()}`,
           payment_intent: testPaymentId,
+          payment_status: 'paid', // REQUIRED: Webhook only processes paid sessions
           amount_total: 4900, // $49.00
           currency: 'usd',
           customer_details: { email: 'buyer@agency.com' },
