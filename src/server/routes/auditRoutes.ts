@@ -43,6 +43,7 @@ export async function auditRoutes(fastify: FastifyInstance) {
     const res = await AuditFulfillmentService.consumeDownload(request.params.token);
     if (!res.ok) return reply.status(403).send({ error: res.reason });
     reply.header('Content-Type', 'text/html; charset=utf-8');
-    return reply.send(fs.readFileSync(res.path, 'utf8'));
+    const content = await fs.promises.readFile(res.path, 'utf8');
+    return reply.send(content);
   });
 }

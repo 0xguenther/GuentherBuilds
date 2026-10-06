@@ -53,14 +53,22 @@ export async function webhookRoutes(fastify: FastifyInstance) {
         }
       }
 
-      // We handle checkout.session.completed or payment_intent.succeeded
-      if (event?.type === 'checkout.session.completed' || event?.type === 'payment_intent.succeeded') {
+      // Only handle checkout.session.completed with payment_status === 'paid'
+      // payment_intent.succeeded is ignored to prevent double-processing
+      if (event?.type === 'checkout.session.completed') {
         const session = event.data?.object || event;
+
+        // Verify payment actually succeeded
+        if (session.payment_status !== 'paid') {
+          fastify.log.info(`[Webhook] Checkout session ${session.id} not paid (status: ${session.payment_status}). Ignoring.`);
+          return reply.status(200).send({ received: true, status: 'not_paid' });
+        }
+
         const paymentId = session.payment_intent || session.id || `mock_pi_${Date.now()}`;
         const amountCents = session.amount_total || session.amount || 0;
-        const currency = session.currency || 'usd';
+        const currency = (session.currency || 'usd').toLowerCase();
 
-        fastify.log.info(`[Webhook] Valid checkout event received for payment ${paymentId}: ${amountCents} ${currency}`);
+        fastify.log.info(`[Webhook] Valid checkout completed for payment ${paymentId}: ${amountCents} ${currency}`);
 
         const metadata = session.metadata || {};
 

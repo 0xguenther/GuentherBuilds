@@ -83,6 +83,7 @@ export class PaymentService {
       where: { stripePaymentId },
       data: {
         status: 'failed',
+        errorReason,
       },
     });
   }

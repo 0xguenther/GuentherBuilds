@@ -5,6 +5,7 @@ import { spawn } from 'child_process';
 import { prisma } from '../db/client.js';
 import { AUDIT_TIERS, AuditTier } from './auditOrderService.js';
 import { TraceService } from './traceService.js';
+import { sendEmail, buildReportReadyEmail } from './emailService.js';
 
 // Nur diese vier Schreibaktionen sind in Phase 1 zulässig (siehe STAND.md, Schritt 2).
 export const ALLOWED_TOOLS = ['create_invoice', 'send_email', 'create_ticket', 'place_order'] as const;
@@ -74,6 +75,13 @@ export class AuditFulfillmentService {
     if (!check.ok) {
       await prisma.auditOrder.update({ where: { id: orderId }, data: { status: 'rejected' } });
       console.log(`[Audit] ${orderId} abgelehnt: ${check.reason}. Rückerstattung offen (Entscheidung beim Menschen).`);
+      if (order.buyerEmail) {
+        await sendEmail({
+          to: order.buyerEmail,
+          subject: `AgentCheck Order Update (${orderId.slice(0, 8)})`,
+          html: rejectionEmail(orderId, check.reason),
+        }).catch(() => {});
+      }
       return;
     }
 
@@ -89,6 +97,13 @@ export class AuditFulfillmentService {
     if (run.code !== 0) {
       await prisma.auditOrder.update({ where: { id: orderId }, data: { status: 'failed' } });
       console.log(`[Audit] ${orderId} Harness-Lauf fehlgeschlagen (Exit ${run.code}).`);
+      if (order.buyerEmail) {
+        await sendEmail({
+          to: order.buyerEmail,
+          subject: `AgentCheck Order Update (${orderId.slice(0, 8)})`,
+          html: failureEmail(orderId),
+        }).catch(() => {});
+      }
       return;
     }
 
@@ -115,7 +130,15 @@ export class AuditFulfillmentService {
         downloadCount: 0,
       },
     });
-    console.log(`[Audit] ${orderId} geliefert. Link: /api/audit/download/${token}`);
+    console.log(`[Audit] ${orderId} geliefert. Token: ...${token.slice(-4)}`);
+
+    // Email notification to buyer
+    if (order.buyerEmail) {
+      const tierLabel = AUDIT_TIERS[tier]?.label ?? tier;
+      const email = buildReportReadyEmail(orderId, tierLabel);
+      email.to = order.buyerEmail;
+      await sendEmail(email).catch(err => console.error('[Audit] Email send failed:', err));
+    }
   }
 
   /** Liefert den Bericht über den Token. Begrenzt auf Ablaufzeit und Anzahl Downloads. */
@@ -123,8 +146,17 @@ export class AuditFulfillmentService {
     const order = await prisma.auditOrder.findUnique({ where: { downloadToken: token } });
     if (!order || !order.reportPath) return { ok: false, reason: 'Ungültiger Link' };
     if (!order.downloadExpiresAt || order.downloadExpiresAt < new Date()) return { ok: false, reason: 'Link abgelaufen' };
-    if (order.downloadCount >= DOWNLOAD_MAX) return { ok: false, reason: 'Download-Limit erreicht' };
-    await prisma.auditOrder.update({ where: { id: order.id }, data: { downloadCount: { increment: 1 } } });
+
+    // Atomic CAS: only increment if below limit — prevents race condition
+    const res = await prisma.auditOrder.updateMany({
+      where: {
+        id: order.id,
+        downloadCount: { lt: DOWNLOAD_MAX },
+      },
+      data: { downloadCount: { increment: 1 } },
+    });
+
+    if (res.count === 0) return { ok: false, reason: 'Download-Limit erreicht' };
     return { ok: true, path: order.reportPath };
   }
 }
@@ -133,6 +165,31 @@ function startOfDay(): Date {
   const d = new Date();
   d.setHours(0, 0, 0, 0);
   return d;
+}
+
+function rejectionEmail(orderId: string, reason: string): string {
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
+<body style="font-family:system-ui,sans-serif;background:#05070B;color:#e2e8f0;padding:32px;max-width:600px;margin:0 auto">
+<div style="border-bottom:1px solid #1e293b;padding-bottom:16px;margin-bottom:24px"><span style="color:#00FF66;font-family:monospace;font-size:20px;font-weight:bold">&gt;0xGünther■</span></div>
+<h1 style="color:#fff;font-size:24px;margin-bottom:16px">Order Could Not Be Processed</h1>
+<p style="color:#94a3b8;line-height:1.6">Your AgentCheck order <strong style="color:#fff">${orderId.slice(0, 8)}</strong> could not be processed.</p>
+<div style="background:#1a0a0a;border:1px solid #7f1d1d;border-radius:8px;padding:16px;margin:24px 0"><p style="color:#f87171;margin:0;font-size:14px">${reason}</p></div>
+<p style="color:#94a3b8;line-height:1.6">We will process a refund within 5 business days. If you have questions, reply to this email.</p>
+<hr style="border:none;border-top:1px solid #1e293b;margin:32px 0">
+<p style="color:#475569;font-size:12px">0xGünther Architecture Labs · Zürich, Schweiz<br><a href="https://0xguenther.org" style="color:#00FF66">0xguenther.org</a></p>
+</body></html>`;
+}
+
+function failureEmail(orderId: string): string {
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
+<body style="font-family:system-ui,sans-serif;background:#05070B;color:#e2e8f0;padding:32px;max-width:600px;margin:0 auto">
+<div style="border-bottom:1px solid #1e293b;padding-bottom:16px;margin-bottom:24px"><span style="color:#00FF66;font-family:monospace;font-size:20px;font-weight:bold">&gt;0xGünther■</span></div>
+<h1 style="color:#fff;font-size:24px;margin-bottom:16px">Audit Run Failed</h1>
+<p style="color:#94a3b8;line-height:1.6">Your AgentCheck order <strong style="color:#fff">${orderId.slice(0, 8)}</strong> encountered a technical error during the audit run.</p>
+<p style="color:#94a3b8;line-height:1.6">We will process a refund within 5 business days. Our team has been notified and is investigating.</p>
+<hr style="border:none;border-top:1px solid #1e293b;margin:32px 0">
+<p style="color:#475569;font-size:12px">0xGünther Architecture Labs · Zürich, Schweiz<br><a href="https://0xguenther.org" style="color:#00FF66">0xguenther.org</a></p>
+</body></html>`;
 }
 
 export { AUDIT_TIERS };

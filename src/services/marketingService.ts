@@ -63,6 +63,7 @@ export class MarketingService {
 
     if (totalRepliesToday >= config.growth.maxDailyReplies) {
       console.log(`[MarketingService] Daily reply cap reached (${totalRepliesToday}/${config.growth.maxDailyReplies}). Skipping mention ${tweetId}.`);
+      await MentionService.markSkipped(tweetId);
       return;
     }
 
@@ -76,6 +77,7 @@ export class MarketingService {
 
     if (userRepliesToday >= config.growth.maxRepliesPerUserDaily) {
       console.log(`[MarketingService] User @${author} reached daily interaction cap (${userRepliesToday}/${config.growth.maxRepliesPerUserDaily}). Skipping mention ${tweetId}.`);
+      await MentionService.markSkipped(tweetId);
       return;
     }
 

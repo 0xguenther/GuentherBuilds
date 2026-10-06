@@ -70,4 +70,15 @@ export class MentionService {
       data: { status: 'failed' },
     });
   }
+
+  /**
+   * Marks a mention as skipped (e.g. daily cap reached).
+   * Resets from 'replying' back to allow future retry.
+   */
+  static async markSkipped(tweetId: string) {
+    return prisma.mention.update({
+      where: { tweetId },
+      data: { status: 'skipped' },
+    });
+  }
 }
