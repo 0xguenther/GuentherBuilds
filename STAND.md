@@ -43,7 +43,7 @@ Durchgeführt mit MiMoCode (Orchestrator) + Claude Code (Security) + interne Age
 - **Remote-Historie:** `origin` zeigt auf dasselbe Repo wie `gunther-core` (`0xguenther/GuentherBuilds`). Vor einem Push prüfen, ob Historien kollidieren.
 - **Strategie-Frage offen:** Mögliche Neuausrichtung von "digitale Produkte verkaufen" hin zu "Services betreiben" (AgentCheck, AgentWatch, …). Noch nicht entschieden, keine Umsetzung begonnen.
 
-## Status: Phase 1 COMPLETE ✅
+## Status: Phase 1 COMPLETE ✅ → Phase 2 READY 🚀 (2026-10-06, 13:40 UTC)
 
 ### ✅ ERLEDIGT (Phase 0 + Download-Fix + Phase 1)
 1. Working-Copy bereinigt: **10 logische Commits** (Audit, Blog, Email, Playbook, Services, Config, Website, Doku, PDF-Cleanup, Download-Fix)
@@ -57,6 +57,25 @@ Durchgeführt mit MiMoCode (Orchestrator) + Claude Code (Security) + interne Age
 5. Database Schema mit dev.db syncen ✅
 
 ## Nächste Schritte
+
+### ✅ PHASE 1 – Autonomie härten (2026-10-06)
+- [x] Langfuse-Integration: TraceService → HTTP API mit Tags (model, task, status)
+- [x] vitest-Framework: 29 Unit-Tests (paymentService, fulfillmentService, retryUtil)
+- [x] Retry/Backoff Utility: executeWithRetry, fetchWithRetry, 429/5xx handling
+
+### ✅ PHASE 2 READINESS CHECK (2026-10-06, 13:40 UTC)
+**Core Systems Tested & Verified:**
+- [x] Canary-Runner: Lokal ✅ (Stub-Test bestanden, Reports HTML+MD)
+- [x] Stripe-Flow: E2E-Test ✅ (Webhook → Token → Download, 28/29 Tests)
+- [x] Download-Security: TTL ✅ (48h), Limit ✅ (5x), Validation ✅
+- [x] Report-Template: Enhanced ✅ (KPI-Cards, Bar-Charts, Findings)
+- [x] UI-Responsive: Fixed ✅ (Mobile ≤640px, Tablet ≤820px)
+
+**Phase 2 Checklist:**
+- [ ] CT 115 Deploy (Canary + Günther)
+- [ ] Live-Test-Zahlung (Stripe Test Mode)
+- [ ] Go-Live Monitoring (Kuma, Langfuse)
+- [ ] Kill-Kriterium starten (30 Tage: ≥500 Besucher + ≥10 Bestellungen)
 
 ### ✅ PHASE 1 – Autonomie härten (2026-10-06)
 - [x] Langfuse-Integration: TraceService → HTTP API mit Tags (model, task, status)
