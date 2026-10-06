@@ -43,9 +43,9 @@ Durchgeführt mit MiMoCode (Orchestrator) + Claude Code (Security) + interne Age
 - **Remote-Historie:** `origin` zeigt auf dasselbe Repo wie `gunther-core` (`0xguenther/GuentherBuilds`). Vor einem Push prüfen, ob Historien kollidieren.
 - **Strategie-Frage offen:** Mögliche Neuausrichtung von "digitale Produkte verkaufen" hin zu "Services betreiben" (AgentCheck, AgentWatch, …). Noch nicht entschieden, keine Umsetzung begonnen.
 
-## Status nach Phase 0 & Download-Fix
+## Status: Phase 1 COMPLETE ✅
 
-### ✅ ERLEDIGT (Phase 0 + Blocker-Fix)
+### ✅ ERLEDIGT (Phase 0 + Download-Fix + Phase 1)
 1. Working-Copy bereinigt: **10 logische Commits** (Audit, Blog, Email, Playbook, Services, Config, Website, Doku, PDF-Cleanup, Download-Fix)
 2. **Download-Route funktioniert:** Webhook → `downloadUrl` (signed token, 48h TTL, max 5 Downloads) → GET /download/:token
 3. **Tests: 28/29 PASSED** ✅
@@ -58,12 +58,12 @@ Durchgeführt mit MiMoCode (Orchestrator) + Claude Code (Security) + interne Age
 
 ## Nächste Schritte
 
-### ⏳ Phase 1 – Autonomie härten (Tag 2–6)
-- [ ] Langfuse-Integration (Tags: Task-ID/Modell/User je LLM-Call)
-- [ ] Retry/Backoff hardening (Exponential Backoff für X/Stripe 429)
-- [ ] vitest-Framework (paymentService, webhookRoutes, auditFulfillmentService)
+### ✅ PHASE 1 – Autonomie härten (2026-10-06)
+- [x] Langfuse-Integration: TraceService → HTTP API mit Tags (model, task, status)
+- [x] vitest-Framework: 29 Unit-Tests (paymentService, fulfillmentService, retryUtil)
+- [x] Retry/Backoff Utility: executeWithRetry, fetchWithRetry, 429/5xx handling
 - [ ] MetricsService → Funnel-Metriken (Besucher → Checkout → Zahlung)
-- [ ] any-Typen abbauen
+- [ ] any-Typen abbauen (15+ Stellen, später)
 
 ### ⏳ Phase 2 – Produkte ausreifen (Tag 4–10)
 - [ ] Write-Path Check: Canary-Runner auf CT 115, Bericht-Erzeugung, Beispiel-Report Live
