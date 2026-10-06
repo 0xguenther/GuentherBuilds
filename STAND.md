@@ -117,14 +117,15 @@ Stand: 2026-10-03
 - Canary-Runner muss auf CT 115 vorhanden sein (Pfad per CANARY_RUNNER_DIR), inklusive .env mit DEEPSEEK_API_KEY.
 - Schema-Änderung (AuditOrder): DB-Backup auf CT 115 vor dem Deploy.
 
-### Offene Entscheidungen — LIVE-BLOCKER (bitte abhaken)
-Entscheidung erforderlich vor Phase 2-Deploy:
+### ✅ LIVE-BLOCKER ENTSCHEIDUNGEN (2026-10-06 geklärt)
 
-- [ ] **Rückerstattung:** Automatisch via Stripe Refund API bei rejected/failed? (Empfehlung: ✅ JA)
-- [ ] **Domain:** Subdomain audit.günther.ai oder audit.cuonztech.ch? (Empfehlung: ✅ audit.günther.ai)
-- [ ] **Rechtsform:** Klärung mit Treuhänder erforderlich. Stripe-Kontoinhaber privat oder Kapitalgesellschaft?
-  - Bis dahin: Preise als CHF netto, Verkauf nur Test-Cohort (max. 5 initial)
-- [ ] Tageslimit Posts (Phase 3): max. 2 pro Kanal pro Tag? (Empfehlung: ✅ JA)
+- [x] **Rückerstattung:** ✅ JA – Automatisch via Stripe Refund API bei rejected/failed
+- [x] **Domain:** Günther hat bereits eigene Domain → nutze günther.ai/audit (nicht neue Subdomain)
+- [x] **Rechtsform:** Einzelfirma, **keine MWST bis 100.000 CHF** (CH-Grenze) 
+  - Preise als CHF netto ausweisen (MWST-Sätze: nicht anwendbar)
+  - Test-Cohort (max. 5 Bestellungen) für Dokumentation & Treuhänder-Abklärung
+  - Stripe-Kontoinhaber: privat (via rk_live_* Key)
+- [x] **Post-Tageslimit:** ✅ 2 pro Kanal pro Tag (Reddit, X), HN manuell oder nicht
 
 ### Schritt 4 und 5 (Stand)
 - Trace: jede bearbeitete Bestellung wird als AUDIT_FULFILMENT im Trace-Protokoll gespeichert, mit Endstatus.
