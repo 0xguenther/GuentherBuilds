@@ -14,6 +14,7 @@ export interface TraceRecordInput {
 export class TraceService {
   /**
    * Records LLM call and token consumption into SQLite and Langfuse
+   * Tags: taskId, model, task, status + metadata for full observability
    */
   static async recordTrace(input: TraceRecordInput) {
     try {
@@ -25,17 +26,67 @@ export class TraceService {
           costUsd: input.costUsd ?? 0,
           tokens: input.tokens ?? 0,
           status: input.status ?? 'ok',
+          metadata: input.metadata ? JSON.stringify(input.metadata) : undefined,
         },
       });
 
-      // If Langfuse credentials are present, log event
+      // Send to Langfuse if credentials present
       if (config.langfuse.publicKey && config.langfuse.secretKey) {
-        // Can be extended with official langfuse SDK call
+        await this.recordLangfuseTrace(input, trace.id);
       }
 
       return trace;
     } catch (err) {
-      console.error('Failed to record trace:', err);
+      console.error('[TraceService] Failed to record trace:', err);
+    }
+  }
+
+  /**
+   * Sends trace event to Langfuse for centralized observability
+   * Tags: taskId, model, task, status
+   */
+  private static async recordLangfuseTrace(input: TraceRecordInput, traceId: string) {
+    try {
+      const langfuseUrl = 'https://cloud.langfuse.com/api/public/trace';
+
+      const payload = {
+        id: traceId,
+        userId: 'günther-core',
+        sessionId: input.taskId,
+        tags: [
+          `model:${input.model}`,
+          `task:${input.task}`,
+          `status:${input.status || 'ok'}`,
+          'autonomous-agent',
+        ],
+        metadata: {
+          taskId: input.taskId,
+          model: input.model,
+          task: input.task,
+          tokens: input.tokens || 0,
+          costUsd: input.costUsd || 0,
+          ...input.metadata,
+        },
+        timestamp: new Date().toISOString(),
+      };
+
+      const auth = Buffer.from(
+        `${config.langfuse.publicKey}:${config.langfuse.secretKey}`
+      ).toString('base64');
+
+      await fetch(langfuseUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Basic ${auth}`,
+        },
+        body: JSON.stringify(payload),
+      });
+    } catch (err) {
+      // Fail silently – Langfuse outage sollte nicht den Agent stoppen
+      if (process.env.DEBUG_LANGFUSE) {
+        console.warn('[TraceService] Langfuse logging failed:', err);
+      }
     }
   }
 }
