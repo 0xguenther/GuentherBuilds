@@ -1,0 +1,17 @@
+node_modules
+.git
+.env
+.env.*
+!.env.example
+prisma/dev.db
+prisma/dev.db-journal
+prisma/dev.db-wal
+scratch
+data
+test
+docs
+*.md
+!README.md
+.gitignore
+.githooks
+docker-compose.yml
