@@ -6,6 +6,7 @@ import {
   createPublicClient,
   createWalletClient,
   encodeFunctionData,
+  fallback,
   http,
   keccak256,
   stringToHex,
@@ -36,6 +37,23 @@ export interface BurnTokenResult {
   txHash: string;
   blockNumber?: number;
   gasUsed?: bigint;
+}
+
+/** Keyless public Base RPCs, used after BASE_RPC_URL when it is rate-limited (-32016/429) or down. */
+const PUBLIC_RPCS = {
+  mainnet: ['https://mainnet.base.org', 'https://base-rpc.publicnode.com', 'https://base.drpc.org', 'https://1rpc.io/base'],
+  sepolia: ['https://sepolia.base.org', 'https://base-sepolia-rpc.publicnode.com'],
+} as const;
+
+/** BASE_RPC_URL (comma-separated list allowed) first, then the public endpoints, without duplicates. */
+export function resolveRpcUrls(isMainnet: boolean, configured: string): string[] {
+  const own = configured.split(',').map((u) => u.trim()).filter(Boolean);
+  return [...new Set([...own, ...(isMainnet ? PUBLIC_RPCS.mainnet : PUBLIC_RPCS.sepolia)])];
+}
+
+// Safe for broadcasts: the burn is signed once, so a re-broadcast via the next RPC carries the same hash.
+function buildTransport(isMainnet: boolean) {
+  return fallback(resolveRpcUrls(isMainnet, config.web3.rpcUrl).map((url) => http(url, { retryCount: 2 })));
 }
 
 /** The node explicitly refused the request (JSON-RPC error or HTTP 429): the tx was not accepted. */
@@ -105,8 +123,7 @@ export class Web3McpClient {
     if (!this.isLiveMode()) return 'success';
     const isMainnet = config.web3.networkId === 'base' || config.web3.networkId.includes('mainnet');
     const chain = isMainnet ? base : baseSepolia;
-    const rpcUrl = config.web3.rpcUrl || (isMainnet ? 'https://mainnet.base.org' : 'https://sepolia.base.org');
-    const publicClient = createPublicClient({ chain, transport: http(rpcUrl) });
+    const publicClient = createPublicClient({ chain, transport: buildTransport(isMainnet) });
     try {
       const r = await publicClient.getTransactionReceipt({ hash: txHash as Hash });
       return r.status === 'reverted' ? 'reverted' : 'success';
@@ -128,9 +145,8 @@ export class Web3McpClient {
     // 2. Live On-Chain Execution on Base L2
     const isMainnet = config.web3.networkId === 'base' || config.web3.networkId.includes('mainnet');
     const chain: Chain = isMainnet ? base : baseSepolia;
-    const rpcUrl = config.web3.rpcUrl || (isMainnet ? 'https://mainnet.base.org' : 'https://sepolia.base.org');
     const account = privateKeyToAccount(config.web3.walletPrivateKey);
-    const transport = http(rpcUrl);
+    const transport = buildTransport(isMainnet);
     const publicClient = createPublicClient({ chain, transport });
     const walletClient = createWalletClient({ account, chain, transport });
 
