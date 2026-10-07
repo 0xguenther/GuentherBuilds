@@ -129,3 +129,6 @@ Kein Cross-Posting im selben Moment. Nicht um Upvotes bitten.
 
 **Rohdaten:**
 Öffentlich unter https://github.com/0xguenther/agent-write-path-runs (500 Läufe, Transkripte, Prompt, Tools, summarize.mjs rechnet die Tabelle nach). Die Posts verlinken darauf und auf den Run full-R6-C08-r1-1791055106678.
+
+**Veroeffentlicht:**
+- X-Thread 2026-10-07: https://x.com/GuentherBuilds/status/2107813448344039867 (5 Posts)
