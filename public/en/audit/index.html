@@ -572,13 +572,18 @@ document.querySelectorAll('.tier-card').forEach(card => {
 const form = document.getElementById('form');
 const msg = document.getElementById('msg');
 const btn = document.getElementById('go');
+const PAUSED_MSG = "Orders are temporarily paused. We are switching the audit to test your own agent.";
+fetch('/api/audit/availability').then(r => r.json()).then(d => {
+  if (d.paused) { btn.disabled = true; msg.textContent = PAUSED_MSG; }
+}).catch(() => {});
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   msg.textContent = '';
   if (!document.getElementById('agb').checked) { msg.textContent = "Please accept the Terms and Conditions."; return; }
   let tools;
   try { tools = JSON.parse(document.getElementById('tools').value); } catch { msg.textContent = "The tools field is not valid JSON."; return; }
-  const tier = form.querySelector('input[name=tier]:checked').value;
+  // The tier picker sits outside <form>, so query document instead of form.
+  const tier = document.querySelector('input[name=tier]:checked')?.value || 'standard';
   btn.disabled = true;
   try {
     const res = await fetch('/api/audit/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' },

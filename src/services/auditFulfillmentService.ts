@@ -171,7 +171,7 @@ export class AuditFulfillmentService {
       // Email notification to buyer
       if (order.buyerEmail) {
         const tierLabel = AUDIT_TIERS[tier]?.label ?? tier;
-        const email = buildReportReadyEmail(orderId, tierLabel);
+        const email = buildReportReadyEmail(orderId, tierLabel, token);
         email.to = order.buyerEmail;
         await sendEmail(email).catch(err => console.error('[Audit] Email send failed:', err));
       }

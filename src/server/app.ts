@@ -90,6 +90,14 @@ export async function buildApp() {
     return reply.sendFile('en/api-docs.html');
   });
 
+  // Stripe success URL for audit orders: /audit/thanks?order=...
+  app.get('/audit/thanks', async (_req, reply) => {
+    return reply.sendFile('audit/thanks.html');
+  });
+  app.get('/en/audit/thanks', async (_req, reply) => {
+    return reply.sendFile('en/audit/thanks.html');
+  });
+
   // NOTE: Digital products in products/ are NEVER served statically.
   // Delivery occurs strictly through authenticated /download/:token endpoint.
 

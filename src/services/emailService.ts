@@ -42,8 +42,8 @@ export async function sendEmail({ to, subject, html }: SendEmailParams): Promise
   }
 }
 
-export function buildReportReadyEmail(orderId: string, tier: string): SendEmailParams & { subject: string } {
-  const downloadUrl = `https://0xguenther.org/audit/thanks?order=${orderId}`;
+export function buildReportReadyEmail(orderId: string, tier: string, downloadToken: string): SendEmailParams & { subject: string } {
+  const downloadUrl = `https://0xguenther.org/api/audit/download/${downloadToken}`;
   return {
     to: '', // filled by caller
     subject: `Your AgentCheck Report is Ready (${tier})`,

@@ -38,7 +38,8 @@ export class AuditOrderService {
       description: 'Automated write-path check of your agent tool definitions',
       priceInCents: tier.priceCents,
       metadata: { type: 'write_path_check', auditOrderId: order.id, tier: input.tier },
-      successUrl: `${PUBLIC_URL}/audit/thanks?order=${order.id}`,
+      // Stripe ersetzt {CHECKOUT_SESSION_ID}. Nur wer die Session kennt, sieht den Download-Link.
+      successUrl: `${PUBLIC_URL}/audit/thanks?order=${order.id}&session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${PUBLIC_URL}/audit`,
       currency: 'chf',
     });

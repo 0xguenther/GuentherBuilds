@@ -10,9 +10,18 @@ const OrderSchema = z.object({
   buyerEmail: z.string().email().optional(),
 });
 
+// Bestellungen sind gesperrt, bis AUDIT_ORDERS_ENABLED=1 gesetzt ist. Der aktuelle
+// Lauf prüft nur eine feste Referenz-Konfiguration, nicht den Agenten des Kunden.
+export const auditOrdersPaused = () => process.env.AUDIT_ORDERS_ENABLED !== '1';
+
 export async function auditRoutes(fastify: FastifyInstance) {
+  fastify.get('/api/audit/availability', async () => ({ paused: auditOrdersPaused() }));
+
   // Bestellannahme: validiert die Konfiguration und liefert den Checkout-Link.
   fastify.post('/api/audit/orders', async (request: FastifyRequest, reply: FastifyReply) => {
+    if (auditOrdersPaused()) {
+      return reply.status(503).send({ error: 'paused', paused: true });
+    }
     const parsed = OrderSchema.safeParse(request.body);
     if (!parsed.success) {
       return reply.status(400).send({ error: 'Ungültige Bestellung', details: parsed.error.issues.slice(0, 5) });
@@ -31,11 +40,20 @@ export async function auditRoutes(fastify: FastifyInstance) {
     }
   });
 
-  // Status einer Bestellung. Gibt keine Konfiguration zurück.
-  fastify.get('/api/audit/orders/:id', async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+  // Status einer Bestellung. Gibt keine Konfiguration zurück. Den Download-Link
+  // gibt es nur mit der passenden Stripe-Session-ID aus der Success-URL.
+  fastify.get('/api/audit/orders/:id', async (request: FastifyRequest<{ Params: { id: string }; Querystring: { session_id?: string } }>, reply: FastifyReply) => {
     const order = await AuditOrderService.get(request.params.id);
     if (!order) return reply.status(404).send({ error: 'Bestellung nicht gefunden' });
-    return reply.send({ id: order.id, tier: order.tier, status: order.status, createdAt: order.createdAt });
+    const sessionId = request.query.session_id;
+    const canDownload = order.status === 'delivered'
+      && !!order.downloadToken
+      && !!sessionId && sessionId === order.stripeSessionId
+      && !!order.downloadExpiresAt && order.downloadExpiresAt > new Date();
+    return reply.send({
+      id: order.id, tier: order.tier, status: order.status, createdAt: order.createdAt,
+      ...(canDownload ? { downloadUrl: `/api/audit/download/${order.downloadToken}` } : {}),
+    });
   });
 
   // Bericht herunterladen. Der Token ist die Berechtigung, Ablauf und Anzahl werden geprüft.
