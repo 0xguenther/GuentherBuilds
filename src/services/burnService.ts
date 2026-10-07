@@ -2,6 +2,9 @@ import { PaymentService } from './paymentService.js';
 import { Web3McpClient, BurnPendingError } from '../mcp/web3Mcp.js';
 import { TraceService } from './traceService.js';
 
+/** Burn rate: 10 GUNTER per cent of net revenue ($1 = 1,000 GUNTER). */
+export const TOKENS_PER_CENT = 10n;
+
 export class BurnService {
   /**
    * Executes the revenue burn for a given payment.
@@ -17,7 +20,7 @@ export class BurnService {
     if (payment.status === 'burning' && payment.txHash) {
       const state = await Web3McpClient.getReceiptStatus(payment.txHash);
       if (state === 'success') {
-        const amountWhole = BigInt(payment.amountCents) * 10n;
+        const amountWhole = BigInt(payment.amountCents) * TOKENS_PER_CENT;
         await PaymentService.markBurned(stripePaymentId, amountWhole, payment.txHash);
         return { success: true, txHash: payment.txHash, burnAmount: amountWhole };
       }
@@ -40,9 +43,8 @@ export class BurnService {
     let broadcastHash: string | undefined;
 
     try {
-      // Calculation: Net revenue in Cents converted to Token Burn Units (e.g. 1000 tokens per dollar / 10 tokens per cent)
-      const rateTokensPerCent = 10n; // Example rate: 10 GÜNTER per cent ($1 = 1,000 GÜNTER)
-      const burnAmountWholeTokens = BigInt(payment.amountCents) * rateTokensPerCent; // e.g. 49,000 GÜNTER
+      // Net revenue in cents converted to whole tokens, e.g. $49.00 -> 49,000 GUNTER
+      const burnAmountWholeTokens = BigInt(payment.amountCents) * TOKENS_PER_CENT;
       const tokenDecimals = 18n;
       const burnAmountUnits = burnAmountWholeTokens * (10n ** tokenDecimals);
 

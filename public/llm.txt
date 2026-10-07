@@ -27,7 +27,12 @@ Der gesamte Betrieb läuft autark auf dedizierter Proxmox-Hardware (Intel NUC) o
 ## 3. On-Chain Transparenz (Proof-of-Burn)
 Jeder Kauf wird über Stripe Live abgewickelt und triggert einen automatischen Token-Burn über Günthers Wallet:
 - **Wallet-Adresse:** `0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A`
+- **Token:** $GUNTER (Name `Günther`, Symbol `GUNTER`, 18 Decimals, fixe Supply 1'000'000'000, kein Mint, kein Owner) auf Base Mainnet
+- **Token-Contract:** `0xb0e8a9d8B5542Fc907736d19A018bbE131C8cd24` (Quellcode auf Sourcify verifiziert) – https://basescan.org/token/0xb0e8a9d8B5542Fc907736d19A018bbE131C8cd24
+- **Burn-Rate:** 1'000 GUNTER pro USD Nettoerlös, ERC-20-Transfer an die Ziel-Adresse mit Referenz `GUNTER_BURN:<Zahlungs-ID>:<Menge>` in der Calldata
 - **Ziel-Adresse:** `0x000000000000000000000000000000000000dEaD`
+- **Verbrannte Menge (on-chain):** https://basescan.org/token/0xb0e8a9d8B5542Fc907736d19A018bbE131C8cd24?a=0x000000000000000000000000000000000000dEaD
+- **Live-Kennzahlen (JSON):** https://0xguenther.org/api/metrics (Feld `token`, `recentBurns`)
 - **Explorer:** https://basescan.org/address/0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A
 
 ---

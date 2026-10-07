@@ -1,5 +1,8 @@
 import { prisma } from '../db/client.js';
 import { config } from '../config/index.js';
+import { TOKENS_PER_CENT } from './burnService.js';
+
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 export interface BurnEventSummary {
   id: string;
@@ -11,7 +14,21 @@ export interface BurnEventSummary {
   timestamp: string;
 }
 
+export interface TokenInfo {
+  name: string;
+  symbol: string;
+  decimals: number;
+  network: string;
+  address: string;
+  explorerUrl: string;
+  burnAddress: string;
+  /** Basescan view of the GUNTER balance held by the burn address (on-chain proof of all burns). */
+  burnedBalanceUrl: string;
+  tokensPerUsd: number;
+}
+
 export interface SystemMetrics {
+  token: TokenInfo | null;
   financials: {
     totalRevenueUsd: number;
     totalBurnedTokens: string;
@@ -122,9 +139,25 @@ export class MetricsService {
    */
   static async getLiveMetrics(): Promise<SystemMetrics> {
     const isMainnet = config.web3.networkId === 'base' || config.web3.networkId.includes('mainnet');
-    const explorerBase = isMainnet
-      ? 'https://basescan.org/tx/'
-      : 'https://sepolia.basescan.org/tx/';
+    const explorerOrigin = isMainnet ? 'https://basescan.org' : 'https://sepolia.basescan.org';
+    const explorerBase = `${explorerOrigin}/tx/`;
+
+    const tokenAddress = config.web3.gunterTokenAddress;
+    const burnAddress = config.web3.burnDestinationAddress;
+    const token: TokenInfo | null =
+      tokenAddress && tokenAddress.toLowerCase() !== ZERO_ADDRESS
+        ? {
+            name: 'Günther',
+            symbol: 'GUNTER',
+            decimals: 18,
+            network: isMainnet ? 'Base Mainnet' : 'Base Sepolia',
+            address: tokenAddress,
+            explorerUrl: `${explorerOrigin}/token/${tokenAddress}`,
+            burnAddress,
+            burnedBalanceUrl: `${explorerOrigin}/token/${tokenAddress}?a=${burnAddress}`,
+            tokensPerUsd: Number(TOKENS_PER_CENT * 100n),
+          }
+        : null;
 
     // 1. Fetch data in parallel
     const [payments, skills, skillPurchases, b2bLeads, b2bContracts, traceTotals, llmCallCount] = await Promise.all([
@@ -139,9 +172,15 @@ export class MetricsService {
     ]);
 
     // 2. Financials - Playbooks
+    // The Payment table is the burn ledger for every revenue source: B2B setups (`b2b_…`) and
+    // Claw Mart take-rates (`skill_…`) get their own rows there. Their revenue is counted from
+    // B2bContract / SkillPurchase, so only unprefixed rows are playbook sales.
     const validPayments = payments.filter((p) => p.status !== 'failed');
-    const playbookCents = validPayments.reduce((sum, p) => sum + p.amountCents, 0);
-    const playbookUnits = validPayments.length;
+    const burnSource = (id: string): BurnEventSummary['source'] =>
+      id.startsWith('b2b_') ? 'CLAWCOMMERCE_B2B' : id.startsWith('skill_') ? 'CLAW_MART' : 'PLAYBOOK';
+    const playbookPayments = validPayments.filter((p) => burnSource(p.stripePaymentId) === 'PLAYBOOK');
+    const playbookCents = playbookPayments.reduce((sum, p) => sum + p.amountCents, 0);
+    const playbookUnits = playbookPayments.length;
 
     // 3. Financials - Claw Mart
     const validSkillPurchases = skillPurchases.filter((p) => p.status !== 'failed');
@@ -168,39 +207,20 @@ export class MetricsService {
     // hashes (e.g. `0xbase…` from simulation mode) are never published as burns.
     const isOnChainTxHash = (h: string | null | undefined): h is string => !!h && /^0x[0-9a-fA-F]{64}$/.test(h);
 
-    // From Flagship Playbook
+    // Every burn (playbook, B2B setup, Claw Mart take-rate) is a Payment row carrying the
+    // amount actually sent on chain, so this ledger is the single source of truth.
     for (const p of validPayments) {
       if (isOnChainTxHash(p.txHash) && p.burnAmount) {
         const tokens = BigInt(p.burnAmount);
         totalBurnedBigInt += tokens;
         burnEvents.push({
           id: p.id,
-          source: 'PLAYBOOK',
+          source: burnSource(p.stripePaymentId),
           amountUsd: p.amountCents / 100,
           tokensBurned: tokens.toString(),
           txHash: p.txHash,
           explorerUrl: `${explorerBase}${p.txHash}`,
           timestamp: p.createdAt.toISOString(),
-        });
-      }
-    }
-
-    // Claw Mart take-rate burns carry no on-chain tx hash (SkillPurchase has none), so they are
-    // reported as owed amount (takeRateBurnsUsd) only and never as verified burn events.
-
-    // From B2B Clawcommerce
-    for (const bc of paidContracts) {
-      if (isOnChainTxHash(bc.setupTxHash)) {
-        const tokens = BigInt(bc.setupFeeCents * 1000);
-        totalBurnedBigInt += tokens;
-        burnEvents.push({
-          id: bc.id,
-          source: 'CLAWCOMMERCE_B2B',
-          amountUsd: bc.setupFeeCents / 100,
-          tokensBurned: tokens.toString(),
-          txHash: bc.setupTxHash,
-          explorerUrl: `${explorerBase}${bc.setupTxHash}`,
-          timestamp: bc.updatedAt.toISOString(),
         });
       }
     }
@@ -220,6 +240,7 @@ export class MetricsService {
     const memoryRssMb = parseFloat((memUsage.rss / 1024 / 1024).toFixed(1));
 
     return {
+      token,
       financials: {
         totalRevenueUsd,
         totalBurnedTokens: totalBurnedBigInt.toString(),
