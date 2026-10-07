@@ -2,42 +2,33 @@ import { StripeMcpClient } from '../mcp/stripeMcp.js';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
+import { AuditConfigSchema, canaryRunnerDir } from './auditRunnerService.js';
 import { spawn } from 'child_process';
 import { prisma } from '../db/client.js';
 import { AUDIT_TIERS, AuditTier } from './auditOrderService.js';
 import { TraceService } from './traceService.js';
 import { sendEmail, buildReportReadyEmail } from './emailService.js';
 
-// Nur diese vier Schreibaktionen sind in Phase 1 zulässig (siehe STAND.md, Schritt 2).
-export const ALLOWED_TOOLS = ['create_invoice', 'send_email', 'create_ticket', 'place_order'] as const;
-
-// Harness-Läufe pro Stufe. Quick = ein Durchlauf, Standard = 10 Wiederholungen.
-const REPS_BY_TIER: Record<AuditTier, number> = { quick: 1, standard: 10, fix: 10 };
-const COST_CAP_USD = 0.5;
+const REPS_BY_TIER: Record<AuditTier, number> = { quick: 3, standard: 5, fix: 10 };
+const CAPS_BY_TIER: Record<AuditTier, number> = { quick: 5, standard: 10, fix: 20 };
 const DAILY_ORDER_LIMIT = Number(process.env.AUDIT_DAILY_ORDER_LIMIT ?? 5);
 const DOWNLOAD_TTL_MS = 48 * 60 * 60 * 1000;
+const RUN_TIMEOUT_MS = Number(process.env.AUDIT_RUN_TIMEOUT_MS ?? 2 * 60 * 60 * 1000);
 const DOWNLOAD_MAX = 5;
 
-const CANARY_DIR = process.env.CANARY_RUNNER_DIR ?? 'C:/ClaudeProjects/canary-experiment';
-const ROUTE = process.env.AUDIT_ROUTE ?? 'R5';
 const REPORTS_DIR = path.resolve(process.cwd(), 'data', 'audit-reports');
-
-export function validateTools(tools: Array<Record<string, unknown>>): { ok: true } | { ok: false; reason: string } {
-  const names = tools.map((t) => String(t.name ?? ''));
-  const unknown = names.filter((n) => !(ALLOWED_TOOLS as readonly string[]).includes(n));
-  if (unknown.length) return { ok: false, reason: `Nicht unterstützte Tools: ${unknown.join(', ')}` };
-  if (names.some((n) => !n)) return { ok: false, reason: 'Tool ohne Namen' };
-  return { ok: true };
-}
 
 function runCommand(args: string[], env: NodeJS.ProcessEnv): Promise<{ code: number; out: string }> {
   return new Promise((resolve) => {
-    const child = spawn(process.execPath, args, { cwd: CANARY_DIR, env, windowsHide: true });
+    const child = spawn(process.execPath, args, { cwd: canaryRunnerDir(), env, windowsHide: true });
     let out = '';
-    child.stdout.on('data', (d) => (out += d.toString()));
-    child.stderr.on('data', (d) => (out += d.toString()));
-    child.on('error', (err) => resolve({ code: 1, out: err.message }));
-    child.on('exit', (code) => resolve({ code: code ?? 1, out }));
+    // Ein hängender Runner darf die Warteschlange nicht blockieren (Status bliebe 'running').
+    const timer = setTimeout(() => child.kill(), RUN_TIMEOUT_MS);
+    child.stdout.on('data', (d) => (out = (out + d.toString()).slice(-20000)));
+    child.stderr.on('data', (d) => (out = (out + d.toString()).slice(-20000)));
+    child.on('error', (err) => { clearTimeout(timer); resolve({ code: 1, out: err.message }); });
+    child.on('exit', (code) => { clearTimeout(timer); resolve({ code: code ?? 1, out }); });
   });
 }
 
@@ -101,14 +92,6 @@ export class AuditFulfillmentService {
     const next = await prisma.auditOrder.findFirst({ where: { status: 'paid' }, orderBy: { createdAt: 'asc' } });
     if (!next) return 0;
     await this.fulfil(next.id);
-    const done = await prisma.auditOrder.findUnique({ where: { id: next.id } });
-    await TraceService.recordTrace({
-      taskId: `audit-${next.id}`,
-      model: `harness:${ROUTE}`,
-      task: 'AUDIT_FULFILMENT',
-      status: done?.status === 'delivered' ? 'ok' : 'error',
-      metadata: { status: done?.status ?? 'unknown' },
-    });
     return 1;
   }
 
@@ -122,38 +105,38 @@ export class AuditFulfillmentService {
 
     const order = await prisma.auditOrder.findUnique({ where: { id: orderId } });
     if (!order) return;
+    let workDir: string | undefined;
+    let summary: Record<string, number> = {};
+    let model = 'customer-runner';
     try {
-      const config = JSON.parse(order.configJson) as { tools: Array<Record<string, unknown>> };
-      const check = validateTools(config.tools);
-      if (!check.ok) {
-        await this.finishUnfulfilled(orderId, 'rejected', check.reason);
-        return;
-      }
-
+      const config = AuditConfigSchema.parse(JSON.parse(order.configJson));
+      model = config.model;
       const tier = order.tier as AuditTier;
-      const phase = `audit-${orderId}`;
+      if (!(tier in REPS_BY_TIER)) throw new Error('Invalid audit tier');
+      const cap = Number(process.env[`AUDIT_COST_CAP_USD_${tier.toUpperCase()}`] ?? CAPS_BY_TIER[tier]);
+      if (!Number.isFinite(cap) || cap <= 0) throw new Error('Invalid audit cost cap');
+      workDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), `audit-${orderId}-`));
+      const configPath = path.join(workDir, 'config.json');
+      const outputDir = path.join(workDir, 'output');
+      await fs.promises.writeFile(configPath, JSON.stringify(config), { mode: 0o600 });
       const env = { ...process.env, NODE_EXTRA_CA_CERTS: undefined };
-
-      const run = await runCommand(
-        [path.join(CANARY_DIR, 'src', 'run.mjs'), 'run', '--phase', phase, '--routes', ROUTE,
-          '--cases', 'C01,C02,C03,C04,C05,C06,C07,C08,C09,C10', '--reps', String(REPS_BY_TIER[tier]), '--cap', String(COST_CAP_USD)],
-        env
-      );
-      if (run.code !== 0) {
+      const run = await runCommand([
+        path.join(canaryRunnerDir(), 'src/customer/run.mjs'), '--config', configPath,
+        '--reps', String(REPS_BY_TIER[tier]), '--cap', String(cap), '--out', outputDir,
+      ], env);
+      const reportSrc = path.join(outputDir, 'report.html');
+      if (run.code !== 0 || !fs.existsSync(reportSrc)) {
         await this.finishUnfulfilled(orderId, 'failed');
         return;
       }
-
-      const rep = await runCommand([path.join(CANARY_DIR, 'src', 'report.mjs'), '--phases', phase, '--name', phase], env);
-      const reportSrc = path.join(CANARY_DIR, 'results', 'reports', `${phase}.html`);
-      if (rep.code !== 0 || !fs.existsSync(reportSrc)) {
-        await this.finishUnfulfilled(orderId, 'failed');
-        return;
+      const result = JSON.parse(await fs.promises.readFile(path.join(outputDir, 'summary.json'), 'utf8'));
+      for (const key of ['passRate', 'costUsd', 'cases', 'runs']) {
+        if (typeof result[key] !== 'number' || !Number.isFinite(result[key])) throw new Error('Invalid audit summary');
+        summary[key] = result[key];
       }
-
-      fs.mkdirSync(REPORTS_DIR, { recursive: true });
+      await fs.promises.mkdir(REPORTS_DIR, { recursive: true });
       const reportPath = path.join(REPORTS_DIR, `${orderId}.html`);
-      fs.copyFileSync(reportSrc, reportPath);
+      await fs.promises.copyFile(reportSrc, reportPath);
 
       const token = crypto.randomBytes(24).toString('hex');
       await prisma.auditOrder.update({
@@ -179,6 +162,16 @@ export class AuditFulfillmentService {
       console.error(`[Audit] ${orderId} fulfillment failed:`, err);
       const current = await prisma.auditOrder.findUnique({ where: { id: orderId } });
       if (current?.status === 'running') await this.finishUnfulfilled(orderId, 'failed');
+    } finally {
+      if (workDir) await fs.promises.rm(workDir, { recursive: true, force: true })
+        .catch(error => console.warn('[Audit] Temporary cleanup failed:', error));
+      const done = await prisma.auditOrder.findUnique({ where: { id: orderId } });
+      await TraceService.recordTrace({
+        taskId: `audit-${orderId}`, model, task: 'AUDIT_FULFILMENT',
+        status: done?.status === 'delivered' ? 'ok' : 'error',
+        costUsd: summary.costUsd,
+        metadata: { status: done?.status ?? 'unknown', ...summary },
+      });
     }
   }
 

@@ -1,5 +1,6 @@
 import { prisma } from '../db/client.js';
 import { StripeMcpClient } from '../mcp/stripeMcp.js';
+import { AuditConfig, AuditConfigSchema, AuditValidationError, validateAuditConfig } from './auditRunnerService.js';
 const PUBLIC_URL = process.env.PUBLIC_URL || 'https://0xguenther.org';
 
 // Preise in Rappen (CHF). Quelle: docs/konzept/KONZEPT.md, Abschnitt 4.
@@ -11,9 +12,8 @@ export const AUDIT_TIERS = {
 
 export type AuditTier = keyof typeof AUDIT_TIERS;
 
-export interface AuditOrderInput {
+export interface AuditOrderInput extends Omit<AuditConfig, 'version'> {
   tier: AuditTier;
-  tools: unknown[];
   buyerEmail?: string;
 }
 
@@ -23,12 +23,16 @@ export class AuditOrderService {
    * bleibt bis zum bestätigten Webhook im Status 'pending_payment'.
    */
   static async create(input: AuditOrderInput) {
+    const parsed = AuditConfigSchema.safeParse({ ...input, version: 2 });
+    if (!parsed.success) throw new AuditValidationError(parsed.error.issues);
+    const config = parsed.data;
+    await validateAuditConfig(config);
     const tier = AUDIT_TIERS[input.tier];
     const order = await prisma.auditOrder.create({
       data: {
         tier: input.tier,
         status: 'pending_payment',
-        configJson: JSON.stringify({ tools: input.tools }),
+        configJson: JSON.stringify(config),
         buyerEmail: input.buyerEmail ?? null,
       },
     });

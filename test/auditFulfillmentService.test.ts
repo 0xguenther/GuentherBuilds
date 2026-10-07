@@ -29,13 +29,13 @@ describe('automatic audit refunds', () => {
     await prisma.trace.deleteMany({ where: { taskId: `audit-${orderId}` } });
   });
 
-  it('refunds rejection once with a stable idempotency key and informs the buyer', async () => {
+  it('refunds a legacy configuration once with a stable idempotency key and informs the buyer', async () => {
     await AuditFulfillmentService.fulfil(orderId);
     await AuditFulfillmentService.fulfil(orderId);
     expect(mocks.refund).toHaveBeenCalledTimes(1);
     expect(mocks.refund).toHaveBeenCalledWith({ payment_intent: 'pi_audit_test' }, { idempotencyKey: `refund-audit-${orderId}` });
     const order = await prisma.auditOrder.findUniqueOrThrow({ where: { id: orderId } });
-    expect(order).toMatchObject({ status: 'rejected', refundId: `re_${orderId}`, refundError: null });
+    expect(order).toMatchObject({ status: 'failed', refundId: `re_${orderId}`, refundError: null });
     expect(order.refundedAt).toBeInstanceOf(Date);
     expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ html: expect.stringContaining('CHF 90.00 was issued') }));
     expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ html: expect.stringContaining('5-10 business days') }));
@@ -63,7 +63,7 @@ describe('automatic audit refunds', () => {
   });
 
   it.each(['harness', 'report', 'spawn'])('refunds a %s failure', async (failure) => {
-    await prisma.auditOrder.update({ where: { id: orderId }, data: { configJson: JSON.stringify({ tools: [{ name: 'send_email' }] }) } });
+    await prisma.auditOrder.update({ where: { id: orderId }, data: { configJson: JSON.stringify({ version: 2, lang: 'en', model: 'fixture-model', systemPrompt: 'Test', tools: [{ name: 'send_email', description: 'Sends mail', kind: 'write', parameters: { type: 'object', properties: {} } }] }) } });
     let calls = 0;
     mocks.spawn.mockImplementation(() => {
       const child = Object.assign(new EventEmitter(), { stdout: new EventEmitter(), stderr: new EventEmitter() });

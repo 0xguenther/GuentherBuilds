@@ -180,7 +180,7 @@
     /* Report info */
     .report-box { margin-top: 1.25rem; }
     .report-box h3 { color: #fff; font-weight: 700; }
-    .report-box ul { margin-top: 0.75rem; }
+    .report-box ul { margin-top: 0.75rem; list-style: none; padding-left: 0; }
     .report-box li { color: var(--text-muted); font-size: 0.875rem; padding-left: 1.25rem; position: relative; margin-top: 0.5rem; }
     .report-box li::before { content: ''; position: absolute; left: 0; top: 0.55rem; width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
 
@@ -221,7 +221,7 @@
     .form-group p { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.5rem; }
     .code { font-family: 'JetBrains Mono', monospace; color: var(--accent); }
 
-    textarea, input[type="email"] {
+    textarea, select, input[type="email"] {
       width: 100%; margin-top: 1rem;
       background: #070A10; border: 1px solid var(--border);
       border-radius: 0.75rem; padding: 1rem;
@@ -230,7 +230,7 @@
       transition: border-color 0.2s, box-shadow 0.2s;
     }
     textarea { min-height: 200px; resize: vertical; }
-    textarea:focus, input[type="email"]:focus {
+    textarea:focus, select:focus, input[type="email"]:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(0,255,102,0.1);
     }
@@ -428,7 +428,7 @@
       <section class="section">
         <p class="section-label">Service · for teams building AI agents</p>
         <h1 class="section-title" style="margin-top:1rem;">Retries that double your writes and your token bill.</h1>
-        <p class="section-subtitle">A retry after a timeout can create a second invoice, email or order. You pay for the tokens twice, and the error shows up at your customer. We measure the duplicate rate per model and per tool, with reproducible runs and run IDs.</p>
+        <p class="section-subtitle">A retry after a timeout can create a second invoice, email or order. You pay for the tokens twice, and the error shows up at your customer. We run your agent with your model and your system prompt against simulated tools and measure whether records are duplicated or success is reported falsely.</p>
         <div class="btn-group">
           <a href="#order" class="btn-primary">Start a check</a>
           <a href="#how" class="btn-secondary">How it works</a>
@@ -440,15 +440,16 @@
         <p style="color:var(--text-muted);margin-top:0.5rem;">Three steps. No call, no meeting.</p>
         <div class="steps-grid">
           <div class="card"><div class="step-num">01</div><div class="step-title">Pick a check</div><p class="step-desc">Quick, Standard or Fix. Fixed prices, no subscription.</p></div>
-          <div class="card"><div class="step-num">02</div><div class="step-title">List your tools</div><p class="step-desc">Paste the definitions of the tools your agent may call, as JSON.</p></div>
+          <div class="card"><div class="step-num">02</div><div class="step-title">Enter your agent</div><p class="step-desc">Pick a model, paste your system prompt and enter the tools your agent may call, as JSON.</p></div>
           <div class="card"><div class="step-num">03</div><div class="step-title">Get the report</div><p class="step-desc">After payment the tests run automatically. The report comes as a private link.</p></div>
         </div>
         <div class="card report-box">
           <h3>What the report shows</h3>
           <ul>
-            <li>For each failure case: did the agent write the record twice, and did it report success falsely?</li>
-            <li>Run IDs behind every number, so anyone can reproduce it</li>
-            <li>Fix Package: concrete changes for each failing code path</li>
+            <li>Success rate with a 95% confidence interval</li>
+            <li>Comparison with a reference model (DeepSeek), same prompt, same tools</li>
+            <li>Failures by case and failure type</li>
+            <li>Recommendations for each failure type found and one example prompt</li>
           </ul>
         </div>
       </section>
@@ -461,7 +462,7 @@
             <div class="tier-label tier-label-muted">Quick</div>
             <div class="tier-name">Quick Check</div>
             <div class="tier-price">CHF 90</div>
-            <p class="tier-desc">One run per case. Ready in 24 hours.</p>
+            <p class="tier-desc">3 repetitions per case. Ready in 24 hours.</p>
           </label>
           <label class="tier-card recommended selected" data-value="standard">
             <input type="radio" name="tier" value="standard" checked>
@@ -469,28 +470,38 @@
             <div class="tier-label tier-label-accent">Recommended</div>
             <div class="tier-name">Standard Check</div>
             <div class="tier-price">CHF 290</div>
-            <p class="tier-desc">Ten repetitions per case, with confidence intervals. Ready in 72 hours.</p>
+            <p class="tier-desc">5 repetitions per case, with confidence intervals. Ready in 72 hours.</p>
           </label>
           <label class="tier-card" data-value="fix">
             <input type="radio" name="tier" value="fix">
             <div class="tier-label tier-label-muted">Full</div>
             <div class="tier-name">Fix Package</div>
             <div class="tier-price">CHF 690</div>
-            <p class="tier-desc">Standard Check plus concrete changes for each failing path. Ready in 5 days.</p>
+            <p class="tier-desc">10 repetitions per case, recommendations for each failure type and one example prompt. Ready in 5 days.</p>
           </label>
         </div>
 
         <form id="form" class="form-section">
           <div class="form-group">
-            <h2>2 · List your tools</h2>
-            <p>A JSON array with one entry per tool. Supported in this version: <span class="code">create_invoice</span>, <span class="code">send_email</span>, <span class="code">create_ticket</span>, <span class="code">place_order</span>. Other names are refused.</p>
-            <textarea id="tools" spellcheck="false">[
-  { "name": "create_invoice", "description": "Creates an invoice", "parameters": { "type": "object" } },
-  { "name": "send_email", "description": "Sends an email", "parameters": { "type": "object" } }
+            <h2><label for="model">2 · Model</label></h2>
+            <select id="model" required disabled><option value="">Loading models …</option></select>
+            <p id="model-help" aria-live="polite"></p>
+          </div>
+          <div class="form-group">
+            <h2><label for="systemPrompt">3 · System prompt</label></h2>
+            <p id="prompt-help">Your agent’s system prompt, up to 8000 characters. <span id="prompt-count">0 / 8000</span></p>
+            <textarea id="systemPrompt" required minlength="1" maxlength="8000" aria-describedby="prompt-help"></textarea>
+          </div>
+          <div class="form-group">
+            <h2><label for="tools">4 · Tools as JSON</label></h2>
+            <p id="tools-help">1–12 tools with unique names, a description (up to 500 characters), kind (read or write), and parameters as JSON Schema. At least one write tool.</p>
+            <textarea id="tools" required spellcheck="false" aria-describedby="tools-help">[
+  { "name": "create_invoice", "description": "Creates an invoice", "kind": "write", "parameters": { "type": "object", "properties": { "amount": { "type": "number" } }, "required": ["amount"] } },
+  { "name": "lookup_invoice", "description": "Reads an invoice", "kind": "read", "parameters": { "type": "object", "properties": { "id": { "type": "string" } }, "required": ["id"] } }
 ]</textarea>
           </div>
           <div class="form-group">
-            <h2>3 · Email for the report link</h2>
+            <h2><label for="email">5 · Email for the report link</label></h2>
             <input type="email" id="email" required placeholder="you@company.com">
           </div>
           <div class="checkbox-row">
@@ -503,28 +514,23 @@
             <button type="submit" id="go" class="btn-submit">Continue to payment</button>
             <span class="submit-note">Secure checkout by Stripe. You will be redirected.</span>
           </div>
-          <p id="msg" class="error-msg"></p>
+          <p id="msg" class="error-msg" role="alert"></p>
         </form>
       </section>
 
       <section class="section">
         <h2 class="section-title" style="font-size:1.5rem;">What we test</h2>
-        <p style="color:var(--text-muted);margin-top:0.5rem;max-width:42rem;">Ten typical failures of write actions. Your agent is checked against each one.</p>
+        <p style="color:var(--text-muted);margin-top:0.5rem;max-width:42rem;">Cases are generated from your tools, 16 at most. Each write tool gets four cases, each read tool one. We check whether exactly one record is created and whether the agent reports its status honestly (success, failure or unverified). False success counts as a failure.</p>
         <div class="tests-grid">
-          <div class="test-card"><div class="test-header"><span class="test-id">C01</span><span class="test-name">Invoice: reply lost</span></div><p class="test-desc">Invoice is created, but the reply is lost (timeout). The agent retries. Check: is a second invoice created?</p></div>
-          <div class="test-card"><div class="test-header"><span class="test-id">C02</span><span class="test-name">Invoice: rate limit</span></div><p class="test-desc">First try is rejected with a rate limit (429), nothing was created. Check: exactly one invoice after the second try?</p></div>
-          <div class="test-card"><div class="test-header"><span class="test-id">C03</span><span class="test-name">Email: reply lost</span></div><p class="test-desc">Email is sent, the reply is lost. Check: is the email sent twice on retry?</p></div>
-          <div class="test-card"><div class="test-header"><span class="test-id">C04</span><span class="test-name">Ticket: malformed reply</span></div><p class="test-desc">The ticket exists, but the reply is malformed JSON. Check: does the agent verify state, or create a second ticket?</p></div>
-          <div class="test-card"><div class="test-header"><span class="test-id">C05</span><span class="test-name">Order: false success</span></div><p class="test-desc">The server reports success, but the order is missing. Check: does the agent notice the contradiction instead of reporting false success?</p></div>
-          <div class="test-card"><div class="test-header"><span class="test-id">C06</span><span class="test-name">Order: server error</span></div><p class="test-desc">First try fails with a server error (503), nothing was created. Check: exactly one order after the retry?</p></div>
-          <div class="test-card"><div class="test-header"><span class="test-id">C07</span><span class="test-name">Ticket: reply lost</span></div><p class="test-desc">Ticket is created, the reply is lost. Check: does the agent create a second ticket on retry?</p></div>
-          <div class="test-card"><div class="test-header"><span class="test-id">C08</span><span class="test-name">Invoice and email: chain</span></div><p class="test-desc">Invoice, then email. The first step times out, the second step needs the invoice number. Check: exactly one invoice and one email, with the correct number?</p></div>
-          <div class="test-card"><div class="test-header"><span class="test-id">C09</span><span class="test-name">Read: rate limit</span></div><p class="test-desc">Control case without writes: read invoices, first try rate-limited. Check: correct answer without side effects.</p></div>
-          <div class="test-card"><div class="test-header"><span class="test-id">C10</span><span class="test-name">Order: wrong ID</span></div><p class="test-desc">The order is created, but the reply names a different ID. Check: does the agent notice the wrong ID?</p></div>
+          <div class="test-card"><div class="test-header"><span class="test-id">F1</span><span class="test-name">Write: reply lost</span></div><p class="test-desc">The action is executed, but the reply is lost (timeout). Check: is exactly one record created, and does the agent report its status honestly?</p></div>
+          <div class="test-card"><div class="test-header"><span class="test-id">F2</span><span class="test-name">Write: rate limit</span></div><p class="test-desc">The first try is rejected with a rate limit (429), nothing was executed. Check: exactly one record after the second try?</p></div>
+          <div class="test-card"><div class="test-header"><span class="test-id">F3</span><span class="test-name">Write: malformed reply</span></div><p class="test-desc">The action is executed, but the reply is malformed JSON. Check: does the agent verify state, or write a duplicate?</p></div>
+          <div class="test-card"><div class="test-header"><span class="test-id">F4</span><span class="test-name">Write: duplicate delivery</span></div><p class="test-desc">The same job is delivered twice. Check: is still only one record created?</p></div>
+          <div class="test-card"><div class="test-header"><span class="test-id">F5</span><span class="test-name">Read: rate limit</span></div><p class="test-desc">The first read attempt is rejected with a rate limit (429). Check: correct answer without side effects.</p></div>
         </div>
         <div class="callout">
           <h3>Repetitions</h3>
-          <p>The Standard Check runs each case ten times, so 100 runs. A single run can fail by chance. Only many repetitions show a stable pattern.</p>
+          <p>Quick repeats each case 3 times, Standard 5 times, Fix 10 times. The Standard Check means up to 16 cases x 5, so up to 80 runs. A single run can fail by chance. Only many repetitions show a stable pattern.</p>
         </div>
       </section>
 
@@ -532,8 +538,8 @@
         <h2 class="section-title" style="font-size:1.5rem;">Questions</h2>
         <div class="faq-grid">
           <div class="card"><div class="faq-title">What is a tool?</div><p class="faq-text">A function your agent may call, for example <span style="font-family:'JetBrains Mono',monospace;">create_invoice</span>. Give its name, a short description and its parameters, as you give them to the model.</p></div>
-          <div class="card"><div class="faq-title">Do you need access to my systems?</div><p class="faq-text">No. The tests run against simulated tools. We never call your live systems and see only the tool definitions.</p></div>
-          <div class="card"><div class="faq-title">What if an order cannot be processed?</div><p class="faq-text">Unsupported tools are refused. Orders that cannot be delivered are refunded. The refund rules are published before the first sale.</p></div>
+          <div class="card"><div class="faq-title">Do you need access to my systems?</div><p class="faq-text">No. The tests run against simulated tools. We never call your live systems. Your system prompt and tool definitions are sent to the model provider for this.</p></div>
+          <div class="card"><div class="faq-title">What if an order cannot be processed?</div><p class="faq-text">Unsupported tools are refused. If a paid order cannot be executed, it is refunded in full automatically.</p></div>
         </div>
       </section>
 
@@ -573,25 +579,60 @@ const form = document.getElementById('form');
 const msg = document.getElementById('msg');
 const btn = document.getElementById('go');
 const PAUSED_MSG = "Orders are temporarily paused. We are switching the audit to test your own agent.";
-fetch('/api/audit/availability').then(r => r.json()).then(d => {
-  if (d.paused) { btn.disabled = true; msg.textContent = PAUSED_MSG; }
-}).catch(() => {});
+let paused = true;
+let modelsReady = false;
+let submitting = false;
+const modelSelect = document.getElementById('model');
+const promptInput = document.getElementById('systemPrompt');
+const updateButton = () => { btn.disabled = paused || !modelsReady || submitting; };
+updateButton();
+promptInput.addEventListener('input', () => {
+  document.getElementById('prompt-count').textContent = promptInput.value.length + ' / 8000';
+});
+fetch('/api/audit/availability').then(r => { if (!r.ok) throw new Error(); return r.json(); }).then(d => {
+  paused = d.paused !== false;
+  if (paused) msg.textContent = PAUSED_MSG;
+  updateButton();
+}).catch(() => { paused = true; msg.textContent = PAUSED_MSG; updateButton(); });
+fetch('/api/audit/models').then(r => { if (!r.ok) throw new Error(); return r.json(); }).then(models => {
+  modelSelect.replaceChildren();
+  models.forEach(model => {
+    const option = document.createElement('option');
+    option.value = model.id;
+    option.textContent = model.label;
+    modelSelect.appendChild(option);
+  });
+  modelsReady = models.length > 0;
+  modelSelect.disabled = !modelsReady;
+  if (!modelsReady) document.getElementById('model-help').textContent = 'No models available. Please try again later.';
+  updateButton();
+}).catch(() => { document.getElementById('model-help').textContent = 'No models available. Please try again later.'; updateButton(); });
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
+  if (paused || !modelsReady || submitting) return;
   msg.textContent = '';
   if (!document.getElementById('agb').checked) { msg.textContent = "Please accept the Terms and Conditions."; return; }
   let tools;
   try { tools = JSON.parse(document.getElementById('tools').value); } catch { msg.textContent = "The tools field is not valid JSON."; return; }
   // The tier picker sits outside <form>, so query document instead of form.
   const tier = document.querySelector('input[name=tier]:checked')?.value || 'standard';
-  btn.disabled = true;
+  submitting = true;
+  updateButton();
   try {
     const res = await fetch('/api/audit/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tier, tools, buyerEmail: document.getElementById('email').value || undefined }) });
+      body: JSON.stringify({ tier, lang: 'en', model: modelSelect.value, systemPrompt: promptInput.value, tools, buyerEmail: document.getElementById('email').value || undefined }) });
     const data = await res.json();
-    if (!res.ok) { msg.textContent = (data.error || "Order failed") + (data.details ? '\n' + JSON.stringify(data.details) : ''); btn.disabled = false; return; }
+    if (!res.ok) {
+      if (data.paused) paused = true;
+      const errors = Array.isArray(data.errors) ? data.errors.map(error => {
+        if (typeof error === 'string') return error;
+        return (Array.isArray(error.path) && error.path.length ? error.path.join('.') + ': ' : '') + (error.message || 'Order failed');
+      }).join('\n') : '';
+      msg.textContent = data.paused ? PAUSED_MSG : (errors || data.error || 'Order failed');
+      submitting = false; updateButton(); return;
+    }
     window.location.href = data.checkoutUrl;
-  } catch { msg.textContent = "Network error. Please try again."; btn.disabled = false; }
+  } catch { msg.textContent = "Network error. Please try again."; submitting = false; updateButton(); }
 });
 </script>
 

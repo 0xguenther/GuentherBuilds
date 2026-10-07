@@ -3,19 +3,21 @@ import { z } from 'zod';
 import { AuditOrderService, AUDIT_TIERS } from '../../services/auditOrderService.js';
 import { AuditFulfillmentService } from '../../services/auditFulfillmentService.js';
 import fs from 'fs';
+import { AuditConfigSchema, AuditValidationError, auditModels } from '../../services/auditRunnerService.js';
 
-const OrderSchema = z.object({
-  tier: z.enum(Object.keys(AUDIT_TIERS) as [string, ...string[]]),
-  tools: z.array(z.record(z.unknown())).min(1).max(50),
+const OrderSchema = AuditConfigSchema.omit({ version: true }).extend({
+  tier: z.enum(['quick', 'standard', 'fix']),
   buyerEmail: z.string().email().optional(),
 });
 
-// Bestellungen sind gesperrt, bis AUDIT_ORDERS_ENABLED=1 gesetzt ist. Der aktuelle
-// Lauf prüft nur eine feste Referenz-Konfiguration, nicht den Agenten des Kunden.
+// Bestellungen sind gesperrt, bis AUDIT_ORDERS_ENABLED=1 gesetzt ist.
+// Kunden-Runner und Berichte müssen vor der Freigabe abgenommen sein.
 export const auditOrdersPaused = () => process.env.AUDIT_ORDERS_ENABLED !== '1';
 
 export async function auditRoutes(fastify: FastifyInstance) {
   fastify.get('/api/audit/availability', async () => ({ paused: auditOrdersPaused() }));
+
+  fastify.get('/api/audit/models', async () => auditModels(message => fastify.log.warn(message)));
 
   // Bestellannahme: validiert die Konfiguration und liefert den Checkout-Link.
   fastify.post('/api/audit/orders', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -24,16 +26,22 @@ export async function auditRoutes(fastify: FastifyInstance) {
     }
     const parsed = OrderSchema.safeParse(request.body);
     if (!parsed.success) {
-      return reply.status(400).send({ error: 'Ungültige Bestellung', details: parsed.error.issues.slice(0, 5) });
+      return reply.status(400).send({ error: 'Ungültige Bestellung', errors: parsed.error.issues });
     }
     try {
       const result = await AuditOrderService.create({
         tier: parsed.data.tier as keyof typeof AUDIT_TIERS,
+        lang: parsed.data.lang,
+        model: parsed.data.model,
+        systemPrompt: parsed.data.systemPrompt,
         tools: parsed.data.tools,
         buyerEmail: parsed.data.buyerEmail,
       });
       return reply.status(201).send(result);
     } catch (err: unknown) {
+      if (err instanceof AuditValidationError) {
+        return reply.status(400).send({ error: 'Ungültige Agent-Konfiguration', errors: err.errors });
+      }
       const message = err instanceof Error ? err.message : 'Unbekannter Fehler';
       fastify.log.error(`[Audit] Bestellung fehlgeschlagen: ${message}`);
       return reply.status(500).send({ error: 'Bestellung konnte nicht angelegt werden' });
