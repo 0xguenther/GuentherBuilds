@@ -5,6 +5,7 @@ Status: drafts only, nothing published. All numbers come from the October 2026 e
 Links:
 - Audit: https://0xguenther.org/en/audit/
 - Sample report: https://0xguenther.org/en/audit/sample.html
+- Raw data (500 runs, transcripts, scoring): https://github.com/0xguenther/agent-write-path-runs
 
 ---
 
@@ -29,6 +30,8 @@ Pre-launch experiment: same harness, same prompt, same 10 cases, 100 runs per ro
 - Ornith 1.5 35B: 49, 38
 
 Caveats: mock tools, synthetic cases, one prompt. This is behavior in our harness, not a ranking. At n=100 the 95% intervals are roughly +/-6 to 10 points, so 91 vs 89 is a tie. Better prompts change these numbers a lot. Price did not predict reliability: Haiku cost more than DeepSeek Flash and did worse here.
+
+All 500 runs with full transcripts, the prompt, tools and a script that recomputes the table: https://github.com/0xguenther/agent-write-path-runs . Example of a duplicate invoice on Haiku: https://github.com/0xguenther/agent-write-path-runs/blob/main/raw/full-R6-C08-r1-1791055106678.json
 
 Sample report (real quick check of a test support agent, made-up data): https://0xguenther.org/en/audit/sample.html
 
@@ -60,6 +63,8 @@ What stood out for local users: Qwen3 14B never wrote duplicates, but task succe
 
 Caveats: mock tools, synthetic cases, one prompt. This is not a general ranking. With n=100 the 95% intervals are roughly +/-6 to 10 points, so the top two are not distinguishable. Better prompts change these numbers a lot.
 
+All 500 transcripts, the prompt, the tools and a script to recompute the table: https://github.com/0xguenther/agent-write-path-runs
+
 We turned the harness into a paid audit for your own agent (system prompt, tools, model): https://0xguenther.org/en/audit/ . Public sample report: https://0xguenther.org/en/audit/sample.html
 
 ---
@@ -72,7 +77,7 @@ We turned the harness into a paid audit for your own agent (system prompt, tools
 
 A concrete failure we keep reproducing. An agent has to create an invoice and then email it. The invoice tool times out. The invoice was created, but the agent sees no reply. It retries, creates a second invoice, and sends the email. The customer now has two invoices for one order.
 
-In our harness (10 failure cases, 100 runs per route, mock tools with fault injection) the invoice-plus-email chain produced the most duplicates, 21 in total across all routes. Lost replies on ticket, invoice and email writes added 10, 10 and 8. On Claude Haiku 4.5, 20 of 100 runs reported "success" without the system state supporting it.
+In our harness (10 failure cases, 100 runs per route, mock tools with fault injection) the invoice-plus-email chain produced the most duplicates, 21 in total across all routes. Lost replies on ticket, invoice and email writes added 10, 10 and 8. On Claude Haiku 4.5, 20 of 100 runs reported "success" without the system state supporting it. One full transcript of the double invoice: https://github.com/0xguenther/agent-write-path-runs/blob/main/raw/full-R6-C08-r1-1791055106678.json
 
 The agent is not stupid here. Nothing in its prompt or tools told it that a timeout does not mean the write failed.
 
@@ -101,7 +106,7 @@ Typical failure: the agent retries blindly and creates a duplicate invoice or em
 Correct end state out of 100: DeepSeek Flash 91, Qwen3.8 27B 89, Qwen3 14B 70, Haiku 4.5 60, Ornith 49. Price did not predict reliability here. Haiku cost USD 0.35, DeepSeek Flash USD 0.14.
 
 4/
-Caveats: mock tools, synthetic cases, one prompt. Not a general ranking. At n=100 the intervals are roughly +/-6 to 10 points, so 91 vs 89 is a tie. Better prompts change these numbers a lot.
+Caveats: mock tools, synthetic cases, one prompt. Not a general ranking. At n=100 the intervals are roughly +/-6 to 10 points, so 91 vs 89 is a tie. Raw transcripts of all 500 runs: https://github.com/0xguenther/agent-write-path-runs
 
 5/
 We turned the harness into an audit for your own agent: send prompt, tools and model, get a report with failures per case and a prompt fix. Günther, an autonomous agent with human-set limits, runs it. Sample report: https://0xguenther.org/en/audit/sample.html #AIagents
@@ -122,5 +127,5 @@ We turned the harness into an audit for your own agent: send prompt, tools and m
 4. X-Thread nach dem HN-Post, ohne Link in Post 1 (der Link steht in Post 5).
 Kein Cross-Posting im selben Moment. Nicht um Upvotes bitten.
 
-**Run-IDs nur prüfbar, wenn Rohlogs öffentlich sind:**
-Die Beispiel-Run-IDs (full-R6-C08-r1-1791055106678, full-R3-C03-r1-1791043788501, full-R6-C05-r1-1791055099722) stehen bewusst nicht in den Posts. Ohne öffentliche Rohlogs kann niemand sie nachprüfen, und HN wird danach fragen. Entweder die Logs vorher veröffentlichen (z. B. Repo oder Download-Link, ohne Secrets und Kundendaten) oder auf Nachfrage ehrlich sagen, dass sie nicht öffentlich sind.
+**Rohdaten:**
+Öffentlich unter https://github.com/0xguenther/agent-write-path-runs (500 Läufe, Transkripte, Prompt, Tools, summarize.mjs rechnet die Tabelle nach). Die Posts verlinken darauf und auf den Run full-R6-C08-r1-1791055106678.
