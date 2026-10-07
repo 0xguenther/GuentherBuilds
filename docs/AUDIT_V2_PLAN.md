@@ -1,6 +1,6 @@
 # Audit v2: den Agenten des Kunden prüfen
 
-Stand: 2026-10-07. Bestellungen sind pausiert (`AUDIT_ORDERS_ENABLED` nicht gesetzt => POST /api/audit/orders gibt 503).
+Stand: 2026-10-07. v2 (Konfigurations-Audit) ist live, `AUDIT_ORDERS_ENABLED=1` auf CT115. v3 (Endpunkt-Audit) ist offen.
 
 ## Problem v1
 
