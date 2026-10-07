@@ -2420,7 +2420,7 @@
         if (burnEl && data.financials) burnEl.innerText = Number(data.financials.totalBurnedTokens).toLocaleString('en-US');
 
         const marginEl = document.getElementById('stat-margin');
-        if (marginEl && data.aiObservability) marginEl.innerText = data.aiObservability.netProfitMarginPercent + '%';
+        if (marginEl && data.aiObservability) marginEl.innerText = data.aiObservability.netProfitMarginPercent === null ? '–' : data.aiObservability.netProfitMarginPercent + '%';
 
         const pipeEl = document.getElementById('stat-pipeline');
         if (pipeEl && data.products) pipeEl.innerText = data.products.clawMart.totalSkills + ' Skills • ' + data.products.clawcommerceB2b.totalLeads + ' Leads';

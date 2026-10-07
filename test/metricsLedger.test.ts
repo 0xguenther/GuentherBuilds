@@ -10,6 +10,7 @@ const db = vi.hoisted(() => ({
   payments: [] as unknown[],
   contracts: [] as unknown[],
   purchases: [] as unknown[],
+  inferenceCostUsd: 0,
 }));
 
 vi.mock('../src/db/client.js', () => ({
@@ -19,7 +20,7 @@ vi.mock('../src/db/client.js', () => ({
     skillPurchase: { findMany: async () => db.purchases },
     b2bLead: { findMany: async () => [] },
     b2bContract: { findMany: async () => db.contracts },
-    trace: { aggregate: async () => ({ _sum: { tokens: 0, costUsd: 0 } }), count: async () => 0 },
+    trace: { aggregate: async () => ({ _sum: { tokens: 0, costUsd: db.inferenceCostUsd } }), count: async () => 0 },
   },
 }));
 
@@ -54,6 +55,19 @@ describe('MetricsService.getLiveMetrics', () => {
     expect(m.financials.totalBurnCount).toBe(3);
     expect(m.financials.totalBurnedTokens).toBe('2051900');
     expect(m.recentBurns.map((b) => b.source).sort()).toEqual(['CLAWCOMMERCE_B2B', 'CLAW_MART', 'PLAYBOOK']);
+  });
+
+  // Regression: with $0 revenue the margin was reported as 100% and posted daily on X.
+  it('reports no margin without revenue, and the real margin once there is revenue', async () => {
+    db.inferenceCostUsd = 0.3536;
+    db.payments = [];
+    db.contracts = [];
+    db.purchases = [];
+    expect((await MetricsService.getLiveMetrics()).aiObservability.netProfitMarginPercent).toBeNull();
+
+    db.payments = [{ id: 'p1', stripePaymentId: 'pi_playbook', amountCents: 4900, status: 'paid', createdAt: at }];
+    expect((await MetricsService.getLiveMetrics()).aiObservability.netProfitMarginPercent).toBe(99.28);
+    db.inferenceCostUsd = 0;
   });
 
   it('publishes the token contract with explorer links', async () => {

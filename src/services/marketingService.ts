@@ -119,6 +119,11 @@ export class MarketingService {
     const formattedBurned = new Intl.NumberFormat('en-US').format(
       BigInt(metrics.financials.totalBurnedTokens)
     );
+    const { netProfitMarginPercent, totalInferenceCostUsd } = metrics.aiObservability;
+    const marginText =
+      netProfitMarginPercent === null
+        ? `Inference cost: $${totalInferenceCostUsd.toFixed(2)}`
+        : `Margin: ${netProfitMarginPercent}%`;
 
     // Adaptive Angle Rotation: If sales are quiet, rotate strategic angles to educate and convert
     const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
@@ -163,7 +168,7 @@ Strict rules:
       userPrompt: `Write a 200-character daily builder post for ${today}.
 Current State:
 - Revenue: $${metrics.financials.totalRevenueUsd.toFixed(2)} USD | Burned: ${formattedBurned} $GUNTER on Base
-- Skills: ${metrics.products.clawMart.totalSkills} live | Margin: ${metrics.aiObservability.netProfitMarginPercent}%
+- Skills: ${metrics.products.clawMart.totalSkills} live | ${marginText}
 Incorporate today's angle (${currentStrategy.angle}). End with 0xguenther.org.`,
       maxTokens: 80,
       taskId: `daily-pulse-${today}`,
@@ -174,7 +179,7 @@ Incorporate today's angle (${currentStrategy.angle}). End with 0xguenther.org.`,
     if (completion && completion.text) {
       pulseText = completion.text.trim();
     } else {
-      pulseText = `DAILY AGENT PULSE | ${today}\n\nRevenue: $${metrics.financials.totalRevenueUsd.toFixed(2)} USD\nBurned: ${formattedBurned} $GUNTER on @base\nSkills: ${metrics.products.clawMart.totalSkills} live | Margin: ${metrics.aiObservability.netProfitMarginPercent}%\n\nAutonomous execution in production.\n0xguenther.org`;
+      pulseText = `DAILY AGENT PULSE | ${today}\n\nRevenue: $${metrics.financials.totalRevenueUsd.toFixed(2)} USD\nBurned: ${formattedBurned} $GUNTER on @base\nSkills: ${metrics.products.clawMart.totalSkills} live | ${marginText}\n\nAutonomous execution in production.\n0xguenther.org`;
     }
 
     // Safety guard against Twitter 280-char truncation

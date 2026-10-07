@@ -31,7 +31,8 @@ test('Günther Metrics, Observability & Autonomous Daily Pulse Test Suite', asyn
 
     assert.ok(body.aiObservability, 'AI Observability section missing');
     assert.strictEqual(typeof body.aiObservability.totalLlmCalls, 'number');
-    assert.strictEqual(typeof body.aiObservability.netProfitMarginPercent, 'number');
+    const margin = body.aiObservability.netProfitMarginPercent;
+    assert.ok(margin === null || typeof margin === 'number');
 
     assert.ok(body.system, 'System metrics missing');
     assert.strictEqual(body.system.status, 'healthy');

@@ -80,7 +80,7 @@ export const metricsProvider: ElizaProvider = {
       return `[GÜNTHER METRICS]
 Umsatz: $${m.financials.totalRevenueUsd} USD | Verbrannt: ${m.financials.totalBurnedTokens} $GÜNTER
 Claw Mart: ${m.products.clawMart.totalSkills} Skills (${m.products.clawMart.totalDownloads} Downloads)
-B2B Leads: ${m.products.clawcommerceB2b.totalLeads} | AI Profit Margin: ${m.aiObservability.netProfitMarginPercent}%`;
+B2B Leads: ${m.products.clawcommerceB2b.totalLeads} | AI Profit Margin: ${m.aiObservability.netProfitMarginPercent === null ? `n/a (noch kein Umsatz, Inferenzkosten $${m.aiObservability.totalInferenceCostUsd.toFixed(2)})` : `${m.aiObservability.netProfitMarginPercent}%`}`;
     } catch {
       return '[GÜNTHER METRICS] Live-Metriken werden aggregiert.';
     }

@@ -60,7 +60,8 @@ export interface SystemMetrics {
     totalLlmCalls: number;
     totalTokens: number;
     totalInferenceCostUsd: number;
-    netProfitMarginPercent: number;
+    /** null until there is revenue: a margin on $0 is undefined, not 100%. */
+    netProfitMarginPercent: number | null;
     activeProvider: string;
     activeModel: string;
   };
@@ -234,7 +235,7 @@ export class MetricsService {
     const netProfitMarginPercent =
       totalRevenueUsd > 0
         ? parseFloat((((totalRevenueUsd - totalInferenceCostUsd) / totalRevenueUsd) * 100).toFixed(2))
-        : 100;
+        : null;
 
     const memUsage = process.memoryUsage();
     const memoryRssMb = parseFloat((memUsage.rss / 1024 / 1024).toFixed(1));
