@@ -353,8 +353,8 @@
     "paid":            { text: "Zahlung eingegangen. Deine Prüfung ist eingeplant.", state: "pending" },
     "running":         { text: "Deine Prüfung läuft.", state: "running" },
     "delivered":       { text: "Dein Bericht ist fertig.", state: "done" },
-    "rejected":        { text: "Nicht unterstützte Werkzeuge in dieser Bestellung. Wir melden uns wegen der Erstattung.", state: "error" },
-    "failed":          { text: "Der Lauf ist fehlgeschlagen. Wir melden uns wegen der Erstattung.", state: "error" }
+    "rejected":        { text: "Nicht unterstützte Werkzeuge in dieser Bestellung. Der Betrag wird automatisch voll erstattet.", state: "error" },
+    "failed":          { text: "Der Lauf ist fehlgeschlagen. Der Betrag wird automatisch voll erstattet.", state: "error" }
   };
 
   const statusEl = document.getElementById('status');
@@ -408,7 +408,11 @@
       const info = labels[o.status] || { text: o.status, state: 'pending' };
       applyState(info.state, info.text);
       if (o.downloadUrl) { downloadEl.href = o.downloadUrl; downloadEl.style.display = 'inline-block'; }
-      else if (o.status === 'delivered') { statusEl.textContent = info.text + ' ' + 'Den Download-Link findest du auch in der E-Mail zur Bestellung.'; }
+      else if (o.status === 'delivered') {
+        statusEl.textContent = info.text + ' ' + (o.downloadsLeft === 0
+          ? 'Das Download-Limit ist erreicht. Schreib uns an labs@0xguenther.org.'
+          : 'Den Download-Link findest du auch in der E-Mail zur Bestellung.');
+      }
       if (!['delivered', 'rejected', 'failed'].includes(o.status)) setTimeout(poll, 5000);
     } catch { applyState('error', 'Verbindungsfehler.'); setTimeout(poll, 5000); }
   }

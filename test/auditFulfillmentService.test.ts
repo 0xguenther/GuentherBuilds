@@ -11,7 +11,7 @@ vi.mock('stripe', () => ({ default: class {
   checkout = { sessions: { retrieve: mocks.retrieve } };
 } }));
 vi.mock('child_process', () => ({ spawn: mocks.spawn }));
-vi.mock('../src/services/emailService.js', () => ({ sendEmail: vi.fn().mockResolvedValue(true), buildReportReadyEmail: vi.fn() }));
+vi.mock('../src/services/emailService.js', () => ({ sendEmail: vi.fn().mockResolvedValue(true), }));
 
 describe('automatic audit refunds', () => {
   let orderId: string;
@@ -37,8 +37,9 @@ describe('automatic audit refunds', () => {
     const order = await prisma.auditOrder.findUniqueOrThrow({ where: { id: orderId } });
     expect(order).toMatchObject({ status: 'failed', refundId: `re_${orderId}`, refundError: null });
     expect(order.refundedAt).toBeInstanceOf(Date);
-    expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ html: expect.stringContaining('CHF 90.00 was issued') }));
-    expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ html: expect.stringContaining('5-10 business days') }));
+    expect(order.startedAt).toBeInstanceOf(Date);
+    expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ html: expect.stringContaining('CHF 90.00 zurückerstattet') }));
+    expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ html: expect.stringContaining('5-10 Werktagen') }));
     const trace = await prisma.trace.findFirstOrThrow({ where: { taskId: `audit-${orderId}`, task: 'AUDIT_REFUND' } });
     expect(trace.status).toBe('ok');
     expect(JSON.parse(trace.metadata!)).toMatchObject({ refundId: `re_${orderId}` });
@@ -56,7 +57,7 @@ describe('automatic audit refunds', () => {
     mocks.refund.mockRejectedValueOnce(new Error('Stripe unavailable'));
     await expect(AuditFulfillmentService.fulfil(orderId)).resolves.toBeUndefined();
     expect(await prisma.auditOrder.findUnique({ where: { id: orderId } })).toMatchObject({ refundError: 'Stripe unavailable', refundId: null });
-    expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ html: expect.stringContaining('within 5 business days') }));
+    expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ html: expect.stringContaining('manuell innert 5 Werktagen') }));
     expect(await prisma.trace.findFirst({ where: { taskId: `audit-${orderId}`, task: 'AUDIT_REFUND' } })).toMatchObject({ status: 'error' });
     await AuditFulfillmentService.fulfil(orderId);
     expect(await prisma.auditOrder.findUnique({ where: { id: orderId } })).toMatchObject({ refundError: null, refundId: `re_${orderId}` });
@@ -74,7 +75,7 @@ describe('automatic audit refunds', () => {
     await AuditFulfillmentService.fulfil(orderId);
     expect(await prisma.auditOrder.findUnique({ where: { id: orderId } })).toMatchObject({ status: 'failed', refundId: `re_${orderId}` });
     expect(mocks.refund).toHaveBeenCalledTimes(1);
-    expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ html: expect.stringContaining('CHF 90.00 was issued') }));
+    expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ html: expect.stringContaining('We have refunded CHF 90.00') }));
   });
 
   it('records malformed stored configuration as a failed, refunded order', async () => {

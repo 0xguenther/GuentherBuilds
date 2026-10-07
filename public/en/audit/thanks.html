@@ -355,8 +355,8 @@
     "paid":            { text: "Payment received. Your check is queued.", state: "pending" },
     "running":         { text: "Your check is running.", state: "running" },
     "delivered":       { text: "Your report is ready.", state: "done" },
-    "rejected":        { text: "Unsupported tools in this order. We will contact you about a refund.", state: "error" },
-    "failed":          { text: "The run failed. We will contact you about a refund.", state: "error" }
+    "rejected":        { text: "Unsupported tools in this order. The amount is refunded in full automatically.", state: "error" },
+    "failed":          { text: "The run failed. The amount is refunded in full automatically.", state: "error" }
   };
 
   const statusEl = document.getElementById('status');
@@ -410,7 +410,11 @@
       const info = labels[o.status] || { text: o.status, state: 'pending' };
       applyState(info.state, info.text);
       if (o.downloadUrl) { downloadEl.href = o.downloadUrl; downloadEl.style.display = 'inline-block'; }
-      else if (o.status === 'delivered') { statusEl.textContent = info.text + ' ' + 'The download link is also in your order email.'; }
+      else if (o.status === 'delivered') {
+        statusEl.textContent = info.text + ' ' + (o.downloadsLeft === 0
+          ? 'The download limit has been reached. Write to labs@0xguenther.org.'
+          : 'The download link is also in your order email.');
+      }
       if (!['delivered', 'rejected', 'failed'].includes(o.status)) setTimeout(poll, 5000);
     } catch { applyState('error', 'Connection error.'); setTimeout(poll, 5000); }
   }

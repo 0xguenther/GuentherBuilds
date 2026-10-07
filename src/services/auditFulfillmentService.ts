@@ -8,14 +8,15 @@ import { spawn } from 'child_process';
 import { prisma } from '../db/client.js';
 import { AUDIT_TIERS, AuditTier } from './auditOrderService.js';
 import { TraceService } from './traceService.js';
-import { sendEmail, buildReportReadyEmail } from './emailService.js';
+import { sendEmail } from './emailService.js';
+import { orderLang, buildReportReadyEmail, buildFailureEmail, buildRejectionEmail } from './auditMailTemplates.js';
 
 const REPS_BY_TIER: Record<AuditTier, number> = { quick: 3, standard: 5, fix: 10 };
 const CAPS_BY_TIER: Record<AuditTier, number> = { quick: 5, standard: 10, fix: 20 };
 const DAILY_ORDER_LIMIT = Number(process.env.AUDIT_DAILY_ORDER_LIMIT ?? 5);
 const DOWNLOAD_TTL_MS = 48 * 60 * 60 * 1000;
 const RUN_TIMEOUT_MS = Number(process.env.AUDIT_RUN_TIMEOUT_MS ?? 2 * 60 * 60 * 1000);
-const DOWNLOAD_MAX = 5;
+export const DOWNLOAD_MAX = 5;
 
 const REPORTS_DIR = path.resolve(process.cwd(), 'data', 'audit-reports');
 
@@ -68,15 +69,21 @@ export class AuditFulfillmentService {
   }
 
   private static async finishUnfulfilled(orderId: string, status: 'rejected' | 'failed', reason?: string): Promise<void> {
-    const order = await prisma.auditOrder.update({ where: { id: orderId }, data: { status } });
+    const claim = await prisma.auditOrder.updateMany({ where: { id: orderId, status: 'running' }, data: { status } });
+    if (claim.count === 0) return;
+    await this.notifyUnfulfilled(orderId, status, reason);
+  }
+
+  private static async notifyUnfulfilled(orderId: string, status: 'rejected' | 'failed', reason?: string): Promise<void> {
+    const order = await prisma.auditOrder.findUniqueOrThrow({ where: { id: orderId } });
     const refundAmount = await this.refundOrder(orderId);
     console.log(`[Audit] ${orderId}: ${status}.`);
     if (order.buyerEmail) {
-      await sendEmail({
-        to: order.buyerEmail,
-        subject: `AgentCheck Order Update (${orderId.slice(0, 8)})`,
-        html: status === 'rejected' ? rejectionEmail(orderId, reason ?? '', refundAmount) : failureEmail(orderId, refundAmount),
-      }).catch(() => {});
+      const lang = orderLang(order.configJson);
+      const mail = status === 'rejected'
+        ? buildRejectionEmail({ orderId, lang, reason: reason ?? '', refundAmount })
+        : buildFailureEmail({ orderId, lang, refundAmount });
+      await sendEmail({ to: order.buyerEmail, ...mail }).catch(() => {});
     }
   }
 
@@ -84,8 +91,20 @@ export class AuditFulfillmentService {
    * Arbeitet bezahlte Bestellungen ab. Eine Bestellung nach der anderen, Tageslimit beachtet.
    */
   static async processPaidOrders(): Promise<number> {
+    const cutoff = new Date(Date.now() - RUN_TIMEOUT_MS - 10 * 60 * 1000);
+    const stale = {
+      status: 'running',
+      OR: [{ startedAt: { lt: cutoff } }, { startedAt: null, updatedAt: { lt: cutoff } }],
+    };
+    const orphans = await prisma.auditOrder.findMany({ where: stale, select: { id: true } });
+    for (const order of orphans) {
+      const claim = await prisma.auditOrder.updateMany({
+        where: { id: order.id, ...stale }, data: { status: 'failed' },
+      });
+      if (claim.count > 0) await this.notifyUnfulfilled(order.id, 'failed');
+    }
     const startedToday = await prisma.auditOrder.count({
-      where: { status: { in: ['running', 'delivered', 'failed', 'rejected'] }, updatedAt: { gte: startOfDay() } },
+      where: { startedAt: { gte: startOfDay() } },
     });
     if (startedToday >= DAILY_ORDER_LIMIT) return 0;
 
@@ -97,7 +116,7 @@ export class AuditFulfillmentService {
 
   static async fulfil(orderId: string): Promise<void> {
     // CAS: nur paid -> running, damit kein Auftrag doppelt läuft
-    const claim = await prisma.auditOrder.updateMany({ where: { id: orderId, status: 'paid' }, data: { status: 'running' } });
+    const claim = await prisma.auditOrder.updateMany({ where: { id: orderId, status: 'paid' }, data: { status: 'running', startedAt: new Date() } });
     if (claim.count === 0) {
       await this.refundOrder(orderId);
       return;
@@ -153,10 +172,8 @@ export class AuditFulfillmentService {
 
       // Email notification to buyer
       if (order.buyerEmail) {
-        const tierLabel = AUDIT_TIERS[tier]?.label ?? tier;
-        const email = buildReportReadyEmail(orderId, tierLabel, token);
-        email.to = order.buyerEmail;
-        await sendEmail(email).catch(err => console.error('[Audit] Email send failed:', err));
+        const email = buildReportReadyEmail({ orderId, tier, lang: orderLang(order.configJson), downloadToken: token });
+        await sendEmail({ to: order.buyerEmail, ...email }).catch(err => console.error('[Audit] Email send failed:', err));
       }
     } catch (err: unknown) {
       console.error(`[Audit] ${orderId} fulfillment failed:`, err);
@@ -176,21 +193,28 @@ export class AuditFulfillmentService {
   }
 
   /** Liefert den Bericht über den Token. Begrenzt auf Ablaufzeit und Anzahl Downloads. */
-  static async consumeDownload(token: string): Promise<{ ok: true; path: string } | { ok: false; reason: string }> {
+  static async consumeDownload(token: string, consume = true): Promise<
+    { ok: true; path: string } | { ok: false; reason: 'invalid' | 'expired' | 'limit'; lang: 'de' | 'en' | undefined }
+  > {
     const order = await prisma.auditOrder.findUnique({ where: { downloadToken: token } });
-    if (!order || !order.reportPath) return { ok: false, reason: 'Ungültiger Link' };
-    if (!order.downloadExpiresAt || order.downloadExpiresAt < new Date()) return { ok: false, reason: 'Link abgelaufen' };
+    const lang = order ? orderLang(order.configJson) : undefined;
+    if (!order || !order.reportPath || order.status !== 'delivered') return { ok: false, reason: 'invalid', lang };
+    if (!order.downloadExpiresAt || order.downloadExpiresAt <= new Date()) return { ok: false, reason: 'expired', lang };
+    if (order.downloadCount >= DOWNLOAD_MAX) return { ok: false, reason: 'limit', lang };
+    if (!consume) return { ok: true, path: order.reportPath };
 
     // Atomic CAS: only increment if below limit — prevents race condition
     const res = await prisma.auditOrder.updateMany({
       where: {
         id: order.id,
+        status: 'delivered',
+        downloadExpiresAt: { gt: new Date() },
         downloadCount: { lt: DOWNLOAD_MAX },
       },
       data: { downloadCount: { increment: 1 } },
     });
 
-    if (res.count === 0) return { ok: false, reason: 'Download-Limit erreicht' };
+    if (res.count === 0) return { ok: false, reason: 'limit', lang };
     return { ok: true, path: order.reportPath };
   }
 }
@@ -199,31 +223,6 @@ function startOfDay(): Date {
   const d = new Date();
   d.setHours(0, 0, 0, 0);
   return d;
-}
-
-function rejectionEmail(orderId: string, reason: string, refundAmount?: string): string {
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
-<body style="font-family:system-ui,sans-serif;background:#05070B;color:#e2e8f0;padding:32px;max-width:600px;margin:0 auto">
-<div style="border-bottom:1px solid #1e293b;padding-bottom:16px;margin-bottom:24px"><span style="color:#00FF66;font-family:monospace;font-size:20px;font-weight:bold">&gt;0xGünther■</span></div>
-<h1 style="color:#fff;font-size:24px;margin-bottom:16px">Order Could Not Be Processed</h1>
-<p style="color:#94a3b8;line-height:1.6">Your AgentCheck order <strong style="color:#fff">${orderId.slice(0, 8)}</strong> could not be processed.</p>
-<div style="background:#1a0a0a;border:1px solid #7f1d1d;border-radius:8px;padding:16px;margin:24px 0"><p style="color:#f87171;margin:0;font-size:14px">${reason.replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char] ?? char)}</p></div>
-<p style="color:#94a3b8;line-height:1.6">${refundAmount ? `A refund of ${refundAmount} was issued and should appear within 5-10 business days.` : 'We will process a refund within 5 business days.'} If you have questions, reply to this email.</p>
-<hr style="border:none;border-top:1px solid #1e293b;margin:32px 0">
-<p style="color:#475569;font-size:12px">0xGünther Architecture Labs · Zürich, Schweiz<br><a href="https://0xguenther.org" style="color:#00FF66">0xguenther.org</a></p>
-</body></html>`;
-}
-
-function failureEmail(orderId: string, refundAmount?: string): string {
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
-<body style="font-family:system-ui,sans-serif;background:#05070B;color:#e2e8f0;padding:32px;max-width:600px;margin:0 auto">
-<div style="border-bottom:1px solid #1e293b;padding-bottom:16px;margin-bottom:24px"><span style="color:#00FF66;font-family:monospace;font-size:20px;font-weight:bold">&gt;0xGünther■</span></div>
-<h1 style="color:#fff;font-size:24px;margin-bottom:16px">Audit Run Failed</h1>
-<p style="color:#94a3b8;line-height:1.6">Your AgentCheck order <strong style="color:#fff">${orderId.slice(0, 8)}</strong> encountered a technical error during the audit run.</p>
-<p style="color:#94a3b8;line-height:1.6">${refundAmount ? `A refund of ${refundAmount} was issued and should appear within 5-10 business days.` : 'We will process a refund within 5 business days.'} Our team has been notified and is investigating.</p>
-<hr style="border:none;border-top:1px solid #1e293b;margin:32px 0">
-<p style="color:#475569;font-size:12px">0xGünther Architecture Labs · Zürich, Schweiz<br><a href="https://0xguenther.org" style="color:#00FF66">0xguenther.org</a></p>
-</body></html>`;
 }
 
 export { AUDIT_TIERS };

@@ -125,7 +125,7 @@ describe('HTTP client retry policies', () => {
 
   it('retries Resend only on 429', async () => {
     vi.stubEnv('RESEND_API_KEY', 'test');
-    const email = { to: 'test@example.test', subject: 'test', html: 'test' };
+    const email = { to: 'test@example.test', subject: 'test', html: 'test', text: 'test' };
     fetchMock.mockResolvedValueOnce(response(429)).mockResolvedValueOnce(response(200));
     expect(await sendEmail(email)).toBe(true);
     expect(fetchMock).toHaveBeenCalledTimes(2);

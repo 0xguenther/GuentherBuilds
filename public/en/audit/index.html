@@ -444,7 +444,7 @@
           <div class="card"><div class="step-num">03</div><div class="step-title">Get the report</div><p class="step-desc">After payment the tests run automatically. The report comes as a private link.</p></div>
         </div>
         <div class="card report-box">
-          <h3>What the report shows</h3>
+          <h3>What the report shows (the same in every tier)</h3>
           <ul>
             <li>Success rate with a 95% confidence interval</li>
             <li>Comparison with a reference model (DeepSeek), same prompt, same tools</li>
@@ -462,7 +462,7 @@
             <div class="tier-label tier-label-muted">Quick</div>
             <div class="tier-name">Quick Check</div>
             <div class="tier-price">CHF 90</div>
-            <p class="tier-desc">3 repetitions per case. Ready in 24 hours.</p>
+            <p class="tier-desc">Full report, 3 repetitions per case. Usually within 30 minutes.</p>
           </label>
           <label class="tier-card recommended selected" data-value="standard">
             <input type="radio" name="tier" value="standard" checked>
@@ -470,14 +470,14 @@
             <div class="tier-label tier-label-accent">Recommended</div>
             <div class="tier-name">Standard Check</div>
             <div class="tier-price">CHF 290</div>
-            <p class="tier-desc">5 repetitions per case, with confidence intervals. Ready in 72 hours.</p>
+            <p class="tier-desc">Full report, 5 repetitions per case: narrower intervals. Usually within 30 minutes.</p>
           </label>
           <label class="tier-card" data-value="fix">
             <input type="radio" name="tier" value="fix">
             <div class="tier-label tier-label-muted">Full</div>
             <div class="tier-name">Fix Package</div>
             <div class="tier-price">CHF 690</div>
-            <p class="tier-desc">10 repetitions per case, recommendations for each failure type and one example prompt. Ready in 5 days.</p>
+            <p class="tier-desc">Full report, 10 repetitions per case: narrowest intervals, rare failures are more likely to show up. Usually within 30 minutes.</p>
           </label>
         </div>
 
@@ -530,7 +530,7 @@
         </div>
         <div class="callout">
           <h3>Repetitions</h3>
-          <p>Quick repeats each case 3 times, Standard 5 times, Fix 10 times. The Standard Check means up to 16 cases x 5, so up to 80 runs. A single run can fail by chance. Only many repetitions show a stable pattern.</p>
+          <p>All tiers deliver the same full report. The difference is the repetitions per case: Quick 3 times, Standard 5 times, Fix 10 times. More repetitions mean narrower confidence intervals, and rare failures are more likely to show up. The Standard Check means up to 16 cases x 5, so up to 80 runs. A single run can fail by chance. Only many repetitions show a stable pattern.</p>
         </div>
       </section>
 
@@ -539,6 +539,7 @@
         <div class="faq-grid">
           <div class="card"><div class="faq-title">What is a tool?</div><p class="faq-text">A function your agent may call, for example <span style="font-family:'JetBrains Mono',monospace;">create_invoice</span>. Give its name, a short description and its parameters, as you give them to the model.</p></div>
           <div class="card"><div class="faq-title">Do you need access to my systems?</div><p class="faq-text">No. The tests run against simulated tools. We never call your live systems. Your system prompt and tool definitions are sent to the model provider for this.</p></div>
+          <div class="card"><div class="faq-title">When do I get the report?</div><p class="faq-text">Automatically after payment, usually within 30 minutes, at the latest within 24 hours. The link arrives by email and is shown on the thank-you page. If the audit fails, the amount is refunded in full automatically.</p></div>
           <div class="card"><div class="faq-title">What if an order cannot be processed?</div><p class="faq-text">Unsupported tools are refused. If a paid order cannot be executed, it is refunded in full automatically.</p></div>
         </div>
       </section>

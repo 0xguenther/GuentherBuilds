@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { randomUUID } from 'crypto';
 import { prisma } from '../src/db/client.js';
 import { buildApp } from '../src/server/app.js';
-import { buildReportReadyEmail } from '../src/services/emailService.js';
+import { buildReportReadyEmail } from '../src/services/auditMailTemplates.js';
 
 describe('audit delivery', () => {
   const ids: string[] = [];
@@ -58,8 +58,23 @@ describe('audit delivery', () => {
     } finally { await app.close(); }
   });
 
+  it('reports downloadsLeft and hides the link once the limit is used up', async () => {
+    const id = await delivered();
+    const app = await buildApp();
+    try {
+      const url = `/api/audit/orders/${id}?session_id=cs_test_${id}`;
+      expect((await app.inject({ url })).json()).toMatchObject({ downloadsLeft: 5, downloadUrl: `/api/audit/download/tok_${id}` });
+      await prisma.auditOrder.update({ where: { id }, data: { downloadCount: 3 } });
+      expect((await app.inject({ url })).json().downloadsLeft).toBe(2);
+      await prisma.auditOrder.update({ where: { id }, data: { downloadCount: 7 } });
+      const spent = (await app.inject({ url })).json();
+      expect(spent.downloadsLeft).toBe(0);
+      expect(spent.downloadUrl).toBeUndefined();
+    } finally { await app.close(); }
+  });
+
   it('links the email straight to the token download', () => {
-    const mail = buildReportReadyEmail('order-1', 'Quick-Check', 'abc123');
+    const mail = buildReportReadyEmail({ orderId: 'order-1', tier: 'quick', lang: 'de', downloadToken: 'abc123' });
     expect(mail.html).toContain('https://0xguenther.org/api/audit/download/abc123');
     expect(mail.html).not.toContain('/audit/thanks');
   });

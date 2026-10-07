@@ -442,7 +442,7 @@
           <div class="card"><div class="step-num">03</div><div class="step-title">Bericht erhalten</div><p class="step-desc">Nach der Zahlung laufen die Tests automatisch. Der Bericht kommt über einen privaten Link.</p></div>
         </div>
         <div class="card report-box">
-          <h3>Was im Bericht steht</h3>
+          <h3>Was im Bericht steht (in jeder Stufe gleich)</h3>
           <ul>
             <li>Erfolgsquote mit 95%-Konfidenzintervall</li>
             <li>Vergleich mit einem Referenzmodell (DeepSeek), gleicher Prompt, gleiche Werkzeuge</li>
@@ -460,7 +460,7 @@
             <div class="tier-label tier-label-muted">Quick</div>
             <div class="tier-name">Quick-Check</div>
             <div class="tier-price">CHF 90</div>
-            <p class="tier-desc">3 Wiederholungen pro Fall. Fertig in 24 Stunden.</p>
+            <p class="tier-desc">Voller Bericht, 3 Wiederholungen pro Fall. Meist in unter 30 Minuten.</p>
           </label>
           <label class="tier-card recommended selected" data-value="standard">
             <input type="radio" name="tier" value="standard" checked>
@@ -468,14 +468,14 @@
             <div class="tier-label tier-label-accent">Empfohlen</div>
             <div class="tier-name">Standard-Check</div>
             <div class="tier-price">CHF 290</div>
-            <p class="tier-desc">5 Wiederholungen pro Fall, mit Konfidenzintervallen. Fertig in 72 Stunden.</p>
+            <p class="tier-desc">Voller Bericht, 5 Wiederholungen pro Fall: engere Intervalle. Meist in unter 30 Minuten.</p>
           </label>
           <label class="tier-card" data-value="fix">
             <input type="radio" name="tier" value="fix">
             <div class="tier-label tier-label-muted">Komplett</div>
             <div class="tier-name">Fix-Paket</div>
             <div class="tier-price">CHF 690</div>
-            <p class="tier-desc">10 Wiederholungen pro Fall, Empfehlungen je Fehlerart und ein Beispiel-Prompt. Fertig in 5 Tagen.</p>
+            <p class="tier-desc">Voller Bericht, 10 Wiederholungen pro Fall: engste Intervalle, seltene Fehler zeigen sich eher. Meist in unter 30 Minuten.</p>
           </label>
         </div>
 
@@ -528,7 +528,7 @@
         </div>
         <div class="callout">
           <h3>Wiederholungen</h3>
-          <p>Quick wiederholt jeden Fall 3-mal, Standard 5-mal, Fix 10-mal. Beim Standard-Check sind das bis zu 16 Fälle x 5, also bis zu 80 Läufe. Ein einzelner Lauf kann zufällig ausfallen. Erst viele Wiederholungen zeigen ein stabiles Muster.</p>
+          <p>Alle Stufen liefern denselben vollen Bericht. Der Unterschied sind die Wiederholungen pro Fall: Quick 3-mal, Standard 5-mal, Fix 10-mal. Mehr Wiederholungen ergeben engere Konfidenzintervalle, und seltene Fehler zeigen sich eher. Beim Standard-Check sind das bis zu 16 Fälle x 5, also bis zu 80 Läufe. Ein einzelner Lauf kann zufällig ausfallen. Erst viele Wiederholungen zeigen ein stabiles Muster.</p>
         </div>
       </section>
 
@@ -537,6 +537,7 @@
         <div class="faq-grid">
           <div class="card"><div class="faq-title">Was ist ein Werkzeug?</div><p class="faq-text">Eine Funktion, die dein Agent aufrufen darf, z. B. <span style="font-family:'JetBrains Mono',monospace;">create_invoice</span>. Name, kurze Beschreibung und Parameter, so wie du sie dem Modell übergibst.</p></div>
           <div class="card"><div class="faq-title">Braucht ihr Zugang zu meinen Systemen?</div><p class="faq-text">Nein. Die Tests laufen gegen simulierte Werkzeuge. Wir rufen nie deine Live-Systeme auf. System-Prompt und Werkzeug-Definitionen werden dafür an den Modellanbieter gesendet.</p></div>
+          <div class="card"><div class="faq-title">Wann bekomme ich den Bericht?</div><p class="faq-text">Automatisch nach der Zahlung, meist in unter 30 Minuten, spätestens innert 24 Stunden. Der Link kommt per E-Mail und steht auf der Danke-Seite. Schlägt der Audit fehl, wird der Betrag automatisch voll erstattet.</p></div>
           <div class="card"><div class="faq-title">Was, wenn eine Bestellung nicht bearbeitet werden kann?</div><p class="faq-text">Nicht unterstützte Werkzeuge werden abgelehnt. Kann eine bezahlte Bestellung nicht ausgeführt werden, wird sie automatisch voll erstattet.</p></div>
         </div>
       </section>

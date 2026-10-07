@@ -37,14 +37,15 @@ export class AuditOrderService {
       },
     });
 
+    const auditUrl = `${PUBLIC_URL}${config.lang === 'en' ? '/en' : ''}/audit`;
     const session = await StripeMcpClient.createCheckoutSession({
       title: `${tier.label} — Agent Write-Path Check`,
       description: 'Automated write-path check of your agent tool definitions',
       priceInCents: tier.priceCents,
       metadata: { type: 'write_path_check', auditOrderId: order.id, tier: input.tier },
       // Stripe ersetzt {CHECKOUT_SESSION_ID}. Nur wer die Session kennt, sieht den Download-Link.
-      successUrl: `${PUBLIC_URL}/audit/thanks?order=${order.id}&session_id={CHECKOUT_SESSION_ID}`,
-      cancelUrl: `${PUBLIC_URL}/audit`,
+      successUrl: `${auditUrl}/thanks?order=${order.id}&session_id={CHECKOUT_SESSION_ID}`,
+      cancelUrl: auditUrl,
       currency: 'chf',
     });
 

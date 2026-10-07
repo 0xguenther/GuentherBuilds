@@ -15,7 +15,6 @@ vi.mock('../src/mcp/stripeMcp.js', () => ({ StripeMcpClient: {
 } }));
 vi.mock('../src/services/emailService.js', () => ({
   sendEmail: mocks.email,
-  buildReportReadyEmail: () => ({ to: '', subject: 'Report', html: 'Report ready' }),
 }));
 
 const config: AuditConfig = {
@@ -62,6 +61,7 @@ describe('audit v2 customer runner', () => {
   }
 
   it.each([
+    { buyerEmail: undefined }, { buyerEmail: '' },
     { lang: 'fr' }, { model: '' }, { systemPrompt: '' }, { systemPrompt: 'x'.repeat(8001) },
     { tools: [] }, { tools: Array(13).fill(config.tools[0]) },
     { tools: [config.tools[0], config.tools[0]] },
@@ -90,14 +90,19 @@ describe('audit v2 customer runner', () => {
     expect(mocks.checkout).not.toHaveBeenCalled();
   });
 
-  it('creates checkout and persists only the validated v2 configuration', async () => {
-    const res = await request(payload());
+  it.each(['de', 'en'] as const)('creates localized %s checkout and persists only the validated v2 configuration', async lang => {
+    const res = await request({ ...payload(), lang });
     if (res.statusCode === 201) ids.push(res.json().orderId);
     expect(res.statusCode).toBe(201);
     expect(res.json().checkoutUrl).toBe('https://checkout.example.test');
     expect(mocks.checkout).toHaveBeenCalledOnce();
+    const prefix = lang === 'en' ? '/en/audit' : '/audit';
+    expect(mocks.checkout).toHaveBeenCalledWith(expect.objectContaining({
+      successUrl: expect.stringContaining(`${prefix}/thanks?order=${res.json().orderId}&session_id={CHECKOUT_SESSION_ID}`),
+      cancelUrl: expect.stringMatching(new RegExp(`${prefix}$`)),
+    }));
     const order = await prisma.auditOrder.findUniqueOrThrow({ where: { id: res.json().orderId } });
-    expect(JSON.parse(order.configJson)).toEqual(config);
+    expect(JSON.parse(order.configJson)).toEqual({ ...config, lang });
     expect(order).toMatchObject({ status: 'pending_payment', stripeSessionId: 'cs_fixture' });
   });
 
@@ -157,7 +162,7 @@ describe('audit v2 customer runner', () => {
     await AuditFulfillmentService.fulfil(id);
     expect(await prisma.auditOrder.findUnique({ where: { id } })).toMatchObject({ status: 'failed', refundId: 're_fixture', reportPath: null });
     expect(mocks.refund).toHaveBeenCalledOnce();
-    expect(mocks.email).toHaveBeenCalledWith(expect.objectContaining({ html: expect.stringContaining('CHF 90.00 was issued') }));
+    expect(mocks.email).toHaveBeenCalledWith(expect.objectContaining({ html: expect.stringContaining('CHF 90.00 zurückerstattet') }));
   });
 
   it('fails and refunds legacy configuration without invoking the runner', async () => {
