@@ -1,0 +1,28 @@
+{
+  "network": "base",
+  "chainId": 8453,
+  "status": "deployed",
+  "token": {
+    "name": "Günther",
+    "symbol": "GUNTER",
+    "decimals": 18,
+    "totalSupplyAtDeploy": "1000000000000000000000000000",
+    "address": "0xb0e8a9d8B5542Fc907736d19A018bbE131C8cd24",
+    "deployTx": "0x064092b75d51743a5d09745b4fe158a52a1d2a31cfa5614d535688c2764c7596",
+    "block": "52283737",
+    "deployedAt": "2026-10-07T07:07:01Z",
+    "deployer": "0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A",
+    "treasury": "0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A",
+    "sourceVerification": "sourcify exact_match",
+    "compiler": "0.8.28+commit.7893614a, optimizer 200 runs, evm cancun"
+  },
+  "retired": [
+    {
+      "address": "0x4205c5649693883f61260df8bbcb24f907459084",
+      "deployTx": "0x2c3e02c5720a6dc5c658571618eb9d52c2923e378302237599b8f6a9f5fdc477",
+      "reason": "accidental duplicate deployment (script rerun)",
+      "retireTx": "0x5dc5262b1dda894006aa704e50a68d144fdf16cec7972aa8ea7dab5248da5af7",
+      "note": "entire supply burned via burn(); totalSupply = 0"
+    }
+  ]
+}

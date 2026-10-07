@@ -37,13 +37,61 @@ Durchgeführt mit MiMoCode (Orchestrator) + Claude Code (Security) + interne Age
 - `.env` nutzt einen eingeschränkten Live-Key (`rk_live`). Lesende Abfrage bei Stripe (2026-10-03): Account CH, Zahlungen aktiviert, **0 Charges und 0 PaymentIntents insgesamt**. Es ist bisher kein echtes Geld über Stripe geflossen.
 - Folge: Die Aussagen "verifizierter Umsatz" in `docs/SYSTEM_DOKUMENTATION.md` und auf der Website sind lokal nicht belegt.
 
+### Bereinigung 2026-10-07 (erledigt)
+- **Ursache:** e2e-Skripte (`test/*-e2e.ts`) liefen gegen die Prod-DB mit NODE_ENV≠test → Testdaten in Prod + 2 echte Mainnet-Calldata-Txs (`GUNTER_BURN:pi_test_…`, value 0, kein Token-Transfer, nur Gas).
+- **Fix:** `test/e2eGuard.ts` (erster Import aller e2e-Skripte): erzwingt NODE_ENV=test, Default `file:./test.db`, Abbruch bei Nicht-Test-DB, fixer Test-Admin-Token.
+- **Metrics:** `/api/metrics` zählt nur echte On-Chain-Hashes (`0x`+64 hex) als Burns; Claw-Mart-Fake-Hashes (`0xskill_…`) entfernt; Trace-Totals via Aggregation statt findMany; `totalLlmCalls` = Traces mit tokens>0.
+- **Prod-DB bereinigt** (Backup `prisma/backup-pre-cleanup-20261007-065951.db`): 141 Payments, 48 SkillPurchases, 15 B2bContracts, 16 B2bLeads, 16 `community-agent-*` Skills, 2 AuditOrders `@example.com` gelöscht. Live: Revenue 0, Burns 0 (ehrlich).
+- **Deploy-Skript:** überschreibt Server-`.env` nicht mehr (ADMIN_API_TOKEN bleibt erhalten).
+- Tests: vitest 66/66, e2e metrics/reddit/simulate/clawmart/b2b/web3 grün.
+- **Burn-Claim vs. Realität: gelöst durch Token-Deploy** (siehe unten).
+
+### $GUNTER Token live auf Base Mainnet (2026-10-07)
+- **Token:** `Günther` / `GUNTER`, 18 Decimals, fixe Supply 1 Mrd, kein Owner, kein Mint, kein Pause (`contracts/GuntherToken.sol`, OZ 5.4 ERC20+Burnable, solc 0.8.28).
+- **Adresse:** `0xb0e8a9d8B5542Fc907736d19A018bbE131C8cd24` – Deploy-Tx `0x064092b7…c7596`, Block 52283737. Quelle auf Sourcify verifiziert (exact_match). Gesamte Supply in der Server-Wallet `0xb54A…0f1A` (Treasury).
+- **Burn-Rate:** 10 GUNTER pro Cent (1'000 pro USD) → Supply reicht für 1 Mio USD Umsatz. Burn = ERC-20-`transfer` an `0x…dEaD` + Referenz `GUNTER_BURN:<paymentId>:<amount>` in der Calldata. Simulierter Burn erfolgreich.
+- **Server:** `.env` `GUNTER_TOKEN_ADDRESS` gesetzt (Backup `.env.bak-*`), Deploy-Record `contracts/deployments/base.json`.
+- **Panne + Behebung:** Deploy-Skript lief zweimal (RPC-Read nach Receipt schlug fehl, Rerun ohne Nonce-Check) → Duplikat `0x4205c564…9084`; gesamte Supply per `burn()` vernichtet (totalSupply 0, Tx `0x5dc5262b…5af7`). Kosten gesamt ~0.000007 ETH (2 Deploys + Retire-Burn). Fix: `scripts/token/deploy.mjs` schreibt den Deploy-Record **vor** dem Broadcast und bricht bei vorhandenem Record ab; Reads nach Deploy mit Backoff.
+- **Burn-Sicherheit (`src/mcp/web3Mcp.ts`):** Burn-Tx wird genau einmal signiert; Retries senden nur dieselbe Raw-Tx erneut (gleicher Nonce) → kein Doppel-Burn bei verlorener/rate-limitierter RPC-Antwort. Unklarer Broadcast → `BurnPendingError` (Hash bleibt, nur Bestätigung). Test `test/burnBroadcast.test.ts`. Vitest 70/70, Build grün, live deployt.
+- **Offen:** Öffentliches RPC `mainnet.base.org` rate-limitet (`-32016`) → eigener RPC-Key (Alchemy/QuickNode/CDP) via `BASE_RPC_URL` empfohlen. Token-Adresse + Basescan-Link auf Website/`/api/metrics` zeigen. ETH-Reserve der Wallet: ~0.00014 ETH (≈ 400 Burns à ~55k Gas).
+
 ## Offene Punkte
 - **Token-Rotation nötig:** Im `.git/config` stand bis 2026-10-03 ein GitHub-PAT im Klartext in der Remote-URL. Remote ist bereinigt (`https://github.com/0xguenther/GuentherBuilds.git`), der Token selbst ist aber **noch nicht widerrufen**. Zu tun: Token in GitHub widerrufen, neuen im KeePassXC-Tresor ablegen. Auth läuft jetzt über Git Credential Manager.
 - **Uncommitted Änderung:** `scripts/deploy-to-proxmox.ps1` (noch nicht geprüft/committed).
 - **Remote-Historie:** `origin` zeigt auf dasselbe Repo wie `gunther-core` (`0xguenther/GuentherBuilds`). Vor einem Push prüfen, ob Historien kollidieren.
 - **Strategie-Frage offen:** Mögliche Neuausrichtung von "digitale Produkte verkaufen" hin zu "Services betreiben" (AgentCheck, AgentWatch, …). Noch nicht entschieden, keine Umsetzung begonnen.
 
-## Status: Phase 1 COMPLETE ✅ → Phase 2 READY 🚀 (2026-10-06, 13:40 UTC)
+## Status: Phase 1 COMPLETE ✅ → Phase 2 GO-LIVE 🚀 (2026-10-06, Strategic Pivot)
+
+### 🎯 STRATEGIC PIVOT: Arsenal Model (NOT Kill-Criterion)
+
+**New Strategy (User Decision 2026-10-06):**
+Instead of: "If audit doesn't hit ≥10 orders in 30 days → Shutdown"
+Now: "If audit fails → Pivot to parallel Arsenal of products (Agent-Ops, Dev Tools, AI Infra, Content)"
+
+**Components:**
+1. **Audit-Check (Primary):** 30-day kill criterion still active (≥500 visitors + ≥10 orders)
+2. **Arsenal Research:** 4 parallel loops researching 9 product candidates
+3. **Autonomous Pivot:** If Audit misses targets, launch ready TIER-1 product instead (AgentWatch or HealthDash)
+
+**Outcome Matrix:**
+- Audit succeeds: Scale audit + Arsenal becomes expansion roadmap
+- Audit fails but Arsenal hot: Pivot + launch alternative service within 2 weeks
+- Multi-product success: Günther becomes SaaS company (Audit + AgentWatch + PromptDoctor)
+
+**Key Constraint:** Günther remains autonomous throughout (no hiring, no external dependencies)
+
+**DIAGNOSTICS-Framework (Nov 6 Decision):**
+```
+Wenn Kill-Kriterium verfehlt → ERST Problem diagnostizieren:
+  <300 Visitor        → Visibility-Problem (Marketing war schwach)
+  ≥500 Visitor        → Check Conversion Rate:
+    <0.3% Conversion  → Produkt-Problem (überarbeiten oder sofort Arsenal-Pivot)
+    0.3-1%            → Produkt hat Potential, aber UX/Pricing/Message anpassen
+    ≥1%               → ✅ SUCCESS (beide Seiten funktionieren, skalieren)
+```
+**Die Regel:** Nicht anfangen, Audit-Check zu überarbeiten, wenn <300 Visitor.
+Das ist ein Visibility-Problem, nicht ein Produkt-Problem.
 
 ### ✅ ERLEDIGT (Phase 0 + Download-Fix + Phase 1)
 1. Working-Copy bereinigt: **10 logische Commits** (Audit, Blog, Email, Playbook, Services, Config, Website, Doku, PDF-Cleanup, Download-Fix)
@@ -84,10 +132,29 @@ Durchgeführt mit MiMoCode (Orchestrator) + Claude Code (Security) + interne Age
 - [ ] MetricsService → Funnel-Metriken (Besucher → Checkout → Zahlung)
 - [ ] any-Typen abbauen (15+ Stellen, später)
 
-### ⏳ Phase 2 – Produkte ausreifen (Tag 4–10)
-- [ ] Write-Path Check: Canary-Runner auf CT 115, Bericht-Erzeugung, Beispiel-Report Live
-- [ ] Produkte (Craft, Claw Mart, Clawcommerce): Checklisten pro Produkt
-- [ ] Live-Blocker abhaken (Nutzer: Rückerstattung, Domain, Rechtsform/MWST)
+### ✅ PHASE 2 – Produkte ausreifen + Arsenal Launches (Tag 4–30)
+
+**Audit-Check (Primary):**
+- [x] Canary-Runner auf CT 115
+- [x] Bericht-Erzeugung (Report-Template ENHANCED)
+- [ ] Test-Zahlung durchführen (Stripe Test Card 4242...)
+- [ ] Öffentliches Beispiel-Report auf Website
+- [ ] Visitor tracking + order counting live
+- [ ] 30-Tage Kill-Kriterium aktiv (Nov 6 Decision Day)
+
+**Arsenal (Parallel Product Research):**
+- [x] Arsenal structure created (`C:\ClaudeProjects\Arsenal\`)
+- [x] 9 product candidates evaluated + scored
+- [x] Automation scripts: idea-mining, candidate-scoring, MVP-sketches
+- [ ] Loop 1 (Agent-Ops): AgentWatch MVP sketch by Oct 12
+- [ ] Loop 1: 5 validation interviews with developers
+- [ ] Loop 2 (Dev Tools): Prototype PromptDoctor by Oct 20
+- [ ] All loops: 3+ MVP sketches with landing pages by Oct 27
+- [ ] Decision matrix: If Audit succeeds → scale. If fails → launch AgentWatch (TIER-1)
+
+**Products (Craft, Claw Mart, Clawcommerce): Optional expansion**
+- May deprioritize if Arsenal generates stronger signals
+- Audit-Check is core focus for 30 days
 
 ### ⏳ Security (Nutzer-Aktion erforderlich)
 - [ ] GitHub-PAT widerrufen + neuer im KeePassXC

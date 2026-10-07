@@ -1,11 +1,19 @@
 import {
+  BaseError,
+  HttpRequestError,
+  RpcRequestError,
+  concatHex,
   createPublicClient,
   createWalletClient,
+  encodeFunctionData,
   http,
+  keccak256,
   stringToHex,
   formatEther,
   type Hash,
+  type Hex,
   type Address,
+  type Chain,
 } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { base, baseSepolia } from 'viem/chains';
@@ -28,6 +36,12 @@ export interface BurnTokenResult {
   txHash: string;
   blockNumber?: number;
   gasUsed?: bigint;
+}
+
+/** The node explicitly refused the request (JSON-RPC error or HTTP 429): the tx was not accepted. */
+function isDefiniteRejection(err: unknown): boolean {
+  if (!(err instanceof BaseError)) return false;
+  return Boolean(err.walk((e) => e instanceof RpcRequestError || (e instanceof HttpRequestError && e.status === 429)));
 }
 
 const erc20TransferAbi = [
@@ -56,11 +70,11 @@ export class Web3McpClient {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         return await fn();
-      } catch (err: any) {
+      } catch (err: unknown) {
         // Pending-Burn NICHT erneut senden: die Transaktion liegt bereits auf der Chain.
         if (err instanceof BurnPendingError) throw err;
         if (attempt === maxRetries) throw err;
-        console.warn(`[Web3Mcp] Attempt ${attempt} failed: ${err.message}. Retrying in ${delay}ms...`);
+        console.warn(`[Web3Mcp] Attempt ${attempt} failed: ${(err instanceof Error ? err.message : 'Unknown error')}. Retrying in ${delay}ms...`);
         await new Promise((resolve) => setTimeout(resolve, delay));
         delay *= 2;
       }
@@ -102,109 +116,90 @@ export class Web3McpClient {
   }
 
   static async burnTokens(params: BurnTokenParams): Promise<BurnTokenResult> {
-    return this.retryWithBackoff(async () => {
-      // 1. Simulation fallback for tests, local dev, or missing credentials
-      if (!this.isLiveMode()) {
-        console.log(
-          `[Web3Mcp] (Simulation Mode) Executing burn of ${params.amount.toString()} $GÜNTER on ${config.web3.networkId}...`
-        );
-
-        const rawSimulated = `0xbase${Date.now().toString(16)}${Math.random().toString(16).substring(2, 10)}`;
-        const simulatedTxHash = rawSimulated.padEnd(66, '0');
-
-        return {
-          txHash: simulatedTxHash,
-          blockNumber: 1234567,
-          gasUsed: 21000n,
-        };
-      }
-
-      // 2. Live On-Chain Execution on Base L2
-      const isMainnet =
-        config.web3.networkId === 'base' || config.web3.networkId.includes('mainnet');
-      const chain = isMainnet ? base : baseSepolia;
-      const rpcUrl =
-        config.web3.rpcUrl || (isMainnet ? 'https://mainnet.base.org' : 'https://sepolia.base.org');
-
-      const account = privateKeyToAccount(config.web3.walletPrivateKey);
-      const transport = http(rpcUrl);
-
-      const publicClient = createPublicClient({ chain, transport });
-      const walletClient = createWalletClient({ account, chain, transport });
-
+    // 1. Simulation fallback for tests, local dev, or missing credentials
+    if (!this.isLiveMode()) {
       console.log(
-        `[Web3Mcp] Executing live on-chain burn on Base (${chain.name}) from ${account.address}...`
+        `[Web3Mcp] (Simulation Mode) Executing burn of ${params.amount.toString()} $GÜNTER on ${config.web3.networkId}...`
       );
+      const rawSimulated = `0xbase${Date.now().toString(16)}${Math.random().toString(16).substring(2, 10)}`;
+      return { txHash: rawSimulated.padEnd(66, '0'), blockNumber: 1234567, gasUsed: 21000n };
+    }
 
-      // Verify wallet balance
-      const balance = await publicClient.getBalance({ address: account.address });
-      if (balance === 0n) {
-        throw new Error(
-          `Insufficient ETH balance on ${account.address} (${formatEther(balance)} ETH). Cannot pay gas fees.`
-        );
+    // 2. Live On-Chain Execution on Base L2
+    const isMainnet = config.web3.networkId === 'base' || config.web3.networkId.includes('mainnet');
+    const chain: Chain = isMainnet ? base : baseSepolia;
+    const rpcUrl = config.web3.rpcUrl || (isMainnet ? 'https://mainnet.base.org' : 'https://sepolia.base.org');
+    const account = privateKeyToAccount(config.web3.walletPrivateKey);
+    const transport = http(rpcUrl);
+    const publicClient = createPublicClient({ chain, transport });
+    const walletClient = createWalletClient({ account, chain, transport });
+
+    const hasCustomToken =
+      config.web3.gunterTokenAddress &&
+      config.web3.gunterTokenAddress !== '0x0000000000000000000000000000000000000000';
+    const destination = config.web3.burnDestinationAddress as Address;
+    // Proof-of-burn reference: appended to the ERC-20 calldata (ignored by the ABI decoder) or sent as calldata.
+    const reference = stringToHex(`GUNTER_BURN:${params.referenceId}:${params.amount.toString()}`);
+    const to = hasCustomToken ? (config.web3.gunterTokenAddress as Address) : destination;
+    const data = hasCustomToken
+      ? concatHex([encodeFunctionData({ abi: erc20TransferAbi, functionName: 'transfer', args: [destination, params.amount] }), reference])
+      : reference;
+
+    // Signed exactly once: retries only re-broadcast the identical raw transaction (same nonce),
+    // so a lost or rate-limited RPC response can never produce a second burn.
+    let signed: { raw: Hex; hash: Hash } | undefined;
+    let broadcastAttempted = false;
+
+    const attempt = async (): Promise<BurnTokenResult> => {
+      if (!signed) {
+        console.log(`[Web3Mcp] Executing live on-chain burn on Base (${chain.name}) from ${account.address}...`);
+        const balance = await publicClient.getBalance({ address: account.address });
+        if (balance === 0n) {
+          throw new Error(`Insufficient ETH balance on ${account.address} (${formatEther(balance)} ETH). Cannot pay gas fees.`);
+        }
+        const request = await walletClient.prepareTransactionRequest({ to, data, value: 0n });
+        if (request.maxFeePerGas && request.maxFeePerGas > 100n * 10n ** 9n) {
+          console.warn(`[Web3Mcp] Gas price unusually high: ${request.maxFeePerGas.toString()} wei. Proceeding with caution.`);
+        }
+        const raw = await walletClient.signTransaction(request);
+        signed = { raw, hash: keccak256(raw) };
+        console.log(`[Web3Mcp] Signed burn ${signed.hash} (nonce ${request.nonce}, ${params.amount.toString()} units -> ${destination}).`);
       }
 
-      // Gas price and safety fee guard (<5% rule)
-      const gasPrice = await publicClient.getGasPrice();
-      const maxAllowedGwei = 100n * 10n ** 9n; // 100 Gwei limit protection
-      if (gasPrice > maxAllowedGwei) {
-        console.warn(`[Web3Mcp] Gas price unusually high: ${gasPrice.toString()} wei. Proceeding with caution.`);
+      broadcastAttempted = true;
+      try {
+        await publicClient.sendRawTransaction({ serializedTransaction: signed.raw });
+      } catch (err) {
+        // Identical transaction already in the mempool or mined: the broadcast is done.
+        const msg = err instanceof Error ? err.message : String(err);
+        if (!/already known|known transaction|already imported|nonce too low/i.test(msg)) throw err;
       }
 
-      const hasCustomToken =
-        config.web3.gunterTokenAddress &&
-        config.web3.gunterTokenAddress !== '0x0000000000000000000000000000000000000000';
-
-      let txHash: Hash;
-
-      if (hasCustomToken) {
-        // A. ERC-20 $GÜNTER token transfer to dead address
-        console.log(
-          `[Web3Mcp] Transferring ${params.amount.toString()} tokens to ${config.web3.burnDestinationAddress}...`
-        );
-        txHash = await walletClient.writeContract({
-          address: config.web3.gunterTokenAddress as Address,
-          abi: erc20TransferAbi,
-          functionName: 'transfer',
-          args: [config.web3.burnDestinationAddress as Address, params.amount],
-        });
-      } else {
-        // B. Native Proof-of-Burn with immutable reference in calldata to dead address
-        const burnCalldata = stringToHex(`GUNTER_BURN:${params.referenceId}:${params.amount.toString()}`);
-        console.log(
-          `[Web3Mcp] Broadcasting Proof-of-Burn transaction with calldata reference to ${config.web3.burnDestinationAddress}...`
-        );
-        txHash = await walletClient.sendTransaction({
-          to: config.web3.burnDestinationAddress as Address,
-          value: 0n,
-          data: burnCalldata,
-        });
-      }
-
-      console.log(`[Web3Mcp] Transaction broadcasted. Waiting for confirmation: ${txHash}...`);
+      console.log(`[Web3Mcp] Transaction broadcasted. Waiting for confirmation: ${signed.hash}...`);
       let receipt;
       try {
-        receipt = await publicClient.waitForTransactionReceipt({
-          hash: txHash,
-          timeout: 30_000,
-        });
+        receipt = await publicClient.waitForTransactionReceipt({ hash: signed.hash, timeout: 30_000 });
       } catch {
-        throw new BurnPendingError(txHash);
+        throw new BurnPendingError(signed.hash);
       }
-
       if (receipt.status === 'reverted') {
-        throw new Error(`Transaction reverted on Base L2: ${txHash}`);
+        throw new Error(`Transaction reverted on Base L2: ${signed.hash}`);
       }
-
       console.log(
-        `[Web3Mcp] ✓ Live Base L2 burn confirmed in block ${receipt.blockNumber}! Gas used: ${receipt.gasUsed}. Tx: ${txHash}`
+        `[Web3Mcp] ✓ Live Base L2 burn confirmed in block ${receipt.blockNumber}! Gas used: ${receipt.gasUsed}. Tx: ${signed.hash}`
       );
+      return { txHash: signed.hash, blockNumber: Number(receipt.blockNumber), gasUsed: receipt.gasUsed };
+    };
 
-      return {
-        txHash,
-        blockNumber: Number(receipt.blockNumber),
-        gasUsed: receipt.gasUsed,
-      };
-    });
+    try {
+      return await this.retryWithBackoff(attempt);
+    } catch (err) {
+      // Broadcast outcome unknown (network error/timeout): the tx may be on chain.
+      // Keep the hash so the payment stays 'burning' and is only confirmed, never re-burned.
+      if (signed && broadcastAttempted && !(err instanceof BurnPendingError) && !isDefiniteRejection(err)) {
+        throw new BurnPendingError(signed.hash);
+      }
+      throw err;
+    }
   }
 }
