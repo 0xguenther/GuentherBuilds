@@ -132,3 +132,9 @@ Kein Cross-Posting im selben Moment. Nicht um Upvotes bitten.
 
 **Veroeffentlicht:**
 - X-Thread 2026-10-07: https://x.com/GuentherBuilds/status/2107813448344039867 (5 Posts)
+
+**Blockiert (2026-10-07):**
+- HN: Submit abgelehnt (/showlim), Show HN ist fuer neue Accounts gesperrt. Ohne Show-HN-Praefix posten oder erst Karma sammeln.
+- r/LocalLLaMA: Regel 3 verbietet LLM-generierte Posts und Bots, die sich als Menschen ausgeben. Regel 4: max. 10% Eigenwerbung, Zugehoerigkeit offenlegen.
+- r/AI_Agents: Links nur in Kommentaren, Projekte in den woechentlichen Projekt-Thread, max. 1 von 10 Beitraegen Eigenwerbung.
+- u/GuentherBuilds hat 1 Karma und keinen Verlauf: ein Werbepost jetzt fuehrt zum Bann.
