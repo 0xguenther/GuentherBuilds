@@ -1,3 +1,4 @@
+import './e2eGuard.js';
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { prisma } from '../src/db/client.js';
@@ -99,6 +100,7 @@ describe('Clawcommerce: High-Ticket B2B Funnel Test Suite ($2,000 Setup + $500/M
         object: {
           id: `cs_${Date.now()}`,
           payment_intent: testPaymentId,
+          payment_status: 'paid',
           amount_total: 200000, // $2,000.00 USD
           currency: 'usd',
           customer_details: { email: 'marc.steiner@helvetic-logistics.ch' },

@@ -7,7 +7,7 @@ export interface GuntherRuntimeConfig {
 }
 
 export class GuntherElizaRuntime {
-  private character: any;
+  private character?: { name?: string; style?: { all?: string[] } };
   private isInitialized = false;
 
   constructor(config?: GuntherRuntimeConfig) {
@@ -35,7 +35,7 @@ export class GuntherElizaRuntime {
   /**
    * Dispatches a message or event to the ElizaOS plugin actions
    */
-  async processEvent(memory: ElizaMemory): Promise<{ handled: boolean; result?: any }> {
+  async processEvent(memory: ElizaMemory): Promise<{ handled: boolean; result?: { text: string; data?: unknown } }> {
     if (!this.isInitialized) {
       await this.initialize();
     }
@@ -52,7 +52,7 @@ export class GuntherElizaRuntime {
       return { handled: false };
     }
 
-    let outputResult: any;
+    let outputResult: { text: string; data?: unknown } | undefined;
     const success = await action.handler(memory, undefined, undefined, (resp) => {
       outputResult = resp;
     });

@@ -11,7 +11,7 @@ export const RoutingDecisionSchema = z.object({
   ]),
   reason: z.string(),
   priority: z.enum(['HIGH', 'MEDIUM', 'LOW']),
-  payload: z.record(z.any()),
+  payload: z.record(z.unknown()),
 });
 
 export type RoutingDecision = z.infer<typeof RoutingDecisionSchema>;

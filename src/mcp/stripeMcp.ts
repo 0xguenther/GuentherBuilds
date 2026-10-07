@@ -14,10 +14,23 @@ export class StripeMcpClient {
   private static getStripe(): Stripe {
     if (!this.stripeInstance) {
       this.stripeInstance = new Stripe(config.stripe.secretKey, {
-        apiVersion: '2025-02-24.acacia' as any,
+        apiVersion: '2025-02-24.acacia',
       });
     }
     return this.stripeInstance;
+  }
+
+  static async refundAuditOrder(order: { id: string; stripePaymentId: string | null; stripeSessionId: string | null }): Promise<Stripe.Refund> {
+    const stripe = this.getStripe();
+    let paymentIntent = order.stripePaymentId;
+    if (!paymentIntent?.startsWith('pi_')) {
+      const sessionId = order.stripeSessionId ?? (paymentIntent?.startsWith('cs_') ? paymentIntent : null);
+      if (!sessionId) throw new Error('Audit order has no Stripe payment or checkout session');
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      paymentIntent = typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id ?? null;
+    }
+    if (!paymentIntent) throw new Error('Audit checkout session has no payment intent');
+    return stripe.refunds.create({ payment_intent: paymentIntent }, { idempotencyKey: `refund-audit-${order.id}` });
   }
 
   /**

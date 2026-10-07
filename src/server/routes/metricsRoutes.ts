@@ -3,6 +3,10 @@ import { MetricsService } from '../../services/metricsService.js';
 import { MarketingService } from '../../services/marketingService.js';
 
 export async function metricsRoutes(fastify: FastifyInstance) {
+  fastify.get<{ Querystring: { days?: number } }>('/api/metrics/funnel', {
+    schema: { querystring: { type: 'object', properties: { days: { type: 'integer', minimum: 1, maximum: 3650 } }, additionalProperties: false } },
+  }, async (request) => MetricsService.getFunnel({ days: request.query.days }));
+
   // Live Comprehensive System Metrics
   fastify.get('/api/metrics', async (_request, reply) => {
     try {

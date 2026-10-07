@@ -1,3 +1,4 @@
+import { E2E_ADMIN_AUTH } from './e2eGuard.js';
 import { test } from 'node:test';
 import assert from 'node:assert';
 import { buildApp } from '../src/server/app.js';
@@ -53,6 +54,7 @@ test('Günther Metrics, Observability & Autonomous Daily Pulse Test Suite', asyn
       method: 'POST',
       url: '/api/marketing/pulse',
       headers: {
+        ...E2E_ADMIN_AUTH,
         'content-type': 'application/json',
       },
       payload: {},

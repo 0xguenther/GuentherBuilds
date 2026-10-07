@@ -1,3 +1,4 @@
+import { fetchWithRetry } from '../utils/retryUtil.js';
 import { prisma } from '../db/client.js';
 import { config } from '../config/index.js';
 
@@ -5,10 +6,11 @@ export interface TraceRecordInput {
   taskId: string;
   model: string;
   task: string;
+  user?: string;
   costUsd?: number;
   tokens?: number;
   status?: 'ok' | 'error';
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export class TraceService {
@@ -51,9 +53,11 @@ export class TraceService {
 
       const payload = {
         id: traceId,
-        userId: 'günther-core',
+        userId: input.user ?? 'günther-core',
         sessionId: input.taskId,
         tags: [
+          `task:${input.taskId}`,
+          `user:${input.user ?? 'günther-core'}`,
           `model:${input.model}`,
           `task:${input.task}`,
           `status:${input.status || 'ok'}`,
@@ -74,14 +78,15 @@ export class TraceService {
         `${config.langfuse.publicKey}:${config.langfuse.secretKey}`
       ).toString('base64');
 
-      await fetch(langfuseUrl, {
+      await fetchWithRetry(langfuseUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Basic ${auth}`,
         },
         body: JSON.stringify(payload),
-      });
+        signal: AbortSignal.timeout(10000),
+      }, { maxRetries: 3 });
     } catch (err) {
       // Fail silently – Langfuse outage sollte nicht den Agent stoppen
       if (process.env.DEBUG_LANGFUSE) {

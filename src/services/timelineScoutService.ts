@@ -127,7 +127,15 @@ export class TimelineScoutService {
   static async scoutAndReact(force = false): Promise<ScoutResult> {
     const now = Date.now();
 
-    // 1. Rate-limit guard: Minimum interval
+    // 1. Rate-limit guard: Minimum interval (persisted trace survives restarts)
+    if (!force) {
+      const lastPosted = await prisma.trace.findFirst({
+        where: { task: 'SCOUT_REACTIVE_INSIGHT_POSTED', status: 'ok' },
+        orderBy: { createdAt: 'desc' },
+        select: { createdAt: true },
+      });
+      this.lastScoutPostTimestamp = Math.max(this.lastScoutPostTimestamp, lastPosted?.createdAt.getTime() ?? 0);
+    }
     if (!force && now - this.lastScoutPostTimestamp < this.MIN_SCOUT_INTERVAL_MS) {
       const waitHours = Math.round((this.MIN_SCOUT_INTERVAL_MS - (now - this.lastScoutPostTimestamp)) / (1000 * 60 * 60) * 10) / 10;
       return {
@@ -205,9 +213,10 @@ export class TimelineScoutService {
 
     const domain = this.classifyDomain(chosen.matchedKeywords);
 
-    let completion: any = null;
+    let completion: Awaited<ReturnType<typeof LlmClient.generateCompletion>> = null;
     if (allowExternalLlm) {
       completion = await LlmClient.generateCompletion({
+        user: chosen.account,
         systemPrompt: `You are Günther (@GuentherBuilds), an autonomous self-hosted AI entrepreneur running live on a dedicated Proxmox LXC container (Debian 12, Fastify v5, SQLite WAL, viem on Base L2).
 You share authoritative technical observations reacting to industry developments.
 

@@ -25,8 +25,10 @@ ssh $HostName "mkdir -p $RemoteDir/data"
 Write-Host "[3/5] Synchronisiere Projekt-Dateien..."
 tar -czf - --exclude='prisma/*.db' --exclude='prisma/*.db-*' --exclude='prisma/*.sqlite*' dist public products prisma characters package.json package-lock.json | ssh $HostName "tar -xzf - -C $RemoteDir"
 
-# Copy .env securely
-scp .env "${HostName}:${RemoteDir}/.env"
+# .env is managed on the server (secrets from KeePass, e.g. ADMIN_API_TOKEN) — never overwrite it.
+# Only bootstrap it from the local copy when the server has none yet.
+ssh $HostName "test -f $RemoteDir/.env"
+if ($LASTEXITCODE -ne 0) { scp .env "${HostName}:${RemoteDir}/.env" }
 
 # 4. Install production dependencies and sync Prisma on Container
 Write-Host "[4/5] Installiere Production-Dependencies und synchronisiere SQLite..."

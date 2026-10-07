@@ -1,3 +1,4 @@
+import Stripe from 'stripe';
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import fs from 'fs';
 import { StripeMcpClient } from '../../mcp/stripeMcp.js';
@@ -24,7 +25,7 @@ export async function webhookRoutes(fastify: FastifyInstance) {
       const sig = request.headers['stripe-signature'];
       const rawBody = (request as FastifyRequest & { rawBody?: string | Buffer }).rawBody;
 
-      let event: any;
+      let event: Stripe.Event;
 
       const isTestEnv = config.server.env === 'test' || process.env.NODE_ENV === 'test';
       const hasMockSecret = config.stripe.webhookSecret.includes('placeholder');
@@ -32,7 +33,7 @@ export async function webhookRoutes(fastify: FastifyInstance) {
       // Only allow simulation if explicitly configured with mock secret in test/dev
       if (hasMockSecret && (isTestEnv || config.server.env === 'development')) {
         fastify.log.warn('[Webhook] Dev/Test simulation mode active (mock secret configured).');
-        event = request.body;
+        event = request.body as Stripe.Event;
       } else {
         if (!sig || typeof sig !== 'string') {
           fastify.log.warn('[Webhook] Missing stripe-signature header. Request rejected.');
@@ -56,7 +57,7 @@ export async function webhookRoutes(fastify: FastifyInstance) {
       // Only handle checkout.session.completed with payment_status === 'paid'
       // payment_intent.succeeded is ignored to prevent double-processing
       if (event?.type === 'checkout.session.completed') {
-        const session = event.data?.object || event;
+        const session = event.data.object;
 
         // Verify payment actually succeeded
         if (session.payment_status !== 'paid') {
@@ -64,8 +65,8 @@ export async function webhookRoutes(fastify: FastifyInstance) {
           return reply.status(200).send({ received: true, status: 'not_paid' });
         }
 
-        const paymentId = session.payment_intent || session.id || `mock_pi_${Date.now()}`;
-        const amountCents = session.amount_total || session.amount || 0;
+        const paymentId = (typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id) || session.id;
+        const amountCents = session.amount_total || 0;
         const currency = (session.currency || 'usd').toLowerCase();
 
         fastify.log.info(`[Webhook] Valid checkout completed for payment ${paymentId}: ${amountCents} ${currency}`);
@@ -86,7 +87,7 @@ export async function webhookRoutes(fastify: FastifyInstance) {
             skillId: metadata.skillId,
             stripePaymentId: paymentId,
             amountCents,
-            buyerEmail: session.customer_details?.email,
+            buyerEmail: session.customer_details?.email ?? undefined,
           });
 
           return reply.status(200).send({
@@ -104,7 +105,7 @@ export async function webhookRoutes(fastify: FastifyInstance) {
             leadId: metadata.leadId,
             stripePaymentId: paymentId,
             amountCents,
-            customerEmail: session.customer_details?.email,
+            customerEmail: session.customer_details?.email ?? undefined,
           });
 
           return reply.status(200).send({
@@ -122,7 +123,7 @@ export async function webhookRoutes(fastify: FastifyInstance) {
           sessionId: session.id,
           amountCents,
           currency,
-          customerEmail: session.customer_details?.email,
+          customerEmail: session.customer_details?.email ?? undefined,
         });
 
         if (alreadyBurned) {

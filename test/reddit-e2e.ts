@@ -1,3 +1,4 @@
+import { E2E_ADMIN_AUTH } from './e2eGuard.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildApp } from '../src/server/app.js';
@@ -78,6 +79,7 @@ test('Reddit Autonomous Distribution & MCP Suite', async (t) => {
     const res = await app.inject({
       method: 'GET',
       url: '/api/reddit/status',
+      headers: E2E_ADMIN_AUTH,
     });
 
     assert.strictEqual(res.statusCode, 200);
@@ -90,6 +92,7 @@ test('Reddit Autonomous Distribution & MCP Suite', async (t) => {
     const res = await app.inject({
       method: 'GET',
       url: '/api/reddit/curated',
+      headers: E2E_ADMIN_AUTH,
     });
 
     assert.strictEqual(res.statusCode, 200);
@@ -102,6 +105,7 @@ test('Reddit Autonomous Distribution & MCP Suite', async (t) => {
     const res = await app.inject({
       method: 'POST',
       url: '/api/reddit/publish',
+      headers: E2E_ADMIN_AUTH,
       payload: {
         subreddit: 's', // too short (<2)
       },
@@ -114,6 +118,7 @@ test('Reddit Autonomous Distribution & MCP Suite', async (t) => {
     const res = await app.inject({
       method: 'POST',
       url: '/api/reddit/publish',
+      headers: E2E_ADMIN_AUTH,
       payload: {
         subreddit: 'selfhosted',
         strategy: 'selfhosted',
@@ -131,6 +136,7 @@ test('Reddit Autonomous Distribution & MCP Suite', async (t) => {
     const res = await app.inject({
       method: 'GET',
       url: '/api/reddit/posts',
+      headers: E2E_ADMIN_AUTH,
     });
 
     assert.strictEqual(res.statusCode, 200);

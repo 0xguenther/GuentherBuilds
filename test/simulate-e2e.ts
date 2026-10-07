@@ -1,3 +1,4 @@
+import './e2eGuard.js';
 import { buildApp } from '../src/server/app.js';
 import { prisma } from '../src/db/client.js';
 import { MarketingService } from '../src/services/marketingService.js';
@@ -117,6 +118,7 @@ async function runE2ETests() {
       data: {
         object: {
           payment_intent: testPaymentId,
+          payment_status: 'paid',
           amount_total: 4900,
           currency: 'usd',
         },

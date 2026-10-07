@@ -1,3 +1,4 @@
+import { it } from 'vitest';
 import { CommunityGrowthService } from '../src/services/communityGrowthService.js';
 import { prisma } from '../src/db/client.js';
 
@@ -26,6 +27,9 @@ async function testGrowthEngagement() {
   }
 
   // 4. Test timeline ecosystem scouting and reactive posting
+  // Hermetic: earlier runs leave SCOUT_REACTIVE_INSIGHT_POSTED traces in test.db (72h dedup window),
+  // which would make the simulated opportunities look "already addressed".
+  await prisma.trace.deleteMany({ where: { task: 'SCOUT_REACTIVE_INSIGHT_POSTED' } });
   const { TimelineScoutService } = await import('../src/services/timelineScoutService.js');
   const scoutResult = await TimelineScoutService.scoutAndReact(true);
   console.log('Timeline scout result:', scoutResult);
@@ -41,9 +45,4 @@ async function testGrowthEngagement() {
   console.log('✅ ALL CommunityGrowthService & TimelineScoutService tests passed!');
 }
 
-testGrowthEngagement()
-  .catch((err) => {
-    console.error('❌ Growth test failed:', err);
-    process.exit(1);
-  })
-  .finally(() => prisma.$disconnect());
+it('runs the simulated growth and scouting cycle', testGrowthEngagement, 30000);

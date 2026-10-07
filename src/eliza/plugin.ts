@@ -10,7 +10,7 @@ export interface ElizaMemory {
   content: {
     text: string;
     action?: string;
-    params?: Record<string, any>;
+    params?: Record<string, unknown>;
   };
 }
 
@@ -19,7 +19,7 @@ export interface ElizaState {
   lore?: string;
   messageDirections?: string;
   providers?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface ElizaAction {
@@ -30,8 +30,8 @@ export interface ElizaAction {
   handler: (
     memory: ElizaMemory,
     state?: ElizaState,
-    options?: any,
-    callback?: (response: { text: string; data?: any }) => void
+    options?: unknown,
+    callback?: (response: { text: string; data?: unknown }) => void
   ) => Promise<boolean>;
   examples: Array<Array<{ user: string; content: { text: string; action?: string } }>>;
 }
@@ -99,7 +99,7 @@ export const executeBurnAction: ElizaAction = {
   },
   handler: async (memory, _state, _options, callback) => {
     const paymentId = memory.content.params?.paymentId;
-    if (!paymentId) return false;
+    if (typeof paymentId !== 'string' || !paymentId) return false;
 
     try {
       const result = await BurnService.executeBurn(paymentId);
@@ -142,8 +142,10 @@ export const announceBurnAction: ElizaAction = {
   },
   handler: async (memory, _state, _options, callback) => {
     const { amountCents, tokensBurned, txHash } = memory.content.params || {};
+    if (typeof amountCents !== 'number' || typeof txHash !== 'string' ||
+        (typeof tokensBurned !== 'string' && typeof tokensBurned !== 'number' && typeof tokensBurned !== 'bigint')) return false;
     try {
-      const tokens = typeof tokensBurned === 'bigint' ? tokensBurned : BigInt(tokensBurned || 0);
+      const tokens = BigInt(tokensBurned);
       const result = await MarketingService.announceBurn(amountCents, tokens, txHash);
       if (callback) {
         callback({ text: `Proof of Burn getwittert: ${result.tweetId}` });

@@ -1,3 +1,4 @@
+import { fetchWithRetry } from '../utils/retryUtil.js';
 import { config } from '../config/index.js';
 import { TraceService } from '../services/traceService.js';
 import { RoutingDecisionSchema, RoutingDecision } from '../types/index.js';
@@ -19,7 +20,8 @@ export class LlmClient {
    */
   static async routeWithLocalLlm(
     eventDescription: string,
-    taskId: string
+    taskId: string,
+    user?: string
   ): Promise<RoutingDecision | null> {
     const startTime = Date.now();
     try {
@@ -36,7 +38,7 @@ Gib das Ergebnis AUSSCHLIESSLICH als gültiges JSON-Objekt zurück, das diesem S
 Ereignis:
 ${eventDescription}`;
 
-      const res = await fetch(`${config.llm.localUrl}/api/generate`, {
+      const res = await fetchWithRetry(`${config.llm.localUrl}/api/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -49,14 +51,10 @@ ${eventDescription}`;
           },
         }),
         signal: AbortSignal.timeout(3000), // Strict 3s timeout
-      });
-
-      if (!res.ok) {
-        return null;
-      }
+      }, { maxRetries: 2 });
 
       const data = await res.json() as { response?: string; prompt_eval_count?: number; eval_count?: number };
-      if (!data.response) return null;
+      if (!data.response) throw new Error('Local LLM returned no response');
 
       const parsed = JSON.parse(data.response);
       const validated = RoutingDecisionSchema.parse(parsed);
@@ -65,6 +63,7 @@ ${eventDescription}`;
 
       await TraceService.recordTrace({
         taskId,
+        user,
         model: config.llm.localModel,
         task: 'LOCAL_LLM_ROUTING',
         tokens: totalTokens,
@@ -79,6 +78,7 @@ ${eventDescription}`;
       // Record failed trace for observability in Langfuse
       await TraceService.recordTrace({
         taskId,
+        user,
         model: config.llm.localModel,
         task: 'LOCAL_LLM_ROUTING',
         tokens: 0,
@@ -100,6 +100,7 @@ ${eventDescription}`;
     maxTokens?: number;
     taskId: string;
     taskName: string;
+    user?: string;
     timeoutMs?: number;
   }): Promise<{ text: string; model: string; inputTokens: number; outputTokens: number; costUsd: number } | null> {
     const startTime = Date.now();
@@ -110,125 +111,105 @@ ${eventDescription}`;
       return null;
     }
 
-    const maxRetries = 3;
-    let delay = 1000;
     const timeoutMs = params.timeoutMs || 8000;
     const maxTokens = params.maxTokens || 300;
     const usedModel = hasAnthropic ? 'claude-3-5-sonnet-20241022' : config.llm.openrouterModel;
 
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        let replyText = '';
-        let inputTokens = 0;
-        let outputTokens = 0;
+    try {
+      let replyText = '';
+      let inputTokens = 0;
+      let outputTokens = 0;
 
-        if (hasAnthropic) {
-          const response = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-api-key': config.llm.anthropicApiKey,
-              'anthropic-version': '2023-06-01',
-            },
-            body: JSON.stringify({
-              model: usedModel,
-              max_tokens: maxTokens,
-              system: params.systemPrompt,
-              messages: [{ role: 'user', content: params.userPrompt }],
-            }),
-            signal: AbortSignal.timeout(timeoutMs),
-          });
-
-          if (response.status === 429 && attempt < maxRetries) {
-            console.warn(`[LlmClient] Claude API rate-limited (429). Retrying in ${delay}ms...`);
-            await new Promise((r) => setTimeout(r, delay));
-            delay *= 2;
-            continue;
-          }
-
-          if (!response.ok) {
-            throw new Error(`Claude API error: ${response.status} ${response.statusText}`);
-          }
-
-          const data = (await response.json()) as ClaudeMessageResponse;
-          replyText = data.content?.[0]?.text?.trim() || '';
-          inputTokens = data.usage?.input_tokens || 0;
-          outputTokens = data.usage?.output_tokens || 0;
-        } else {
-          // OpenRouter API call
-          const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${config.llm.openrouterApiKey}`,
-              'HTTP-Referer': 'https://0xguenther.org',
-              'X-Title': 'Guenther Autonomous AI Entrepreneur',
-            },
-            body: JSON.stringify({
-              model: usedModel,
-              max_tokens: maxTokens,
-              messages: [
-                { role: 'system', content: params.systemPrompt },
-                { role: 'user', content: params.userPrompt },
-              ],
-            }),
-            signal: AbortSignal.timeout(timeoutMs),
-          });
-
-          if (response.status === 429 && attempt < maxRetries) {
-            console.warn(`[LlmClient] OpenRouter API rate-limited (429). Retrying in ${delay}ms...`);
-            await new Promise((r) => setTimeout(r, delay));
-            delay *= 2;
-            continue;
-          }
-
-          if (!response.ok) {
-            throw new Error(`OpenRouter API error: ${response.status} ${response.statusText}`);
-          }
-
-          const data = (await response.json()) as any;
-          replyText = data.choices?.[0]?.message?.content?.trim() || '';
-          inputTokens = data.usage?.prompt_tokens || 0;
-          outputTokens = data.usage?.completion_tokens || 0;
-        }
-
-        const costUsd = (inputTokens * 0.000003) + (outputTokens * 0.000015);
-
-        await TraceService.recordTrace({
-          taskId: params.taskId,
-          model: usedModel,
-          task: params.taskName,
-          tokens: inputTokens + outputTokens,
-          costUsd,
-          status: 'ok',
-          metadata: { latencyMs: Date.now() - startTime },
+      if (hasAnthropic) {
+        const response = await fetchWithRetry('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': config.llm.anthropicApiKey,
+            'anthropic-version': '2023-06-01',
+          },
+          body: JSON.stringify({
+            model: usedModel,
+            max_tokens: maxTokens,
+            system: params.systemPrompt,
+            messages: [{ role: 'user', content: params.userPrompt }],
+          }),
+          signal: AbortSignal.timeout(timeoutMs),
         });
 
-        return {
-          text: replyText,
-          model: usedModel,
-          inputTokens,
-          outputTokens,
-          costUsd,
-        };
-      } catch (err: unknown) {
-        if (attempt === maxRetries) {
-          const message = err instanceof Error ? err.message : 'Unknown LLM API error';
-          await TraceService.recordTrace({
-            taskId: params.taskId,
-            model: usedModel,
-            task: params.taskName,
-            tokens: 0,
-            costUsd: 0,
-            status: 'error',
-            metadata: { error: message, latencyMs: Date.now() - startTime },
-          });
-          return null;
+        if (!response.ok) {
+          throw new Error(`Claude API error: ${response.status} ${response.statusText}`);
         }
-      }
-    }
 
-    return null;
+        const data = (await response.json()) as ClaudeMessageResponse;
+        replyText = data.content?.[0]?.text?.trim() || '';
+        inputTokens = data.usage?.input_tokens || 0;
+        outputTokens = data.usage?.output_tokens || 0;
+      } else {
+        // OpenRouter API call
+        const response = await fetchWithRetry('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${config.llm.openrouterApiKey}`,
+            'HTTP-Referer': 'https://0xguenther.org',
+            'X-Title': 'Guenther Autonomous AI Entrepreneur',
+          },
+          body: JSON.stringify({
+            model: usedModel,
+            max_tokens: maxTokens,
+            messages: [
+              { role: 'system', content: params.systemPrompt },
+              { role: 'user', content: params.userPrompt },
+            ],
+          }),
+          signal: AbortSignal.timeout(timeoutMs),
+        });
+
+        if (!response.ok) {
+          throw new Error(`OpenRouter API error: ${response.status} ${response.statusText}`);
+        }
+
+        const data = (await response.json()) as { choices?: Array<{ message?: { content?: string } }>; usage?: { prompt_tokens?: number; completion_tokens?: number } };
+        replyText = data.choices?.[0]?.message?.content?.trim() || '';
+        inputTokens = data.usage?.prompt_tokens || 0;
+        outputTokens = data.usage?.completion_tokens || 0;
+      }
+
+      const costUsd = (inputTokens * 0.000003) + (outputTokens * 0.000015);
+
+      await TraceService.recordTrace({
+        taskId: params.taskId,
+        user: params.user,
+        model: usedModel,
+        task: params.taskName,
+        tokens: inputTokens + outputTokens,
+        costUsd,
+        status: 'ok',
+        metadata: { latencyMs: Date.now() - startTime },
+      });
+
+      return {
+        text: replyText,
+        model: usedModel,
+        inputTokens,
+        outputTokens,
+        costUsd,
+      };
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Unknown LLM API error';
+      await TraceService.recordTrace({
+        taskId: params.taskId,
+        user: params.user,
+        model: usedModel,
+        task: params.taskName,
+        tokens: 0,
+        costUsd: 0,
+        status: 'error',
+        metadata: { error: message, latencyMs: Date.now() - startTime },
+      });
+      return null;
+    }
   }
 
   /**
@@ -245,6 +226,7 @@ ${eventDescription}`;
       maxTokens: 150,
       taskId,
       taskName: 'GENERATE_SALES_REPLY',
+      user: author,
       timeoutMs: 8000,
     });
 

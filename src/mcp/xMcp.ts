@@ -1,3 +1,4 @@
+import { executeWithRetry, fetchResponseWithRetry, HttpError } from '../utils/retryUtil.js';
 import crypto from 'crypto';
 import { config } from '../config/index.js';
 import { prisma } from '../db/client.js';
@@ -40,6 +41,11 @@ export interface SearchTweetItem {
 export interface SearchTweetsParams {
   query: string;
   maxResults?: number;
+}
+
+interface XTweetsResponse {
+  data?: Array<{ id: string; text: string; author_id?: string; created_at?: string }>;
+  includes?: { users?: Array<{ id: string; username: string }> };
 }
 
 function percentEncode(str: string): string {
@@ -87,37 +93,12 @@ function buildOAuthHeader(
 
 export class XMcpClient {
   /**
-   * Resilient HTTP call with Exponential Backoff specifically handling HTTP 429
-   */
-  private static async executeWithExponentialBackoff<T>(
-    fn: () => Promise<T>,
-    maxRetries = 4,
-    baseDelayMs = 1500
-  ): Promise<T> {
-    let delay = baseDelayMs;
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        return await fn();
-      } catch (error: any) {
-        const isRateLimited = error?.status === 429 || error?.message?.includes('429');
-        if (attempt === maxRetries || !isRateLimited) {
-          throw error;
-        }
-
-        console.warn(`[XMcp] Hit rate limit (429). Retrying attempt ${attempt}/${maxRetries} after ${delay}ms...`);
-        await new Promise((res) => setTimeout(res, delay));
-        delay *= 2; // exponential backoff
-      }
-    }
-    throw new Error('X API max backoff retries reached');
-  }
-
-  /**
    * Posts a tweet or reply to X using OAuth 1.0a User Context.
    * If in test mode or API keys are missing, runs in verified simulated mode.
    */
   static async postTweet(params: PostTweetParams): Promise<PostTweetResult> {
-    return this.executeWithExponentialBackoff(async () => {
+    // Retry the whole 429 attempt so OAuth and the existing claim/finish flow are renewed.
+    return executeWithRetry(async () => {
       const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
       const hasKeys = Boolean(
         config.x.apiKey &&
@@ -155,7 +136,7 @@ export class XMcpClient {
         config.x.accessSecret
       );
 
-      const payload: Record<string, any> = { text: params.text };
+      const payload: Record<string, unknown> = { text: params.text };
       if (params.inReplyToStatusId) {
         payload.reply = { in_reply_to_tweet_id: params.inReplyToStatusId };
       }
@@ -165,7 +146,7 @@ export class XMcpClient {
 
       let res: Response;
       try {
-        res = await fetch(url, {
+        res = await fetchResponseWithRetry(url, {
           method: 'POST',
           headers: {
             Authorization: authHeader,
@@ -173,14 +154,14 @@ export class XMcpClient {
           },
           body: JSON.stringify(payload),
           signal: AbortSignal.timeout(10000),
-        });
+        }, { maxRetries: 1 });
       } catch {
         throw new XUnconfirmedError(params.idempotencyKey ?? url);
       }
 
       if (res.status === 429) {
         await XMcpClient.finishIdempotency(claim.traceId, 'error');
-        throw new Error('X API rate limit (429)');
+        throw HttpError.fromResponse(res);
       }
 
       if (res.status === 402) {
@@ -196,7 +177,7 @@ export class XMcpClient {
         throw new Error(`X API error ${res.status}: ${errorText}`);
       }
 
-      const data = (await res.json()) as any;
+      const data = (await res.json()) as { data?: { id: string; text: string } };
       const tweetId = data.data?.id || `live_${Date.now()}`;
       await XMcpClient.finishIdempotency(claim.traceId, 'ok', tweetId);
       console.log(`[XMcp] Live Tweet posted successfully: ${tweetId}`);
@@ -205,7 +186,7 @@ export class XMcpClient {
         text: data.data?.text || params.text,
         createdAt: new Date().toISOString(),
       };
-    });
+    }, { maxRetries: 4, initialDelayMs: 1500, retryableStatuses: [429] });
   }
 
   /** Prüft den Idempotenz-Schlüssel gegen die Trace-Tabelle. */
@@ -245,361 +226,351 @@ export class XMcpClient {
    * If in test mode or API keys are missing, returns simulated high-signal tweets.
    */
   static async searchRecentTweets(params: SearchTweetsParams): Promise<SearchTweetItem[]> {
-    return this.executeWithExponentialBackoff(async () => {
-      const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
-      const hasKeys = Boolean(
-        config.x.apiKey &&
-        config.x.apiSecret &&
-        config.x.accessToken &&
-        config.x.accessSecret
-      );
+    const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
+    const hasKeys = Boolean(
+      config.x.apiKey &&
+      config.x.apiSecret &&
+      config.x.accessToken &&
+      config.x.accessSecret
+    );
 
-      if (!hasKeys || isTestMode) {
-        return [
-          {
-            id: 'sim_tweet_1',
-            text: 'Payments plus AI agents on Base L2 is the real wedge for autonomous micro-SaaS.',
-            authorId: 'sim_author_1',
-            username: 'builder_sim',
-          },
-        ];
-      }
-
-      const url = 'https://api.twitter.com/2/tweets/search/recent';
-      const queryParams: Record<string, string> = {
-        query: params.query,
-        max_results: String(params.maxResults || 10),
-      };
-
-      const oauthParams: Record<string, string> = {
-        oauth_consumer_key: config.x.apiKey,
-        oauth_nonce: crypto.randomBytes(16).toString('hex'),
-        oauth_signature_method: 'HMAC-SHA1',
-        oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
-        oauth_token: config.x.accessToken,
-        oauth_version: '1.0',
-      };
-
-      const authHeader = buildOAuthHeader(
-        'GET',
-        url,
-        oauthParams,
-        config.x.apiSecret,
-        config.x.accessSecret,
-        queryParams
-      );
-
-      const qs = Object.keys(queryParams)
-        .map((k) => `${percentEncode(k)}=${percentEncode(queryParams[k])}`)
-        .join('&');
-
-      const res = await fetch(`${url}?${qs}`, {
-        method: 'GET',
-        headers: {
-          Authorization: authHeader,
-          'Content-Type': 'application/json',
+    if (!hasKeys || isTestMode) {
+      return [
+        {
+          id: 'sim_tweet_1',
+          text: 'Payments plus AI agents on Base L2 is the real wedge for autonomous micro-SaaS.',
+          authorId: 'sim_author_1',
+          username: 'builder_sim',
         },
-        signal: AbortSignal.timeout(10000),
-      });
+      ];
+    }
 
-      if (res.status === 429) {
-        throw new Error('X API rate limit (429)');
-      }
+    const url = 'https://api.twitter.com/2/tweets/search/recent';
+    const queryParams: Record<string, string> = {
+      query: params.query,
+      max_results: String(params.maxResults || 10),
+    };
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`X API search error ${res.status}: ${errorText}`);
-      }
+    const oauthParams: Record<string, string> = {
+      oauth_consumer_key: config.x.apiKey,
+      oauth_nonce: crypto.randomBytes(16).toString('hex'),
+      oauth_signature_method: 'HMAC-SHA1',
+      oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
+      oauth_token: config.x.accessToken,
+      oauth_version: '1.0',
+    };
 
-      const data = (await res.json()) as any;
-      if (!data.data || !Array.isArray(data.data)) {
-        return [];
-      }
+    const authHeader = buildOAuthHeader(
+      'GET',
+      url,
+      oauthParams,
+      config.x.apiSecret,
+      config.x.accessSecret,
+      queryParams
+    );
 
-      return data.data.map((t: any) => ({
-        id: t.id,
-        text: t.text,
-        authorId: t.author_id,
-      }));
+    const qs = Object.keys(queryParams)
+      .map((k) => `${percentEncode(k)}=${percentEncode(queryParams[k])}`)
+      .join('&');
+
+    const res = await fetchResponseWithRetry(`${url}?${qs}`, {
+      method: 'GET',
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json',
+      },
+      signal: AbortSignal.timeout(10000),
     });
+
+    if (res.status === 429) {
+      throw new Error('X API rate limit (429)');
+    }
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`X API search error ${res.status}: ${errorText}`);
+    }
+
+    const data = (await res.json()) as XTweetsResponse;
+    if (!data.data || !Array.isArray(data.data)) {
+      return [];
+    }
+
+    return data.data.map((t) => ({
+      id: t.id,
+      text: t.text,
+      authorId: t.author_id,
+    }));
   }
 
   /**
    * Fetches recent incoming mentions to @GuentherBuilds.
    */
   static async getRecentMentions(): Promise<Array<{ id: string; author: string; text: string }>> {
-    return this.executeWithExponentialBackoff(async () => {
-      const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
-      const hasKeys = Boolean(
-        config.x.apiKey &&
-        config.x.apiSecret &&
-        config.x.accessToken &&
-        config.x.accessSecret
-      );
+    const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
+    const hasKeys = Boolean(
+      config.x.apiKey &&
+      config.x.apiSecret &&
+      config.x.accessToken &&
+      config.x.accessSecret
+    );
 
-      if (!hasKeys || isTestMode) {
-        return [];
-      }
+    if (!hasKeys || isTestMode) {
+      return [];
+    }
 
-      const userId = '2104592585335443457';
-      const url = `https://api.twitter.com/2/users/${userId}/mentions`;
-      const queryParams: Record<string, string> = {
-        expansions: 'author_id',
-        'user.fields': 'username',
-        max_results: '10',
-      };
+    const userId = '2104592585335443457';
+    const url = `https://api.twitter.com/2/users/${userId}/mentions`;
+    const queryParams: Record<string, string> = {
+      expansions: 'author_id',
+      'user.fields': 'username',
+      max_results: '10',
+    };
 
-      const oauthParams: Record<string, string> = {
-        oauth_consumer_key: config.x.apiKey,
-        oauth_nonce: crypto.randomBytes(16).toString('hex'),
-        oauth_signature_method: 'HMAC-SHA1',
-        oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
-        oauth_token: config.x.accessToken,
-        oauth_version: '1.0',
-      };
+    const oauthParams: Record<string, string> = {
+      oauth_consumer_key: config.x.apiKey,
+      oauth_nonce: crypto.randomBytes(16).toString('hex'),
+      oauth_signature_method: 'HMAC-SHA1',
+      oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
+      oauth_token: config.x.accessToken,
+      oauth_version: '1.0',
+    };
 
-      const authHeader = buildOAuthHeader(
-        'GET',
-        url,
-        oauthParams,
-        config.x.apiSecret,
-        config.x.accessSecret,
-        queryParams
-      );
+    const authHeader = buildOAuthHeader(
+      'GET',
+      url,
+      oauthParams,
+      config.x.apiSecret,
+      config.x.accessSecret,
+      queryParams
+    );
 
-      const qs = Object.keys(queryParams)
-        .map((k) => `${percentEncode(k)}=${percentEncode(queryParams[k])}`)
-        .join('&');
+    const qs = Object.keys(queryParams)
+      .map((k) => `${percentEncode(k)}=${percentEncode(queryParams[k])}`)
+      .join('&');
 
-      const res = await fetch(`${url}?${qs}`, {
-        method: 'GET',
-        headers: {
-          Authorization: authHeader,
-          'Content-Type': 'application/json',
-        },
-        signal: AbortSignal.timeout(10000),
-      });
-
-      if (!res.ok) {
-        if (res.status === 429) throw new Error('X API rate limit (429)');
-        return [];
-      }
-
-      const data = (await res.json()) as any;
-      if (!data.data || !Array.isArray(data.data)) {
-        return [];
-      }
-
-      const userMap = new Map<string, string>();
-      if (data.includes?.users && Array.isArray(data.includes.users)) {
-        for (const u of data.includes.users) {
-          userMap.set(u.id, u.username);
-        }
-      }
-
-      return data.data.map((m: any) => ({
-        id: m.id,
-        author: userMap.get(m.author_id) || 'unknown',
-        text: m.text,
-      }));
+    const res = await fetchResponseWithRetry(`${url}?${qs}`, {
+      method: 'GET',
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json',
+      },
+      signal: AbortSignal.timeout(10000),
     });
+
+    if (!res.ok) {
+      if (res.status === 429) throw new Error('X API rate limit (429)');
+      return [];
+    }
+
+    const data = (await res.json()) as XTweetsResponse;
+    if (!data.data || !Array.isArray(data.data)) {
+      return [];
+    }
+
+    const userMap = new Map<string, string>();
+    if (data.includes?.users && Array.isArray(data.includes.users)) {
+      for (const u of data.includes.users) {
+        userMap.set(u.id, u.username);
+      }
+    }
+
+    return data.data.map((m) => ({
+      id: m.id,
+      author: userMap.get(m.author_id ?? '') || 'unknown',
+      text: m.text,
+    }));
   }
 
   /**
    * Looks up a user on X by their username.
    */
   static async getUserByUsername(username: string): Promise<{ id: string; name: string; username: string } | null> {
-    return this.executeWithExponentialBackoff(async () => {
-      const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
-      const hasKeys = Boolean(
-        config.x.apiKey &&
-        config.x.apiSecret &&
-        config.x.accessToken &&
-        config.x.accessSecret
-      );
+    const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
+    const hasKeys = Boolean(
+      config.x.apiKey &&
+      config.x.apiSecret &&
+      config.x.accessToken &&
+      config.x.accessSecret
+    );
 
-      if (!hasKeys || isTestMode) {
-        return { id: `sim_uid_${username}`, name: username, username };
-      }
+    if (!hasKeys || isTestMode) {
+      return { id: `sim_uid_${username}`, name: username, username };
+    }
 
-      const cleanUsername = username.replace(/^@/, '');
-      const url = `https://api.twitter.com/2/users/by/username/${cleanUsername}`;
+    const cleanUsername = username.replace(/^@/, '');
+    const url = `https://api.twitter.com/2/users/by/username/${cleanUsername}`;
 
-      const oauthParams: Record<string, string> = {
-        oauth_consumer_key: config.x.apiKey,
-        oauth_nonce: crypto.randomBytes(16).toString('hex'),
-        oauth_signature_method: 'HMAC-SHA1',
-        oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
-        oauth_token: config.x.accessToken,
-        oauth_version: '1.0',
-      };
+    const oauthParams: Record<string, string> = {
+      oauth_consumer_key: config.x.apiKey,
+      oauth_nonce: crypto.randomBytes(16).toString('hex'),
+      oauth_signature_method: 'HMAC-SHA1',
+      oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
+      oauth_token: config.x.accessToken,
+      oauth_version: '1.0',
+    };
 
-      const authHeader = buildOAuthHeader(
-        'GET',
-        url,
-        oauthParams,
-        config.x.apiSecret,
-        config.x.accessSecret
-      );
+    const authHeader = buildOAuthHeader(
+      'GET',
+      url,
+      oauthParams,
+      config.x.apiSecret,
+      config.x.accessSecret
+    );
 
-      const res = await fetch(url, {
-        method: 'GET',
-        headers: {
-          Authorization: authHeader,
-          'Content-Type': 'application/json',
-        },
-        signal: AbortSignal.timeout(10000),
-      });
-
-      if (!res.ok) {
-        if (res.status === 429) throw new Error('X API rate limit (429)');
-        return null;
-      }
-
-      const data = (await res.json()) as any;
-      if (!data.data) return null;
-      return {
-        id: data.data.id,
-        name: data.data.name,
-        username: data.data.username,
-      };
+    const res = await fetchResponseWithRetry(url, {
+      method: 'GET',
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json',
+      },
+      signal: AbortSignal.timeout(10000),
     });
+
+    if (!res.ok) {
+      if (res.status === 429) throw new Error('X API rate limit (429)');
+      return null;
+    }
+
+    const data = (await res.json()) as { data?: { id: string; name: string; username: string } };
+    if (!data.data) return null;
+    return {
+      id: data.data.id,
+      name: data.data.name,
+      username: data.data.username,
+    };
   }
 
   /**
    * Fetches recent tweets for a user, excluding retweets.
    */
   static async getUserTweets(userId: string, maxResults = 5): Promise<Array<{ id: string; text: string; createdAt?: string }>> {
-    return this.executeWithExponentialBackoff(async () => {
-      const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
-      const hasKeys = Boolean(
-        config.x.apiKey &&
-        config.x.apiSecret &&
-        config.x.accessToken &&
-        config.x.accessSecret
-      );
+    const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
+    const hasKeys = Boolean(
+      config.x.apiKey &&
+      config.x.apiSecret &&
+      config.x.accessToken &&
+      config.x.accessSecret
+    );
 
-      if (!hasKeys || isTestMode) {
-        return [
-          {
-            id: `sim_tweet_${userId}`,
-            text: 'x402 payments settling in USDC on @base are transforming agent economics. Machine-to-machine micropayments now in production.',
-            createdAt: new Date().toISOString(),
-          },
-        ];
-      }
-
-      const url = `https://api.twitter.com/2/users/${userId}/tweets`;
-      const queryParams: Record<string, string> = {
-        max_results: String(maxResults),
-        exclude: 'retweets',
-        'tweet.fields': 'created_at',
-      };
-
-      const oauthParams: Record<string, string> = {
-        oauth_consumer_key: config.x.apiKey,
-        oauth_nonce: crypto.randomBytes(16).toString('hex'),
-        oauth_signature_method: 'HMAC-SHA1',
-        oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
-        oauth_token: config.x.accessToken,
-        oauth_version: '1.0',
-      };
-
-      const authHeader = buildOAuthHeader(
-        'GET',
-        url,
-        oauthParams,
-        config.x.apiSecret,
-        config.x.accessSecret,
-        queryParams
-      );
-
-      const qs = Object.keys(queryParams)
-        .map((k) => `${percentEncode(k)}=${percentEncode(queryParams[k])}`)
-        .join('&');
-
-      const res = await fetch(`${url}?${qs}`, {
-        method: 'GET',
-        headers: {
-          Authorization: authHeader,
-          'Content-Type': 'application/json',
+    if (!hasKeys || isTestMode) {
+      return [
+        {
+          id: `sim_tweet_${userId}`,
+          text: 'x402 payments settling in USDC on @base are transforming agent economics. Machine-to-machine micropayments now in production.',
+          createdAt: new Date().toISOString(),
         },
-        signal: AbortSignal.timeout(10000),
-      });
+      ];
+    }
 
-      if (!res.ok) {
-        if (res.status === 429) throw new Error('X API rate limit (429)');
-        return [];
-      }
+    const url = `https://api.twitter.com/2/users/${userId}/tweets`;
+    const queryParams: Record<string, string> = {
+      max_results: String(maxResults),
+      exclude: 'retweets',
+      'tweet.fields': 'created_at',
+    };
 
-      const data = (await res.json()) as any;
-      if (!data.data || !Array.isArray(data.data)) {
-        return [];
-      }
+    const oauthParams: Record<string, string> = {
+      oauth_consumer_key: config.x.apiKey,
+      oauth_nonce: crypto.randomBytes(16).toString('hex'),
+      oauth_signature_method: 'HMAC-SHA1',
+      oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
+      oauth_token: config.x.accessToken,
+      oauth_version: '1.0',
+    };
 
-      return data.data.map((t: any) => ({
-        id: t.id,
-        text: t.text,
-        createdAt: t.created_at,
-      }));
+    const authHeader = buildOAuthHeader(
+      'GET',
+      url,
+      oauthParams,
+      config.x.apiSecret,
+      config.x.accessSecret,
+      queryParams
+    );
+
+    const qs = Object.keys(queryParams)
+      .map((k) => `${percentEncode(k)}=${percentEncode(queryParams[k])}`)
+      .join('&');
+
+    const res = await fetchResponseWithRetry(`${url}?${qs}`, {
+      method: 'GET',
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json',
+      },
+      signal: AbortSignal.timeout(10000),
     });
+
+    if (!res.ok) {
+      if (res.status === 429) throw new Error('X API rate limit (429)');
+      return [];
+    }
+
+    const data = (await res.json()) as XTweetsResponse;
+    if (!data.data || !Array.isArray(data.data)) {
+      return [];
+    }
+
+    return data.data.map((t) => ({
+      id: t.id,
+      text: t.text,
+      createdAt: t.created_at,
+    }));
   }
 
   /**
    * Follows a target user on X.
    */
   static async followUser(targetUserId: string): Promise<boolean> {
-    return this.executeWithExponentialBackoff(async () => {
-      const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
-      const hasKeys = Boolean(
-        config.x.apiKey &&
-        config.x.apiSecret &&
-        config.x.accessToken &&
-        config.x.accessSecret
-      );
+    const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
+    const hasKeys = Boolean(
+      config.x.apiKey &&
+      config.x.apiSecret &&
+      config.x.accessToken &&
+      config.x.accessSecret
+    );
 
-      if (!hasKeys || isTestMode) {
-        return true;
-      }
+    if (!hasKeys || isTestMode) {
+      return true;
+    }
 
-      const myUserId = '2104592585335443457';
-      const url = `https://api.twitter.com/2/users/${myUserId}/following`;
+    const myUserId = '2104592585335443457';
+    const url = `https://api.twitter.com/2/users/${myUserId}/following`;
 
-      const oauthParams: Record<string, string> = {
-        oauth_consumer_key: config.x.apiKey,
-        oauth_nonce: crypto.randomBytes(16).toString('hex'),
-        oauth_signature_method: 'HMAC-SHA1',
-        oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
-        oauth_token: config.x.accessToken,
-        oauth_version: '1.0',
-      };
+    const oauthParams: Record<string, string> = {
+      oauth_consumer_key: config.x.apiKey,
+      oauth_nonce: crypto.randomBytes(16).toString('hex'),
+      oauth_signature_method: 'HMAC-SHA1',
+      oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
+      oauth_token: config.x.accessToken,
+      oauth_version: '1.0',
+    };
 
-      const authHeader = buildOAuthHeader(
-        'POST',
-        url,
-        oauthParams,
-        config.x.apiSecret,
-        config.x.accessSecret
-      );
+    const authHeader = buildOAuthHeader(
+      'POST',
+      url,
+      oauthParams,
+      config.x.apiSecret,
+      config.x.accessSecret
+    );
 
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: {
-          Authorization: authHeader,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ target_user_id: targetUserId }),
-        signal: AbortSignal.timeout(10000),
-      });
+    const res = await fetchResponseWithRetry(url, {
+      method: 'POST',
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ target_user_id: targetUserId }),
+      signal: AbortSignal.timeout(10000),
+    }, { retryableStatuses: [429] });
 
-      if (!res.ok) {
-        if (res.status === 429) throw new Error('X API rate limit (429)');
-        return false;
-      }
+    if (!res.ok) {
+      if (res.status === 429) throw new Error('X API rate limit (429)');
+      return false;
+    }
 
-      const data = (await res.json()) as any;
-      return Boolean(data?.data?.following);
-    });
+    const data = (await res.json()) as { data?: { following?: boolean } };
+    return Boolean(data?.data?.following);
   }
 
   /**

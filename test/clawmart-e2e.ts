@@ -1,3 +1,4 @@
+import './e2eGuard.js';
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { prisma } from '../src/db/client.js';

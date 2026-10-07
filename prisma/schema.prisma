@@ -18,7 +18,7 @@ model Payment {
   stripeSessionId String?
   amountCents  Int
   currency     String   @default("USD")
-  status       String   @default("received") // received | calculating | burning | burned | failed
+  status       String   @default("received") // received | calculating | burning | burned | failed | needs_review (never auto-retried)
   errorReason  String?  // Failure reason for debugging
   burnAmount   BigInt?
   txHash       String?  @unique
@@ -168,11 +168,14 @@ model RedditPost {
 model AuditOrder {
   id              String    @id @default(uuid())
   tier            String
-  status          String    @default("pending_payment") // pending_payment | paid | running | delivered | failed
+  status          String    @default("pending_payment") // pending_payment | paid | running | delivered | failed | rejected
   configJson      String
   buyerEmail      String?
   stripeSessionId String?
   stripePaymentId String?
+  refundId        String?
+  refundedAt      DateTime?
+  refundError     String?
   reportPath      String?
   downloadToken   String?   @unique
   downloadExpiresAt DateTime?
@@ -181,4 +184,16 @@ model AuditOrder {
   updatedAt       DateTime  @updatedAt
 
   @@index([status])
+}
+
+model PageView {
+  id           String   @id @default(uuid())
+  createdAt    DateTime @default(now())
+  day          String
+  path         String
+  visitorHash  String
+  referrerHost String?
+
+  @@index([day])
+  @@index([visitorHash])
 }

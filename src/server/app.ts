@@ -1,4 +1,5 @@
 import Fastify from 'fastify';
+import { recordPageView } from '../services/pageViewService.js';
 import rawBody from 'fastify-raw-body';
 import cors from '@fastify/cors';
 import fastifyStatic from '@fastify/static';
@@ -49,6 +50,11 @@ export async function buildApp() {
     }
   });
 
+  app.addHook('onResponse', (request, reply, done) => {
+    void recordPageView(request, reply).catch(() => request.log.warn('Page-view counting failed'));
+    done();
+  });
+
   // Serve static landing page and public assets only
   await app.register(fastifyStatic, {
     root: path.resolve(process.cwd(), 'public'),
@@ -89,7 +95,7 @@ export async function buildApp() {
 
   // Admin auth hook — protects write endpoints from unauthorized access
   const ADMIN_TOKEN = process.env.ADMIN_API_TOKEN;
-  const adminProtectedPrefixes = ['/api/reddit', '/api/growth', '/api/marketing'];
+  const adminProtectedPrefixes = ['/api/reddit', '/api/growth', '/api/marketing', '/api/metrics/funnel'];
 
   app.addHook('onRequest', async (request, reply) => {
     const url = request.url;

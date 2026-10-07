@@ -4,7 +4,7 @@ import { LlmClient } from './llmClient.js';
 
 export interface InboundEvent {
   source: 'STRIPE_WEBHOOK' | 'X_MENTION' | 'CRON_TRIGGER' | 'USER_PROMPT';
-  rawPayload: Record<string, any>;
+  rawPayload: Record<string, unknown>;
 }
 
 export class EventRouter {
@@ -45,7 +45,8 @@ export class EventRouter {
       // 1. Attempt structured routing with local LLM
       const localDecision = await LlmClient.routeWithLocalLlm(
         `X Mention von @${event.rawPayload.author}: "${event.rawPayload.text}"`,
-        taskId
+        taskId,
+        typeof event.rawPayload.author === 'string' ? event.rawPayload.author : undefined
       );
 
       // Security Guard: Never allow an untrusted X_MENTION to trigger financial burns or product creation!

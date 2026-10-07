@@ -8,6 +8,9 @@ import { checkDatabaseConnection } from '../db/client.js';
 import { config } from '../config/index.js';
 
 export class GuntherDaemon {
+  /** Claim -> broadcast takes seconds; an hour without txHash means the burner died mid-flight. */
+  static readonly STALE_BURN_MS = 60 * 60 * 1000;
+
   private timer: NodeJS.Timeout | null = null;
   private isRunning = false;
   private isTickBusy = false;
@@ -108,6 +111,18 @@ export class GuntherDaemon {
    * Reconciles payments that were received but not yet burned (e.g. after restart or temporary RPC glitch).
    */
   async reconcilePendingPayments(): Promise<number> {
+    const flagged = await PaymentService.flagStaleBurns(GuntherDaemon.STALE_BURN_MS);
+    for (const id of flagged) {
+      console.warn(`[Daemon] Payment ${id} stuck in 'burning' without txHash -> needs_review (no automatic re-burn).`);
+      await TraceService.recordTrace({
+        taskId: `burn-${id}`,
+        model: 'web3-cdp-agentkit',
+        task: 'BURN_NEEDS_REVIEW',
+        status: 'error',
+        metadata: { reason: 'burning without txHash' },
+      });
+    }
+
     const pending = await PaymentService.getPendingPayments();
     if (pending.length === 0) return 0;
 

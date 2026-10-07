@@ -6,6 +6,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   test: {
+    env: {
+      NODE_ENV: 'test',
+      DATABASE_URL: 'file:./test.db',
+      ANTHROPIC_API_KEY: '',
+      OPENROUTER_API_KEY: '',
+      LANGFUSE_PUBLIC_KEY: '',
+      LANGFUSE_SECRET_KEY: '',
+      RESEND_API_KEY: '',
+    },
     globals: true,
     environment: 'node',
     setupFiles: ['./test/setup.ts'],

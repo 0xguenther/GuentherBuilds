@@ -40,8 +40,8 @@ export async function growthRoutes(app: FastifyInstance) {
   // POST /api/growth/insight — forces publishing a builder insight with developer hashtags
   app.post('/api/growth/insight', async (req, reply) => {
     try {
-      const body = (req.body as any) || {};
-      const force = body.force !== false;
+      const body = (typeof req.body === 'object' && req.body !== null ? req.body : {});
+      const force = !('force' in body) || body.force !== false;
       const result = await CommunityGrowthService.publishBuilderInsight(force);
       return reply.send({
         success: result.published,
@@ -70,8 +70,8 @@ export async function growthRoutes(app: FastifyInstance) {
   // POST /api/growth/scout — triggers timeline scouting across ecosystem accounts
   app.post('/api/growth/scout', async (req, reply) => {
     try {
-      const body = (req.body as any) || {};
-      const force = body.force !== false;
+      const body = (typeof req.body === 'object' && req.body !== null ? req.body : {});
+      const force = !('force' in body) || body.force !== false;
       const { TimelineScoutService } = await import('../../services/timelineScoutService.js');
       const result = await TimelineScoutService.scoutAndReact(force);
       return reply.send({

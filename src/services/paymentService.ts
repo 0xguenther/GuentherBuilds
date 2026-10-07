@@ -88,6 +88,22 @@ export class PaymentService {
     });
   }
 
+  /**
+   * 'burning' ohne txHash nach maxAgeMs: Prozess starb zwischen Claim und Broadcast.
+   * Ob gesendet wurde, ist unklar -> nie automatisch erneut burnen, ein Mensch prüft on-chain.
+   */
+  static async flagStaleBurns(maxAgeMs: number): Promise<string[]> {
+    const where = { status: 'burning', txHash: null, updatedAt: { lt: new Date(Date.now() - maxAgeMs) } };
+    const stale = await prisma.payment.findMany({ where, select: { stripePaymentId: true } });
+    if (stale.length === 0) return [];
+    const ids = stale.map((p) => p.stripePaymentId);
+    await prisma.payment.updateMany({
+      where: { ...where, stripePaymentId: { in: ids } },
+      data: { status: 'needs_review', errorReason: 'burning without txHash: broadcast state unknown' },
+    });
+    return ids;
+  }
+
   static async getPaymentByStripeId(stripePaymentId: string) {
     return prisma.payment.findUnique({
       where: { stripePaymentId },

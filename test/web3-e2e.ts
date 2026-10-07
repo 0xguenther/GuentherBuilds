@@ -1,3 +1,4 @@
+import './e2eGuard.js';
 import test from 'node:test';
 import assert from 'node:assert';
 import { Web3McpClient } from '../src/mcp/web3Mcp.js';

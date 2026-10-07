@@ -67,7 +67,7 @@ export class BurnService {
 
       console.log(`[BurnService] Successfully burned tokens for payment ${stripePaymentId}. Tx: ${txResult.txHash}`);
       return { success: true, txHash: txResult.txHash, burnAmount: burnAmountWholeTokens };
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (err instanceof BurnPendingError) {
         await PaymentService.markPending(stripePaymentId, err.txHash);
         return { pending: true, txHash: err.txHash };
@@ -78,14 +78,14 @@ export class BurnService {
         return { pending: true, txHash: broadcastHash };
       }
       console.error(`[BurnService] Burn failed for ${stripePaymentId}:`, err);
-      await PaymentService.markFailed(stripePaymentId, err.message || 'Unknown error');
+      await PaymentService.markFailed(stripePaymentId, (err instanceof Error ? err.message : 'Unknown error') || 'Unknown error');
       
       await TraceService.recordTrace({
         taskId: `burn-${stripePaymentId}`,
         model: 'web3-cdp-agentkit',
         task: 'EXECUTE_BURN',
         status: 'error',
-        metadata: { error: err.message },
+        metadata: { error: (err instanceof Error ? err.message : 'Unknown error') },
       });
 
       throw err;

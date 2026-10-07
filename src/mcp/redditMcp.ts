@@ -1,3 +1,4 @@
+import { fetchResponseWithRetry } from '../utils/retryUtil.js';
 import { config } from '../config/index.js';
 
 export interface SubmitRedditPostParams {
@@ -29,32 +30,6 @@ export interface RedditAccountInfo {
 export class RedditMcpClient {
   private static cachedAccessToken: string | null = null;
   private static tokenExpiresAt = 0;
-
-  /**
-   * Resilient HTTP call with Exponential Backoff specifically handling HTTP 429
-   */
-  private static async executeWithExponentialBackoff<T>(
-    fn: () => Promise<T>,
-    maxRetries = 3,
-    baseDelayMs = 2000
-  ): Promise<T> {
-    let delay = baseDelayMs;
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        return await fn();
-      } catch (error: any) {
-        const isRateLimited = error?.status === 429 || error?.message?.includes('429');
-        if (attempt === maxRetries || !isRateLimited) {
-          throw error;
-        }
-
-        console.warn(`[RedditMcp] Rate limited (429). Retrying attempt ${attempt}/${maxRetries} after ${delay}ms...`);
-        await new Promise((res) => setTimeout(res, delay));
-        delay *= 2;
-      }
-    }
-    throw new Error('Reddit API max backoff retries reached');
-  }
 
   /**
    * Checks whether valid live Reddit credentials are configured
@@ -93,7 +68,7 @@ export class RedditMcpClient {
       password: config.reddit.password,
     });
 
-    const res = await fetch('https://www.reddit.com/api/v1/access_token', {
+    const res = await fetchResponseWithRetry('https://www.reddit.com/api/v1/access_token', {
       method: 'POST',
       headers: {
         Authorization: authHeader,
@@ -109,7 +84,7 @@ export class RedditMcpClient {
       throw new Error(`Reddit token exchange failed (HTTP ${res.status}): ${errorText}`);
     }
 
-    const data = (await res.json()) as any;
+    const data = (await res.json()) as { error?: string; error_description?: string; access_token: string; expires_in?: number };
     if (data.error) {
       throw new Error(`Reddit OAuth error: ${data.error} - ${data.error_description || ''}`);
     }
@@ -137,35 +112,33 @@ export class RedditMcpClient {
       };
     }
 
-    return this.executeWithExponentialBackoff(async () => {
-      const token = await this.getAccessToken();
+    const token = await this.getAccessToken();
 
-      const res = await fetch('https://oauth.reddit.com/api/v1/me', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'User-Agent': config.reddit.userAgent,
-        },
-        signal: AbortSignal.timeout(10000),
-      });
-
-      if (!res.ok) {
-        throw new Error(`Failed to fetch Reddit user profile (HTTP ${res.status})`);
-      }
-
-      const data = (await res.json()) as any;
-      const createdUtc = data.created_utc || Math.floor(Date.now() / 1000);
-      const ageDays = Math.max(0, Math.floor((Date.now() / 1000 - createdUtc) / 86400));
-
-      return {
-        username: data.name,
-        linkKarma: data.link_karma || 0,
-        commentKarma: data.comment_karma || 0,
-        totalKarma: (data.link_karma || 0) + (data.comment_karma || 0),
-        createdUtc,
-        accountAgeDays: ageDays,
-        isSimulated: false,
-      };
+    const res = await fetchResponseWithRetry('https://oauth.reddit.com/api/v1/me', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'User-Agent': config.reddit.userAgent,
+      },
+      signal: AbortSignal.timeout(10000),
     });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch Reddit user profile (HTTP ${res.status})`);
+    }
+
+    const data = (await res.json()) as { name: string; link_karma?: number; comment_karma?: number; created_utc?: number };
+    const createdUtc = data.created_utc || Math.floor(Date.now() / 1000);
+    const ageDays = Math.max(0, Math.floor((Date.now() / 1000 - createdUtc) / 86400));
+
+    return {
+      username: data.name,
+      linkKarma: data.link_karma || 0,
+      commentKarma: data.comment_karma || 0,
+      totalKarma: (data.link_karma || 0) + (data.comment_karma || 0),
+      createdUtc,
+      accountAgeDays: ageDays,
+      isSimulated: false,
+    };
   }
 
   /**
@@ -173,84 +146,82 @@ export class RedditMcpClient {
    * If credentials are missing or in test mode, executes in simulation mode.
    */
   static async submitPost(params: SubmitRedditPostParams): Promise<RedditPostResult> {
-    return this.executeWithExponentialBackoff(async () => {
-      const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
-      const cleanSubreddit = params.subreddit.replace(/^r\//i, '').trim();
+    const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
+    const cleanSubreddit = params.subreddit.replace(/^r\//i, '').trim();
 
-      if (!this.hasValidCredentials() || isTestMode) {
-        console.log(`[RedditMcp] (${isTestMode ? 'Test Mode' : 'Simulation Mode'}) Submitting to r/${cleanSubreddit}:`);
-        console.log(`Title: "${params.title}"`);
-        if (params.text) {
-          console.log(`Text preview: ${params.text.slice(0, 150)}...`);
-        }
-
-        const simulatedId = `t3_sim_${Date.now()}`;
-        return {
-          redditId: simulatedId,
-          url: `https://www.reddit.com/r/${cleanSubreddit}/comments/${simulatedId}`,
-          title: params.title,
-          subreddit: cleanSubreddit,
-          createdAt: new Date().toISOString(),
-        };
-      }
-
-      const token = await this.getAccessToken();
-
-      const formBody = new URLSearchParams({
-        api_type: 'json',
-        sr: cleanSubreddit,
-        kind: params.url ? 'link' : 'self',
-        title: params.title,
-        resubmit: 'true',
-        sendreplies: 'true',
-      });
-
+    if (!this.hasValidCredentials() || isTestMode) {
+      console.log(`[RedditMcp] (${isTestMode ? 'Test Mode' : 'Simulation Mode'}) Submitting to r/${cleanSubreddit}:`);
+      console.log(`Title: "${params.title}"`);
       if (params.text) {
-        formBody.set('text', params.text);
-      }
-      if (params.url) {
-        formBody.set('url', params.url);
+        console.log(`Text preview: ${params.text.slice(0, 150)}...`);
       }
 
-      const res = await fetch('https://oauth.reddit.com/api/submit', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'User-Agent': config.reddit.userAgent,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: formBody.toString(),
-        signal: AbortSignal.timeout(15000),
-      });
-
-      if (res.status === 429) {
-        throw new Error('Reddit API rate limit (429)');
-      }
-
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(`Reddit submit error (HTTP ${res.status}): ${errText}`);
-      }
-
-      const json = (await res.json()) as any;
-      const errors = json.json?.errors;
-      if (errors && errors.length > 0) {
-        throw new Error(`Reddit API rejected post: ${JSON.stringify(errors)}`);
-      }
-
-      const postData = json.json?.data;
-      const redditId = postData?.id || postData?.name || `t3_${Date.now()}`;
-      const url = postData?.url || `https://www.reddit.com/r/${cleanSubreddit}/comments/${redditId}`;
-
-      console.log(`[RedditMcp] Successfully posted to r/${cleanSubreddit}: ${url}`);
-
+      const simulatedId = `t3_sim_${Date.now()}`;
       return {
-        redditId,
-        url,
+        redditId: simulatedId,
+        url: `https://www.reddit.com/r/${cleanSubreddit}/comments/${simulatedId}`,
         title: params.title,
         subreddit: cleanSubreddit,
         createdAt: new Date().toISOString(),
       };
+    }
+
+    const token = await this.getAccessToken();
+
+    const formBody = new URLSearchParams({
+      api_type: 'json',
+      sr: cleanSubreddit,
+      kind: params.url ? 'link' : 'self',
+      title: params.title,
+      resubmit: 'true',
+      sendreplies: 'true',
     });
+
+    if (params.text) {
+      formBody.set('text', params.text);
+    }
+    if (params.url) {
+      formBody.set('url', params.url);
+    }
+
+    const res = await fetchResponseWithRetry('https://oauth.reddit.com/api/submit', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'User-Agent': config.reddit.userAgent,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formBody.toString(),
+      signal: AbortSignal.timeout(15000),
+    }, { retryableStatuses: [429] });
+
+    if (res.status === 429) {
+      throw new Error('Reddit API rate limit (429)');
+    }
+
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`Reddit submit error (HTTP ${res.status}): ${errText}`);
+    }
+
+    const json = (await res.json()) as { json?: { errors?: unknown[]; data?: { id?: string; name?: string; url?: string } } };
+    const errors = json.json?.errors;
+    if (errors && errors.length > 0) {
+      throw new Error(`Reddit API rejected post: ${JSON.stringify(errors)}`);
+    }
+
+    const postData = json.json?.data;
+    const redditId = postData?.id || postData?.name || `t3_${Date.now()}`;
+    const url = postData?.url || `https://www.reddit.com/r/${cleanSubreddit}/comments/${redditId}`;
+
+    console.log(`[RedditMcp] Successfully posted to r/${cleanSubreddit}: ${url}`);
+
+    return {
+      redditId,
+      url,
+      title: params.title,
+      subreddit: cleanSubreddit,
+      createdAt: new Date().toISOString(),
+    };
   }
 }

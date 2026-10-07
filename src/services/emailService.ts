@@ -1,3 +1,4 @@
+import { fetchResponseWithRetry } from '../utils/retryUtil.js';
 import { config } from '../config/index.js';
 
 const RESEND_API = 'https://api.resend.com/emails';
@@ -17,14 +18,15 @@ export async function sendEmail({ to, subject, html }: SendEmailParams): Promise
   }
 
   try {
-    const res = await fetch(RESEND_API, {
+    const res = await fetchResponseWithRetry(RESEND_API, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ from: FROM_ADDRESS, to, subject, html }),
-    });
+      signal: AbortSignal.timeout(10000),
+    }, { retryableStatuses: [429] });
 
     if (!res.ok) {
       const body = await res.text().catch(() => '');

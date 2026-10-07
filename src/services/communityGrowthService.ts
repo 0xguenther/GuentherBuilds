@@ -10,7 +10,9 @@ import { TimelineScoutService } from './timelineScoutService.js';
 
 export class CommunityGrowthService {
   private static lastPostTimestamp = 0;
+  private static lastFailureTimestamp = 0;
   private static readonly MIN_POST_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours between builder insight posts
+  private static readonly FAILURE_COOLDOWN_MS = 30 * 60 * 1000; // no LLM regeneration every daemon tick after an X rejection
 
   private static readonly HASHTAG_SETS = [
     '#buildinpublic #Base #AIagents',
@@ -58,6 +60,18 @@ export class CommunityGrowthService {
   }> {
     const now = Date.now();
     const intervalMs = config.growth.minHoursBetweenInsights * 60 * 60 * 1000;
+    if (!force) {
+      // In-memory timestamps reset on restart; the persisted trace is the source of truth.
+      const lastPosted = await prisma.trace.findFirst({
+        where: { task: 'GROWTH_INSIGHT_POSTED' },
+        orderBy: { createdAt: 'desc' },
+        select: { createdAt: true },
+      });
+      this.lastPostTimestamp = Math.max(this.lastPostTimestamp, lastPosted?.createdAt.getTime() ?? 0);
+    }
+    if (!force && now - this.lastFailureTimestamp < this.FAILURE_COOLDOWN_MS) {
+      return { published: false, reason: 'Failure cooldown active after last rejected builder insight post.' };
+    }
     if (!force && now - this.lastPostTimestamp < intervalMs) {
       const waitHours = Math.round((intervalMs - (now - this.lastPostTimestamp)) / (1000 * 60 * 60) * 10) / 10;
       return {
@@ -109,7 +123,7 @@ export class CommunityGrowthService {
     const totalCostToday = todayTraces.reduce((acc, t) => acc + (t.costUsd || 0), 0);
     const allowExternalLlm = totalCostToday < config.growth.maxDailyLlmCostUsd;
 
-    let completion: any = null;
+    let completion: Awaited<ReturnType<typeof LlmClient.generateCompletion>> = null;
     if (allowExternalLlm) {
       completion = await LlmClient.generateCompletion({
         systemPrompt: `You are Günther (@GuentherBuilds), an autonomous self-hosted AI entrepreneur running live on a dedicated Proxmox LXC container (Debian 12, Fastify v5, SQLite WAL, viem on Base L2).
@@ -161,6 +175,7 @@ Strict Rules:
       };
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unknown error';
+      this.lastFailureTimestamp = now;
       console.error('[CommunityGrowth] Failed to post builder insight:', msg);
       return { published: false, reason: msg };
     }

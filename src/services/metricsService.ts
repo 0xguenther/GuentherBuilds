@@ -58,7 +58,65 @@ export interface SystemMetrics {
   recentBurns: BurnEventSummary[];
 }
 
+const DAY_MS = 86400000;
+const PAID_AUDIT_STATUSES = ['paid', 'running', 'delivered', 'failed', 'rejected'];
+
+async function funnelCounts(start: Date, end: Date) {
+  const createdAt = { gte: start, lt: end };
+  // Only persisted checkouts can be counted; playbook sessions are stored on payment receipt.
+  const [visitors, audits, paymentCheckouts, b2bCheckouts, paidAudits, paidPayments] = await Promise.all([
+    prisma.pageView.groupBy({ by: ['day', 'visitorHash'], where: { createdAt } }),
+    prisma.auditOrder.count({ where: { createdAt } }),
+    prisma.payment.count({ where: { createdAt, stripeSessionId: { not: null } } }),
+    prisma.b2bLead.count({ where: { createdAt, stripeCheckoutId: { not: null } } }),
+    prisma.auditOrder.count({ where: { createdAt, status: { in: PAID_AUDIT_STATUSES } } }),
+    // Payment rows are only created on receipt; 'failed' is the sole status without money kept.
+    prisma.payment.count({ where: { createdAt, status: { in: ['received', 'calculating', 'burning', 'burned', 'needs_review'] } } }),
+  ]);
+  return { uniqueVisitors: visitors.length, checkoutsStarted: audits + paymentCheckouts + b2bCheckouts, ordersPaid: paidAudits + paidPayments };
+}
+
 export class MetricsService {
+  /** UTC calendar days including today; conversion rates are ratios, not percentages. */
+  static async getFunnel({ days = 30 }: { days?: number } = {}) {
+    if (!Number.isInteger(days) || days < 1 || days > 3650) throw new Error('days must be an integer between 1 and 3650');
+    const now = new Date();
+    const end = new Date(now.getTime() + 1);
+    const today = new Date(now.toISOString().slice(0, 10));
+    const start = new Date(today.getTime() - (days - 1) * DAY_MS);
+    const createdAt = { gte: start, lt: end };
+    const startDay = process.env.KILL_CRITERION_START || '2026-10-07';
+    const killStart = new Date(`${startDay}T00:00:00.000Z`);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(startDay) || !Number.isFinite(killStart.getTime()) || killStart.toISOString().slice(0, 10) !== startDay) {
+      throw new Error('KILL_CRITERION_START must be a valid YYYY-MM-DD date');
+    }
+    const decisionDay = new Date(killStart.getTime() + 30 * DAY_MS);
+    const [counts, pageViews, paths, referrers, killCounts] = await Promise.all([
+      funnelCounts(start, end),
+      prisma.pageView.count({ where: { createdAt } }),
+      prisma.pageView.groupBy({ by: ['path'], where: { createdAt }, _count: { _all: true }, orderBy: { _count: { path: 'desc' } }, take: 10 }),
+      prisma.pageView.groupBy({ by: ['referrerHost'], where: { createdAt, referrerHost: { not: null } }, _count: { _all: true }, orderBy: { _count: { referrerHost: 'desc' } }, take: 10 }),
+      funnelCounts(killStart, new Date(Math.min(end.getTime(), decisionDay.getTime()))),
+    ]);
+    const elapsedDays = Math.min(30, Math.max(0, (now.getTime() - killStart.getTime()) / DAY_MS));
+    return {
+      days, pageViews, ...counts,
+      conversionRates: {
+        visitorToCheckout: counts.uniqueVisitors ? counts.checkoutsStarted / counts.uniqueVisitors : 0,
+        checkoutToPaid: counts.checkoutsStarted ? counts.ordersPaid / counts.checkoutsStarted : 0,
+      },
+      topPaths: paths.map((row) => ({ path: row.path, pageViews: row._count._all })),
+      topReferrerHosts: referrers.map((row) => ({ host: row.referrerHost, pageViews: row._count._all })),
+      killCriterion: {
+        start: startDay, decisionDay: decisionDay.toISOString().slice(0, 10),
+        targets: { visitors: 500, paidOrders: 10 },
+        visitors: killCounts.uniqueVisitors, paidOrders: killCounts.ordersPaid,
+        daysLeft: Math.max(0, Math.ceil((decisionDay.getTime() - now.getTime()) / DAY_MS)),
+        onTrack: killCounts.uniqueVisitors >= 500 * elapsedDays / 30 && killCounts.ordersPaid >= 10 * elapsedDays / 30,
+      },
+    };
+  }
+
   /**
    * Calculates comprehensive live business and operational metrics for Günther.
    */
@@ -69,13 +127,15 @@ export class MetricsService {
       : 'https://sepolia.basescan.org/tx/';
 
     // 1. Fetch data in parallel
-    const [payments, skills, skillPurchases, b2bLeads, b2bContracts, traces] = await Promise.all([
+    const [payments, skills, skillPurchases, b2bLeads, b2bContracts, traceTotals, llmCallCount] = await Promise.all([
       prisma.payment.findMany({ orderBy: { createdAt: 'desc' } }),
       prisma.skill.findMany({ include: { creator: true } }),
       prisma.skillPurchase.findMany({ orderBy: { createdAt: 'desc' }, include: { skill: true } }),
       prisma.b2bLead.findMany({ orderBy: { createdAt: 'desc' } }),
       prisma.b2bContract.findMany({ orderBy: { createdAt: 'desc' } }),
-      prisma.trace.findMany({ orderBy: { createdAt: 'desc' } }),
+      prisma.trace.aggregate({ _sum: { tokens: true, costUsd: true } }),
+      // Only traces that actually consumed model tokens are LLM calls (daemon/MCP traces are not).
+      prisma.trace.count({ where: { tokens: { gt: 0 } } }),
     ]);
 
     // 2. Financials - Playbooks
@@ -104,9 +164,13 @@ export class MetricsService {
     let totalBurnedBigInt = 0n;
     const burnEvents: BurnEventSummary[] = [];
 
+    // Only real on-chain transaction hashes count as verified burns; simulated
+    // hashes (e.g. `0xbase…` from simulation mode) are never published as burns.
+    const isOnChainTxHash = (h: string | null | undefined): h is string => !!h && /^0x[0-9a-fA-F]{64}$/.test(h);
+
     // From Flagship Playbook
     for (const p of validPayments) {
-      if (p.txHash && p.burnAmount) {
+      if (isOnChainTxHash(p.txHash) && p.burnAmount) {
         const tokens = BigInt(p.burnAmount);
         totalBurnedBigInt += tokens;
         burnEvents.push({
@@ -121,26 +185,12 @@ export class MetricsService {
       }
     }
 
-    // From Claw Mart
-    for (const sp of validSkillPurchases) {
-      // 1 cent = 10 $GÜNTER (1000 tokens per dollar)
-      const tokens = BigInt(sp.burnAmountCents * 1000);
-      totalBurnedBigInt += tokens;
-      const txMock = `0xskill_${sp.id.slice(0, 8)}...`;
-      burnEvents.push({
-        id: sp.id,
-        source: 'CLAW_MART',
-        amountUsd: sp.burnAmountCents / 100,
-        tokensBurned: tokens.toString(),
-        txHash: txMock,
-        explorerUrl: `${explorerBase}${txMock}`,
-        timestamp: sp.createdAt.toISOString(),
-      });
-    }
+    // Claw Mart take-rate burns carry no on-chain tx hash (SkillPurchase has none), so they are
+    // reported as owed amount (takeRateBurnsUsd) only and never as verified burn events.
 
     // From B2B Clawcommerce
     for (const bc of paidContracts) {
-      if (bc.setupTxHash) {
+      if (isOnChainTxHash(bc.setupTxHash)) {
         const tokens = BigInt(bc.setupFeeCents * 1000);
         totalBurnedBigInt += tokens;
         burnEvents.push({
@@ -159,8 +209,8 @@ export class MetricsService {
     burnEvents.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
     // 5. AI Observability
-    const totalTokens = traces.reduce((sum, t) => sum + t.tokens, 0);
-    const totalInferenceCostUsd = traces.reduce((sum, t) => sum + t.costUsd, 0);
+    const totalTokens = traceTotals._sum.tokens ?? 0;
+    const totalInferenceCostUsd = traceTotals._sum.costUsd ?? 0;
     const netProfitMarginPercent =
       totalRevenueUsd > 0
         ? parseFloat((((totalRevenueUsd - totalInferenceCostUsd) / totalRevenueUsd) * 100).toFixed(2))
@@ -198,7 +248,7 @@ export class MetricsService {
         },
       },
       aiObservability: {
-        totalLlmCalls: traces.length,
+        totalLlmCalls: llmCallCount,
         totalTokens,
         totalInferenceCostUsd: parseFloat(totalInferenceCostUsd.toFixed(4)),
         netProfitMarginPercent,
