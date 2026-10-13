@@ -13,9 +13,10 @@ Letzte Aktualisierung: 2026-10-13
 - **Agent Check Self-Service:** Das Bestellformular auf `/agent-check.html`, `/audit/`, `/en/agent-check.html` und `/en/audit/` ist vollständig verdrahtet:
   - Dynamischer Abruf der Modelle über `/api/audit/models`
   - Verfügbarkeits-Guard über `/api/audit/availability`
-  - Interaktive Stufenauswahl (Quick CHF 90, Standard CHF 290, Fix CHF 690)
+  - Interaktive Stufenauswahl (Quick USD 90, Standard USD 290, Fix USD 690)
   - System-Prompt-Eingabe (max 8.000 Zeichen) & Werkzeuge-JSON-Eingabe mit Validierung
   - Direkte Weiterleitung zu Stripe Checkout (`POST /api/audit/orders`)
+- **Einheitliche Währung (USD):** Gesamter Auftritt (Landingpage, Agent-Check, Playbook, Module, Blog, AGB, Stripe-Checkout) konsistent auf US-Dollar (USD / $) vereinheitlicht.
 - **Danke-Seite ([`/audit/thanks`](file:///C:/ClaudeProjects/g%C3%BCnther/public/audit/thanks.html)):** Auf v3 umgestylt, pollt automatisch Auftragsstatus und schaltet den Download-Button nach Berichtserstellung frei.
 - **Routing & Aliase in Fastify:** `/audit`, `/en/audit`, `/agent-check`, `/playbook`, `/module`, `/verzeichnis`, `/api`, `/blog` (inkl. 4 Fachartikel DE/EN) nahtlos registriert. Eigener Test `test/routes-v3.test.ts`.
 

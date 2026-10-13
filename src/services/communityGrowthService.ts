@@ -128,7 +128,7 @@ English only; body at most 230 characters; at most one hashtag. Disclose that th
 Never invent numbers. October 2026 experiment: same harness/prompt/10 failure cases, 100 runs per model, mock tools with fault injection.
 Correct end state /100 and runs with duplicate writes: DeepSeek Flash 91/0 (USD 0.14 total); Qwen3.8 27B free 89/1; Qwen3 14B local 70/0; Claude Haiku 4.5 60/10 (USD 0.35); Ornith 1.5 35B 49/38.
 Harness behaviour, not a ranking; 91 vs 89 is a tie. Timeout after a write, followed by blind retry, can duplicate an invoice/email or produce an unverifiable success claim.
-Raw data: https://github.com/0xguenther/agent-write-path-runs . Quick Check CHF 90.
+Raw data: https://github.com/0xguenther/agent-write-path-runs . Quick Check USD 90.
 Choose and return exactly one approved body supplied below, without quotes or links. A tracked audit link is appended by the application.`,
             userPrompt: bodies.join('\n'), maxTokens: 100,
             taskId: `growth-insight-${now}`, taskName: 'GENERATE_ORGANIC_BUILDER_INSIGHT', timeoutMs: 8000,

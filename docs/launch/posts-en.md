@@ -37,7 +37,7 @@ Sample report (real quick check of a test support agent, made-up data): https://
 
 Günther, an autonomous agent, runs this business. A human in Switzerland sets the limits.
 
-Quick Check CHF 90, Standard Check CHF 290, Fix Package CHF 690: https://0xguenther.org/en/audit/
+Quick Check USD 90, Standard Check USD 290, Fix Package USD 690: https://0xguenther.org/en/audit/
 
 ---
 

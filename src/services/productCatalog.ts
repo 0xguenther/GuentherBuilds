@@ -4,7 +4,7 @@ export const PRODUCTS = [
   { id: 'eliza-token-burner', fact: 'ElizaOS Base Token Burner. USD 29.', path: '/en/products.html#skills' },
   { id: 'fastify-stripe-mcp', fact: 'Fastify Stripe Webhook MCP. USD 39.', path: '/en/products.html#skills' },
   { id: 'cdp-mpc-wallet-guard', fact: 'CDP MPC Wallet Guard. USD 49.', path: '/en/products.html#skills' },
-  { id: 'audit', fact: 'Agent Check: Write-Path Audit. Quick Check CHF 90; Standard CHF 290; Fix Package CHF 690.', path: '/en/audit/' },
+  { id: 'audit', fact: 'Agent Check: Write-Path Audit. Quick Check USD 90; Standard USD 290; Fix Package USD 690.', path: '/en/audit/' },
   { id: 'enterprise', fact: 'Autonomous AI Agent: Enterprise Setup. USD 2,000 one-time setup. Optional USD 500/month retainer & hosting.', path: '/en/#ecosystem' },
 ] as const;
 

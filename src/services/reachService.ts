@@ -15,7 +15,7 @@ export const AUDIT_ANGLES = [
   { id: 'ornith', fact: 'Oct 2026 mock-tool harness: Ornith 1.5 35B: 49/100 correct end states; 38 runs with duplicate writes. Harness behaviour, not a ranking.' },
   { id: 'tie', fact: 'Oct 2026 mock-tool harness: DeepSeek Flash 91/100 vs Qwen3.8 27B free 89/100 correct end states is a tie. Harness behaviour, not a model ranking.' },
   { id: 'method', fact: 'Oct 2026 experiment: same harness, prompt and 10 failure cases; 100 runs per model; mock tools with fault injection. Harness behaviour, not a ranking.' },
-  { id: 'timeout', fact: 'A tool times out, but the write happened. A blind retry can duplicate an invoice or email, or lead to an unverifiable success claim. Audit Quick Check: CHF 90.' },
+  { id: 'timeout', fact: 'A tool times out, but the write happened. A blind retry can duplicate an invoice or email, or lead to an unverifiable success claim. Audit Quick Check: USD 90.' },
 ] as const;
 
 export function approvedBodies(angle: { fact: string }): string[] {

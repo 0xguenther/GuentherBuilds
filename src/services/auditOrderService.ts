@@ -3,7 +3,7 @@ import { StripeMcpClient } from '../mcp/stripeMcp.js';
 import { AuditConfig, AuditConfigSchema, AuditValidationError, validateAuditConfig } from './auditRunnerService.js';
 const PUBLIC_URL = process.env.PUBLIC_URL || 'https://0xguenther.org';
 
-// Preise in Rappen (CHF). Quelle: docs/konzept/KONZEPT.md, Abschnitt 4.
+// Preise in Cents (USD). Quelle: docs/konzept/KONZEPT.md, Abschnitt 4.
 export const AUDIT_TIERS = {
   quick: { label: 'Quick Check', priceCents: 9000, deliveryHours: 24 },
   standard: { label: 'Standard Check', priceCents: 29000, deliveryHours: 72 },
@@ -46,7 +46,7 @@ export class AuditOrderService {
       // Stripe ersetzt {CHECKOUT_SESSION_ID}. Nur wer die Session kennt, sieht den Download-Link.
       successUrl: `${auditUrl}/thanks?order=${order.id}&session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: auditUrl,
-      currency: 'chf',
+      currency: 'usd',
     });
 
     await prisma.auditOrder.update({

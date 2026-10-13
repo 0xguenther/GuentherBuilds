@@ -41,7 +41,7 @@ export class AuditFulfillmentService {
       if (!order || !['rejected', 'failed'].includes(order.status)) return undefined;
       if (order.refundId) {
         const tier = AUDIT_TIERS[order.tier as AuditTier];
-        return tier ? `CHF ${(tier.priceCents / 100).toFixed(2)}` : undefined;
+        return tier ? `USD ${(tier.priceCents / 100).toFixed(2)}` : undefined;
       }
       const refund = await StripeMcpClient.refundAuditOrder(order);
       if (refund.status === 'failed' || refund.status === 'canceled') {

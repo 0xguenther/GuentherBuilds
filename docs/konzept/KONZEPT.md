@@ -22,7 +22,7 @@ Abgrenzung: keine Beratung, keine Abos in Version 1, keine Prüfung fremder Syst
 
 ## 4. Das Angebot, gestaffelt
 
-| Stufe | Inhalt | Preis (CHF) | Auslieferung |
+| Stufe | Inhalt | Preis (USD) | Auslieferung |
 |---|---|---|---|
 | Quick Check | Statische Prüfung der Schreibpfade anhand der Tool-Definitionen, 10 Fehlerfälle in Simulation | 90 | 24 h, automatisch |
 | Standard Check | Vollständige Läufe (100 pro Route), Befunde, reproduzierbare Testläufe mit Run-IDs | 290 | 3 Werktage, automatisch |
