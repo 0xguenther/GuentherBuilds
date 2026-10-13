@@ -1,0 +1,129 @@
+/* Skizze Agent Check: nur der obere Viewport. Ein Blatt, das Zeile für Zeile schreibt. */
+@font-face { font-family: "Source Serif 4"; src: url("../fonts/source-serif-4-opsz.woff2") format("woff2"); font-weight: 200 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "JetBrains Mono"; src: url("../fonts/jetbrains-mono-wght.woff2") format("woff2"); font-weight: 100 800; font-style: normal; font-display: swap; }
+
+:root {
+  --raum: #1a1816;
+  --tinte: #ece6da;
+  --leise: #a8a093;
+  --linie: rgb(236 230 218 / 0.22);
+  --licht: #2bfe5a;
+  --serif: "Source Serif 4", "Iowan Old Style", "Palatino Linotype", serif;
+  --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
+  --rand: clamp(1.25rem, 5.5vw, 5.5rem);
+}
+
+* { box-sizing: border-box; }
+html { background: var(--raum); color: var(--tinte); }
+body {
+  margin: 0;
+  min-height: 100svh;
+  font-family: var(--serif);
+  font-size: 1.125rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--tinte); color: var(--raum); }
+a:focus-visible { outline: 2px solid var(--licht); outline-offset: 4px; }
+
+.kopf {
+  display: flex;
+  justify-content: space-between;
+  padding: clamp(1rem, 2.2vw, 1.75rem) var(--rand);
+  font-family: var(--mono);
+  font-size: 0.9375rem;
+  color: var(--leise);
+}
+.kopf a { color: var(--tinte); text-decoration: none; }
+.kopf a span { color: var(--leise); margin-right: 0.5em; }
+
+.blatt { padding: clamp(1.5rem, 6svh, 4rem) var(--rand) 3rem; max-width: 100rem; }
+
+h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4.6vw, 5.6rem);
+  font-weight: 350;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  word-spacing: 0.08em;
+  text-wrap: balance;
+}
+.cursor {
+  display: inline-block;
+  width: 0.3em;
+  height: 0.72em;
+  margin-left: 0.2em;
+  background: var(--licht);
+  box-shadow: 0 0 0.5em rgb(43 254 90 / 0.55), 0 0 1.6em rgb(43 254 90 / 0.25);
+  animation: blinkt 1.2s steps(1, end) 1 both;
+}
+@keyframes blinkt { 0%, 40% { opacity: 1; } 40.01%, 75% { opacity: 0; } 75.01%, 100% { opacity: 1; } }
+
+.erklaert {
+  max-width: 50em;
+  margin: clamp(1.25rem, 3.5svh, 2rem) 0 0;
+  font-size: clamp(1.1rem, 1.6vw, 1.55rem);
+  font-weight: 300;
+  line-height: 1.4;
+}
+
+.protokoll {
+  margin: clamp(2.5rem, 9svh, 5rem) 0 0;
+  padding: 0;
+  list-style: none;
+  max-width: 78rem;
+  font-family: var(--mono);
+  font-size: clamp(0.9rem, 1.3vw, 1.25rem);
+}
+.protokoll li {
+  display: flex;
+  align-items: baseline;
+  gap: 1.25rem;
+  padding: 0.75rem 0;
+}
+.nr { color: var(--leise); width: 2.2ch; flex: none; }
+.name { flex: none; }
+.fuell { flex: 1; align-self: end; margin-bottom: 0.4em; border-bottom: 1px dotted var(--linie); min-width: 1rem; }
+.ergebnis { flex: none; min-width: 11ch; text-align: right; font-weight: 560; }
+.ergebnis--doppelt { color: #e8836b; }
+.ergebnis--unbest { font-style: italic; font-weight: 400; }
+.bsp { flex: none; width: 8ch; color: var(--leise); font-size: 0.8em; letter-spacing: 0.04em; }
+
+/* Zeilen sind leer, bis das Skript sie setzt. Ohne Skript stehen sie da. */
+.js .protokoll li:not(.fertig) .ergebnis,
+.js .protokoll li:not(.fertig) .bsp { visibility: hidden; }
+
+.preis {
+  max-width: 78rem;
+  margin: 1.75rem 0 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--linie);
+  font-family: var(--mono);
+  font-size: clamp(0.9rem, 1.3vw, 1.25rem);
+}
+.preis .gt { color: var(--leise); margin-right: 1ch; }
+.knopf {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 0.8rem 1.5rem;
+  background: var(--tinte);
+  color: var(--raum);
+  font-family: var(--mono);
+  font-size: 0.9375rem;
+  font-weight: 560;
+  text-decoration: none;
+}
+.knopf:hover { background: #fff; }
+
+@media (max-width: 40rem) {
+  .protokoll li { flex-wrap: wrap; gap: 0.1rem 0.9rem; }
+  .fuell { display: none; }
+  .ergebnis { margin-left: auto; min-width: 0; }
+  .bsp { width: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cursor { animation: none; }
+}
+
+.ergebnis--aus { color: #8a8478; font-weight: 400; font-style: italic; }
+.simulation { margin: 1.2rem 0 0; font-size: 0.9rem; color: #8a8478; }

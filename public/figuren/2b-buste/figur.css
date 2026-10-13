@@ -1,0 +1,19 @@
+/* Figur 2b · «Büste»: Günther als echte 3D-Form, aus Zeichen gerendert. Nur Regeln für diese Bühne. */
+.spur { position: relative; height: 230svh; }
+.spur .szene { position: sticky; top: 0; }
+.szene[data-figur="2b-buste"] .buehne { background: #0f0e0c; }
+
+/* Standbild: ohne JavaScript und ohne WebGL sichtbar, sonst liegt das Canvas darüber */
+.standbild img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 100% 50%; }
+.js .standbild { opacity: 0; }
+.js .ohne-webgl .standbild { opacity: 1; }
+.ohne-webgl canvas.figur { display: none; }
+canvas.figur { opacity: 0; transition: opacity 0.5s; }
+.ist-bereit canvas.figur { opacity: 1; }
+
+/* Die Wörter liegen über der Figur; ein weicher Schatten im Raumton hält sie lesbar, wo Zeichen dahinter stehen */
+.szene[data-figur="2b-buste"] .titel, .szene[data-figur="2b-buste"] .satz { text-shadow: 0 0 1.2em rgb(15 14 12 / 0.85), 0 0 0.3em rgb(15 14 12 / 0.6); }
+
+@media (max-width: 49.99rem) {
+  .standbild img { object-position: 50% 0; }
+}

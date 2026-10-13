@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module · 0xGünther</title>
+<meta name="description" content="Drei Bausteine in TypeScript: Stripe-Webhook-Gateway, Wallet Guard und Base-Token-Burner. Dazu das Playbook.">
+<meta name="theme-color" content="#1a1816">
+<meta name="color-scheme" content="dark">
+<link rel="alternate" hreflang="de" href="module.html">
+<link rel="alternate" hreflang="en" href="en/module.html">
+<link rel="icon" href="images/cursor.png" type="image/png">
+<link rel="preload" href="fonts/source-serif-4-opsz-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="figuren/_shared/rahmen.css">
+<link rel="stylesheet" href="_shared/kapitel.css">
+<link rel="stylesheet" href="css/index.css">
+<link rel="stylesheet" href="css/seiten.css">
+<script src="figuren/_shared/rahmen.js" defer></script>
+</head>
+<body>
+<a class="sprung" href="#inhalt">Zum Inhalt</a>
+<header class="kopf">
+  <a class="marke" href="index.html" aria-label="0xGünther, Startseite">
+    <img src="images/logo.jpg" alt="0xGünther" width="2816" height="1536">
+  </a>
+</header>
+<nav class="sprache" aria-label="Sprache"><a href="module.html" lang="de" hreflang="de" aria-current="true">DE</a><a href="en/module.html" lang="en" hreflang="en">EN</a></nav>
+<button class="eingabe" type="button" aria-expanded="false" aria-controls="befehle" data-auf="Menü" data-zu="schliessen">
+  <span aria-hidden="true">&gt;</span>
+  <span class="eingabe__wort">Menü</span>
+</button>
+<div class="befehle" id="befehle" hidden>
+  <nav class="befehle__blatt" aria-label="Hauptnavigation">
+    <label class="befehle__zeile">
+      <span aria-hidden="true">&gt;</span>
+      <input class="befehle__feld" type="text" autocomplete="off" spellcheck="false" placeholder="wohin?" aria-label="Ziel eingeben, filtert die Liste">
+    </label>
+    <ul class="befehle__liste">
+      <li><a href="agent-check.html"><span class="befehle__name">agent-check</span><span class="befehle__was">Prüfen, ob dein Agent doppelt schreibt</span></a></li>
+      <li><a href="playbook.html"><span class="befehle__name">playbook</span><span class="befehle__was">Günther Craft, 66 Seiten</span></a></li>
+      <li><a href="module.html"><span class="befehle__name">module</span><span class="befehle__was">Drei Bausteine in TypeScript</span></a></li>
+      <li><a href="verzeichnis.html"><span class="befehle__name">verzeichnis</span><span class="befehle__was">Burns auf Base, Stand 07.10.2026</span></a></li>
+      <li><a href="blog.html"><span class="befehle__name">blog</span><span class="befehle__was">Notizen aus dem Betrieb</span></a></li>
+      <li><a href="api.html"><span class="befehle__name">api</span><span class="befehle__was">Schnittstellen</span></a></li>
+    </ul>
+    <p class="befehle__hilfe">Tippen filtert. Enter folgt dem ersten Treffer. Esc schliesst.</p>
+    <p class="befehle__sprache"><a href="module.html" lang="de" hreflang="de" aria-current="true">DE</a><a href="en/module.html" lang="en" hreflang="en">EN</a></p>
+  </nav>
+</div>
+<main id="inhalt">
+<!-- no-images: Der Kunde besitzt nur sein Logo und keine Fotos (docs/dna.md § Bildwelt). -->
+<section class="seite" aria-labelledby="titel">
+<p class="etikett">Module</p>
+<h1 class="sagt sagt--lang" id="titel">Was ich gebaut habe, kannst du kaufen.</h1>
+<div class="einleitung"><p>Drei Bausteine in TypeScript und das Playbook. Zahlung über Stripe. Der Download-Link gilt 48 Stunden und höchstens fünfmal.</p></div>
+<div class="abschnitt abschnitt--breit"><h2 class="sr">Übersicht</h2><ul class="liste liste--werkzeuge"><li><a href="playbook.html"><span class="liste__name">Günther Craft</span><span class="liste__was">Playbook, 66 Seiten, 58 Kapitel, mit Quellcode</span><span class="liste__preis">USD 49</span></a></li><li><a href="#fastify-stripe-webhook-mcp"><span class="liste__name">Fastify Stripe Webhook MCP</span><span class="liste__was">Gehärtetes Fastify Webhook Gateway für Stripe mit Rohdaten-Pufferung (fastify-raw-body), kryptografischer HMAC-SHA256 Signaturprüfung und direktem MCP-Tooling für lokale oder hosted Agenten</span><span class="liste__preis">USD 39</span></a></li><li><a href="#cdp-mpc-wallet-guard"><span class="liste__name">CDP MPC Wallet Guard</span><span class="liste__was">Enterprise Multi-Party-Computation Wallet Manager für autonome Agenten</span><span class="liste__preis">USD 49</span></a></li><li><a href="#elizaos-base-token-burner"><span class="liste__name">ElizaOS Base Token Burner</span><span class="liste__was">Vollwertiges ElizaOS Plugin für autonome On-Chain Transaktionen auf Base L2</span><span class="liste__preis">USD 29</span></a></li></ul></div>
+<div class="abschnitt" id="fastify-stripe-webhook-mcp">
+<h2>Fastify Stripe Webhook MCP</h2>
+<div class="fliess "><p>Gehärtetes Fastify Webhook Gateway für Stripe mit Rohdaten-Pufferung (fastify-raw-body), kryptografischer HMAC-SHA256 Signaturprüfung und direktem MCP-Tooling für lokale oder hosted Agenten.</p><ul><li>Replay-Attacken Schutz</li><li>Atomic Compare-and-Swap Guard</li><li>Inkl. 48h Download-Token Streamer</li></ul><p><strong>USD 39</strong> · <a href="https://0xguenther.org/products.html">Zum Kauf auf 0xguenther.org</a></p></div>
+</div><div class="abschnitt" id="cdp-mpc-wallet-guard">
+<h2>CDP MPC Wallet Guard</h2>
+<div class="fliess "><p>Enterprise Multi-Party-Computation Wallet Manager für autonome Agenten. Ermöglicht On-Chain-Aktionen ohne Private Keys im Klartext im Speicher oder Dateisystem zu hinterlegen.</p><ul><li>Tägliches Budget-Hardlimit</li><li>Gas-Ceiling Circuit Breaker</li><li>KeePass &amp; Vault Agent Adapter</li></ul><p><strong>USD 49</strong> · <a href="https://0xguenther.org/products.html">Zum Kauf auf 0xguenther.org</a></p></div>
+</div><div class="abschnitt" id="elizaos-base-token-burner">
+<h2>ElizaOS Base Token Burner</h2>
+<div class="fliess "><p>Vollwertiges ElizaOS Plugin für autonome On-Chain Transaktionen auf Base L2. Kommuniziert nativ via viem mit Base Mainnet &amp; Sepolia, generiert Calldata und besitzt Gas-Spike-Schutzschalter (&lt;100 Gwei).</p><ul><li>Action: EXECUTE_TOKEN_BURN</li><li>Action: ANNOUNCE_BURN</li><li>Zero Cloud Lock-in (Viem Native)</li></ul><p><strong>USD 29</strong> · <a href="https://0xguenther.org/products.html">Zum Kauf auf 0xguenther.org</a></p></div>
+</div>
+<div class="abschnitt">
+<h2>Zahlung</h2>
+<div class="fliess "><p>Alle gängigen Kreditkarten (Visa, MasterCard, American Express), Apple Pay, Google Pay und SEPA via Stripe.</p><p class="offen">[OFFEN: Kaufweg in v2. Die Käufe laufen vorerst über die bestehende Seite 0xguenther.org]</p></div>
+</div>
+<div class="abschnitt">
+<h2>Enterprise-Setup</h2>
+<div class="fliess "><p class="offen">[OFFEN: Angebot, Preis und Kapazität des Enterprise-Setups (Clawcommerce) sind ungeklärt und stehen deshalb nicht auf der Seite (docs/open-questions.md)]</p></div>
+</div>
+<nav class="weiter" aria-label="Weiter"><a href="index.html">Startseite</a><a href="playbook.html">Playbook</a><a href="agent-check.html">Agent Check</a></nav>
+</section>
+</main>
+<footer class="fuss">
+  <p>0xGünther Architecture Labs</p>
+  <ul class="fuss__links">
+    <li><a href="impressum.html">Impressum</a></li>
+    <li><a href="datenschutz.html">Datenschutz</a></li>
+    <li><a href="agb.html">AGB</a></li>
+    <li><a href="https://github.com/0xguenther" rel="noopener">GitHub</a></li>
+    <li><a href="https://basescan.org/token/0xb0e8a9d8B5542Fc907736d19A018bbE131C8cd24" rel="noopener">BaseScan</a></li>
+  </ul>
+  <p>Built by <a href="https://cuonztech.ch" rel="noopener">CuonzTech</a></p>
+</footer>
+</body>
+</html>

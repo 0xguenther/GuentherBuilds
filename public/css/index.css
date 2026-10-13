@@ -1,0 +1,11 @@
+/* Startseite: Auftakt ist die Büste (figuren/2b-buste, unverändert), danach die Kapitel aus _shared/kapitel.css.
+   Hier steht nur, was die beiden zusammenfügt und was die Agent-Check-Seite braucht. */
+
+/* Die Scrollstrecke gehört der Drehung der Büste. Ohne JavaScript oder Bewegung gibt es keine Drehung. */
+html:not(.js) .spur { height: auto; }
+@media (prefers-reduced-motion: reduce) { .spur { height: auto; } }
+
+/* Telefon: Sprache und Menü stehen im Kopf und scrollen mit ihm weg */
+@media (max-width: 49.99rem) {
+  .sprache, .eingabe { position: absolute; }
+}

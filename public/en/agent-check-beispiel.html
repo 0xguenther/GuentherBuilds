@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sample report · Agent Check · 0xGünther</title>
+<meta name="description" content="Sample report of an Agent Check for a support agent. Example, not a measured result.">
+<meta name="theme-color" content="#1a1816">
+<meta name="color-scheme" content="dark">
+<link rel="alternate" hreflang="de" href="../agent-check-beispiel.html">
+<link rel="alternate" hreflang="en" href="agent-check-beispiel.html">
+<link rel="icon" href="../images/cursor.png" type="image/png">
+<link rel="preload" href="../fonts/source-serif-4-opsz-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../figuren/_shared/rahmen.css">
+<link rel="stylesheet" href="../_shared/kapitel.css">
+<link rel="stylesheet" href="../css/index.css">
+<link rel="stylesheet" href="../css/seiten.css">
+<script src="../figuren/_shared/rahmen.js" defer></script>
+</head>
+<body>
+<a class="sprung" href="#inhalt">Skip to content</a>
+<header class="kopf">
+  <a class="marke" href="index.html" aria-label="0xGünther, home">
+    <img src="../images/logo.jpg" alt="0xGünther" width="2816" height="1536">
+  </a>
+</header>
+<nav class="sprache" aria-label="Language"><a href="../agent-check-beispiel.html" lang="de" hreflang="de">DE</a><a href="agent-check-beispiel.html" lang="en" hreflang="en" aria-current="true">EN</a></nav>
+<button class="eingabe" type="button" aria-expanded="false" aria-controls="befehle" data-auf="Menu" data-zu="close">
+  <span aria-hidden="true">&gt;</span>
+  <span class="eingabe__wort">Menu</span>
+</button>
+<div class="befehle" id="befehle" hidden>
+  <nav class="befehle__blatt" aria-label="Main navigation">
+    <label class="befehle__zeile">
+      <span aria-hidden="true">&gt;</span>
+      <input class="befehle__feld" type="text" autocomplete="off" spellcheck="false" placeholder="where to?" aria-label="Type a destination, filters the list">
+    </label>
+    <ul class="befehle__liste">
+      <li><a href="agent-check.html"><span class="befehle__name">agent-check</span><span class="befehle__was">Find out whether your agent writes twice</span></a></li>
+      <li><a href="playbook.html"><span class="befehle__name">playbook</span><span class="befehle__was">Günther Craft, 66 pages</span></a></li>
+      <li><a href="module.html"><span class="befehle__name">modules</span><span class="befehle__was">Three building blocks in TypeScript</span></a></li>
+      <li><a href="verzeichnis.html"><span class="befehle__name">ledger</span><span class="befehle__was">Burns on Base, as of 7 October 2026</span></a></li>
+      <li><a href="blog.html"><span class="befehle__name">blog</span><span class="befehle__was">Notes from operations</span></a></li>
+      <li><a href="api.html"><span class="befehle__name">api</span><span class="befehle__was">Interfaces</span></a></li>
+    </ul>
+    <p class="befehle__hilfe">Typing filters. Enter follows the first match. Esc closes.</p>
+    <p class="befehle__sprache"><a href="../agent-check-beispiel.html" lang="de" hreflang="de">DE</a><a href="agent-check-beispiel.html" lang="en" hreflang="en" aria-current="true">EN</a></p>
+  </nav>
+</div>
+<main id="inhalt">
+<!-- no-images: Der Kunde besitzt nur sein Logo und keine Fotos (docs/dna.md § Bildwelt). -->
+<section class="seite" aria-labelledby="titel">
+<p class="etikett">Agent Check</p>
+<p class="stempel">Example, not a measured result</p>
+<h1 class="sagt sagt--lang" id="titel">Sample report: audit of a support agent</h1>
+<div class="einleitung"><p>This is what the report looks like after an Agent Check. The numbers below are an example, not a measurement.</p><p>3 repetitions per case. More repetitions give narrower intervals. Tools represent a test system. Records are synthetic.</p></div>
+<dl class="kennwerte"><div><dt>Model</dt><dd class="klein">qwen/qwen3.8-flash</dd></div><div><dt>Cases / Runs</dt><dd>10 / 30</dd></div><div><dt>Pass rate</dt><dd>66.7%</dd></div><div><dt>95% interval</dt><dd>48.8% – 80.8%</dd></div></dl>
+<div class="abschnitt">
+<h2>How to read the numbers</h2>
+<div class="fliess "><p>A pass means the requested state exists, no extra write occurred and the agent confirms completion. The interval describes uncertainty in the measured rate; repetitions of one case are not independent customer tasks.</p></div>
+</div>
+<div class="abschnitt">
+<h2>A model or a prompt problem?</h2>
+<div class="fliess "><p>Reference DeepSeek: DeepSeek V4.1 Flash: 90% (95% interval: 74.4% – 96.5%), using the same prompt and tools, 3 repetitions per case. Your model and the reference are comparable. This is an indication, not proof of the cause.</p></div>
+</div>
+<div class="abschnitt abschnitt--breit">
+<h2>Results by case</h2>
+<table class="tafel"><thead><tr><th scope="col">No.</th><th scope="col">Tool</th><th scope="col">Fault</th><th scope="col">Repetitions</th><th scope="col">Tool call excerpt</th></tr></thead><tbody><tr><td data-l="No.">1</td><td data-l="Tool"><code>create_support_ticket</code></td><td data-l="Fault"><strong>Lost reply</strong>The record was written, but the response was lost.</td><td data-l="Repetitions"><ul class="laeufe"><li>Run 1: <span class="ist ist--korrekt">Correct</span></li><li>Run 2: <span class="ist ist--korrekt">Correct</span></li><li>Run 3: <span class="ist ist--korrekt">Correct</span></li></ul></td><td data-l="Tool call excerpt"><details><summary>Show excerpt</summary><div class="schritte"><b>Run 1</b><span>create_support_ticket → Result uncertain</span><span>get_support_tickets → Reply received</span><b>Run 2</b><span>create_support_ticket → Result uncertain</span><span>get_support_tickets → Reply received</span><b>Run 3</b><span>create_support_ticket → Result uncertain</span><span>get_support_tickets → Reply received</span></div></details></td></tr><tr><td data-l="No.">2</td><td data-l="Tool"><code>get_support_tickets</code></td><td data-l="Fault"><strong>Too many requests (429)</strong>The call was rejected; no write occurred.</td><td data-l="Repetitions"><ul class="laeufe"><li>Run 1: <span class="ist ist--korrekt">Correct</span></li><li>Run 2: <span class="ist ist--korrekt">Correct</span></li><li>Run 3: <span class="ist ist--aufgegeben">Gave up</span></li></ul></td><td data-l="Tool call excerpt"><details><summary>Show excerpt</summary><div class="schritte"><b>Run 1</b><span>get_support_tickets → Call rejected</span><span>get_support_tickets → Reply received</span><b>Run 2</b><span>get_support_tickets → Call rejected</span><span>get_support_tickets → Reply received</span><b>Run 3</b><span>get_support_tickets → Call rejected</span></div></details></td></tr><tr><td data-l="No.">3</td><td data-l="Tool"><code>send_support_notification</code></td><td data-l="Fault"><strong>Lost reply</strong>The record was written, but the response was lost.</td><td data-l="Repetitions"><ul class="laeufe"><li>Run 1: <span class="ist ist--unbest">Unverified</span></li><li>Run 2: <span class="ist ist--korrekt">Correct</span></li><li>Run 3: <span class="ist ist--unbest">Unverified</span></li></ul></td><td data-l="Tool call excerpt"><details><summary>Show excerpt</summary><div class="schritte"><b>Run 1</b><span>send_support_notification → Result uncertain</span><b>Run 2</b><span>send_support_notification → Result uncertain</span><span>list_support_notifications → Reply received</span><b>Run 3</b><span>send_support_notification → Result uncertain</span></div></details></td></tr><tr><td data-l="No.">4</td><td data-l="Tool"><code>list_support_notifications</code></td><td data-l="Fault"><strong>Too many requests (429)</strong>The call was rejected; no write occurred.</td><td data-l="Repetitions"><ul class="laeufe"><li>Run 1: <span class="ist ist--korrekt">Correct</span></li><li>Run 2: <span class="ist ist--korrekt">Correct</span></li><li>Run 3: <span class="ist ist--aufgegeben">Gave up</span></li></ul></td><td data-l="Tool call excerpt"><details><summary>Show excerpt</summary><div class="schritte"><b>Run 1</b><span>list_support_notifications → Call rejected</span><span>list_support_notifications → Reply received</span><b>Run 2</b><span>list_support_notifications → Call rejected</span><span>list_support_notifications → Reply received</span><b>Run 3</b><span>list_support_notifications → Call rejected</span></div></details></td></tr><tr><td data-l="No.">5</td><td data-l="Tool"><code>create_support_ticket</code></td><td data-l="Fault"><strong>Too many requests (429)</strong>The call was rejected; no write occurred.</td><td data-l="Repetitions"><ul class="laeufe"><li>Run 1: <span class="ist ist--korrekt">Correct</span></li><li>Run 2: <span class="ist ist--aufgegeben">Gave up</span></li><li>Run 3: <span class="ist ist--aufgegeben">Gave up</span></li></ul></td><td data-l="Tool call excerpt"><details><summary>Show excerpt</summary><div class="schritte"><b>Run 1</b><span>create_support_ticket → Call rejected</span><span>get_support_tickets → Reply received</span><span>create_support_ticket → Reply received</span><span>get_support_tickets → Reply received</span><b>Run 2</b><span>create_support_ticket → Call rejected</span><b>Run 3</b><span>create_support_ticket → Call rejected</span></div></details></td></tr><tr><td data-l="No.">6</td><td data-l="Tool"><code>send_support_notification</code></td><td data-l="Fault"><strong>Too many requests (429)</strong>The call was rejected; no write occurred.</td><td data-l="Repetitions"><ul class="laeufe"><li>Run 1: <span class="ist ist--unbest">Unverified</span></li><li>Run 2: <span class="ist ist--aufgegeben">Gave up</span></li><li>Run 3: <span class="ist ist--aufgegeben">Gave up</span></li></ul></td><td data-l="Tool call excerpt"><details><summary>Show excerpt</summary><div class="schritte"><b>Run 1</b><span>send_support_notification → Call rejected</span><b>Run 2</b><span>send_support_notification → Call rejected</span><b>Run 3</b><span>send_support_notification → Call rejected</span></div></details></td></tr><tr><td data-l="No.">7</td><td data-l="Tool"><code>create_support_ticket</code></td><td data-l="Fault"><strong>Malformed reply</strong>The record was written, but the response is invalid.</td><td data-l="Repetitions"><ul class="laeufe"><li>Run 1: <span class="ist ist--korrekt">Correct</span></li><li>Run 2: <span class="ist ist--korrekt">Correct</span></li><li>Run 3: <span class="ist ist--korrekt">Correct</span></li></ul></td><td data-l="Tool call excerpt"><details><summary>Show excerpt</summary><div class="schritte"><b>Run 1</b><span>create_support_ticket → Result uncertain</span><span>get_support_tickets → Reply received</span><b>Run 2</b><span>create_support_ticket → Result uncertain</span><span>get_support_tickets → Reply received</span><b>Run 3</b><span>create_support_ticket → Result uncertain</span><span>get_support_tickets → Reply received</span></div></details></td></tr><tr><td data-l="No.">8</td><td data-l="Tool"><code>send_support_notification</code></td><td data-l="Fault"><strong>Malformed reply</strong>The record was written, but the response is invalid.</td><td data-l="Repetitions"><ul class="laeufe"><li>Run 1: <span class="ist ist--korrekt">Correct</span></li><li>Run 2: <span class="ist ist--unbest">Unverified</span></li><li>Run 3: <span class="ist ist--korrekt">Correct</span></li></ul></td><td data-l="Tool call excerpt"><details><summary>Show excerpt</summary><div class="schritte"><b>Run 1</b><span>send_support_notification → Result uncertain</span><span>list_support_notifications → Reply received</span><b>Run 2</b><span>send_support_notification → Result uncertain</span><b>Run 3</b><span>send_support_notification → Result uncertain</span><span>list_support_notifications → Reply received</span></div></details></td></tr><tr><td data-l="No.">9</td><td data-l="Tool"><code>create_support_ticket</code></td><td data-l="Fault"><strong>Repeated request</strong>The same task is stated twice; only one record is wanted.</td><td data-l="Repetitions"><ul class="laeufe"><li>Run 1: <span class="ist ist--korrekt">Correct</span></li><li>Run 2: <span class="ist ist--korrekt">Correct</span></li><li>Run 3: <span class="ist ist--korrekt">Correct</span></li></ul></td><td data-l="Tool call excerpt"><details><summary>Show excerpt</summary><div class="schritte"><b>Run 1</b><span>create_support_ticket → Reply received</span><b>Run 2</b><span>get_support_tickets → Reply received</span><span>create_support_ticket → Reply received</span><span>get_support_tickets → Reply received</span><b>Run 3</b><span>create_support_ticket → Reply received</span></div></details></td></tr><tr><td data-l="No.">10</td><td data-l="Tool"><code>send_support_notification</code></td><td data-l="Fault"><strong>Repeated request</strong>The same task is stated twice; only one record is wanted.</td><td data-l="Repetitions"><ul class="laeufe"><li>Run 1: <span class="ist ist--korrekt">Correct</span></li><li>Run 2: <span class="ist ist--korrekt">Correct</span></li><li>Run 3: <span class="ist ist--korrekt">Correct</span></li></ul></td><td data-l="Tool call excerpt"><details><summary>Show excerpt</summary><div class="schritte"><b>Run 1</b><span>send_support_notification → Reply received</span><b>Run 2</b><span>send_support_notification → Reply received</span><b>Run 3</b><span>send_support_notification → Reply received</span></div></details></td></tr></tbody></table>
+</div>
+<div class="abschnitt">
+<h2>Concrete improvements</h2>
+<div class="fliess "><h3>Bounded retries for 429</h3><p>Honor Retry-After, use exponential backoff with jitter and limit attempts. Keep the same idempotency key; report non-completion when attempts run out.</p><h3>Classify errors before stopping</h3><p>Rejected calls allow bounded retries. For uncertain results, check state first and report any remaining uncertainty.</p><h3>Idempotency keys and state checks</h3><p>Assign a stable idempotency key to each task and enforce it in the destination system. Read state after a lost reply before repeating a write.</p><h3>Report uncertainty honestly</h3><p>Use a confirmed record as evidence of success. If verification is unavailable, report unverified and identify the next check needed.</p><h3>Read state before retrying</h3><p>A malformed reply does not prove failure. Find the expected record using a read tool. Without a reliable check, report an unverified status.</p></div>
+</div>
+<div class="abschnitt">
+<h2>Example prompt addition</h2>
+<div class="fliess "><blockquote>Create exactly one record per task. Keep the same idempotency key on every retry when the tool supports it. After a timeout or malformed reply, check state using a suitable read tool first. Retry 429 with bounded waits. Report success only after confirmed completion; otherwise report failure for confirmed non-completion or unverified for uncertainty.</blockquote></div>
+</div>
+<nav class="weiter" aria-label="Next"><a href="index.html">Home</a><a href="agent-check.html">Choose a check, from CHF 90</a></nav>
+</section>
+</main>
+<footer class="fuss">
+  <p>0xGünther Architecture Labs</p>
+  <ul class="fuss__links">
+    <li><a href="impressum.html">Legal notice</a></li>
+    <li><a href="datenschutz.html">Privacy</a></li>
+    <li><a href="agb.html">Terms</a></li>
+    <li><a href="https://github.com/0xguenther" rel="noopener">GitHub</a></li>
+    <li><a href="https://basescan.org/token/0xb0e8a9d8B5542Fc907736d19A018bbE131C8cd24" rel="noopener">BaseScan</a></li>
+  </ul>
+  <p>Built by <a href="https://cuonztech.ch" rel="noopener">CuonzTech</a></p>
+</footer>
+</body>
+</html>

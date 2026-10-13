@@ -1,0 +1,207 @@
+/* Grundlage, Kopf, Eingabezeile (Menü), Fuss */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  background: var(--raum);
+  color: var(--tinte);
+  font-family: var(--serif);
+  font-size: 100%;
+  font-optical-sizing: auto;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  scrollbar-color: #3a3632 var(--raum-tief);
+  scrollbar-width: thin;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  font-size: var(--text);
+  font-weight: 380;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--tinte); color: var(--raum); }
+
+h1, h2, h3, p, ul, ol, dl, dd, figure { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+img, canvas { display: block; max-width: 100%; }
+a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 0.22em; }
+button, input { font: inherit; color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--tinte);
+  outline-offset: 4px;
+}
+
+.sprung {
+  position: absolute;
+  left: var(--rand);
+  top: -4rem;
+  padding: 0.6rem 0.9rem;
+  background: var(--tinte);
+  color: var(--raum);
+  font-size: var(--klein);
+}
+.sprung:focus { top: 0.75rem; z-index: 30; }
+
+/* Kopf: bewusst ohne eigene Ebene, damit das Logo additiv über dem Raum liegt */
+.kopf {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 5;
+  padding: clamp(1rem, 2.2vw, 1.75rem) var(--rand);
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+/* Das Logo ist die Originaldatei. Der Ausschnitt zeigt die Wortmarke samt Hof;
+   screen lässt das Schwarz der Datei im Raum verschwinden. */
+.marke {
+  --b: clamp(9.5rem, 13vw, 12.5rem);
+  display: block;
+  width: var(--b);
+  aspect-ratio: 82 / 19.6;
+  overflow: hidden;
+  pointer-events: auto;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 4.5%, #000 95.5%, transparent), linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 4.5%, #000 95.5%, transparent), linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+  margin-left: calc(var(--b) * -0.05);
+}
+.marke img {
+  width: calc(100% / 0.82);
+  max-width: none;
+  height: auto;
+  margin: calc(var(--b) / 0.82 * -0.18) 0 0 calc(var(--b) / 0.82 * -0.09);
+}
+
+/* Eingabezeile: das Menü */
+.eingabe {
+  position: fixed;
+  top: clamp(1rem, 2.2vw, 1.75rem);
+  right: var(--rand);
+  z-index: 20;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6em;
+  min-height: 2.75rem;
+  padding: 0.5rem 0 0.45rem 0.75rem;
+  border: 0;
+  background: none;
+  color: #fff;
+  mix-blend-mode: difference;
+  font-family: var(--mono);
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  text-align: left;
+  cursor: pointer;
+}
+.eingabe__wort { padding-bottom: 0.2em; border-bottom: 1px solid currentColor; opacity: 0.8; transition: opacity 0.2s; }
+.eingabe:hover .eingabe__wort,
+.eingabe[aria-expanded="true"] .eingabe__wort { opacity: 1; }
+
+.befehle {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  background: rgb(15 14 12 / 0.72);
+}
+.befehle[hidden] { display: none; }
+.befehle__blatt {
+  position: absolute;
+  inset: 0 0 auto 0;
+  min-height: 66svh;
+  max-height: 100svh;
+  overflow: auto;
+  padding: clamp(4.5rem, 9vw, 7rem) var(--rand) clamp(1.5rem, 3vw, 2.5rem);
+  background: var(--raum-gehoben);
+  box-shadow: 0 2.5rem 5rem -1rem rgb(0 0 0 / 0.7);
+  animation: blatt-auf 0.5s var(--ruhig);
+}
+@keyframes blatt-auf {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+.befehle__zeile {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--linie);
+  font-family: var(--mono);
+  color: var(--tinte-leise);
+}
+.befehle__feld {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  caret-color: var(--tinte);
+  font-family: var(--mono);
+}
+.befehle__feld::placeholder { color: var(--tinte-leise); opacity: 1; }
+.befehle__feld:focus { outline: none; }
+.befehle__zeile:focus-within { border-bottom-color: var(--tinte); }
+.befehle__liste { margin-top: clamp(1rem, 2.5vw, 2rem); }
+.befehle__liste li[hidden] { display: none; }
+.befehle__liste a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 1.5rem;
+  padding: 0.12em 0;
+  text-decoration: none;
+  color: var(--tinte-leise);
+  transition: color 0.2s;
+}
+.befehle__name {
+  font-size: clamp(2.2rem, 6.2vw, 5.6rem);
+  font-weight: 300;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+}
+.befehle__was { font-size: var(--klein); font-family: var(--mono); }
+.befehle__liste a:hover,
+.befehle__liste a:focus-visible,
+.befehle__liste li.ist-treffer a { color: var(--tinte); outline: none; }
+.befehle__liste a:hover .befehle__name::after,
+.befehle__liste a:focus-visible .befehle__name::after,
+.befehle__liste li.ist-treffer .befehle__name::after {
+  content: "";
+  display: inline-block;
+  width: 0.36em;
+  height: 0.82em;
+  margin-left: 0.14em;
+  vertical-align: -0.1em;
+  background: var(--licht);
+  box-shadow: 0 0 0.5em 0.05em rgb(43 254 90 / 0.45), 0 0 2.2em 0.3em rgb(43 254 90 / 0.18);
+}
+.befehle__hilfe { margin-top: 1.5rem; font-family: var(--mono); font-size: var(--klein); color: var(--tinte-leise); }
+
+@media (max-width: 40rem) {
+  .befehle__liste a { grid-template-columns: 1fr; gap: 0; padding: 0.35rem 0; }
+}
+
+/* Fuss */
+.fuss {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 2rem;
+  align-items: baseline;
+  padding: 1.5rem var(--rand) 2rem;
+  background: var(--raum-tief);
+  color: var(--tinte-leise);
+  font-family: var(--mono);
+  font-size: var(--klein);
+}
+.fuss__links { display: flex; flex-wrap: wrap; gap: 0.25rem 1.5rem; margin-right: auto; }
+.fuss a { display: inline-block; padding: 0.6rem 0; text-decoration: none; }
+.fuss a:hover { color: var(--tinte); text-decoration: underline; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

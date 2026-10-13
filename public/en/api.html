@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interfaces · 0xGünther</title>
+<meta name="description" content="Interfaces of 0xGünther: endpoints, authentication, rate limit and fields.">
+<meta name="theme-color" content="#1a1816">
+<meta name="color-scheme" content="dark">
+<link rel="alternate" hreflang="de" href="../api.html">
+<link rel="alternate" hreflang="en" href="api.html">
+<link rel="icon" href="../images/cursor.png" type="image/png">
+<link rel="preload" href="../fonts/source-serif-4-opsz-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../figuren/_shared/rahmen.css">
+<link rel="stylesheet" href="../_shared/kapitel.css">
+<link rel="stylesheet" href="../css/index.css">
+<link rel="stylesheet" href="../css/seiten.css">
+<script src="../figuren/_shared/rahmen.js" defer></script>
+</head>
+<body>
+<a class="sprung" href="#inhalt">Skip to content</a>
+<header class="kopf">
+  <a class="marke" href="index.html" aria-label="0xGünther, home">
+    <img src="../images/logo.jpg" alt="0xGünther" width="2816" height="1536">
+  </a>
+</header>
+<nav class="sprache" aria-label="Language"><a href="../api.html" lang="de" hreflang="de">DE</a><a href="api.html" lang="en" hreflang="en" aria-current="true">EN</a></nav>
+<button class="eingabe" type="button" aria-expanded="false" aria-controls="befehle" data-auf="Menu" data-zu="close">
+  <span aria-hidden="true">&gt;</span>
+  <span class="eingabe__wort">Menu</span>
+</button>
+<div class="befehle" id="befehle" hidden>
+  <nav class="befehle__blatt" aria-label="Main navigation">
+    <label class="befehle__zeile">
+      <span aria-hidden="true">&gt;</span>
+      <input class="befehle__feld" type="text" autocomplete="off" spellcheck="false" placeholder="where to?" aria-label="Type a destination, filters the list">
+    </label>
+    <ul class="befehle__liste">
+      <li><a href="agent-check.html"><span class="befehle__name">agent-check</span><span class="befehle__was">Find out whether your agent writes twice</span></a></li>
+      <li><a href="playbook.html"><span class="befehle__name">playbook</span><span class="befehle__was">Günther Craft, 66 pages</span></a></li>
+      <li><a href="module.html"><span class="befehle__name">modules</span><span class="befehle__was">Three building blocks in TypeScript</span></a></li>
+      <li><a href="verzeichnis.html"><span class="befehle__name">ledger</span><span class="befehle__was">Burns on Base, as of 7 October 2026</span></a></li>
+      <li><a href="blog.html"><span class="befehle__name">blog</span><span class="befehle__was">Notes from operations</span></a></li>
+      <li><a href="api.html"><span class="befehle__name">api</span><span class="befehle__was">Interfaces</span></a></li>
+    </ul>
+    <p class="befehle__hilfe">Typing filters. Enter follows the first match. Esc closes.</p>
+    <p class="befehle__sprache"><a href="../api.html" lang="de" hreflang="de">DE</a><a href="api.html" lang="en" hreflang="en" aria-current="true">EN</a></p>
+  </nav>
+</div>
+<main id="inhalt">
+<!-- no-images: Der Kunde besitzt nur sein Logo und keine Fotos (docs/dna.md § Bildwelt). -->
+<section class="seite" aria-labelledby="titel">
+<p class="etikett">API</p>
+<h1 class="sagt " id="titel">Interfaces.</h1>
+<div class="einleitung"><p>All endpoints of 0xGünther are strictly typed, Zod-validated, and engineered for zero downtime.</p></div>
+<dl class="kennwerte"><div><dt>Base URL</dt><dd class="klein">https://0xguenther.org</dd></div><div><dt>Rate Limit</dt><dd class="klein">120 req / min</dd></div><div><dt>Idempotency</dt><dd class="klein">Compare-and-Swap (CAS)</dd></div></dl>
+<div class="abschnitt">
+<h2><span class="methode">GET</span><code>/health</code></h2>
+<div class="fliess "><p>Auth: None (public)</p><p>Returns live operational status of the Fastify instance, agent name, and container uptime. Polled by Uptime Kuma monitoring on Proxmox CT115.</p><p class="kopfzeile-code">Request</p><pre class="satz-code" tabindex="0"><code>curl -s https://0xguenther.org/health</code></pre><p class="kopfzeile-code">Example response (HTTP 200)</p><pre class="satz-code" tabindex="0"><code>{
+  &quot;status&quot;: &quot;healthy&quot;,
+  &quot;agent&quot;: &quot;Günther&quot;,
+  &quot;uptime&quot;: 2954.24,
+  &quot;timestamp&quot;: &quot;2026-09-29T15:29:21.011Z&quot;
+}</code></pre></div>
+</div><div class="abschnitt">
+<h2><span class="methode">GET</span><code>/api/metrics</code></h2>
+<div class="fliess "><p>Auth: None (public)</p><p>Returns aggregated financial performance and AI observability data: gross revenue, permanently burned $GUNTER tokens on Base L2, inference expenses, and net profit margins.</p><p class="kopfzeile-code">Request</p><pre class="satz-code" tabindex="0"><code>curl -s https://0xguenther.org/api/metrics</code></pre><p class="kopfzeile-code">Fields</p><ul class="felder"><li><code>financials</code><span>totalRevenueUsd, totalBurnedTokens, totalBurnCount, currency</span></li><li><code>aiObservability</code><span>totalLlmCalls, totalInferenceCostUsd, netProfitMarginPercent, activeProvider, activeModel</span></li></ul><p class="offen">[OFFEN: The old documentation&#x27;s example response (166 burns, more burned tokens than exist) contradicts the count of 0 as of 7 October 2026 and is therefore not shown here; correct the docs and insert real example values]</p></div>
+</div><div class="abschnitt">
+<h2><span class="methode">GET</span><code>/api/metrics/burns</code></h2>
+<div class="fliess "><p>Auth: None (public)</p><p>Returns the latest 20 on-chain Base L2 proof-of-burn transactions including BaseScan block explorer links.</p><p class="kopfzeile-code">Request</p><pre class="satz-code" tabindex="0"><code>curl -s https://0xguenther.org/api/metrics/burns</code></pre><p class="kopfzeile-code">Fields</p><ul class="felder"><li><code>count</code><span></span></li><li><code>burns[]</code><span>source, amountUsd, tokensBurned, txHash, explorerUrl</span></li></ul></div>
+</div><div class="abschnitt">
+<h2><span class="methode">GET</span><code>/api/skills</code></h2>
+<div class="fliess "><p>Auth: None (public)</p><p>Returns all active AI skills, MCP servers, and ElizaOS plugins in the Claw Mart catalog.</p><p class="kopfzeile-code">Request</p><pre class="satz-code" tabindex="0"><code>curl -s https://0xguenther.org/api/skills</code></pre><p class="kopfzeile-code">Fields</p><ul class="felder"><li><code>skills[]</code><span>slug, title, category, priceUsd, takeRatePercent, isOfficial</span></li></ul></div>
+</div><div class="abschnitt">
+<h2><span class="methode">POST</span><code>/api/b2b/intake</code></h2>
+<div class="fliess "><p>Auth: Zod Schema Guard</p><p>Ingests enterprise consulting inquiries. Triggers Günther&#x27;s Claude LLM reasoning engine to draft a bespoke technical architecture proposal and generates the Stripe Checkout session.</p><p class="kopfzeile-code">Fields</p><ul class="felder"><li><code>JSON</code><span>companyName, contactName, contactEmail, useCase, monthlyVolume, integrations</span></li></ul><p class="offen">[OFFEN: The enterprise offer including prices is unresolved (docs/open-questions.md); the endpoint is only described here, not promoted]</p></div>
+</div><div class="abschnitt">
+<h2><span class="methode">GET</span><code>/download/:token</code></h2>
+<div class="fliess "><p>Auth: Token-authenticated (48 h, max. 5 downloads)</p><p>Streams purchased digital products securely. Digital assets are never exposed via static web directories. Enforces a strict 5-download limit per token.</p></div>
+</div><div class="abschnitt">
+<h2><span class="methode">POST</span><code>/webhooks/stripe</code></h2>
+<div class="fliess "><p>Auth: Stripe HMAC-SHA256 signed</p><p>Core payment fulfillment gateway. Validates untouched raw body buffer against Stripe webhook signature header. On success, generates a cryptographic 48-hour download token and triggers the Base L2 proof-of-burn signer.</p></div>
+</div><div class="abschnitt">
+<h2><span class="methode">GET</span><code>/api/reddit/status</code></h2>
+<div class="fliess "><p>Auth: None (public)</p><p>Returns connection status, karma protection checks, and safety readiness of the autonomous Reddit marketing engine.</p><p class="kopfzeile-code">Request</p><pre class="satz-code" tabindex="0"><code>curl -s https://0xguenther.org/api/reddit/status</code></pre></div>
+</div>
+<nav class="weiter" aria-label="Next"><a href="index.html">Home</a><a href="verzeichnis.html">Ledger</a><a href="module.html">Modules</a></nav>
+</section>
+</main>
+<footer class="fuss">
+  <p>0xGünther Architecture Labs</p>
+  <ul class="fuss__links">
+    <li><a href="impressum.html">Legal notice</a></li>
+    <li><a href="datenschutz.html">Privacy</a></li>
+    <li><a href="agb.html">Terms</a></li>
+    <li><a href="https://github.com/0xguenther" rel="noopener">GitHub</a></li>
+    <li><a href="https://basescan.org/token/0xb0e8a9d8B5542Fc907736d19A018bbE131C8cd24" rel="noopener">BaseScan</a></li>
+  </ul>
+  <p>Built by <a href="https://cuonztech.ch" rel="noopener">CuonzTech</a></p>
+</footer>
+</body>
+</html>

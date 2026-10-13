@@ -68,42 +68,41 @@ export async function buildApp() {
     prefix: '/',
   });
 
-  // Alias for /products -> products.html
-  app.get('/products', async (_req, reply) => {
-    return reply.sendFile('products.html');
-  });
+  // Static route aliases
+  app.get('/audit', async (_req, reply) => reply.sendFile('audit/index.html'));
+  app.get('/en/audit', async (_req, reply) => reply.sendFile('en/audit/index.html'));
+  app.get('/agent-check', async (_req, reply) => reply.sendFile('agent-check.html'));
+  app.get('/en/agent-check', async (_req, reply) => reply.sendFile('en/agent-check.html'));
+  app.get('/playbook', async (_req, reply) => reply.sendFile('playbook.html'));
+  app.get('/en/playbook', async (_req, reply) => reply.sendFile('en/playbook.html'));
+  app.get('/module', async (_req, reply) => reply.sendFile('module.html'));
+  app.get('/modules', async (_req, reply) => reply.sendFile('module.html'));
+  app.get('/en/module', async (_req, reply) => reply.sendFile('en/module.html'));
+  app.get('/en/modules', async (_req, reply) => reply.sendFile('en/module.html'));
+  app.get('/verzeichnis', async (_req, reply) => reply.sendFile('verzeichnis.html'));
+  app.get('/en/verzeichnis', async (_req, reply) => reply.sendFile('en/verzeichnis.html'));
+  app.get('/api', async (_req, reply) => reply.sendFile('api.html'));
+  app.get('/en/api', async (_req, reply) => reply.sendFile('en/api.html'));
+  app.get('/api-docs', async (_req, reply) => reply.sendFile('api.html'));
+  app.get('/en/api-docs', async (_req, reply) => reply.sendFile('en/api.html'));
+  app.get('/products', async (_req, reply) => reply.sendFile('module.html'));
+  app.get('/en/products', async (_req, reply) => reply.sendFile('en/module.html'));
+  app.get('/preview', async (_req, reply) => reply.sendFile('playbook.html'));
+  app.get('/en/preview', async (_req, reply) => reply.sendFile('en/playbook.html'));
+  app.get('/impressum', async (_req, reply) => reply.sendFile('impressum.html'));
+  app.get('/en/impressum', async (_req, reply) => reply.sendFile('en/impressum.html'));
+  app.get('/datenschutz', async (_req, reply) => reply.sendFile('datenschutz.html'));
+  app.get('/en/datenschutz', async (_req, reply) => reply.sendFile('en/datenschutz.html'));
+  app.get('/agb', async (_req, reply) => reply.sendFile('agb.html'));
+  app.get('/en/agb', async (_req, reply) => reply.sendFile('en/agb.html'));
+  app.get('/en/terms', async (_req, reply) => reply.sendFile('en/agb.html'));
 
-  // Alias for /preview -> preview.html
-  app.get('/preview', async (_req, reply) => {
-    return reply.sendFile('preview.html');
-  });
-
-  // Alias for /api-docs -> api-docs.html
-  app.get('/api-docs', async (_req, reply) => {
-    return reply.sendFile('api-docs.html');
-  });
-
-  // Alias for /en and /en/products, /en/preview, /en/api-docs
-  app.get('/en', async (_req, reply) => {
-    return reply.sendFile('en/index.html');
-  });
-  app.get('/en/products', async (_req, reply) => {
-    return reply.sendFile('en/products.html');
-  });
-  app.get('/en/preview', async (_req, reply) => {
-    return reply.sendFile('en/preview.html');
-  });
-  app.get('/en/api-docs', async (_req, reply) => {
-    return reply.sendFile('en/api-docs.html');
-  });
+  // Alias for /en
+  app.get('/en', async (_req, reply) => reply.sendFile('en/index.html'));
 
   // Stripe success URL for audit orders: /audit/thanks?order=...
-  app.get('/audit/thanks', async (_req, reply) => {
-    return reply.sendFile('audit/thanks.html');
-  });
-  app.get('/en/audit/thanks', async (_req, reply) => {
-    return reply.sendFile('en/audit/thanks.html');
-  });
+  app.get('/audit/thanks', async (_req, reply) => reply.sendFile('audit/thanks.html'));
+  app.get('/en/audit/thanks', async (_req, reply) => reply.sendFile('en/audit/thanks.html'));
 
   // NOTE: Digital products in products/ are NEVER served statically.
   // Delivery occurs strictly through authenticated /download/:token endpoint.

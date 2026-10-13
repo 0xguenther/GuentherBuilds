@@ -1,0 +1,523 @@
+/* agent-check · finale Fassung (dunkel): Günther führt sein Prüfprotokoll vor, sein Cursor ist das einzige Licht.
+   Werte: docs/concept.md § Gestaltungssystem. Eigenständig, berührt index.css nicht. */
+@import "../_shared/tokens.css";
+@import "../_shared/shared.css";
+
+html { background: var(--raum); }
+body { background: var(--raum); }
+
+/* Günther: der Cursor als Körper aus Licht. Kern überstrahlt, weicher Rand, Hof. */
+.ich {
+  position: relative;
+  display: inline-block;
+  width: 0.3em;
+  height: 0.72em;
+  margin-left: 0.16em;
+  background: linear-gradient(to bottom, #d6ffdc, #8dffa6 55%, #2bfe5a);
+  box-shadow:
+    0 0 0.1em 0.01em #d6ffdc,
+    0 0 0.4em 0.05em rgb(43 254 90 / 0.7),
+    0 0 1.6em 0.3em rgb(43 254 90 / 0.28),
+    0 0 5em 1.2em rgb(43 254 90 / 0.1);
+}
+
+.etikett { font-family: var(--mono); font-size: 0.9375rem; color: var(--tinte-leise); }
+.nb { white-space: nowrap; }
+
+.ak {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0 2rem;
+  padding: clamp(1rem, 2.2vw, 1.75rem) var(--rand);
+  font-family: var(--mono);
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+.ak a { display: inline-block; padding: 0.6rem 0; text-decoration: none; }
+.ak__marke { font-weight: 560; letter-spacing: 0; white-space: nowrap; }
+.ak__marke span:first-child { margin-right: 0.6em; font-weight: 400; color: var(--tinte-leise); }
+.ak__wege { display: flex; align-items: baseline; gap: clamp(1rem, 3vw, 2.5rem); }
+.ak__zurueck { color: var(--tinte-leise); white-space: nowrap; }
+.ak__zurueck:hover { color: var(--tinte); text-decoration: underline; }
+.ak__sprache { display: flex; }
+.ak__sprache a { padding-inline: 0.45em; color: var(--tinte-leise); }
+.ak__sprache a + a { background: linear-gradient(var(--linie), var(--linie)) left center / 1px 1.1em no-repeat; }
+.ak__sprache a:last-child { padding-right: 0; }
+.ak__sprache a:hover, .ak__sprache a[aria-current] { color: var(--tinte); }
+
+.raum {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 2rem;
+  padding: 0 var(--rand);
+}
+.raum > * { grid-column: 1 / -1; }
+.raum + .raum { margin-top: clamp(5rem, 15svh, 9rem); }
+.raum:last-child { padding-bottom: clamp(4.5rem, 14svh, 9rem); }
+
+/* Was Günther sagt, ist kursiv */
+.sagt {
+  margin-left: -0.02em;
+  font-style: italic;
+  font-weight: 280;
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  color: #f3eee2;
+  text-wrap: balance;
+}
+
+/* ───────── Auftakt ───────── */
+.raum--auftakt { position: relative; padding-top: clamp(1rem, 3svh, 2.25rem); }
+/* Sein Licht fällt von der Titelzeile auf das Protokoll darunter */
+.raum--auftakt::before {
+  content: "";
+  position: absolute;
+  inset: -6rem 0 0 0;
+  background: radial-gradient(60rem 36rem at 50% 13rem, rgb(43 254 90 / 0.08), rgb(43 254 90 / 0.02) 45%, transparent 72%);
+  pointer-events: none;
+}
+.raum--auftakt > * { position: relative; }
+.raum--auftakt .sagt {
+  grid-column: 1 / 4;
+  margin-top: 0.7rem;
+  font-size: clamp(2.6rem, 5.9vw, 6.3rem);
+}
+.vorspann {
+  grid-column: 1 / 3;
+  max-width: 21em;
+  margin-top: clamp(1.75rem, 4.5svh, 2.75rem);
+  font-size: clamp(1.3rem, 1.95vw, 1.85rem);
+  font-weight: 300;
+  line-height: 1.25;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+.erklaert {
+  grid-column: 3 / 5;
+  align-self: end;
+  max-width: 32em;
+  color: #cfc8ba;
+}
+
+/* ───────── Protokoll: das Hauptmotiv ───────── */
+.protokoll { margin-top: clamp(2.75rem, 8svh, 4.5rem); }
+.protokoll__kopf {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 2rem;
+  padding-bottom: 0.9rem;
+  font-family: var(--mono);
+  font-size: 0.9375rem;
+  color: var(--tinte-leise);
+}
+.protokoll__kopf h2 { font-size: 1rem; font-weight: 400; }
+.protokoll__kopf strong { font-weight: 560; color: var(--tinte); }
+
+.zeile, .spalten {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1.3fr) minmax(0, 1.05fr) 10.5rem 11.5rem;
+  column-gap: 2rem;
+}
+.spalten {
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--tinte);
+  border-bottom: 1px solid var(--linie);
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  color: var(--tinte-leise);
+}
+.zeile {
+  align-items: baseline;
+  padding: clamp(1rem, 2.3svh, 1.4rem) 0 clamp(1.1rem, 2.5svh, 1.5rem);
+  border-bottom: 1px solid var(--linie);
+}
+.zeile__nr { font-family: var(--mono); font-size: 1rem; }
+.zeile__nr small { display: block; margin-top: 0.3rem; font-size: 0.875rem; color: var(--tinte-leise); }
+.zeile__fall h3 {
+  font-size: clamp(1.75rem, 2.5vw, 2.5rem);
+  font-weight: 280;
+  line-height: 1.04;
+  letter-spacing: -0.022em;
+  color: #f3eee2;
+}
+.zeile__fall p { max-width: 26em; margin-top: 0.6rem; color: #cfc8ba; }
+.zeile__frage { font-style: italic; font-size: 1.125rem; line-height: 1.4; }
+
+/* Status. Zustände unterscheiden sich durch Wort, Schriftschnitt und Strich. */
+.zeile__status { position: relative; display: grid; align-items: baseline; margin-top: 0.35rem; white-space: nowrap; }
+.zeile__status > span { grid-area: 1 / 1; }
+.zeile__status > .sl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.offen { font-family: var(--mono); font-size: 0.9375rem; color: var(--tinte-leise); }
+.vor { opacity: 0; }
+.ist {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 1.3125rem;
+  line-height: 1.2;
+}
+.ist::before { content: ""; flex: none; width: 1.5rem; }
+.ist--korrekt { font-weight: 620; color: #f3eee2; }
+.ist--korrekt::before { border-top: 2px solid currentColor; }
+.ist--unbest { font-style: italic; font-weight: 300; color: #cfc8ba; }
+.ist--unbest::before { border-top: 1px dashed currentColor; }
+.ist--fehler { font-weight: 380; text-decoration: line-through; text-decoration-thickness: 1px; }
+.ist--fehler::before { display: none; }
+/* Günther steht an der Zeile, die er gerade einträgt; danach ist er wieder oben */
+.zeile__status .ich {
+  position: absolute;
+  left: -1.1rem;
+  top: 0.1rem;
+  width: 0.42rem;
+  height: 1.2rem;
+  margin: 0;
+  opacity: 0;
+}
+
+.protokoll__fuss {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem 2rem;
+  margin-top: 1.1rem;
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  color: var(--tinte-leise);
+}
+.legende { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 1.75rem; font-family: var(--serif); }
+.legende .ist { font-size: 1.0625rem; }
+.legende .ist::before { width: 1.1rem; }
+
+/* ───────── Preise: ein Satz unter dem Protokoll ───────── */
+.preis {
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: end;
+  row-gap: 2rem;
+  margin-top: clamp(3rem, 9svh, 5.5rem);
+}
+.preis__satz {
+  grid-column: 1 / 4;
+  max-width: 25em;
+  font-size: clamp(1.6rem, 2.9vw, 2.9rem);
+  font-weight: 280;
+  font-variant-numeric: lining-nums;
+  line-height: 1.16;
+  letter-spacing: -0.02em;
+  color: #f3eee2;
+  text-wrap: pretty;
+}
+.preis__satz strong { font-weight: 520; white-space: nowrap; }
+.preis__satz a { text-decoration-color: rgb(236 230 218 / 0.4); text-underline-offset: 0.16em; }
+.preis__satz a:hover { text-decoration-color: currentColor; }
+.preis__weg { grid-column: 4; display: grid; justify-items: start; gap: 0.9rem; }
+.preis__weg p { font-family: var(--mono); font-size: 0.875rem; color: var(--tinte-leise); }
+.preis__weg p a { color: var(--tinte); }
+.preis__frist { grid-column: 1 / 3; max-width: 34em; color: #cfc8ba; }
+
+/* Der eine Knopf: eine Eingabezeile, die schon ausgefüllt ist */
+.knopf {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9em;
+  min-height: 3.5rem;
+  padding: 0.85rem 1.3rem 0.9rem;
+  background: var(--tinte);
+  color: var(--raum);
+  font-size: 1.125rem;
+  font-weight: 560;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.25s;
+}
+.knopf::before { content: ">"; font-family: var(--mono); font-weight: 400; opacity: 0.6; }
+.knopf::after { content: ""; width: 0.32em; height: 0.78em; margin-left: 0.3em; background: currentColor; }
+.knopf:hover { background: #fffdf6; }
+.knopf:active { translate: 0 1px; }
+
+/* ───────── Ablauf: eine Zeile, dann Fliesstext ───────── */
+.raum--ablauf .sagt, .raum--schluss .sagt { grid-column: 1 / 4; font-size: clamp(2.3rem, 4.9vw, 5.4rem); line-height: 1; }
+.raum--ablauf .sagt span { display: block; }
+.weg {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2em 0.7em;
+  margin-top: clamp(2.25rem, 6svh, 3.75rem);
+  padding: 1.1rem 0 1.25rem;
+  border-top: 1px solid var(--tinte);
+  border-bottom: 1px solid var(--linie);
+  font-size: clamp(1.5rem, 3vw, 3rem);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.018em;
+}
+.weg li { display: flex; align-items: baseline; gap: 0.7em; white-space: nowrap; }
+.weg li + li::before { content: "→"; font-weight: 250; color: var(--tinte-leise); }
+.fliess { grid-column: 1 / 3; max-width: 34em; margin-top: 1.75rem; color: #cfc8ba; }
+.fliess + .fliess { grid-column: 3 / 5; }
+.fliess strong { font-weight: 560; color: var(--tinte); }
+
+/* ───────── Schluss ───────── */
+.raum--schluss .fliess { grid-column: 1 / 3; }
+.raum--schluss .zuletzt { grid-column: 3 / 5; align-self: end; justify-self: end; font-family: var(--mono); font-size: 0.9375rem; color: var(--tinte-leise); }
+.raum--schluss .zuletzt a { color: var(--tinte); }
+
+/* Das Protokoll füllt sich: Zeilen tragen sich ein, dann wechselt der Beispiellauf Fall für Fall seinen Status. */
+@media (prefers-reduced-motion: no-preference) {
+  .zeile { animation: linie 0.6s var(--ruhig) both; animation-delay: calc(0.3s + var(--z, 0) * 0.2s); }
+  .zeile > * { animation: eintrag 0.8s var(--ruhig) both; animation-delay: calc(0.36s + var(--z, 0) * 0.2s); }
+  .zeile > .zeile__status { animation-name: status; animation-delay: calc(0.7s + var(--z, 0) * 0.2s); }
+  .zeile:nth-child(2) { --z: 1; }
+  .zeile:nth-child(3) { --z: 2; }
+  .zeile:nth-child(4) { --z: 3; }
+  .zeile:nth-child(5) { --z: 4; }
+  .vor { animation: geht 0.25s linear both; animation-delay: calc(2.5s + var(--z, 0) * 0.7s); }
+  .nach { animation: kommt 0.45s var(--ruhig) both; animation-delay: calc(2.62s + var(--z, 0) * 0.7s); }
+  .zeile__status .ich { animation: steht 0.8s linear both; animation-delay: calc(1.9s + var(--z, 0) * 0.7s); }
+  .raum--auftakt .sagt .ich { animation: fort 4.1s linear 1.5s both, lid 5.6s steps(1) 8s infinite; }
+}
+@keyframes linie { from { border-bottom-color: transparent; } }
+@keyframes eintrag {
+  from { opacity: 0; clip-path: inset(0 100% 0 0); }
+  to { opacity: 1; clip-path: inset(-0.5em -0.5em -0.5em -2em); }
+}
+@keyframes status { from { opacity: 0; } to { opacity: 1; } }
+@keyframes geht { from { opacity: 1; } to { opacity: 0; } }
+@keyframes kommt { from { opacity: 0; translate: -0.4rem 0; } to { opacity: 1; translate: 0 0; } }
+@keyframes steht { 0%, 100% { opacity: 0; } 14%, 80% { opacity: 1; } }
+@keyframes fort { 0%, 100% { opacity: 1; } 8%, 90% { opacity: 0.14; } }
+@keyframes lid { 0%, 3%, 100% { opacity: 1; } 1.5% { opacity: 0.1; } }
+
+@media (max-width: 70rem) {
+  .spalten { display: none; }
+  .protokoll__kopf { border-bottom: 1px solid var(--tinte); }
+  .zeile { grid-template-columns: 6.5rem minmax(0, 1fr) minmax(0, 1fr); row-gap: 0.35rem; }
+  .zeile__nr { grid-row: 1 / span 3; }
+  .zeile__fall { grid-column: 2 / 4; }
+  .zeile__frage { grid-column: 2 / 4; margin-top: 0.4rem; }
+  .zeile__status { grid-column: 2 / 4; grid-template-columns: 8.5rem minmax(0, 1fr); margin-top: 0.9rem; }
+  .zeile__status + .zeile__status { margin-top: 0.15rem; }
+  .zeile__status > span { grid-area: 1 / 2; }
+  .zeile__status > .sl { grid-area: 1 / 1; position: static; width: auto; height: auto; clip-path: none; font-family: var(--mono); font-size: 0.875rem; color: var(--tinte-leise); }
+  .preis__satz { grid-column: 1 / -1; }
+  .preis__weg { grid-column: 1 / 3; }
+  .preis__frist { grid-column: 3 / 5; }
+}
+
+@media (max-width: 40rem) {
+  .raum { grid-template-columns: minmax(0, 1fr); }
+  .raum--auftakt .sagt, .raum--ablauf .sagt, .raum--schluss .sagt,
+  .vorspann, .erklaert, .preis__satz, .preis__weg, .preis__frist,
+  .fliess:nth-child(n), .raum--schluss .zuletzt { grid-column: 1; }
+  .raum--auftakt .sagt { font-size: 12.4vw; }
+  .raum--ablauf .sagt, .raum--schluss .sagt { font-size: 2.35rem; }
+  .erklaert { margin-top: 1.1rem; }
+  .zeile { grid-template-columns: 2.9rem minmax(0, 1fr) minmax(0, 1.25fr); column-gap: 0.75rem; }
+  .zeile__nr small { display: none; }
+  .zeile__status { grid-template-columns: 7.6rem minmax(0, 1fr); }
+  .zeile__status .ich { left: -0.85rem; }
+  .preis { row-gap: 1.5rem; }
+  .knopf { justify-self: stretch; justify-content: space-between; }
+  .weg { gap: 0.15em 0.5em; }
+  .weg li { gap: 0.5em; }
+  .fliess + .fliess { margin-top: 1rem; }
+  .raum--schluss .zuletzt { justify-self: start; margin-top: 1.5rem; }
+}
+
+/* ───────── Formular & Auftrag ───────── */
+.form-raum {
+  grid-column: 1 / -1;
+  margin-top: clamp(3rem, 7svh, 5rem);
+  padding: clamp(2rem, 5vw, 3.5rem) 0;
+  border-top: 1px solid var(--linie);
+  border-bottom: 1px solid var(--linie);
+}
+.form-titel {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(1.8rem, 3.2vw, 2.8rem);
+  font-weight: 300;
+  color: var(--tinte);
+  margin-bottom: 1.5rem;
+}
+.stufen-wahl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+.stufe-karte {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  background: var(--raum-tief);
+  border: 1px solid var(--linie);
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.stufe-karte:hover {
+  border-color: var(--tinte-leise);
+}
+.stufe-karte.ist-gewaehlt {
+  border-color: var(--tinte);
+  background: var(--raum-gehoben);
+}
+.stufe-karte input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.stufe-etikett {
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  color: var(--tinte-leise);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.stufe-preis {
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+  font-weight: 300;
+  font-variant-numeric: lining-nums;
+  color: var(--tinte);
+  margin: 0.4rem 0 0.6rem;
+}
+.stufe-text {
+  font-size: 0.9375rem;
+  color: #cfc8ba;
+  line-height: 1.4;
+}
+.stufe-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  color: var(--licht);
+  border: 1px solid rgb(43 254 90 / 0.4);
+  padding: 0.15rem 0.45rem;
+}
+
+.form-raster {
+  display: grid;
+  gap: 1.75rem;
+  max-width: 54rem;
+}
+.feld {
+  display: flex;
+  flex-direction: column;
+}
+.feld-kopf {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.4rem;
+}
+.feld-label {
+  font-family: var(--mono);
+  font-size: 0.9375rem;
+  color: var(--tinte);
+  font-weight: 500;
+}
+.feld-hinweis {
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  color: var(--tinte-leise);
+}
+.feld-erklaerung {
+  font-size: 0.875rem;
+  color: var(--tinte-leise);
+  margin-bottom: 0.6rem;
+  line-height: 1.4;
+}
+.eingabe-text, .eingabe-select, .eingabe-bereich {
+  width: 100%;
+  background: var(--raum-tief);
+  border: 1px solid var(--linie);
+  color: var(--tinte);
+  font-family: var(--mono);
+  font-size: 0.9375rem;
+  padding: 0.85rem 1.1rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.eingabe-text:focus, .eingabe-select:focus, .eingabe-bereich:focus {
+  outline: none;
+  border-color: var(--tinte);
+  box-shadow: 0 0 12px rgb(43 254 90 / 0.12);
+}
+.eingabe-bereich {
+  min-height: 7rem;
+  font-family: var(--mono);
+  line-height: 1.5;
+  resize: vertical;
+}
+.eingabe-bereich--code {
+  min-height: 10.5rem;
+  font-size: 0.875rem;
+  tab-size: 2;
+}
+.eingabe-select option {
+  background: var(--raum-tief);
+  color: var(--tinte);
+}
+
+.agb-feld {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  margin: 0.5rem 0 1rem;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  color: #cfc8ba;
+}
+.agb-feld input[type="checkbox"] {
+  margin-top: 0.25rem;
+  accent-color: var(--licht);
+  cursor: pointer;
+}
+.agb-feld a {
+  color: var(--tinte);
+  text-decoration: underline;
+}
+
+.form-absenden {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+.form-absenden .knopf {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+.form-note {
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  color: var(--tinte-leise);
+}
+.form-meldung {
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  white-space: pre-wrap;
+  color: #ff8a80;
+  line-height: 1.5;
+}
+.form-meldung:empty {
+  display: none;
+}
+
+@media (max-width: 50rem) {
+  .stufen-wahl {
+    grid-template-columns: 1fr;
+  }
+}

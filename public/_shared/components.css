@@ -1,0 +1,366 @@
+/* Günther und sein Raum. Herleitung: docs/concept.md § Gestaltungssystem, § Signatur. */
+
+/* Szene: ein Kapitel, in dem Günther hinter seinem Satz steht. --gx/--gy ist seine Mitte,
+   --boden die Kante, auf der er steht; raum.js misst beides, die Vorgaben gelten ohne JavaScript. */
+.szene {
+  --gx: 78%;
+  --gy: 55%;
+  --boden: 66%;
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  background: var(--raum-tief);
+}
+.licht {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  transition: opacity 0.16s ease-out;
+}
+/* Ohne JavaScript: dasselbe Licht als Verlauf */
+html:not(.js) .szene {
+  background:
+    radial-gradient(ellipse 60% 22% at var(--gx) var(--boden), rgb(43 254 90 / 0.2), transparent 70%),
+    radial-gradient(circle at var(--gx) var(--gy), rgb(43 254 90 / 0.3), rgb(43 254 90 / 0.08) 22%, transparent 60%),
+    linear-gradient(#100e0c, #221e1a var(--boden), #151311 var(--boden), #0e0d0b);
+}
+
+.szene::after {
+  content: "";
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  pointer-events: none;
+  background-image: var(--korn, none);
+}
+
+/* Was fern von ihm steht, liegt im Halbdunkel: eine Schattenebene über Schrift und Raum */
+.dunkel {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse calc(var(--gh, 9rem) * 1.75) calc(var(--gh, 9rem) * 2.3) at var(--gx) var(--gy),
+      rgb(120 255 145 / 0) 20%, rgb(120 255 145 / 0.8) 30%, rgb(150 255 170 / 0.5) 52%, rgb(170 255 185 / 0) 100%),
+    radial-gradient(circle at var(--gx) var(--gy), rgb(0 0 0 / 0) 0, rgb(0 0 0 / 0) var(--nah, 14rem), rgb(0 0 0 / 0.3) var(--fern, 68rem));
+  mix-blend-mode: multiply;
+}
+
+/* Sein Blick: ein schwacher Schein, der dem Zeiger folgt */
+.blick {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  top: 0;
+  width: 34rem;
+  height: 34rem;
+  margin: -17rem 0 0 -17rem;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgb(43 254 90 / 0.1), rgb(43 254 90 / 0.035) 45%, transparent);
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 0.8s;
+  will-change: transform;
+}
+.blick.ist-da { opacity: 1; }
+
+/* Günther: der Cursor aus dem Logo als Körper aus Licht. Proportion des Cursors im Favicon (148 × 356). */
+.ich {
+  --h: 0.6em;
+  position: relative;
+  display: inline-block;
+  width: calc(var(--h) * 0.4157);
+  height: var(--h);
+  margin-left: 0.09em;
+  vertical-align: -0.1em;
+  mix-blend-mode: screen;
+  transition: opacity 0.16s ease-out;
+}
+/* Hof über der Schrift: überstrahlt die Buchstaben neben ihm */
+.ich__hof {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--h) * var(--hof, 4.6));
+  height: calc(var(--h) * var(--hof, 4.6));
+  translate: -50% -50%;
+  background: radial-gradient(closest-side,
+    rgb(190 255 200 / 0.78) 0,
+    rgb(90 255 128 / 0.5) 11%,
+    rgb(43 254 90 / 0.22) 27%,
+    rgb(43 254 90 / 0.04) 60%,
+    rgb(43 254 90 / 0) 100%);
+  pointer-events: none;
+}
+/* Rand: das Grün des Logos, weich auslaufend */
+.ich::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--h) * -0.02);
+  background: var(--licht);
+  filter: blur(calc(var(--h) * 0.03));
+  box-shadow:
+    0 0 calc(var(--h) * 0.16) calc(var(--h) * 0.02) rgb(43 254 90 / 0.85),
+    0 0 calc(var(--h) * 0.5) calc(var(--h) * 0.06) rgb(43 254 90 / 0.5),
+    0 0 calc(var(--h) * 1.3) calc(var(--h) * 0.1) rgb(43 254 90 / 0.28);
+}
+/* Kern: überstrahlt, fast weiss */
+.ich__kern {
+  position: absolute;
+  inset: calc(var(--h) * 0.02);
+  background: linear-gradient(to bottom, #ecffee, #fbfffa 42%, #e2ffe6);
+  box-shadow: inset 0 0 calc(var(--h) * 0.045) calc(var(--h) * 0.008) rgb(110 255 140 / 0.85);
+  filter: blur(calc(var(--h) * 0.005));
+}
+/* Widerschein auf dem Boden */
+.ich::after {
+  content: "";
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  top: 102%;
+  height: 85%;
+  background: linear-gradient(to bottom, rgb(214 255 220 / 0.6), rgb(43 254 90 / 0.28) 22%, rgb(43 254 90 / 0) 100%);
+  filter: blur(calc(var(--h) * 0.06));
+}
+.ich--schwebt::after { content: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .js .ich__kern, .js .ich__hof { animation: atem 6.5s ease-in-out infinite; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .js .licht { animation: atem-raum 6.5s ease-in-out infinite; }
+}
+@keyframes atem {
+  50% { opacity: 0.84; }
+}
+/* Er atmet, und der Raum wird mit ihm heller und dunkler */
+@keyframes atem-raum {
+  50% { filter: brightness(0.88); }
+}
+/* Lidschlag: er ist das einzige Licht, also wird der Raum mit ihm dunkel */
+.blinzelt .ich { opacity: 0.1; transition-duration: 0.07s; }
+.blinzelt .licht { opacity: 0.5; transition-duration: 0.07s; }
+/* Vor dem Auftritt und in Kapiteln, die er noch nicht betreten hat */
+.js .szene.ist-aus .ich { opacity: 0; }
+.js .szene.ist-aus .licht { opacity: 0; }
+.js .szene .ich, .js .szene .licht { transition: opacity 0.9s var(--ruhig); }
+.js .szene.blinzelt .ich, .js .szene.blinzelt .licht { transition-duration: 0.07s; }
+
+/* Bodenkante: fängt sein Licht nur nahe bei ihm */
+.kante {
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  top: var(--boden);
+  height: 1px;
+  background: radial-gradient(ellipse var(--kante, 17rem) 1px at var(--gx) 50%, rgb(214 255 220 / 0.6), rgb(190 255 200 / 0.16) 55%, rgb(236 230 218 / 0));
+  -webkit-mask-image: linear-gradient(to right, transparent calc(var(--gx) - var(--gw, 3rem) * 1.5), #000 calc(var(--gx) - var(--gw, 3rem) * 0.5));
+  mask-image: linear-gradient(to right, transparent calc(var(--gx) - var(--gw, 3rem) * 1.5), #000 calc(var(--gx) - var(--gw, 3rem) * 0.5));
+}
+
+/* ───────── Kapitel 1: Vorstellung ───────── */
+
+.raum {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 2rem;
+  min-height: 100svh;
+  padding: 0 var(--rand);
+}
+
+/* Was Günther sagt, ist kursiv */
+.titel {
+  position: relative;
+  font-style: italic;
+  font-weight: 280;
+  letter-spacing: -0.03em;
+  color: #f3eee2;
+}
+.titel__zeile { display: block; white-space: nowrap; }
+.js .schreibt .w { opacity: 0; filter: blur(0.04em); }
+.js .schreibt .w.ist-da { opacity: 1; filter: none; transition: opacity 0.4s ease-out, filter 0.4s ease-out; }
+.js .schreibt .ich { transition: transform 0.24s var(--ruhig), opacity 0.3s; }
+.js .schreibt .spaeter { opacity: 0; }
+.js .schreibt .ich::after, .js .ist-dunkel .kante { opacity: 0; }
+.js .ist-dunkel .dunkel { opacity: 0; }
+.kante, .dunkel { transition: opacity 0.9s; }
+.spaeter { transition: opacity 0.7s ease-out; }
+.nb { white-space: nowrap; }
+
+.zweit {
+  font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+  font-weight: 300;
+  line-height: 1.16;
+  letter-spacing: -0.015em;
+}
+.zweit em { display: block; color: #b9b1a3; text-wrap: balance; }
+.boden, .steckbrief { position: relative; z-index: 4; }
+
+/* Legende: hängt mit einer feinen Linie an ihm */
+.randnote {
+  position: absolute;
+  z-index: 4;
+  left: calc(var(--gx) + var(--gw, 3rem) * 0.5 + 4.6rem);
+  top: var(--gy);
+  translate: 0 -50%;
+  font-style: italic;
+  font-size: clamp(1.2rem, 1.5vw, 1.375rem);
+  line-height: 1.3;
+  color: var(--tinte);
+  white-space: nowrap;
+}
+.randnote::before { content: ""; position: absolute; right: calc(100% + 0.9rem); top: 0.72em; width: 2.2rem; height: 1px; background: rgb(236 230 218 / 0.5); }
+.randnote span { display: block; transition: opacity 0.35s; }
+.randnote.wechselt span { opacity: 0; }
+
+/* Der Auftrag: ein Blatt, das in seinem Licht liegt */
+.auftrag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.1em;
+  min-height: 3.5rem;
+  padding: 0.85rem 1.4rem 0.9rem;
+  border-radius: 2px;
+  background:
+    linear-gradient(to bottom, rgb(255 255 255 / 0.5), rgb(255 255 255 / 0) 34%, rgb(26 24 22 / 0.08)),
+    linear-gradient(96deg, #cfc8ba 0%, #e9e3d6 52%, #e4f4dd 84%, #c2ffcd 100%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.7),
+    inset -1px 0 0 rgb(190 255 202 / 0.95),
+    inset 0 -1px 0 rgb(26 24 22 / 0.22),
+    -0.9rem 1.5rem 2.4rem -0.9rem rgb(0 0 0 / 0.8),
+    0.7rem 0 2.4rem -0.7rem rgb(43 254 90 / 0.45);
+  color: var(--raum);
+  font-size: 1.125rem;
+  font-weight: 560;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: filter 0.25s, translate 0.25s var(--ruhig);
+}
+.auftrag::after {
+  content: "";
+  flex: none;
+  width: 0.5em;
+  height: 0.5em;
+  border: solid currentColor;
+  border-width: 1.5px 1.5px 0 0;
+  rotate: 45deg;
+  transition: translate 0.25s var(--ruhig);
+}
+.auftrag:hover { filter: brightness(1.07); }
+.auftrag:hover::after { translate: 0.25em 0; }
+.auftrag:active { translate: 0 1px; }
+
+.steckbrief {
+  display: grid;
+  grid-template-columns: subgrid;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--linie);
+}
+.steckbrief div { display: flex; flex-direction: column; gap: 0.3rem; }
+.steckbrief dt { font-family: var(--mono); font-size: 0.9375rem; color: #b9b1a3; }
+.steckbrief dd {
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
+  font-weight: 300;
+  font-variant-numeric: lining-nums;
+  line-height: 1;
+  letter-spacing: -0.015em;
+}
+
+/* Rendition G · Er steht hinter seinem Satz */
+.raum--g { grid-template-rows: clamp(6.25rem, 14.5svh, 8.25rem) auto minmax(0, 1fr) auto; }
+.raum--g .titel {
+  grid-area: 2 / 1 / 3 / -1;
+  margin-left: -0.022em;
+  font-size: clamp(4.4rem, min(17.2vw, 29.2svh), 19rem);
+  line-height: 0.87;
+}
+.raum--g .boden {
+  grid-area: 3 / 1 / 4 / -1;
+  display: flex;
+  align-items: flex-end;
+  align-self: end;
+  gap: clamp(2rem, 4vw, 4rem);
+  padding: 0 0 clamp(1.5rem, 3.6svh, 2.25rem);
+}
+.raum--g .auftrag { margin-bottom: 0.15rem; }
+
+/* Rendition J · ohne Boden: aufrechte Schrift, er schwebt, der Auftrag ist eine Zeile */
+.raum--j .titel { font-style: normal; font-weight: 240; letter-spacing: -0.045em; }
+.raum--j .kante { display: none; }
+.raum--j .ich::after { content: none; }
+.auftrag--text { min-height: 0; padding: 0 0 0.3rem; border-radius: 0; border-bottom: 1px solid currentColor; background: none; box-shadow: none; color: var(--tinte); font-size: clamp(1.5rem, 2.5vw, 2.5rem); font-weight: 300; letter-spacing: -0.015em; }
+.raum--g .steckbrief { grid-area: 4 / 1 / 5 / -1; margin-bottom: clamp(1.25rem, 2.6vw, 2.25rem); }
+
+/* Rendition I · Beide Sätze stehen aufrecht da, er steht am Ende auf spiegelndem Boden */
+.raum--i { grid-template-rows: clamp(6.25rem, 15svh, 8.5rem) auto minmax(0, 1fr) auto; }
+.raum--i .titel {
+  grid-area: 2 / 1 / 3 / -1;
+  margin-left: -0.035em;
+  font-style: normal;
+  font-weight: 250;
+  font-size: clamp(2.6rem, min(9.7vw, 16.4svh), 10.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.038em;
+}
+.raum--i .ich { --h: 0.66em; }
+.raum--i .ich::after { height: 120%; left: -6%; right: -6%; filter: blur(calc(var(--h) * 0.11)); }
+.raum--i .randnote { left: calc(var(--gx) + var(--gw, 3rem) * 0.5 + 4.2rem); top: var(--gy); translate: 0 -50%; padding: 0; border: 0; }
+.raum--i .randnote::before { content: ""; position: absolute; right: calc(100% + 0.8rem); top: 0.72em; width: 2rem; height: 1px; background: rgb(236 230 218 / 0.42); }
+.raum--i .dunkel { display: none; }
+.raum--i .kante { display: none; }
+.raum--i .boden {
+  grid-area: 3 / 1 / 4 / -1;
+  display: flex;
+  align-items: flex-end;
+  align-self: end;
+  gap: clamp(2rem, 4vw, 4rem);
+  padding: 0 0 clamp(1.5rem, 3.6svh, 2.25rem);
+}
+.raum--i .zweit { font-style: italic; color: #cfc8ba; }
+.raum--i .steckbrief { grid-area: 4 / 1 / 5 / -1; margin-bottom: clamp(1.25rem, 2.6vw, 2.25rem); }
+
+@media (max-width: 40rem) {
+  .raum { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 1.25rem; }
+  .dunkel { --nah: 9rem; --fern: 40rem; }
+  .kante { --kante: 5rem; }
+  .steckbrief { row-gap: 1.1rem; margin-bottom: 1.5rem; }
+  .steckbrief dd { font-size: 2rem; }
+  .steckbrief dt { font-size: 0.875rem; letter-spacing: -0.02em; }
+  /* Auf dem Telefon hängt die Legende unter ihm */
+  .randnote {
+    left: auto;
+    right: calc(100% - var(--gx));
+    top: calc(var(--gy) + var(--gh, 4rem) * 0.5 + 0.9rem);
+    translate: none;
+    padding: 1.1rem 0.8rem 0 0;
+    border-right: 1px solid rgb(236 230 218 / 0.5);
+    font-size: 1.125rem;
+    text-align: right;
+  }
+  .randnote::before { content: none; }
+
+  .raum--g { grid-template-rows: 8.25rem auto minmax(0, 1fr) auto; }
+  .raum--g .titel { grid-area: 2 / 1 / 3 / -1; font-size: 19vw; line-height: 0.92; }
+  .raum--g .ich { --h: 0.78em; }
+  .raum--g .boden { grid-area: 3 / 1 / 4 / -1; flex-direction: column; align-items: stretch; align-self: stretch; justify-content: center; gap: 1.7rem; padding: 6.2rem 0 1rem; }
+  .raum--g .zweit { font-size: 1.7rem; line-height: 1.16; }
+  .auftrag--text { align-self: flex-start; font-size: 1.5rem; }
+  .raum--g .steckbrief { grid-area: 4 / 1 / 5 / -1; }
+
+  .raum--i .randnote { left: auto; top: calc(var(--gy) + var(--gh, 4rem) * 0.5 + 0.9rem); translate: none; padding: 1.1rem 0.8rem 0 0; border-right: 1px solid rgb(236 230 218 / 0.42); }
+  .raum--i .randnote::before { content: none; }
+  .raum--i { grid-template-rows: 6.5rem auto minmax(0, 1fr) auto; }
+  .raum--i .titel { font-size: 13.1vw; line-height: 1; }
+  .raum--i .titel__zeile { white-space: normal; display: inline; }
+  .raum--i .ich { --h: 0.8em; }
+  .raum--i .boden { flex-direction: column; align-items: stretch; gap: 1.5rem; padding: 6.5rem 0 2rem; }
+  .raum--i .zweit { font-size: 1.7rem; }
+}

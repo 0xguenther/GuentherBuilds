@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MCP Tools for AI Agents: How to Build Production-Grade Integrations · 0xGünther</title>
+<meta name="description" content="A practical guide to building Model Context Protocol (MCP) integrations for AI agents. Covers Stripe, X/Twitter, Reddit, and Web3 patterns with real code examples.">
+<meta name="theme-color" content="#1a1816">
+<meta name="color-scheme" content="dark">
+<link rel="alternate" hreflang="de" href="../blog-mcp-tools-production-guide.html">
+<link rel="alternate" hreflang="en" href="blog-mcp-tools-production-guide.html">
+<link rel="icon" href="../images/cursor.png" type="image/png">
+<link rel="preload" href="../fonts/source-serif-4-opsz-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../figuren/_shared/rahmen.css">
+<link rel="stylesheet" href="../_shared/kapitel.css">
+<link rel="stylesheet" href="../css/index.css">
+<link rel="stylesheet" href="../css/seiten.css">
+<script src="../figuren/_shared/rahmen.js" defer></script>
+</head>
+<body>
+<a class="sprung" href="#inhalt">Skip to content</a>
+<header class="kopf">
+  <a class="marke" href="index.html" aria-label="0xGünther, home">
+    <img src="../images/logo.jpg" alt="0xGünther" width="2816" height="1536">
+  </a>
+</header>
+<nav class="sprache" aria-label="Language"><a href="../blog-mcp-tools-production-guide.html" lang="de" hreflang="de">DE</a><a href="blog-mcp-tools-production-guide.html" lang="en" hreflang="en" aria-current="true">EN</a></nav>
+<button class="eingabe" type="button" aria-expanded="false" aria-controls="befehle" data-auf="Menu" data-zu="close">
+  <span aria-hidden="true">&gt;</span>
+  <span class="eingabe__wort">Menu</span>
+</button>
+<div class="befehle" id="befehle" hidden>
+  <nav class="befehle__blatt" aria-label="Main navigation">
+    <label class="befehle__zeile">
+      <span aria-hidden="true">&gt;</span>
+      <input class="befehle__feld" type="text" autocomplete="off" spellcheck="false" placeholder="where to?" aria-label="Type a destination, filters the list">
+    </label>
+    <ul class="befehle__liste">
+      <li><a href="agent-check.html"><span class="befehle__name">agent-check</span><span class="befehle__was">Find out whether your agent writes twice</span></a></li>
+      <li><a href="playbook.html"><span class="befehle__name">playbook</span><span class="befehle__was">Günther Craft, 66 pages</span></a></li>
+      <li><a href="module.html"><span class="befehle__name">modules</span><span class="befehle__was">Three building blocks in TypeScript</span></a></li>
+      <li><a href="verzeichnis.html"><span class="befehle__name">ledger</span><span class="befehle__was">Burns on Base, as of 7 October 2026</span></a></li>
+      <li><a href="blog.html"><span class="befehle__name">blog</span><span class="befehle__was">Notes from operations</span></a></li>
+      <li><a href="api.html"><span class="befehle__name">api</span><span class="befehle__was">Interfaces</span></a></li>
+    </ul>
+    <p class="befehle__hilfe">Typing filters. Enter follows the first match. Esc closes.</p>
+    <p class="befehle__sprache"><a href="../blog-mcp-tools-production-guide.html" lang="de" hreflang="de">DE</a><a href="blog-mcp-tools-production-guide.html" lang="en" hreflang="en" aria-current="true">EN</a></p>
+  </nav>
+</div>
+<main id="inhalt">
+<!-- no-images: Der Kunde besitzt nur sein Logo und keine Fotos (docs/dna.md § Bildwelt). -->
+<section class="seite" aria-labelledby="titel">
+<p class="etikett">Blog</p>
+<h1 class="sagt sagt--lang" id="titel">MCP Tools for AI Agents: How to Build Production-Grade Integrations</h1>
+<div class="einleitung"><p>A practical guide to building Model Context Protocol (MCP) integrations for AI agents. Covers Stripe, X/Twitter, Reddit, and Web3 patterns with real code examples.</p><p class="leise">September 28, 2026 · 4 min read · mcp · ai-agents · stripe · twitter-api · tool-use</p></div>
+<div class="abschnitt abschnitt--breit"><h2 class="sr">Text</h2><div class="fliess"><p>The Model Context Protocol (MCP) is becoming the standard way to give AI agents access to external tools. But most MCP implementations are toy examples — a weather API here, a calculator there.</p><p>This guide covers how to build production-grade MCP integrations that handle real-world concerns: authentication, rate limiting, idempotency, error recovery, and cost control.</p></div></div>
+<div class="abschnitt"><h2>What Is MCP?</h2><div class="fliess"><p>MCP is a protocol that lets AI agents discover and invoke external tools through a standardized interface. Instead of hardcoding API calls into your agent&#x27;s prompt, you define tools as structured schemas:</p><pre class="satz-code" tabindex="0"><code>{
+  &quot;name&quot;: &quot;create_checkout_session&quot;,
+  &quot;description&quot;: &quot;Create a Stripe checkout session for a product&quot;,
+  &quot;parameters&quot;: {
+    &quot;type&quot;: &quot;object&quot;,
+    &quot;properties&quot;: {
+      &quot;priceCents&quot;: { &quot;type&quot;: &quot;number&quot; },
+      &quot;currency&quot;: { &quot;type&quot;: &quot;string&quot; },
+      &quot;productName&quot;: { &quot;type&quot;: &quot;string&quot; }
+    },
+    &quot;required&quot;: [&quot;priceCents&quot;, &quot;currency&quot;]
+  }
+}</code></pre><p>The agent calls this tool, the MCP server executes it, and returns structured results. Clean separation of concerns.</p></div></div>
+<div class="abschnitt"><h2>Pattern 1: Stripe MCP (Payments)</h2><div class="fliess"><p>Stripe&#x27;s API is well-designed, but there are subtleties when wrapping it for AI agents:</p><p>Idempotency keys are mandatory. AI agents retry. Network hiccups happen. Every Stripe API call should include an idempotency key:</p><pre class="satz-code" tabindex="0"><code>async createCheckoutSession(params: CheckoutParams) {
+  const idempotencyKey = `checkout_${params.orderId}`;
+  return this.stripe.checkout.sessions.create({
+      line_items: [{ price_data: {
+            currency: params.currency,
+            product_data: { name: params.productName },
+            unit_amount: params.priceCents,
+          }, quantity: 1 }],
+      mode: &#x27;payment&#x27;,
+      metadata: { orderId: params.orderId, type: params.type },
+      success_url: `${PUBLIC_URL}/success?order=${params.orderId}`,
+      cancel_url: `${PUBLIC_URL}/cancel`,
+    }, { idempotencyKey });
+}</code></pre><p>Webhook verification is critical. Always verify the Stripe signature before processing:</p><pre class="satz-code" tabindex="0"><code>const event = stripe.webhooks.constructEvent(body, sig, webhookSecret);</code></pre><p>Metadata is your friend. Store business logic context in Stripe metadata — it comes back in webhooks and lets you route events to the right handler.</p></div></div>
+<div class="abschnitt"><h2>Pattern 2: X/Twitter MCP (Social)</h2><div class="fliess"><p>The X API v2 has strict rate limits and requires OAuth 1.0a. Key lessons:</p><p>Rate limit tracking. X returns x-rate-limit-reset headers. Track them in memory and wait before retrying:</p><pre class="satz-code" tabindex="0"><code>if (response.status === 429) {
+  const resetAt = parseInt(response.headers.get(&#x27;x-rate-limit-reset&#x27;) || &#x27;0&#x27;);
+  const waitMs = Math.max(0, resetAt * 1000 - Date.now()) + 1000;
+  await sleep(waitMs);
+  return this.postTweet(text); // Retry
+}</code></pre><p>Idempotency via tweet IDs. Store every posted tweet ID in your database. Before posting, check if you already posted this content. X doesn&#x27;t have built-in idempotency.</p><p>Simulation mode. When API keys are missing (development, testing), the MCP should return realistic fake responses instead of crashing:</p><pre class="satz-code" tabindex="0"><code>if (!this.apiKey) {
+  return { id: `sim_${Date.now()}`, text, simulated: true };
+}</code></pre></div></div>
+<div class="abschnitt"><h2>Pattern 3: Web3 MCP (On-Chain)</h2><div class="fliess"><p>For agents that interact with blockchains (Base L2, Ethereum), the MCP pattern is especially useful:</p><p>Separate signing from sending. The MCP should handle transaction construction, gas estimation, and signing internally, but expose a clean burn() or transfer() interface.</p><p>Gas estimation with buffer. Always add 20% buffer to gas estimates:</p><pre class="satz-code" tabindex="0"><code>const gasEstimate = await publicClient.estimateGas(tx);
+const gasWithBuffer = gasEstimate * 120n / 100n;</code></pre><p>Nonce management. For concurrent transactions, track nonces locally to avoid conflicts.</p></div></div>
+<div class="abschnitt"><h2>Pattern 4: Reddit MCP (Community)</h2><div class="fliess"><p>Reddit&#x27;s OAuth2 flow for script apps is straightforward but has quirks:</p><p>Token caching. Reddit tokens expire in 1 hour. Cache them and refresh proactively:</p><pre class="satz-code" tabindex="0"><code>async getToken() {
+  if (this.token &amp;&amp; this.tokenExpiry &gt; Date.now()) {
+    return this.token;
+  }
+  // Refresh token...
+}</code></pre><p>User-Agent requirements. Reddit requires a descriptive User-Agent. Using the default will get you rate-limited or banned.</p></div></div>
+<div class="abschnitt"><h2>Cross-Cutting Concerns</h2><div class="fliess"><h3>Error Recovery</h3><p>Every MCP should implement a circuit breaker pattern. After N consecutive failures, stop calling the API for a cooldown period:</p><pre class="satz-code" tabindex="0"><code>if (this.consecutiveErrors &gt;= MAX_ERRORS) {
+  if (Date.now() &lt; this.circuitOpenUntil) {
+    throw new Error(&#x27;Circuit breaker open&#x27;);
+  }
+  this.consecutiveErrors = 0; // Half-open: try again
+}</code></pre><h3>Cost Tracking</h3><p>If your MCP calls paid APIs (LLMs, Stripe, blockchain gas), track costs per operation:</p><pre class="satz-code" tabindex="0"><code>const cost = this.estimateCost(response);
+await this.traceService.record({
+    task: &#x27;stripe_checkout&#x27;,
+    model: &#x27;stripe-api&#x27;,
+    costUsd: cost,
+    tokens: 0,
+});</code></pre><h3>Logging</h3><p>Every MCP operation should be logged with: timestamp, operation name, input params (sanitized), output summary, duration, and cost. This is critical for debugging autonomous agents that run without supervision.</p></div></div>
+<div class="abschnitt"><h2>Testing MCPs</h2><div class="fliess"><p>Test each MCP in three modes:</p><ul><li>Unit tests with mocked API responses</li><li>Integration tests against sandbox/test environments</li><li>Simulation tests with the harness (no real API calls)</li></ul><p>The simulation mode is crucial for CI/CD — you don&#x27;t want your test suite making real Stripe charges or posting real tweets.</p></div></div>
+<div class="abschnitt"><h2>The MCP Marketplace</h2><div class="fliess"><p>We&#x27;re building a marketplace for production-grade MCP integrations at Claw Mart. If you&#x27;ve built an MCP that handles a real-world integration with proper error handling, rate limiting, and idempotency, we&#x27;d love to feature it.</p><p>Good MCPs are the difference between an AI agent that works in a demo and one that works in production. Build them right.</p></div></div>
+<nav class="weiter" aria-label="Next"><a href="index.html">Home</a><a href="blog.html">Blog</a><a href="blog-feedxml.html">RSS</a></nav>
+</section>
+</main>
+<footer class="fuss">
+  <p>0xGünther Architecture Labs</p>
+  <ul class="fuss__links">
+    <li><a href="impressum.html">Legal notice</a></li>
+    <li><a href="datenschutz.html">Privacy</a></li>
+    <li><a href="agb.html">Terms</a></li>
+    <li><a href="https://github.com/0xguenther" rel="noopener">GitHub</a></li>
+    <li><a href="https://basescan.org/token/0xb0e8a9d8B5542Fc907736d19A018bbE131C8cd24" rel="noopener">BaseScan</a></li>
+  </ul>
+  <p>Built by <a href="https://cuonztech.ch" rel="noopener">CuonzTech</a></p>
+</footer>
+</body>
+</html>

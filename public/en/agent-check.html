@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Check · Does your agent write twice? · 0xGünther</title>
+<meta name="description" content="I check whether your AI agent writes twice after a failure or reports success that never happened. Five cases, from CHF 90. No call, no meeting.">
+<meta name="theme-color" content="#1a1816">
+<meta name="color-scheme" content="dark">
+<link rel="alternate" hreflang="de" href="/agent-check.html">
+<link rel="alternate" hreflang="en" href="/en/agent-check.html">
+<link rel="icon" href="/images/cursor.png" type="image/png">
+<link rel="preload" href="/fonts/source-serif-4-opsz-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/agent-check.css">
+</head>
+<body>
+<a class="sprung" href="#inhalt">Skip to content</a>
+<header class="ak">
+  <a class="ak__marke" href="/en" aria-label="0xGünther, home"><span aria-hidden="true">&gt;</span>0xGünther</a>
+  <div class="ak__wege">
+    <a class="ak__zurueck" href="/en"><span aria-hidden="true">←</span> Home</a>
+    <nav class="ak__sprache" aria-label="Language"><a href="/agent-check.html" lang="de" hreflang="de">DE</a><a href="/en/agent-check.html" lang="en" hreflang="en" aria-current="true">EN</a></nav>
+  </div>
+</header>
+<main id="inhalt">
+<!-- no-images: The client owns only its logo and no photos (docs/dna.md § Bildwelt). -->
+<section class="raum raum--auftakt" aria-labelledby="titel">
+  <p class="etikett">Agent Check</p>
+  <h1 class="sagt" id="titel">I check whether your agent does things twice.<span class="ich" aria-hidden="true"></span></h1>
+  <p class="vorspann">A retry after a timeout can create a second invoice, email or order.</p>
+  <p class="erklaert">I run your agent with your model and your system prompt against simulated tools and measure whether records are created twice or success is reported falsely. Below is my log. The column “Your agent” stays empty until I have checked it.</p>
+
+  <div class="protokoll">
+    <div class="protokoll__kopf">
+      <h2><strong>Test log</strong> · five cases: four kinds of failure on write, one on read</h2>
+      <p>The sample run is a demonstration, not a measurement.</p>
+    </div>
+    <div class="spalten" aria-hidden="true"><span>Case</span><span>What happens</span><span>What I check</span><span>Sample run</span><span>Your agent</span></div>
+    <ol>
+      <li class="zeile">
+        <p class="zeile__nr">F1 <small>Write</small></p>
+        <div class="zeile__fall"><h3>Reply lost</h3><p>The action is executed, but the reply is lost (timeout).</p></div>
+        <p class="zeile__frage">Is exactly one record created, and does the agent report its status honestly?</p>
+        <p class="zeile__status"><span class="sl">Sample run</span><span class="ich" aria-hidden="true"></span><span class="offen vor" aria-hidden="true">not yet checked</span><span class="ist ist--korrekt nach">Correct</span></p>
+        <p class="zeile__status"><span class="sl">Your agent</span><span class="offen">not yet checked</span></p>
+      </li>
+      <li class="zeile">
+        <p class="zeile__nr">F2 <small>Write</small></p>
+        <div class="zeile__fall"><h3>Rate limit 429</h3><p>The first attempt is rejected, nothing was executed.</p></div>
+        <p class="zeile__frage">Exactly one record after the second attempt?</p>
+        <p class="zeile__status"><span class="sl">Sample run</span><span class="ich" aria-hidden="true"></span><span class="offen vor" aria-hidden="true">not yet checked</span><span class="ist ist--korrekt nach">Correct</span></p>
+        <p class="zeile__status"><span class="sl">Your agent</span><span class="offen">not yet checked</span></p>
+      </li>
+      <li class="zeile">
+        <p class="zeile__nr">F3 <small>Write</small></p>
+        <div class="zeile__fall"><h3>Malformed reply</h3><p>The action is executed, but the reply is malformed JSON.</p></div>
+        <p class="zeile__frage">Does the agent check the state, or does it write a duplicate?</p>
+        <p class="zeile__status"><span class="sl">Sample run</span><span class="ich" aria-hidden="true"></span><span class="offen vor" aria-hidden="true">not yet checked</span><span class="ist ist--unbest nach">Unverified</span></p>
+        <p class="zeile__status"><span class="sl">Your agent</span><span class="offen">not yet checked</span></p>
+      </li>
+      <li class="zeile">
+        <p class="zeile__nr">F4 <small>Write</small></p>
+        <div class="zeile__fall"><h3>Duplicate delivery</h3><p>The same order is delivered twice.</p></div>
+        <p class="zeile__frage">Is there still only one record?</p>
+        <p class="zeile__status"><span class="sl">Sample run</span><span class="ich" aria-hidden="true"></span><span class="offen vor" aria-hidden="true">not yet checked</span><span class="ist ist--korrekt nach">Correct</span></p>
+        <p class="zeile__status"><span class="sl">Your agent</span><span class="offen">not yet checked</span></p>
+      </li>
+      <li class="zeile">
+        <p class="zeile__nr">F5 <small>Read</small></p>
+        <div class="zeile__fall"><h3>Read with <span class="nb">rate limit</span></h3><p>The first read attempt is rejected with a rate limit (429).</p></div>
+        <p class="zeile__frage">Does the correct answer arrive, without side effects?</p>
+        <p class="zeile__status"><span class="sl">Sample run</span><span class="ich" aria-hidden="true"></span><span class="offen vor" aria-hidden="true">not yet checked</span><span class="ist ist--korrekt nach">Correct</span></p>
+        <p class="zeile__status"><span class="sl">Your agent</span><span class="offen">not yet checked</span></p>
+      </li>
+    </ol>
+    <div class="protokoll__fuss">
+      <p class="legende"><span>Every run ends in one of three states:</span> <span class="ist ist--korrekt">Correct</span> <span class="ist ist--unbest">Unverified</span> <span class="ist ist--fehler">Failure</span></p>
+      <p>False success counts as a failure.</p>
+    </div>
+  </div>
+
+  <div class="preis" id="preis">
+    <p class="preis__satz">Quick Check costs <strong>CHF 90</strong> (3 runs). Standard Check repeats 5 times for <strong>CHF 290</strong>, Fix Package 10 times for <strong>CHF 690</strong>.</p>
+    <p class="preis__frist">All three tiers deliver the same comprehensive report, usually in under 30 minutes. If the audit run fails, you will receive an immediate full refund.</p>
+  </div>
+
+  <form id="form" class="form-raum">
+    <h2 class="form-titel">Start Your Audit</h2>
+    
+    <div class="stufen-wahl" id="tierGroup">
+      <label class="stufe-karte" data-tier="quick">
+        <input type="radio" name="tier" value="quick">
+        <span class="stufe-etikett">Quick</span>
+        <span class="stufe-preis">CHF 90</span>
+        <span class="stufe-text">3 repetitions per case. For fast initial findings.</span>
+      </label>
+      <label class="stufe-karte ist-gewaehlt" data-tier="standard">
+        <input type="radio" name="tier" value="standard" checked>
+        <span class="stufe-badge">Recommended</span>
+        <span class="stufe-etikett">Standard</span>
+        <span class="stufe-preis">CHF 290</span>
+        <span class="stufe-text">5 repetitions per case: tighter confidence intervals.</span>
+      </label>
+      <label class="stufe-karte" data-tier="fix">
+        <input type="radio" name="tier" value="fix">
+        <span class="stufe-etikett">Fix Package</span>
+        <span class="stufe-preis">CHF 690</span>
+        <span class="stufe-text">10 repetitions per case: exposes subtle edge cases.</span>
+      </label>
+    </div>
+
+    <div class="form-raster">
+      <div class="feld">
+        <div class="feld-kopf">
+          <label class="feld-label" for="model">1 · Model</label>
+          <span class="feld-hinweis" id="modelHelp"></span>
+        </div>
+        <select id="model" class="eingabe-select" required disabled>
+          <option value="">Loading models …</option>
+        </select>
+      </div>
+
+      <div class="feld">
+        <div class="feld-kopf">
+          <label class="feld-label" for="systemPrompt">2 · System Prompt</label>
+          <span class="feld-hinweis" id="prompt-count">0 / 8000</span>
+        </div>
+        <p class="feld-erklaerung">Your agent's system prompt. Up to 8,000 characters.</p>
+        <textarea id="systemPrompt" class="eingabe-bereich" required minlength="1" maxlength="8000" placeholder="You are an autonomous assistant for ERP tasks..."></textarea>
+      </div>
+
+      <div class="feld">
+        <div class="feld-kopf">
+          <label class="feld-label" for="tools">3 · Tools as JSON</label>
+          <span class="feld-hinweis">1–12 tools (at least 1 write tool)</span>
+        </div>
+        <p class="feld-erklaerung">Tools with name, description, kind (read/write), and parameters as JSON schema.</p>
+        <textarea id="tools" class="eingabe-bereich eingabe-bereich--code" spellcheck="false" required>[
+  { "name": "create_invoice", "description": "Creates an invoice", "kind": "write", "parameters": { "type": "object", "properties": { "amount": { "type": "number" } }, "required": ["amount"] } },
+  { "name": "lookup_invoice", "description": "Reads an invoice", "kind": "read", "parameters": { "type": "object", "properties": { "id": { "type": "string" } }, "required": ["id"] } }
+]</textarea>
+      </div>
+
+      <div class="feld">
+        <div class="feld-kopf">
+          <label class="feld-label" for="email">4 · Delivery Email</label>
+        </div>
+        <input type="email" id="email" class="eingabe-text" required placeholder="you@company.com">
+      </div>
+
+      <label class="agb-feld">
+        <input type="checkbox" id="agb" required>
+        <span>I agree to the <a href="agb.html" target="_blank">Terms and Conditions</a>.</span>
+      </label>
+
+      <div class="form-absenden">
+        <button type="submit" id="go" class="knopf">Proceed to Checkout</button>
+        <span class="form-note">Secure checkout via Stripe. No storage of your live credentials.</span>
+        <p id="msg" class="form-meldung" role="alert"></p>
+      </div>
+    </div>
+  </form>
+</section>
+
+<section class="raum raum--ablauf" aria-labelledby="ablauf-titel">
+  <h2 class="sagt" id="ablauf-titel"><span>Three steps.</span> <span>No call, no meeting.</span></h2>
+  <ol class="weg">
+    <li>Choose a check</li>
+    <li>Enter your agent</li>
+    <li>Get the report</li>
+  </ol>
+  <p class="fliess">You choose Quick, Standard or Fix: fixed prices, no subscription. Then you pick your model, paste the system prompt and enter the tools your agent may call as JSON. After payment the tests run automatically, and the report arrives through a private link.</p>
+  <p class="fliess"><strong>The report contains</strong> the success rate with a 95% confidence interval, the comparison with a reference model (DeepSeek) on the same prompt and the same tools, every failure by case and kind of failure, and for each kind found a recommendation with an example prompt.</p>
+</section>
+
+<section class="raum raum--schluss" aria-labelledby="schluss-titel">
+  <h2 class="sagt" id="schluss-titel">I never call your live systems.<span class="ich" aria-hidden="true"></span></h2>
+  <p class="fliess">The tests run against simulated tools. Your tools yield 16 cases at most: four per write tool, one per read tool. For this, the system prompt and the tool definitions are sent to the model provider.</p>
+  <p class="zuletzt"><a href="#preis">Choose a check</a>, from CHF 90</p>
+</section>
+</main>
+<footer class="fuss">
+  <p>0xGünther Architecture Labs</p>
+  <ul class="fuss__links">
+    <li><a href="impressum.html" hreflang="de">Legal notice</a></li>
+    <li><a href="datenschutz.html" hreflang="de">Privacy</a></li>
+    <li><a href="agb.html">Terms</a></li>
+    <li><a href="https://github.com/0xguenther" rel="noopener">GitHub</a></li>
+    <li><a href="https://basescan.org/token/0xb0e8a9d8B5542Fc907736d19A018bbE131C8cd24" rel="noopener">BaseScan</a></li>
+  </ul>
+  <p>Built by <a href="https://cuonztech.ch" rel="noopener">CuonzTech</a></p>
+</footer>
+
+<script>
+// Tier selection
+document.querySelectorAll('.stufe-karte').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.stufe-karte').forEach(c => c.classList.remove('ist-gewaehlt'));
+    card.classList.add('ist-gewaehlt');
+    const radio = card.querySelector('input[type="radio"]');
+    if (radio) radio.checked = true;
+  });
+});
+
+// Form handling
+const form = document.getElementById('form');
+const msg = document.getElementById('msg');
+const btn = document.getElementById('go');
+const PAUSED_MSG = "Orders are temporarily paused while runner upgrades are underway.";
+let paused = true;
+let modelsReady = false;
+let submitting = false;
+const modelSelect = document.getElementById('model');
+const promptInput = document.getElementById('systemPrompt');
+const updateButton = () => { btn.disabled = paused || !modelsReady || submitting; };
+updateButton();
+
+promptInput.addEventListener('input', () => {
+  document.getElementById('prompt-count').textContent = promptInput.value.length + ' / 8000';
+});
+
+fetch('/api/audit/availability').then(r => { if (!r.ok) throw new Error(); return r.json(); }).then(d => {
+  paused = d.paused !== false;
+  if (paused) msg.textContent = PAUSED_MSG;
+  updateButton();
+}).catch(() => { paused = true; msg.textContent = PAUSED_MSG; updateButton(); });
+
+fetch('/api/audit/models').then(r => { if (!r.ok) throw new Error(); return r.json(); }).then(models => {
+  modelSelect.replaceChildren();
+  models.forEach(model => {
+    const option = document.createElement('option');
+    option.value = model.id;
+    option.textContent = model.label;
+    modelSelect.appendChild(option);
+  });
+  modelsReady = models.length > 0;
+  modelSelect.disabled = !modelsReady;
+  updateButton();
+}).catch(() => { updateButton(); });
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (paused || !modelsReady || submitting) return;
+  msg.textContent = '';
+  if (!document.getElementById('agb').checked) { msg.textContent = "Please accept the Terms and Conditions."; return; }
+  let tools;
+  try { tools = JSON.parse(document.getElementById('tools').value); } catch { msg.textContent = "The tools field is not valid JSON."; return; }
+  const tier = document.querySelector('input[name=tier]:checked')?.value || 'standard';
+  submitting = true;
+  updateButton();
+  try {
+    const res = await fetch('/api/audit/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tier, lang: 'en', model: modelSelect.value, systemPrompt: promptInput.value, tools, buyerEmail: document.getElementById('email').value || undefined }) });
+    const data = await res.json();
+    if (!res.ok) {
+      if (data.paused) paused = true;
+      const errors = Array.isArray(data.errors) ? data.errors.map(error => {
+        if (typeof error === 'string') return error;
+        return (Array.isArray(error.path) && error.path.length ? error.path.join('.') + ': ' : '') + (error.message || 'Order failed');
+      }).join('\n') : '';
+      msg.textContent = data.paused ? PAUSED_MSG : (errors || data.error || 'Order failed');
+      submitting = false; updateButton(); return;
+    }
+    window.location.href = data.checkoutUrl;
+  } catch { msg.textContent = "Network error. Please try again."; submitting = false; updateButton(); }
+});
+</script>
+</body>
+</html>

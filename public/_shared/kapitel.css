@@ -1,0 +1,349 @@
+/* Kapitel 2 bis 6 der Startseite. v3: Jede Sektion ist eine Szene, kein Textblock. */
+
+.kap {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: auto 1fr;
+  column-gap: 2rem;
+  min-height: 100svh;
+  min-height: 100dvh;
+  padding: clamp(7rem, 17svh, 10.5rem) var(--rand) clamp(3rem, 7svh, 5rem);
+  overflow: clip;
+}
+.kap > * { grid-column: 1 / -1; position: relative; z-index: 1; }
+
+/* Erste Sektion nach dem Hero */
+.spur + .kap { padding-top: clamp(5rem, 12svh, 8rem); }
+
+/* Licht: ein ganz schwacher Schein, der an Günther erinnert, ohne ihn zu zeigen */
+.kap__licht {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 40% 50% at 72% 55%, rgb(43 254 90 / 0.04), transparent 70%),
+    radial-gradient(circle at 50% 100%, rgb(43 254 90 / 0.025), transparent 50%);
+}
+
+/* Was Günther sagt, ist kursiv — seine Stimme */
+.sagt {
+  margin-left: -0.02em;
+  font-style: italic;
+  font-weight: 280;
+  font-size: clamp(2.6rem, 6.6vw, 7.2rem);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  color: #f3eee2;
+  text-wrap: balance;
+}
+.sagt .ich { --h: 0.6em; }
+.sagt--mittel { font-size: clamp(1.9rem, 3.4vw, 3.8rem); line-height: 0.97; }
+.sagt--riesig { font-size: clamp(4.2rem, min(15vw, 30svh), 16.5rem); line-height: 0.9; }
+
+.inhalt { position: relative; z-index: 4; }
+.etikett { font-family: var(--mono); font-size: 0.9375rem; color: #b9b1a3; }
+.nachsatz { max-width: 34em; color: #cfc8ba; font-size: clamp(1rem, 1.2vw, 1.125rem); line-height: 1.6; }
+.nachsatz--lead { max-width: 36em; font-size: clamp(1.2rem, 1.7vw, 1.5rem); color: #ece6da; line-height: 1.5; }
+.kap code { font-family: var(--mono); font-size: 0.92em; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Zeilen mit Haarlinien: Preise und Werkzeuge */
+.liste li, .liste a {
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
+  align-items: baseline;
+}
+.liste { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 2rem; }
+.liste li { border-top: 1px solid var(--linie); }
+.liste li:last-child { border-bottom: 1px solid var(--linie); }
+.liste li:not(:has(a)), .liste a { padding: clamp(1.1rem, 2.8svh, 1.6rem) 0; }
+.liste a { text-decoration: none; transition: color 0.25s; color: inherit; }
+.liste__name {
+  grid-column: 1 / 3;
+  font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+.liste__was { grid-column: 3 / 4; color: #cfc8ba; }
+.liste__preis {
+  grid-column: 4 / 5;
+  justify-self: end;
+  font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+  font-weight: 300;
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+}
+
+/* ───────── 2 · Wie ich arbeite ───────── */
+.kap--arbeit { min-height: 0; grid-template-rows: auto auto; align-content: center; row-gap: clamp(1.5rem, 4svh, 2.5rem); padding-bottom: clamp(5rem, 11svh, 7rem); }
+.kap--arbeit .inhalt {
+  display: grid;
+  row-gap: clamp(2.5rem, 7svh, 4.5rem);
+}
+.ablauf {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 2rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--linie);
+}
+.ablauf li { display: grid; gap: 0.5rem; align-content: start; }
+.ablauf__name {
+  font-size: clamp(1.7rem, 2.8vw, 2.8rem);
+  font-weight: 300;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.ablauf__was {
+  font-size: 1rem;
+  color: #a8a093;
+  line-height: 1.5;
+  max-width: 20em;
+}
+
+/* ───────── 3 · Agent Check: das helle Blatt ───────── */
+.kap--blatt {
+  min-height: 0;
+  grid-template-rows: auto auto;
+  align-content: center;
+  padding-bottom: clamp(5rem, 11svh, 7rem);
+  background: var(--blatt);
+  color: var(--blatt-tinte);
+  --linie: var(--blatt-linie);
+}
+.kap--blatt::after { content: none; }
+.kap--blatt .sagt { color: var(--blatt-tinte); }
+.kap--blatt .ich { mix-blend-mode: normal; }
+.kap--blatt .ich::before, .kap--blatt .ich::after { content: none; }
+.kap--blatt .ich__kern { inset: 0; background: var(--blatt-tinte); box-shadow: none; filter: none; }
+.check {
+  display: grid;
+  grid-template-columns: subgrid;
+  row-gap: clamp(3rem, 8svh, 5rem);
+  align-content: start;
+  margin-top: clamp(3rem, 8svh, 5rem);
+}
+.check__text { grid-column: 1 / 3; display: grid; gap: 1.2rem; align-content: start; max-width: 33em; }
+.check__text p:first-child { font-size: clamp(1.2rem, 1.7vw, 1.5rem); line-height: 1.5; }
+.merksatz {
+  margin-top: 1rem;
+  font-style: italic;
+  font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+  font-weight: 300;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+}
+.probe { grid-column: 3 / 5; align-self: start; }
+.probe__kopf {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 1.5rem;
+  padding-bottom: 0.7rem;
+  font-family: var(--mono);
+  font-size: 0.9375rem;
+  color: var(--blatt-leise);
+}
+.probe__kopf code { color: var(--blatt-tinte); font-size: 1rem; }
+.probe__zeilen li {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 1.5fr);
+  gap: 1rem;
+  align-items: baseline;
+  padding: 0.95rem 0;
+  border-top: 1px solid var(--blatt-linie);
+  transition: opacity 0.4s, color 0.4s;
+}
+.probe__was { font-size: 1.375rem; font-weight: 400; letter-spacing: -0.01em; font-variant-numeric: lining-nums tabular-nums; }
+.probe__antwort { justify-self: end; text-align: right; font-style: italic; }
+.probe__zweite.ist-verworfen { color: var(--blatt-leise); }
+.probe__zweite.ist-verworfen .probe__was { text-decoration: line-through; text-decoration-thickness: 1px; }
+.probe__zweite[hidden] { display: none; }
+.probe__fuss {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  min-height: 4.5rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--blatt-tinte);
+}
+.probe__zahl { font-family: var(--mono); font-size: 0.9375rem; color: var(--blatt-leise); }
+.probe__zahl b {
+  margin-left: 0.5rem;
+  font-family: var(--serif);
+  font-size: 2.25rem;
+  font-weight: 300;
+  font-variant-numeric: lining-nums;
+  color: var(--blatt-tinte);
+  vertical-align: -0.12em;
+}
+.probe__knopf {
+  min-height: 3rem;
+  padding: 0.6rem 1.2rem 0.65rem;
+  border: 1px solid var(--blatt-tinte);
+  background: none;
+  color: var(--blatt-tinte);
+  font-weight: 560;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.probe__knopf:hover { background: var(--blatt-tinte); color: var(--blatt); }
+.probe__knopf[hidden] { display: none; }
+.probe__unter { font-style: italic; color: var(--blatt-leise); }
+.kap--blatt :focus-visible { outline-color: var(--blatt-tinte); }
+
+.preise { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; row-gap: 1.5rem; }
+.preise .liste { grid-column: 1 / -1; }
+.preise .liste__was { color: var(--blatt-leise); }
+.preise__fuss { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: start; row-gap: 1.5rem; }
+.preise__fuss > p:first-child { grid-column: 1 / 3; max-width: 33em; color: #3b3630; }
+.preise__wege { grid-column: 3 / 5; display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 1rem 2rem; }
+.preise__wege .auftrag { margin-top: 0; }
+.auftrag--tinte { background: var(--blatt-tinte); color: var(--blatt); box-shadow: 0 1.2rem 2rem -1rem rgb(26 24 22 / 0.5); }
+.zweitlink { padding: 0.75rem 0; font-weight: 500; }
+
+/* ───────── 4 · Werkzeuge ───────── */
+.kap--werkzeuge { min-height: 0; grid-template-rows: auto auto; align-content: center; padding-bottom: clamp(5rem, 11svh, 7rem); background: var(--raum-gehoben); }
+.kap--werkzeuge .inhalt {
+  display: grid;
+  row-gap: clamp(1.5rem, 3svh, 2.5rem);
+  margin-top: clamp(3rem, 8svh, 5rem);
+}
+.kap--werkzeuge .inhalt > .auftrag { justify-self: start; }
+.liste--werkzeuge a { color: #d8d1c4; }
+.liste--werkzeuge a:hover, .liste--werkzeuge a:focus-visible { color: #fffdf6; }
+.liste--werkzeuge .liste__was { transition: color 0.25s; }
+
+/* ───────── 5 · Verzeichnis ───────── */
+.kap--verzeichnis {
+  min-height: 0;
+  background: var(--raum-tief);
+  grid-template-rows: auto auto;
+  align-content: center;
+  row-gap: clamp(1.5rem, 4svh, 2.5rem);
+  padding-top: clamp(5rem, 11svh, 7rem);
+  padding-bottom: clamp(5rem, 11svh, 7rem);
+}
+.verzeichnis__stand {
+  grid-area: 1 / 1 / 2 / 3;
+  align-self: center;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--linie);
+}
+.verzeichnis__stand .etikett { padding-bottom: 0.6rem; }
+.verzeichnis__zahl {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 280;
+  font-variant-numeric: lining-nums;
+  letter-spacing: -0.02em;
+  color: #f3eee2;
+}
+.verzeichnis__wort { grid-area: 1 / 3 / 2 / 5; align-self: center; display: grid; gap: clamp(1.5rem, 4svh, 2.5rem); }
+.verzeichnis__wort p { max-width: 31em; color: #d8d1c4; line-height: 1.6; }
+.verzeichnis__quelle {
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  color: #a8a093;
+}
+.verzeichnis__quelle a { color: #b9b1a3; }
+.verzeichnis__quelle a:hover { color: #ece6da; }
+.buch { grid-row: 2; }
+.buch table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.buch th {
+  padding: 0 0 0.6rem;
+  font-family: var(--mono);
+  font-size: 0.9375rem;
+  font-weight: 400;
+  text-align: left;
+  color: #b9b1a3;
+}
+.buch td {
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--linie);
+  border-bottom: 1px solid var(--linie);
+  font-style: italic;
+  font-size: 1.25rem;
+  color: #cfc8ba;
+}
+.buch__fuss { margin-top: 0.9rem; font-family: var(--mono); font-size: 0.875rem; color: #b9b1a3; overflow-wrap: anywhere; }
+
+/* ───────── 6 · Was soll ich tun? ───────── */
+.kap--schluss { min-height: 0; grid-template-rows: auto auto; align-content: center; row-gap: clamp(1.5rem, 4svh, 2.5rem); padding-bottom: clamp(5rem, 11svh, 7rem); }
+.kap--schluss .sagt { align-self: center; }
+.befehl li { border-top: 1px solid var(--linie); }
+.befehl li:last-child { border-bottom: 1px solid var(--linie); }
+.befehl a {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 2rem;
+  flex-wrap: wrap;
+  padding: clamp(0.85rem, 2.2svh, 1.3rem) 0;
+  color: #d8d1c4;
+  text-decoration: none;
+  transition: color 0.25s, padding-left 0.35s var(--ruhig);
+}
+.befehl a::before {
+  content: ">";
+  margin-right: 1.1rem;
+  font-family: var(--mono);
+  font-size: 1.125rem;
+  color: #b9b1a3;
+  align-self: center;
+}
+.befehl__wort {
+  margin-right: auto;
+  font-size: clamp(1.8rem, 3.6vw, 3.6rem);
+  font-weight: 300;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+.befehl__was { font-family: var(--mono); font-size: 1rem; color: #b9b1a3; }
+.befehl a:hover, .befehl a:focus-visible { color: #fffdf6; padding-left: 0.6rem; }
+
+@media (max-width: 40rem) {
+  .kap {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 1.25rem;
+    padding-top: clamp(7rem, 16svh, 9rem);
+    padding-bottom: clamp(3rem, 7svh, 4.5rem);
+  }
+  .sagt { font-size: 9.5vw; line-height: 0.98; }
+  .sagt--mittel { font-size: 1.9rem; }
+  .liste { grid-template-columns: minmax(0, 1fr) auto; column-gap: 1rem; }
+  .liste__name { grid-column: 1; font-size: 1.5rem; }
+  .liste__preis { grid-column: 2; grid-row: 1; font-size: 1.5rem; }
+  .liste__was { grid-column: 1 / -1; margin-top: 0.3rem; }
+
+  .ablauf { grid-template-columns: 1fr; row-gap: 1.5rem; }
+  .ablauf__name { font-size: 1.6rem; }
+
+  .check { grid-template-columns: 1fr; }
+  .check__text, .probe, .preise, .preise__fuss, .preise__fuss > p:first-child, .preise__wege { grid-column: 1; }
+  .preise, .preise__fuss { grid-template-columns: 1fr; }
+  .probe__zeilen li { grid-template-columns: 1fr 1fr; gap: 0.2rem 1rem; }
+  .probe__antwort { grid-column: 1 / -1; justify-self: start; text-align: left; }
+  .preise__wege { justify-content: flex-start; }
+  .preise__wege .auftrag { flex: 1 1 100%; }
+
+  .kap--verzeichnis { grid-template-rows: auto auto auto; }
+  .verzeichnis__stand { grid-area: 1 / 1 / 2 / -1; }
+  .verzeichnis__zahl { font-size: 3.2rem; }
+  .verzeichnis__wort { grid-area: 2 / 1 / 3 / -1; }
+  .buch { grid-row: 3; overflow-x: auto; }
+  .buch table { width: max-content; min-width: 100%; }
+  .buch th { padding-right: 1.5rem; font-size: 0.875rem; letter-spacing: -0.03em; white-space: nowrap; vertical-align: bottom; }
+  .buch td { padding-right: 1.5rem; white-space: nowrap; }
+  .buch th:last-child, .buch td:last-child { padding-right: 0; }
+
+  .befehl__wort { font-size: 1.7rem; }
+  .befehl a::before { margin-right: 0.7rem; }
+  .befehl__was { flex-basis: 100%; padding-left: 1.75rem; }
+}

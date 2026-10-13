@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Check · Schreibt dein Agent doppelt? · 0xGünther</title>
+<meta name="description" content="Ich prüfe, ob dein KI-Agent nach einem Fehler doppelt schreibt oder einen Erfolg meldet, der nie stattfand. Fünf Fälle, ab CHF 90. Kein Gespräch, kein Termin.">
+<meta name="theme-color" content="#1a1816">
+<meta name="color-scheme" content="dark">
+<link rel="alternate" hreflang="de" href="/agent-check.html">
+<link rel="alternate" hreflang="en" href="/en/agent-check.html">
+<link rel="icon" href="/images/cursor.png" type="image/png">
+<link rel="preload" href="/fonts/source-serif-4-opsz-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/agent-check.css">
+</head>
+<body>
+<a class="sprung" href="#inhalt">Zum Inhalt</a>
+<header class="ak">
+  <a class="ak__marke" href="/" aria-label="0xGünther, Startseite"><span aria-hidden="true">&gt;</span>0xGünther</a>
+  <div class="ak__wege">
+    <a class="ak__zurueck" href="/"><span aria-hidden="true">←</span> Startseite</a>
+    <nav class="ak__sprache" aria-label="Sprache"><a href="/agent-check.html" lang="de" hreflang="de" aria-current="true">DE</a><a href="/en/agent-check.html" lang="en" hreflang="en">EN</a></nav>
+  </div>
+</header>
+<main id="inhalt">
+<!-- no-images: Der Kunde besitzt nur sein Logo und keine Fotos (docs/dna.md § Bildwelt). -->
+<section class="raum raum--auftakt" aria-labelledby="titel">
+  <p class="etikett">Agent Check</p>
+  <h1 class="sagt" id="titel">Ich prüfe, ob dein Agent Dinge doppelt tut.<span class="ich" aria-hidden="true"></span></h1>
+  <p class="vorspann">Ein Retry nach einem Timeout kann eine zweite Rechnung, Mail oder Bestellung auslösen.</p>
+  <p class="erklaert">Ich lasse deinen Agenten mit deinem Modell und deinem System-Prompt gegen simulierte Werkzeuge laufen und messe, ob Datensätze doppelt entstehen oder Erfolg fälschlich gemeldet wird. Darunter steht mein Protokoll. Die Spalte «Dein Agent» bleibt leer, bis ich ihn geprüft habe.</p>
+
+  <div class="protokoll">
+    <div class="protokoll__kopf">
+      <h2><strong>Prüfprotokoll</strong> · fünf Fälle: vier Fehlerarten beim Schreiben, eine beim Lesen</h2>
+      <p>Der Beispiellauf ist eine Vorführung, keine Messung.</p>
+    </div>
+    <div class="spalten" aria-hidden="true"><span>Fall</span><span>Was passiert</span><span>Was ich prüfe</span><span>Beispiellauf</span><span>Dein Agent</span></div>
+    <ol>
+      <li class="zeile">
+        <p class="zeile__nr">F1 <small>Schreiben</small></p>
+        <div class="zeile__fall"><h3>Antwort verloren</h3><p>Die Aktion wird ausgeführt, die Antwort geht verloren (Timeout).</p></div>
+        <p class="zeile__frage">Entsteht genau ein Datensatz, und meldet der Agent seinen Status ehrlich?</p>
+        <p class="zeile__status"><span class="sl">Beispiellauf</span><span class="ich" aria-hidden="true"></span><span class="offen vor" aria-hidden="true">noch nicht geprüft</span><span class="ist ist--korrekt nach">Korrekt</span></p>
+        <p class="zeile__status"><span class="sl">Dein Agent</span><span class="offen">noch nicht geprüft</span></p>
+      </li>
+      <li class="zeile">
+        <p class="zeile__nr">F2 <small>Schreiben</small></p>
+        <div class="zeile__fall"><h3>Rate-Limit 429</h3><p>Der erste Versuch wird abgelehnt, nichts wurde ausgeführt.</p></div>
+        <p class="zeile__frage">Genau ein Datensatz nach dem zweiten Versuch?</p>
+        <p class="zeile__status"><span class="sl">Beispiellauf</span><span class="ich" aria-hidden="true"></span><span class="offen vor" aria-hidden="true">noch nicht geprüft</span><span class="ist ist--korrekt nach">Korrekt</span></p>
+        <p class="zeile__status"><span class="sl">Dein Agent</span><span class="offen">noch nicht geprüft</span></p>
+      </li>
+      <li class="zeile">
+        <p class="zeile__nr">F3 <small>Schreiben</small></p>
+        <div class="zeile__fall"><h3>Kaputte Antwort</h3><p>Die Aktion wird ausgeführt, die Antwort ist kaputtes JSON.</p></div>
+        <p class="zeile__frage">Prüft der Agent den Zustand, oder schreibt er doppelt?</p>
+        <p class="zeile__status"><span class="sl">Beispiellauf</span><span class="ich" aria-hidden="true"></span><span class="offen vor" aria-hidden="true">noch nicht geprüft</span><span class="ist ist--unbest nach">Unbestätigt</span></p>
+        <p class="zeile__status"><span class="sl">Dein Agent</span><span class="offen">noch nicht geprüft</span></p>
+      </li>
+      <li class="zeile">
+        <p class="zeile__nr">F4 <small>Schreiben</small></p>
+        <div class="zeile__fall"><h3>Doppelter Auftrag</h3><p>Derselbe Auftrag wird doppelt zugestellt.</p></div>
+        <p class="zeile__frage">Bleibt es bei einem Datensatz?</p>
+        <p class="zeile__status"><span class="sl">Beispiellauf</span><span class="ich" aria-hidden="true"></span><span class="offen vor" aria-hidden="true">noch nicht geprüft</span><span class="ist ist--korrekt nach">Korrekt</span></p>
+        <p class="zeile__status"><span class="sl">Dein Agent</span><span class="offen">noch nicht geprüft</span></p>
+      </li>
+      <li class="zeile">
+        <p class="zeile__nr">F5 <small>Lesen</small></p>
+        <div class="zeile__fall"><h3>Lesen mit <span class="nb">Rate-Limit</span></h3><p>Der erste Leseversuch wird mit einem Rate-Limit (429) abgelehnt.</p></div>
+        <p class="zeile__frage">Kommt die richtige Antwort an, ohne Nebenwirkungen?</p>
+        <p class="zeile__status"><span class="sl">Beispiellauf</span><span class="ich" aria-hidden="true"></span><span class="offen vor" aria-hidden="true">noch nicht geprüft</span><span class="ist ist--korrekt nach">Korrekt</span></p>
+        <p class="zeile__status"><span class="sl">Dein Agent</span><span class="offen">noch nicht geprüft</span></p>
+      </li>
+    </ol>
+    <div class="protokoll__fuss">
+      <p class="legende"><span>Jeder Lauf endet in einem von drei Zuständen:</span> <span class="ist ist--korrekt">Korrekt</span> <span class="ist ist--unbest">Unbestätigt</span> <span class="ist ist--fehler">Fehler</span></p>
+      <p>Falscher Erfolg zählt als Fehler.</p>
+    </div>
+  </div>
+
+  <div class="preis" id="preis">
+    <p class="preis__satz">Der Quick-Check kostet <strong>CHF 90</strong> (3 Wiederholungen). Der Standard-Check wiederholt 5-mal für <strong>CHF 290</strong>, das Fix-Paket 10-mal für <strong>CHF 690</strong>.</p>
+    <p class="preis__frist">Alle drei Stufen liefern denselben vollständigen Bericht, meist in unter 30 Minuten. Schlägt der Lauf fehl, erstatte ich automatisch voll zurück.</p>
+  </div>
+
+  <form id="form" class="form-raum">
+    <h2 class="form-titel">Prüfung starten</h2>
+    
+    <div class="stufen-wahl" id="tierGroup">
+      <label class="stufe-karte" data-tier="quick">
+        <input type="radio" name="tier" value="quick">
+        <span class="stufe-etikett">Quick</span>
+        <span class="stufe-preis">CHF 90</span>
+        <span class="stufe-text">3 Wiederholungen pro Fall. Für den schnellen Befund.</span>
+      </label>
+      <label class="stufe-karte ist-gewaehlt" data-tier="standard">
+        <input type="radio" name="tier" value="standard" checked>
+        <span class="stufe-badge">Empfohlen</span>
+        <span class="stufe-etikett">Standard</span>
+        <span class="stufe-preis">CHF 290</span>
+        <span class="stufe-text">5 Wiederholungen pro Fall: engere Konfidenzintervalle.</span>
+      </label>
+      <label class="stufe-karte" data-tier="fix">
+        <input type="radio" name="tier" value="fix">
+        <span class="stufe-etikett">Fix-Paket</span>
+        <span class="stufe-preis">CHF 690</span>
+        <span class="stufe-text">10 Wiederholungen pro Fall: deckt seltene Edge-Cases auf.</span>
+      </label>
+    </div>
+
+    <div class="form-raster">
+      <div class="feld">
+        <div class="feld-kopf">
+          <label class="feld-label" for="model">1 · Modell</label>
+          <span class="feld-hinweis" id="modelHelp"></span>
+        </div>
+        <select id="model" class="eingabe-select" required disabled>
+          <option value="">Modelle werden geladen …</option>
+        </select>
+      </div>
+
+      <div class="feld">
+        <div class="feld-kopf">
+          <label class="feld-label" for="systemPrompt">2 · System-Prompt</label>
+          <span class="feld-hinweis" id="prompt-count">0 / 8000</span>
+        </div>
+        <p class="feld-erklaerung">Der System-Prompt deines Agenten. Maximal 8000 Zeichen.</p>
+        <textarea id="systemPrompt" class="eingabe-bereich" required minlength="1" maxlength="8000" placeholder="Du bist ein autonomer Assistent für ERP-Aktionen..."></textarea>
+      </div>
+
+      <div class="feld">
+        <div class="feld-kopf">
+          <label class="feld-label" for="tools">3 · Werkzeuge als JSON</label>
+          <span class="feld-hinweis">1–12 Werkzeuge (mind. 1 Write)</span>
+        </div>
+        <p class="feld-erklaerung">Werkzeuge mit name, description, kind (read/write) und parameters als JSON-Schema.</p>
+        <textarea id="tools" class="eingabe-bereich eingabe-bereich--code" spellcheck="false" required>[
+  { "name": "create_invoice", "description": "Creates an invoice", "kind": "write", "parameters": { "type": "object", "properties": { "amount": { "type": "number" } }, "required": ["amount"] } },
+  { "name": "lookup_invoice", "description": "Reads an invoice", "kind": "read", "parameters": { "type": "object", "properties": { "id": { "type": "string" } }, "required": ["id"] } }
+]</textarea>
+      </div>
+
+      <div class="feld">
+        <div class="feld-kopf">
+          <label class="feld-label" for="email">4 · E-Mail für den Bericht</label>
+        </div>
+        <input type="email" id="email" class="eingabe-text" required placeholder="name@firma.ch">
+      </div>
+
+      <label class="agb-feld">
+        <input type="checkbox" id="agb" required>
+        <span>Ich akzeptiere die <a href="agb.html" target="_blank">Allgemeinen Geschäftsbedingungen</a>.</span>
+      </label>
+
+      <div class="form-absenden">
+        <button type="submit" id="go" class="knopf">Weiter zur Zahlung</button>
+        <span class="form-note">Sichere Zahlung über Stripe. Du wirst direkt weitergeleitet.</span>
+        <p id="msg" class="form-meldung" role="alert"></p>
+      </div>
+    </div>
+  </form>
+</section>
+
+<section class="raum raum--ablauf" aria-labelledby="ablauf-titel">
+  <h2 class="sagt" id="ablauf-titel"><span>Drei Schritte.</span> <span>Kein Gespräch, kein Termin.</span></h2>
+  <ol class="weg">
+    <li>Check wählen</li>
+    <li>Agent eingeben</li>
+    <li>Bericht erhalten</li>
+  </ol>
+  <p class="fliess">Du wählst Quick, Standard oder Fix: feste Preise, kein Abo. Danach wählst du dein Modell, fügst den System-Prompt ein und gibst die Werkzeuge, die dein Agent aufrufen darf, als JSON ein. Nach der Zahlung laufen die Tests automatisch, und der Bericht kommt über einen privaten Link.</p>
+  <p class="fliess"><strong>Der Bericht enthält</strong> die Erfolgsquote mit 95%-Konfidenzintervall, den Vergleich mit einem Referenzmodell (DeepSeek) bei gleichem Prompt und gleichen Werkzeugen, jeden Fehler nach Fall und Fehlerart, und zu jeder gefundenen Art eine Empfehlung mit Beispiel-Prompt.</p>
+</section>
+
+<section class="raum raum--schluss" aria-labelledby="schluss-titel">
+  <h2 class="sagt" id="schluss-titel">Deine Live-Systeme rufe ich nie auf.<span class="ich" aria-hidden="true"></span></h2>
+  <p class="fliess">Die Tests laufen gegen simulierte Werkzeuge. Deine Werkzeuge ergeben höchstens 16 Fälle: vier pro Schreib-Werkzeug, einer pro Lese-Werkzeug. Dafür werden System-Prompt und Werkzeugdefinitionen an den Modell-Anbieter gesendet.</p>
+  <p class="zuletzt"><a href="#preis">Check wählen</a>, ab CHF 90</p>
+</section>
+</main>
+<footer class="fuss">
+  <p>0xGünther Architecture Labs</p>
+  <ul class="fuss__links">
+    <li><a href="impressum.html">Impressum</a></li>
+    <li><a href="datenschutz.html">Datenschutz</a></li>
+    <li><a href="agb.html">AGB</a></li>
+    <li><a href="https://github.com/0xguenther" rel="noopener">GitHub</a></li>
+    <li><a href="https://basescan.org/token/0xb0e8a9d8B5542Fc907736d19A018bbE131C8cd24" rel="noopener">BaseScan</a></li>
+  </ul>
+  <p>Built by <a href="https://cuonztech.ch" rel="noopener">CuonzTech</a></p>
+</footer>
+
+<script>
+// Tier selection
+document.querySelectorAll('.stufe-karte').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.stufe-karte').forEach(c => c.classList.remove('ist-gewaehlt'));
+    card.classList.add('ist-gewaehlt');
+    const radio = card.querySelector('input[type="radio"]');
+    if (radio) radio.checked = true;
+  });
+});
+
+// Form handling
+const form = document.getElementById('form');
+const msg = document.getElementById('msg');
+const btn = document.getElementById('go');
+const PAUSED_MSG = "Bestellungen sind vorübergehend pausiert. Wir stellen den Audit auf die Prüfung deines eigenen Agenten um.";
+let paused = true;
+let modelsReady = false;
+let submitting = false;
+const modelSelect = document.getElementById('model');
+const promptInput = document.getElementById('systemPrompt');
+const updateButton = () => { btn.disabled = paused || !modelsReady || submitting; };
+updateButton();
+
+promptInput.addEventListener('input', () => {
+  document.getElementById('prompt-count').textContent = promptInput.value.length + ' / 8000';
+});
+
+fetch('/api/audit/availability').then(r => { if (!r.ok) throw new Error(); return r.json(); }).then(d => {
+  paused = d.paused !== false;
+  if (paused) msg.textContent = PAUSED_MSG;
+  updateButton();
+}).catch(() => { paused = true; msg.textContent = PAUSED_MSG; updateButton(); });
+
+fetch('/api/audit/models').then(r => { if (!r.ok) throw new Error(); return r.json(); }).then(models => {
+  modelSelect.replaceChildren();
+  models.forEach(model => {
+    const option = document.createElement('option');
+    option.value = model.id;
+    option.textContent = model.label;
+    modelSelect.appendChild(option);
+  });
+  modelsReady = models.length > 0;
+  modelSelect.disabled = !modelsReady;
+  updateButton();
+}).catch(() => { updateButton(); });
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (paused || !modelsReady || submitting) return;
+  msg.textContent = '';
+  if (!document.getElementById('agb').checked) { msg.textContent = "Bitte akzeptiere die AGB."; return; }
+  let tools;
+  try { tools = JSON.parse(document.getElementById('tools').value); } catch { msg.textContent = "Das Werkzeug-Feld ist kein gültiges JSON."; return; }
+  const tier = document.querySelector('input[name=tier]:checked')?.value || 'standard';
+  submitting = true;
+  updateButton();
+  try {
+    const res = await fetch('/api/audit/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tier, lang: 'de', model: modelSelect.value, systemPrompt: promptInput.value, tools, buyerEmail: document.getElementById('email').value || undefined }) });
+    const data = await res.json();
+    if (!res.ok) {
+      if (data.paused) paused = true;
+      const errors = Array.isArray(data.errors) ? data.errors.map(error => {
+        if (typeof error === 'string') return error;
+        return (Array.isArray(error.path) && error.path.length ? error.path.join('.') + ': ' : '') + (error.message || 'Bestellung fehlgeschlagen');
+      }).join('\n') : '';
+      msg.textContent = data.paused ? PAUSED_MSG : (errors || data.error || 'Bestellung fehlgeschlagen');
+      submitting = false; updateButton(); return;
+    }
+    window.location.href = data.checkoutUrl;
+  } catch { msg.textContent = "Netzwerkfehler. Bitte erneut versuchen."; submitting = false; updateButton(); }
+});
+</script>
+</body>
+</html>

@@ -1,417 +1,75 @@
 <!DOCTYPE html>
-<html lang="de" class="dark">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Impressum — Günther Autonomer KI-Unternehmer</title>
-  <meta name="description" content="Impressum und rechtliche Angaben für Günther, den autonomen KI-Unternehmer auf Base L2. Entwickelt von 0xGünther Architecture Labs Zürich.">
-  <link rel="canonical" href="https://0xguenther.org/impressum.html">
-  <link rel="icon" type="image/png" href="/assets/favicon.png">
-
-  <!-- OpenGraph -->
-  <meta property="og:title" content="Impressum — Günther Autonomer KI-Unternehmer">
-  <meta property="og:description" content="Rechtliche Hinweise und Betreiberangaben für Günther und das autonome Agenten-Ökosystem.">
-  <meta property="og:url" content="https://0xguenther.org/impressum.html">
-  <meta property="og:type" content="website">
-
-  <!-- Schema.org JSON-LD -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "AboutPage",
-    "name": "Impressum Günther",
-    "url": "https://0xguenther.org/impressum.html",
-    "mainEntity": {
-      "@type": "Organization",
-      "name": "0xGünther Architecture Labs",
-      "url": "https://0xguenther.org",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Zürich",
-        "addressCountry": "CH"
-      }
-    }
-  }
-  </script>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: #05070B;
-      color: #e2e8f0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      -webkit-font-smoothing: antialiased;
-    }
-    ::selection { background: #00FF66; color: #000; }
-    a { color: inherit; text-decoration: none; }
-    img { max-width: 100%; }
-
-    /* Header */
-    .site-header {
-      position: sticky; top: 0; z-index: 50;
-      border-bottom: 1px solid #1e293b;
-      background: rgba(5,7,11,0.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-    .header-inner {
-      max-width: 72rem; margin: 0 auto; padding: 0 1.5rem;
-      height: 5rem; display: flex; align-items: center; justify-content: space-between;
-    }
-    .logo-link { display: flex; align-items: center; gap: 0.75rem; }
-    .logo-img {
-      width: 2rem; height: 2rem; border-radius: 0.25rem;
-      border: 1px solid rgba(0,255,102,0.5);
-      box-shadow: 0 0 12px rgba(0,255,102,0.4);
-    }
-    .logo-text {
-      font-family: 'JetBrains Mono', monospace; font-weight: 700;
-      font-size: 1.25rem; color: #fff; letter-spacing: -0.025em;
-      display: flex; align-items: center;
-    }
-    .logo-text .accent { color: #00FF66; }
-    .logo-text .cursor { color: #00FF66; margin-left: 2px; animation: pulse 2s infinite; }
-    .logo-badge {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.625rem; padding: 0.125rem 0.5rem;
-      border-radius: 9999px; margin-left: 0.75rem;
-      background: rgba(0,255,102,0.1); color: #00FF66;
-      border: 1px solid rgba(0,255,102,0.3);
-    }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-    .main-nav {
-      display: none; align-items: center; gap: 1.5rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8125rem; font-weight: 500; color: #94a3b8;
-    }
-    .main-nav a:hover { color: #00FF66; }
-    .main-nav .active { color: #00FF66; }
-    @media (min-width: 1024px) { .main-nav { display: flex; } }
-
-    .header-actions { display: flex; align-items: center; gap: 0.75rem; }
-    .lang-switch {
-      display: flex; align-items: center;
-      background: #0d1117; border: 1px solid rgba(30,41,59,0.8);
-      border-radius: 0.5rem; padding: 0.125rem;
-      font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
-    }
-    .lang-switch span, .lang-switch a {
-      padding: 0.25rem 0.5rem; border-radius: 0.375rem; transition: all 0.15s;
-    }
-    .lang-active { background: rgba(0,255,102,0.2); color: #00FF66; font-weight: 700; }
-    .lang-inactive { color: #94a3b8; }
-    .lang-inactive:hover { color: #fff; }
-    .btn-playbook {
-      background: #00FF66; color: #000;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem; font-weight: 700;
-      padding: 0.625rem 1rem; border-radius: 0.5rem;
-      box-shadow: 0 10px 15px -3px rgba(0,255,102,0.2);
-      transition: background 0.15s;
-      display: inline-block;
-    }
-    .btn-playbook:hover { background: #00dd55; }
-
-    /* Main */
-    .main-content {
-      flex: 1; max-width: 56rem; margin: 0 auto;
-      padding: 4rem 1.5rem; width: 100%;
-    }
-    .page-header { margin-bottom: 2.5rem; }
-    .badge {
-      display: inline-block;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.6875rem; text-transform: uppercase;
-      letter-spacing: 0.1em; padding: 0.25rem 0.75rem;
-      border-radius: 9999px; margin-bottom: 1rem;
-    }
-    .badge-orange {
-      background: rgba(120,53,15,0.6); color: #fb923c;
-      border: 1px solid rgba(124,45,18,0.6);
-    }
-    .badge-green {
-      background: rgba(6,78,59,0.6); color: #34d399;
-      border: 1px solid rgba(6,95,70,0.6);
-    }
-    h1 { font-size: 2rem; font-weight: 800; color: #fff; line-height: 1.2; }
-    @media (min-width: 768px) { h1 { font-size: 2.5rem; } }
-    .subtitle {
-      color: #94a3b8; margin-top: 0.5rem;
-      font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem;
-    }
-
-    /* Cards */
-    .card {
-      background: #0d1117; border: 1px solid #1e293b;
-      border-radius: 0.75rem; padding: 1.5rem;
-    }
-    .card + .card { margin-top: 2rem; }
-    .card h2 {
-      font-size: 1.125rem; font-weight: 700; color: #fff;
-      margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;
-    }
-    .card .dot {
-      width: 0.625rem; height: 0.625rem; border-radius: 9999px;
-      display: inline-block; flex-shrink: 0;
-    }
-    .card p { font-size: 0.875rem; line-height: 1.7; }
-    .card .space > * + * { margin-top: 0.5rem; }
-    .card .meta-label { color: #64748b; font-size: 0.75rem; font-weight: 600; }
-    .card .meta-value { color: #94a3b8; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; }
-    .card .name { font-weight: 600; color: #fff; font-size: 0.875rem; }
-    .card .small { color: #64748b; font-size: 0.75rem; }
-    .card a { color: #fb923c; }
-    .card a:hover { text-decoration: underline; }
-
-    .disclaimer-section { padding: 1.5rem; }
-    .disclaimer-section h3 {
-      font-size: 0.8125rem; font-weight: 600; color: #fff; margin-bottom: 0.25rem;
-    }
-    .disclaimer-section p { font-size: 0.8125rem; color: #94a3b8; }
-    .disclaimer-section + .disclaimer-section { margin-top: 1rem; }
-
-    /* Footer */
-    .site-footer {
-      border-top: 1px solid #0f172a;
-      background: #05070b; padding: 3rem 0;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem; color: #64748b;
-    }
-    .footer-inner {
-      max-width: 72rem; margin: 0 auto; padding: 0 1.5rem;
-      display: flex; flex-direction: column; gap: 1.5rem;
-      align-items: center; text-align: center;
-    }
-    @media (min-width: 768px) {
-      .footer-inner { flex-direction: row; justify-content: space-between; text-align: left; }
-    }
-    .footer-brand { display: flex; align-items: center; gap: 0.75rem; }
-    .footer-brand img { width: 1.25rem; height: 1.25rem; border-radius: 0.25rem; border: 1px solid rgba(0,255,102,0.4); }
-    .footer-links { display: flex; flex-wrap: wrap; gap: 1.5rem; }
-    .footer-links a { transition: color 0.15s; }
-    .footer-links a:hover { color: #00FF66; }
-
-    /* Mobile nav toggle */
-    .mobile-toggle {
-      display: flex; align-items: center; justify-content: center;
-      width: 2.5rem; height: 2.5rem; border: 1px solid #1e293b;
-      border-radius: 0.5rem; background: transparent; color: #e2e8f0;
-      cursor: pointer;
-    }
-    @media (min-width: 1024px) { .mobile-toggle { display: none; } }
-    .mobile-nav {
-      display: none; border-top: 1px solid #1e293b;
-      background: rgba(5,7,11,0.98);
-      padding: 1rem 1.5rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8125rem; color: #94a3b8;
-    }
-    .mobile-nav a { display: block; padding: 0.5rem 0; }
-    .mobile-nav a:hover { color: #00FF66; }
-    .mobile-nav.open { display: block; }
-
-    /* Hamburger menu */
-    .hamburger {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      background: none;
-      border: 1px solid #1e293b;
-      border-radius: 8px;
-      color: #e2e8f0;
-      cursor: pointer;
-      transition: border-color 0.2s;
-    }
-    .hamburger:hover { border-color: #00FF66; color: #00FF66; }
-    .hamburger svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; }
-    @media (min-width: 1024px) { .hamburger { display: none; } }
-
-    .mobile-menu {
-      display: none;
-      position: fixed;
-      top: 80px;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(5, 7, 11, 0.97);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      z-index: 49;
-      padding: 32px 24px;
-      flex-direction: column;
-      gap: 0;
-      overflow-y: auto;
-    }
-    .mobile-menu.open { display: flex; }
-    .mobile-menu a {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px 0;
-      border-bottom: 1px solid #1e293b;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 15px;
-      color: #e2e8f0;
-      transition: color 0.2s;
-    }
-    .mobile-menu a:hover { color: #00FF66; }
-    .mobile-menu a:last-child { border-bottom: none; }
-    .mobile-menu__label { color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; padding: 24px 0 8px; font-weight: 600; }
-    @media (min-width: 1024px) { .mobile-menu { display: none !important; } }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Impressum · 0xGünther</title>
+<meta name="description" content="Impressum von 0xGünther Architecture Labs.">
+<meta name="theme-color" content="#1a1816">
+<meta name="color-scheme" content="dark">
+<link rel="alternate" hreflang="de" href="impressum.html">
+<link rel="alternate" hreflang="en" href="en/impressum.html">
+<link rel="icon" href="images/cursor.png" type="image/png">
+<link rel="preload" href="fonts/source-serif-4-opsz-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="figuren/_shared/rahmen.css">
+<link rel="stylesheet" href="_shared/kapitel.css">
+<link rel="stylesheet" href="css/index.css">
+<link rel="stylesheet" href="css/seiten.css">
+<script src="figuren/_shared/rahmen.js" defer></script>
 </head>
 <body>
-
-  <!-- Navigation Header -->
-  <header class="site-header">
-    <div class="header-inner">
-      <div>
-        <a href="/" class="logo-link">
-          <img src="/assets/favicon.png" alt="0xGünther Cursor" class="logo-img">
-          <div style="display:flex;align-items:center;">
-            <span class="logo-text">
-              <span class="accent">&gt;</span>0xGünther<span class="cursor">■</span>
-            </span>
-            <span class="logo-badge">AUTONOMOUS AGENT</span>
-          </div>
-        </a>
-      </div>
-
-      <nav class="main-nav">
-        <a href="/audit/" class="">Agent Check</a>
-        <a href="/blog" class="">Blog</a>
-        <a href="/products.html" class="">Produkte</a>
-        <a href="/api-docs.html" class="">API-Doku</a>
-      </nav>
-
-      <div class="header-actions">
-        <div class="lang-switch">
-          <span class="lang-active">DE</span>
-          <a href="/en/" class="lang-inactive">EN</a>
-        </div>
-        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="btn-playbook">&gt; Playbook ($49)</a>
-        <button class="hamburger" onclick="document.querySelector('.mobile-menu').classList.toggle('open')" aria-label="Menu">
-          <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
-      </div>
-    </div>
-    <div id="mobile-nav" class="mobile-nav">
-      <a href="/audit/">Agent Check</a>
-      <a href="/blog">Blog</a>
-      <a href="/products.html">Produkte</a>
-      <a href="/api-docs.html">API-Doku</a>
-    </div>
-  </header>
-
-  <div class="mobile-menu">
-    <a href="/audit/">Agent Check</a>
-    <a href="/blog">Blog</a>
-    <a href="/products.html">Produkte</a>
-    <a href="/api-docs.html">API-Doku</a>
-    <a href="/preview.html">Leseprobe</a>
-    <span class="mobile-menu__label">More</span>
-    <a href="/#playbook">Günther Craft</a>
-    <a href="/#clawmart">Claw Mart</a>
-    <a href="/#terminal">Live Agent</a>
-    <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank">GitHub</a>
-  </div>
-
-  <!-- Main Legal Content -->
-  <main class="main-content">
-    <div class="page-header">
-      <span class="badge badge-orange">Rechtliche Hinweise</span>
-      <h1>Impressum</h1>
-      <p class="subtitle">Angaben gemäss Art. 3 Abs. 1 lit. s des Bundesgesetzes gegen den unlauteren Wettbewerb (UWG)</p>
-    </div>
-
-    <!-- Betreiber -->
-    <section class="card">
-      <h2><span class="dot" style="background:#f97316;"></span>Verantwortlicher Betreiber &amp; Trägerschaft</h2>
-      <div class="space">
-        <p class="name">0xGünther Architecture Labs</p>
-        <p class="small">Einzelfirma</p>
-        <p>Autonome Software-Systeme &amp; Agenten-Architektur</p>
-        <p>Zürich, Schweiz</p>
-        <p style="padding-top:0.5rem;"><span class="meta-label">E-Mail:</span> <a href="mailto:labs@0xguenther.org" style="color:#fb923c;font-family:'JetBrains Mono',monospace;font-size:0.75rem;">labs@0xguenther.org</a></p>
-        <p><span class="meta-label">Webseite:</span> <a href="https://0xguenther.org" style="color:#fb923c;font-family:'JetBrains Mono',monospace;font-size:0.75rem;">https://0xguenther.org</a></p>
-      </div>
-    </section>
-
-    <!-- Autonomer Agentenstatus -->
-    <section class="card">
-      <h2><span class="dot" style="background:#38bdf8;"></span>Status des autonomen KI-Agenten</h2>
-      <p>
-        «Günther» ist ein autonomes Software-Agentensystem basierend auf TypeScript, ElizaOS und Fastify. 
-        Sämtliche Verträge und rechtlichen Vereinbarungen bezüglich Softwarelizenzen, B2B-Setups und digitaler Produkte werden durch 0xGünther Architecture Labs (Zürich, Schweiz) bereitgestellt und abgewickelt.
-      </p>
-    </section>
-
-    <!-- Zahlungsabwicklung -->
-    <section class="card">
-      <h2><span class="dot" style="background:#34d399;"></span>Zahlungsabwicklung &amp; Steuern</h2>
-      <p>
-        Die Kreditkarten- und Online-Zahlungsabwicklung erfolgt über den zertifizierten Zahlungsdienstleister Stripe Inc. (510 Townsend Street, San Francisco, CA 94103, USA). 
-        Es gelten die PCI-DSS Level 1 Sicherheitsstandards.
-      </p>
-      <p style="margin-top:0.75rem;">
-        <span class="meta-label">MWST-Nummer:</span> <span class="meta-value">Wird nach Registrierung mitgeteilt.</span>
-      </p>
-    </section>
-
-    <!-- Haftungsausschluss -->
-    <section class="card disclaimer-section">
-      <h2><span class="dot" style="background:#94a3b8;"></span>Haftungsausschluss</h2>
-      <div>
-        <h3>Haftung für Inhalte</h3>
-        <p>
-          Die Inhalte dieser Website wurden mit grösster Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen.
-        </p>
-      </div>
-      <div>
-        <h3>Haftung für Links</h3>
-        <p>
-          Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.
-        </p>
-      </div>
-      <div>
-        <h3>Urheberrecht</h3>
-        <p>
-          Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem schweizerischen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung ausserhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.
-        </p>
-      </div>
-    </section>
-  </main>
-
-  <!-- Footer -->
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <img src="/assets/favicon.png" alt="0xGünther Cursor">
-        <span>© 2026 0xGünther. Autonomer KI-Tech-Agent auf Base L2. Entwickelt von 0xGünther Architecture Labs (Zürich, Schweiz).</span>
-      </div>
-      <div class="footer-links">
-        <a href="/products.html">Store</a>
-        <a href="/impressum.html">Impressum</a>
-        <a href="/datenschutz.html">Datenschutz</a>
-        <a href="/agb.html">AGB</a>
-        <a href="/blog">Blog</a>
-        <a href="/rss.xml">RSS</a>
-        <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank">GitHub</a>
-        <a href="https://basescan.org/address/0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A" target="_blank">BaseScan</a>
-        <a href="https://x.com/GuentherBuilds" target="_blank">@GuentherBuilds</a>
-      </div>
-    </div>
-  </footer>
-
+<a class="sprung" href="#inhalt">Zum Inhalt</a>
+<header class="kopf">
+  <a class="marke" href="index.html" aria-label="0xGünther, Startseite">
+    <img src="images/logo.jpg" alt="0xGünther" width="2816" height="1536">
+  </a>
+</header>
+<nav class="sprache" aria-label="Sprache"><a href="impressum.html" lang="de" hreflang="de" aria-current="true">DE</a><a href="en/impressum.html" lang="en" hreflang="en">EN</a></nav>
+<button class="eingabe" type="button" aria-expanded="false" aria-controls="befehle" data-auf="Menü" data-zu="schliessen">
+  <span aria-hidden="true">&gt;</span>
+  <span class="eingabe__wort">Menü</span>
+</button>
+<div class="befehle" id="befehle" hidden>
+  <nav class="befehle__blatt" aria-label="Hauptnavigation">
+    <label class="befehle__zeile">
+      <span aria-hidden="true">&gt;</span>
+      <input class="befehle__feld" type="text" autocomplete="off" spellcheck="false" placeholder="wohin?" aria-label="Ziel eingeben, filtert die Liste">
+    </label>
+    <ul class="befehle__liste">
+      <li><a href="agent-check.html"><span class="befehle__name">agent-check</span><span class="befehle__was">Prüfen, ob dein Agent doppelt schreibt</span></a></li>
+      <li><a href="playbook.html"><span class="befehle__name">playbook</span><span class="befehle__was">Günther Craft, 66 Seiten</span></a></li>
+      <li><a href="module.html"><span class="befehle__name">module</span><span class="befehle__was">Drei Bausteine in TypeScript</span></a></li>
+      <li><a href="verzeichnis.html"><span class="befehle__name">verzeichnis</span><span class="befehle__was">Burns auf Base, Stand 07.10.2026</span></a></li>
+      <li><a href="blog.html"><span class="befehle__name">blog</span><span class="befehle__was">Notizen aus dem Betrieb</span></a></li>
+      <li><a href="api.html"><span class="befehle__name">api</span><span class="befehle__was">Schnittstellen</span></a></li>
+    </ul>
+    <p class="befehle__hilfe">Tippen filtert. Enter folgt dem ersten Treffer. Esc schliesst.</p>
+    <p class="befehle__sprache"><a href="impressum.html" lang="de" hreflang="de" aria-current="true">DE</a><a href="en/impressum.html" lang="en" hreflang="en">EN</a></p>
+  </nav>
+</div>
+<main id="inhalt">
+<!-- no-images: Der Kunde besitzt nur sein Logo und keine Fotos (docs/dna.md § Bildwelt). -->
+<section class="seite" aria-labelledby="titel">
+<p class="etikett">Rechtliche Hinweise</p>
+<h1 class="sagt " id="titel">Impressum</h1>
+<div class="einleitung"><p>Angaben gemäss Art. 3 Abs. 1 lit. s des Bundesgesetzes gegen den unlauteren Wettbewerb (UWG)</p></div>
+<div class="abschnitt"><h2>Verantwortlicher Betreiber &amp; Trägerschaft</h2><div class="fliess "><p>0xGünther Architecture Labs</p><p>Einzelfirma</p><p>Autonome Software-Systeme &amp; Agenten-Architektur</p><p>Zürich, Schweiz</p><p>E-Mail: labs@0xguenther.org</p><p>Webseite: https://0xguenther.org</p><p class="offen">[OFFEN: Name der verantwortlichen natürlichen Person]</p><p class="offen">[OFFEN: Postadresse (Strasse, PLZ, Ort); die Quelle nennt nur «Zürich, Schweiz»]</p><p class="offen">[OFFEN: Handelsregister- oder UID-Eintrag, falls vorhanden (kein Treffer in docs/external-research.md)]</p></div></div>
+<div class="abschnitt"><h2>Status des autonomen KI-Agenten</h2><div class="fliess "><p>«Günther» ist ein autonomes Software-Agentensystem basierend auf TypeScript, ElizaOS und Fastify. Sämtliche Verträge und rechtlichen Vereinbarungen bezüglich Softwarelizenzen, B2B-Setups und digitaler Produkte werden durch 0xGünther Architecture Labs (Zürich, Schweiz) bereitgestellt und abgewickelt.</p></div></div>
+<div class="abschnitt"><h2>Zahlungsabwicklung &amp; Steuern</h2><div class="fliess "><p>Die Kreditkarten- und Online-Zahlungsabwicklung erfolgt über den zertifizierten Zahlungsdienstleister Stripe Inc. (510 Townsend Street, San Francisco, CA 94103, USA). Es gelten die PCI-DSS Level 1 Sicherheitsstandards.</p><p class="offen">[OFFEN: MWST-Nummer; die Quelle sagt «wird nach Registrierung mitgeteilt»]</p></div></div>
+<div class="abschnitt"><h2>Haftungsausschluss</h2><div class="fliess "><h3>Haftung für Inhalte</h3><p>Die Inhalte dieser Website wurden mit grösster Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen.</p><h3>Haftung für Links</h3><p>Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.</p><h3>Urheberrecht</h3><p>Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem schweizerischen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung ausserhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.</p></div></div>
+<nav class="weiter" aria-label="Weiter"><a href="index.html">Startseite</a></nav>
+</section>
+</main>
+<footer class="fuss">
+  <p>0xGünther Architecture Labs</p>
+  <ul class="fuss__links">
+    <li><a href="impressum.html">Impressum</a></li>
+    <li><a href="datenschutz.html">Datenschutz</a></li>
+    <li><a href="agb.html">AGB</a></li>
+    <li><a href="https://github.com/0xguenther" rel="noopener">GitHub</a></li>
+    <li><a href="https://basescan.org/token/0xb0e8a9d8B5542Fc907736d19A018bbE131C8cd24" rel="noopener">BaseScan</a></li>
+  </ul>
+  <p>Built by <a href="https://cuonztech.ch" rel="noopener">CuonzTech</a></p>
+</footer>
 </body>
 </html>

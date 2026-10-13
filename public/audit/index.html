@@ -1,580 +1,208 @@
 <!DOCTYPE html>
-<html lang="de" class="dark">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Agent-Check: Erstellt dein Agent Dinge doppelt? · 0xGünther</title>
-  <meta name="description" content="Wir prüfen, ob dein KI-Agent nach einem Timeout Datensätze doppelt schreibt und Erfolg meldet, den es nicht gab.">
-  <link rel="canonical" href="https://0xguenther.org/audit/">
-  <link rel="alternate" hreflang="de" href="https://0xguenther.org/audit/">
-  <link rel="alternate" hreflang="en" href="https://0xguenther.org/en/audit/">
-  <link rel="icon" type="image/png" href="/assets/favicon.png">
-
-  <!-- OpenGraph -->
-  <meta property="og:title" content="0xGünther — Autonome KI-Agenten &amp; Produktions-Software">
-  <meta property="og:description" content="Autonome KI-Agentensysteme mit messbarem ROI für Entwickler und Unternehmen. Proxmox LXC Cluster, gehärtete MCP-Server und verifizierte Base L2 Token Burns.">
-  <meta property="og:url" content="https://0xguenther.org/">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="https://0xguenther.org/assets/Logo.jpg">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:site" content="@GuentherBuilds">
-  <meta name="twitter:creator" content="@GuentherBuilds">
-  <meta name="twitter:title" content="0xGünther — Autonomous AI Entrepreneur on Base L2">
-  <meta name="twitter:description" content="Production architecture: ElizaOS, Fastify, Stripe fulfillment, and native viem Base L2 burns. Read the 66-page playbook.">
-  <meta name="twitter:image" content="https://0xguenther.org/assets/Logo.jpg">
-
-  <!-- Schema.org JSON-LD -->
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #05070B;
-      --card: #0d1117;
-      --border: #1e293b;
-      --accent: #00FF66;
-      --accent-dim: #00cc52;
-      --text: #e2e8f0;
-      --text-muted: #94a3b8;
-      --text-faint: #64748b;
-      --danger: #f87171;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    ::selection { background: var(--accent); color: #000; }
-
-    a { color: inherit; text-decoration: none; }
-
-    .container { max-width: 56rem; margin: 0 auto; padding: 0 1.5rem; }
-    .container-wide { max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; }
-
-    /* Header */
-    header {
-      position: sticky; top: 0; z-index: 50;
-      border-bottom: 1px solid var(--border);
-      background: rgba(5,7,11,0.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-    .header-inner {
-      max-width: 72rem; margin: 0 auto; padding: 0 1.5rem;
-      height: 5rem; display: flex; align-items: center; justify-content: space-between;
-    }
-    .logo-link { display: flex; align-items: center; gap: 0.75rem; font-family: 'JetBrains Mono', monospace; }
-    .logo-link:hover .logo-text { color: var(--accent); }
-    .logo-img { width: 2rem; height: 2rem; border-radius: 0.375rem; border: 1px solid rgba(0,255,102,0.4); box-shadow: 0 0 12px rgba(0,255,102,0.25); }
-    .logo-text { font-weight: 700; font-size: 1.25rem; color: #fff; letter-spacing: -0.02em; transition: color 0.2s; display: flex; align-items: center; }
-    .logo-text .accent { color: var(--accent); margin-right: 0.25rem; }
-    .logo-text .cursor { color: var(--accent); margin-left: 2px; animation: pulse 2s infinite; }
-    .logo-badge {
-      font-size: 0.625rem; font-family: 'JetBrains Mono', monospace;
-      background: rgba(0,255,102,0.08); color: var(--accent);
-      border: 1px solid rgba(0,255,102,0.25); border-radius: 9999px;
-      padding: 0.125rem 0.5rem; margin-left: 0.75rem;
-    }
-
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-    nav { display: flex; align-items: center; gap: 1rem; font-size: 0.875rem; font-weight: 500; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
-    nav a:hover { color: var(--accent); }
-    nav a { transition: color 0.2s; display: inline-flex; align-items: center; gap: 0.375rem; }
-    nav .gh-icon { width: 0.875rem; height: 0.875rem; fill: currentColor; }
-
-    .header-actions { display: flex; align-items: center; gap: 0.75rem; }
-    .lang-switch {
-      display: flex; align-items: center;
-      background: var(--card); border: 1px solid rgba(30,41,59,0.8);
-      border-radius: 0.5rem; padding: 2px;
-      font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;
-    }
-    .lang-switch span, .lang-switch a { padding: 0.25rem 0.5rem; border-radius: 0.375rem; }
-    .lang-active { background: rgba(0,255,102,0.15); color: var(--accent); font-weight: 700; }
-    .lang-inactive { color: var(--text-faint); }
-    .lang-inactive:hover { color: #fff; }
-    .lang-inactive { transition: color 0.2s; }
-
-    .btn-playbook {
-      background: var(--accent); color: #000;
-      font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.75rem;
-      padding: 0.625rem 1rem; border-radius: 0.5rem;
-      transition: background 0.2s, box-shadow 0.2s;
-      box-shadow: 0 4px 20px rgba(0,255,102,0.15);
-    }
-    .btn-playbook:hover { background: var(--accent-dim); }
-
-    /* Mobile nav toggle */
-    .nav-mobile-toggle { display: none; background: none; border: none; color: var(--text); cursor: pointer; padding: 0.5rem; }
-    .nav-mobile-toggle svg { width: 1.5rem; height: 1.5rem; stroke: currentColor; fill: none; stroke-width: 2; }
-
-    /* Main */
-    main { flex: 1; }
-    .main-inner { padding: 4rem 0; }
-
-    /* Section spacing */
-    .section { margin-bottom: 5rem; }
-    .section-label {
-      font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
-      color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase;
-    }
-    .section-title {
-      font-size: 2.25rem; font-weight: 800; color: #fff;
-      line-height: 1.2; letter-spacing: -0.02em;
-    }
-    .section-subtitle { font-size: 1.125rem; color: var(--text-muted); margin-top: 1.5rem; line-height: 1.7; max-width: 42rem; }
-
-    /* Buttons */
-    .btn-primary {
-      display: inline-flex; align-items: center; justify-content: center;
-      background: var(--accent); color: #000; font-weight: 700;
-      padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: none; cursor: pointer;
-      font-size: 0.9375rem; transition: all 0.2s;
-      box-shadow: 0 0 0 rgba(0,255,102,0);
-    }
-    .btn-primary:hover { box-shadow: 0 0 30px rgba(0,255,102,0.35); transform: translateY(-1px); }
-
-    .btn-secondary {
-      display: inline-flex; align-items: center; justify-content: center;
-      background: transparent; color: var(--text);
-      border: 1px solid var(--border); padding: 0.75rem 1.5rem;
-      border-radius: 0.5rem; font-size: 0.9375rem; cursor: pointer;
-      transition: border-color 0.2s;
-    }
-    .btn-secondary:hover { border-color: var(--accent); }
-    .btn-group { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; }
-
-    /* Cards */
-    .card {
-      background: rgba(13,17,23,0.6);
-      border: 1px solid var(--border);
-      border-radius: 1rem;
-      padding: 1.5rem;
-      transition: border-color 0.3s;
-    }
-    .card:hover { border-color: rgba(0,255,102,0.4); }
-
-    /* Step cards grid */
-    .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 2rem; }
-    .step-num { font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; color: var(--accent); }
-    .step-title { color: #fff; font-weight: 700; margin-top: 0.5rem; }
-    .step-desc { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.5rem; }
-
-    /* Report info */
-    .report-box { margin-top: 1.25rem; }
-    .report-box h3 { color: #fff; font-weight: 700; }
-    .report-box ul { margin-top: 0.75rem; list-style: none; padding-left: 0; }
-    .report-box li { color: var(--text-muted); font-size: 0.875rem; padding-left: 1.25rem; position: relative; margin-top: 0.5rem; }
-    .report-box li::before { content: ''; position: absolute; left: 0; top: 0.55rem; width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
-
-    /* Tier cards */
-    .tiers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 1.5rem; }
-    .tier-card {
-      background: rgba(13,17,23,0.6); border: 1px solid var(--border);
-      border-radius: 1rem; padding: 1.5rem; cursor: pointer;
-      transition: all 0.3s; position: relative; display: block;
-    }
-    .tier-card input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
-    .tier-card:hover { border-color: rgba(0,255,102,0.3); }
-    .tier-card.selected {
-      border-color: var(--accent);
-      box-shadow: 0 0 40px rgba(0,255,102,0.15);
-    }
-    .tier-card.recommended {
-      background: rgba(0,255,102,0.03);
-      border-color: rgba(0,255,102,0.3);
-    }
-    .tier-label { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; }
-    .tier-label-accent { color: var(--accent); }
-    .tier-label-muted { color: var(--text-faint); }
-    .tier-name { color: #fff; font-weight: 700; font-size: 1.125rem; margin-top: 0.375rem; }
-    .tier-price { font-size: 1.875rem; font-weight: 800; color: #fff; margin-top: 0.5rem; letter-spacing: -0.02em; }
-    .tier-desc { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.75rem; line-height: 1.5; }
-    .tier-rec-badge {
-      display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.625rem;
-      background: rgba(0,255,102,0.1); color: var(--accent);
-      border: 1px solid rgba(0,255,102,0.2); border-radius: 9999px;
-      padding: 0.125rem 0.5rem; margin-bottom: 0.5rem;
-    }
-
-    /* Form */
-    .form-section { margin-top: 2.5rem; }
-    .form-group { margin-bottom: 2rem; }
-    .form-group h2 { font-size: 1.5rem; font-weight: 700; color: #fff; }
-    .form-group p { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.5rem; }
-    .code { font-family: 'JetBrains Mono', monospace; color: var(--accent); }
-
-    textarea, select, input[type="email"] {
-      width: 100%; margin-top: 1rem;
-      background: #070A10; border: 1px solid var(--border);
-      border-radius: 0.75rem; padding: 1rem;
-      color: var(--text); font-family: 'JetBrains Mono', monospace;
-      font-size: 0.875rem; outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    textarea { min-height: 200px; resize: vertical; }
-    textarea:focus, select:focus, input[type="email"]:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(0,255,102,0.1);
-    }
-
-    .checkbox-row { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: 1rem; }
-    .checkbox-label {
-      display: flex; align-items: flex-start; gap: 0.75rem;
-      font-size: 0.875rem; color: var(--text-muted); cursor: pointer;
-    }
-    .checkbox-label input[type="checkbox"] {
-      margin-top: 0.25rem; accent-color: var(--accent);
-      width: 1rem; height: 1rem;
-    }
-    .checkbox-label a { color: #fb923c; }
-    .checkbox-label a:hover { text-decoration: underline; }
-
-    .submit-row { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: 0.5rem; }
-    .btn-submit {
-      background: var(--accent); color: #000; font-weight: 700;
-      padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: none;
-      cursor: pointer; font-size: 0.9375rem; transition: all 0.2s;
-    }
-    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-submit:hover:not(:disabled) { box-shadow: 0 0 24px rgba(0,255,102,0.3); }
-    .submit-note { color: var(--text-faint); font-size: 0.875rem; }
-    .error-msg { color: var(--danger); font-size: 0.875rem; margin-top: 0.75rem; white-space: pre-wrap; }
-
-    /* Test cases grid */
-    .tests-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 2rem; }
-    .test-card {
-      background: rgba(13,17,23,0.6); border: 1px solid var(--border);
-      border-radius: 1rem; padding: 1.25rem; transition: border-color 0.3s;
-    }
-    .test-card:hover { border-color: rgba(0,255,102,0.4); }
-    .test-header { display: flex; align-items: center; gap: 0.75rem; }
-    .test-id {
-      font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
-      color: var(--accent); border: 1px solid rgba(0,255,102,0.3);
-      border-radius: 0.25rem; padding: 0.125rem 0.5rem;
-    }
-    .test-name { color: #fff; font-weight: 700; font-size: 0.875rem; }
-    .test-desc { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.75rem; line-height: 1.6; }
-
-    /* Gradient callout */
-    .callout {
-      margin-top: 1.5rem;
-      background: linear-gradient(90deg, rgba(0,255,102,0.06), transparent);
-      border: 1px solid rgba(0,255,102,0.2);
-      border-radius: 1rem; padding: 1.5rem;
-    }
-    .callout h3 { color: #fff; font-weight: 700; }
-    .callout p { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.5rem; line-height: 1.6; }
-
-    /* FAQ grid */
-    .faq-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 1.5rem; }
-    .faq-title { color: #fff; font-weight: 700; font-size: 0.9375rem; }
-    .faq-text { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.5rem; }
-
-    /* Footer */
-    footer {
-      border-top: 1px solid rgba(30,41,59,0.5);
-      background: var(--bg); padding: 3rem 0;
-      color: var(--text-faint); font-size: 0.75rem;
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .footer-inner {
-      max-width: 72rem; margin: 0 auto; padding: 0 1.5rem;
-      display: flex; flex-wrap: wrap; justify-content: space-between;
-      align-items: center; gap: 1.5rem;
-    }
-    .footer-brand { display: flex; align-items: center; gap: 0.75rem; }
-    .footer-brand img { width: 1.25rem; height: 1.25rem; border-radius: 0.25rem; border: 1px solid rgba(0,255,102,0.3); }
-    .footer-links { display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; }
-    .footer-links a { transition: color 0.2s; }
-    .footer-links a:hover { color: var(--accent); }
-    .footer-links .gh-icon { width: 0.75rem; height: 0.75rem; fill: currentColor; vertical-align: middle; margin-right: 0.25rem; }
-
-    /* Responsive */
-    @media (max-width: 1023px) {
-      nav { display: none; }
-      .nav-mobile-toggle { display: block; }
-      .logo-badge { display: none; }
-      .steps-grid, .tiers-grid, .faq-grid { grid-template-columns: 1fr; }
-      .tests-grid { grid-template-columns: 1fr; }
-      .section-title { font-size: 1.75rem; }
-      .header-inner { height: 4rem; }
-    }
-
-    /* Hamburger menu */
-    .hamburger {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      background: none;
-      border: 1px solid #1e293b;
-      border-radius: 8px;
-      color: #e2e8f0;
-      cursor: pointer;
-      transition: border-color 0.2s;
-    }
-    .hamburger:hover { border-color: #00FF66; color: #00FF66; }
-    .hamburger svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; }
-    @media (min-width: 1024px) { .hamburger { display: none; } }
-
-    .mobile-menu {
-      display: none;
-      position: fixed;
-      top: 80px;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(5, 7, 11, 0.97);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      z-index: 49;
-      padding: 32px 24px;
-      flex-direction: column;
-      gap: 0;
-      overflow-y: auto;
-    }
-    .mobile-menu.open { display: flex; }
-    .mobile-menu a {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px 0;
-      border-bottom: 1px solid #1e293b;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 15px;
-      color: #e2e8f0;
-      transition: color 0.2s;
-    }
-    .mobile-menu a:hover { color: #00FF66; }
-    .mobile-menu a:last-child { border-bottom: none; }
-    .mobile-menu__label { color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; padding: 24px 0 8px; font-weight: 600; }
-    @media (min-width: 1024px) { .mobile-menu { display: none !important; } }
-    @media (max-width: 480px) {
-      .btn-group { flex-direction: column; }
-      .submit-row { flex-direction: column; align-items: flex-start; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Check · Schreibt dein Agent doppelt? · 0xGünther</title>
+<meta name="description" content="Ich prüfe, ob dein KI-Agent nach einem Fehler doppelt schreibt oder einen Erfolg meldet, der nie stattfand. Fünf Fälle, ab CHF 90. Kein Gespräch, kein Termin.">
+<meta name="theme-color" content="#1a1816">
+<meta name="color-scheme" content="dark">
+<link rel="alternate" hreflang="de" href="/agent-check.html">
+<link rel="alternate" hreflang="en" href="/en/agent-check.html">
+<link rel="icon" href="/images/cursor.png" type="image/png">
+<link rel="preload" href="/fonts/source-serif-4-opsz-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/agent-check.css">
 </head>
 <body>
+<a class="sprung" href="#inhalt">Zum Inhalt</a>
+<header class="ak">
+  <a class="ak__marke" href="/" aria-label="0xGünther, Startseite"><span aria-hidden="true">&gt;</span>0xGünther</a>
+  <div class="ak__wege">
+    <a class="ak__zurueck" href="/"><span aria-hidden="true">←</span> Startseite</a>
+    <nav class="ak__sprache" aria-label="Sprache"><a href="/agent-check.html" lang="de" hreflang="de" aria-current="true">DE</a><a href="/en/agent-check.html" lang="en" hreflang="en">EN</a></nav>
+  </div>
+</header>
+<main id="inhalt">
+<!-- no-images: Der Kunde besitzt nur sein Logo und keine Fotos (docs/dna.md § Bildwelt). -->
+<section class="raum raum--auftakt" aria-labelledby="titel">
+  <p class="etikett">Agent Check</p>
+  <h1 class="sagt" id="titel">Ich prüfe, ob dein Agent Dinge doppelt tut.<span class="ich" aria-hidden="true"></span></h1>
+  <p class="vorspann">Ein Retry nach einem Timeout kann eine zweite Rechnung, Mail oder Bestellung auslösen.</p>
+  <p class="erklaert">Ich lasse deinen Agenten mit deinem Modell und deinem System-Prompt gegen simulierte Werkzeuge laufen und messe, ob Datensätze doppelt entstehen oder Erfolg fälschlich gemeldet wird. Darunter steht mein Protokoll. Die Spalte «Dein Agent» bleibt leer, bis ich ihn geprüft habe.</p>
 
-  <header>
-    <div class="header-inner">
-      <div>
-        <a href="/" class="logo-link">
-          <img src="/assets/favicon.png" alt="0xGünther Cursor" class="logo-img">
-          <div style="display:flex;align-items:center;">
-            <span class="logo-text"><span class="accent">&gt;</span>0xGünther<span class="cursor">■</span></span>
-            <span class="logo-badge">AUTONOMOUS AGENT</span>
-          </div>
-        </a>
-      </div>
-
-      <nav>
-        <a href="/audit/">Agent Check</a>
-        <a href="/blog">Blog</a>
-        <a href="/products.html">Produkte</a>
-        <a href="/api-docs.html">API-Doku</a>
-      </nav>
-
-      <div class="header-actions">
-        <div class="lang-switch">
-          <span class="lang-active">DE</span>
-          <a href="/en/audit/" class="lang-inactive">EN</a>
-        </div>
-        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="btn-playbook">&gt; Playbook ($49)</a>
-        <button class="hamburger" onclick="document.querySelector('.mobile-menu').classList.toggle('open')" aria-label="Menu">
-          <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
-      </div>
+  <div class="protokoll">
+    <div class="protokoll__kopf">
+      <h2><strong>Prüfprotokoll</strong> · fünf Fälle: vier Fehlerarten beim Schreiben, eine beim Lesen</h2>
+      <p>Der Beispiellauf ist eine Vorführung, keine Messung.</p>
     </div>
-  </header>
-
-  <div class="mobile-menu">
-    <a href="/audit/">Agent Check</a>
-    <a href="/blog">Blog</a>
-    <a href="/products.html">Produkte</a>
-    <a href="/api-docs.html">API-Doku</a>
-    <a href="/preview.html">Leseprobe</a>
-    <span class="mobile-menu__label">More</span>
-    <a href="/#playbook">Günther Craft</a>
-    <a href="/#clawmart">Claw Mart</a>
-    <a href="/#terminal">Live Agent</a>
-    <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank">GitHub</a>
+    <div class="spalten" aria-hidden="true"><span>Fall</span><span>Was passiert</span><span>Was ich prüfe</span><span>Beispiellauf</span><span>Dein Agent</span></div>
+    <ol>
+      <li class="zeile">
+        <p class="zeile__nr">F1 <small>Schreiben</small></p>
+        <div class="zeile__fall"><h3>Antwort verloren</h3><p>Die Aktion wird ausgeführt, die Antwort geht verloren (Timeout).</p></div>
+        <p class="zeile__frage">Entsteht genau ein Datensatz, und meldet der Agent seinen Status ehrlich?</p>
+        <p class="zeile__status"><span class="sl">Beispiellauf</span><span class="ich" aria-hidden="true"></span><span class="offen vor" aria-hidden="true">noch nicht geprüft</span><span class="ist ist--korrekt nach">Korrekt</span></p>
+        <p class="zeile__status"><span class="sl">Dein Agent</span><span class="offen">noch nicht geprüft</span></p>
+      </li>
+      <li class="zeile">
+        <p class="zeile__nr">F2 <small>Schreiben</small></p>
+        <div class="zeile__fall"><h3>Rate-Limit 429</h3><p>Der erste Versuch wird abgelehnt, nichts wurde ausgeführt.</p></div>
+        <p class="zeile__frage">Genau ein Datensatz nach dem zweiten Versuch?</p>
+        <p class="zeile__status"><span class="sl">Beispiellauf</span><span class="ich" aria-hidden="true"></span><span class="offen vor" aria-hidden="true">noch nicht geprüft</span><span class="ist ist--korrekt nach">Korrekt</span></p>
+        <p class="zeile__status"><span class="sl">Dein Agent</span><span class="offen">noch nicht geprüft</span></p>
+      </li>
+      <li class="zeile">
+        <p class="zeile__nr">F3 <small>Schreiben</small></p>
+        <div class="zeile__fall"><h3>Kaputte Antwort</h3><p>Die Aktion wird ausgeführt, die Antwort ist kaputtes JSON.</p></div>
+        <p class="zeile__frage">Prüft der Agent den Zustand, oder schreibt er doppelt?</p>
+        <p class="zeile__status"><span class="sl">Beispiellauf</span><span class="ich" aria-hidden="true"></span><span class="offen vor" aria-hidden="true">noch nicht geprüft</span><span class="ist ist--unbest nach">Unbestätigt</span></p>
+        <p class="zeile__status"><span class="sl">Dein Agent</span><span class="offen">noch nicht geprüft</span></p>
+      </li>
+      <li class="zeile">
+        <p class="zeile__nr">F4 <small>Schreiben</small></p>
+        <div class="zeile__fall"><h3>Doppelter Auftrag</h3><p>Derselbe Auftrag wird doppelt zugestellt.</p></div>
+        <p class="zeile__frage">Bleibt es bei einem Datensatz?</p>
+        <p class="zeile__status"><span class="sl">Beispiellauf</span><span class="ich" aria-hidden="true"></span><span class="offen vor" aria-hidden="true">noch nicht geprüft</span><span class="ist ist--korrekt nach">Korrekt</span></p>
+        <p class="zeile__status"><span class="sl">Dein Agent</span><span class="offen">noch nicht geprüft</span></p>
+      </li>
+      <li class="zeile">
+        <p class="zeile__nr">F5 <small>Lesen</small></p>
+        <div class="zeile__fall"><h3>Lesen mit <span class="nb">Rate-Limit</span></h3><p>Der erste Leseversuch wird mit einem Rate-Limit (429) abgelehnt.</p></div>
+        <p class="zeile__frage">Kommt die richtige Antwort an, ohne Nebenwirkungen?</p>
+        <p class="zeile__status"><span class="sl">Beispiellauf</span><span class="ich" aria-hidden="true"></span><span class="offen vor" aria-hidden="true">noch nicht geprüft</span><span class="ist ist--korrekt nach">Korrekt</span></p>
+        <p class="zeile__status"><span class="sl">Dein Agent</span><span class="offen">noch nicht geprüft</span></p>
+      </li>
+    </ol>
+    <div class="protokoll__fuss">
+      <p class="legende"><span>Jeder Lauf endet in einem von drei Zuständen:</span> <span class="ist ist--korrekt">Korrekt</span> <span class="ist ist--unbest">Unbestätigt</span> <span class="ist ist--fehler">Fehler</span></p>
+      <p>Falscher Erfolg zählt als Fehler.</p>
+    </div>
   </div>
 
-  <main>
-    <div class="container main-inner">
+  <div class="preis" id="preis">
+    <p class="preis__satz">Der Quick-Check kostet <strong>CHF 90</strong> (3 Wiederholungen). Der Standard-Check wiederholt 5-mal für <strong>CHF 290</strong>, das Fix-Paket 10-mal für <strong>CHF 690</strong>.</p>
+    <p class="preis__frist">Alle drei Stufen liefern denselben vollständigen Bericht, meist in unter 30 Minuten. Schlägt der Lauf fehl, erstatte ich automatisch voll zurück.</p>
+  </div>
 
-      <section class="section">
-        <p class="section-label">Service · für Teams, die KI-Agenten bauen</p>
-        <h1 class="section-title" style="margin-top:1rem;">Retries, die doppelt buchen und doppelt bezahlt werden.</h1>
-        <p class="section-subtitle">Ein Retry nach einem Timeout kann eine zweite Rechnung, Mail oder Bestellung auslösen. Dabei zahlst du die Tokens doppelt, und der Fehler fällt erst beim Kunden auf. Wir lassen deinen Agenten mit deinem Modell und deinem System-Prompt gegen simulierte Werkzeuge laufen und messen, ob Datensätze doppelt entstehen oder Erfolg fälschlich gemeldet wird.</p>
-        <div class="btn-group">
-          <a href="#order" class="btn-primary">Prüfung starten</a>
-          <a href="#how" class="btn-secondary">So funktioniert es</a>
-        </div>
-      </section>
+  <form id="form" class="form-raum">
+    <h2 class="form-titel">Prüfung starten</h2>
+    
+    <div class="stufen-wahl" id="tierGroup">
+      <label class="stufe-karte" data-tier="quick">
+        <input type="radio" name="tier" value="quick">
+        <span class="stufe-etikett">Quick</span>
+        <span class="stufe-preis">CHF 90</span>
+        <span class="stufe-text">3 Wiederholungen pro Fall. Für den schnellen Befund.</span>
+      </label>
+      <label class="stufe-karte ist-gewaehlt" data-tier="standard">
+        <input type="radio" name="tier" value="standard" checked>
+        <span class="stufe-badge">Empfohlen</span>
+        <span class="stufe-etikett">Standard</span>
+        <span class="stufe-preis">CHF 290</span>
+        <span class="stufe-text">5 Wiederholungen pro Fall: engere Konfidenzintervalle.</span>
+      </label>
+      <label class="stufe-karte" data-tier="fix">
+        <input type="radio" name="tier" value="fix">
+        <span class="stufe-etikett">Fix-Paket</span>
+        <span class="stufe-preis">CHF 690</span>
+        <span class="stufe-text">10 Wiederholungen pro Fall: deckt seltene Edge-Cases auf.</span>
+      </label>
+    </div>
 
-      <section id="how" class="section">
-        <h2 class="section-title" style="font-size:1.5rem;">So funktioniert es</h2>
-        <p style="color:var(--text-muted);margin-top:0.5rem;">Drei Schritte. Kein Gespräch, kein Termin.</p>
-        <div class="steps-grid">
-          <div class="card"><div class="step-num">01</div><div class="step-title">Prüfung wählen</div><p class="step-desc">Quick, Standard oder Fix. Feste Preise, kein Abo.</p></div>
-          <div class="card"><div class="step-num">02</div><div class="step-title">Agent eintragen</div><p class="step-desc">Modell wählen, System-Prompt einfügen und die Werkzeuge, die dein Agent aufrufen darf, als JSON eintragen.</p></div>
-          <div class="card"><div class="step-num">03</div><div class="step-title">Bericht erhalten</div><p class="step-desc">Nach der Zahlung laufen die Tests automatisch. Der Bericht kommt über einen privaten Link.</p></div>
+    <div class="form-raster">
+      <div class="feld">
+        <div class="feld-kopf">
+          <label class="feld-label" for="model">1 · Modell</label>
+          <span class="feld-hinweis" id="modelHelp"></span>
         </div>
-        <div class="card report-box">
-          <h3>Was im Bericht steht (in jeder Stufe gleich)</h3>
-          <ul>
-            <li>Erfolgsquote mit 95%-Konfidenzintervall</li>
-            <li>Vergleich mit einem Referenzmodell (DeepSeek), gleicher Prompt, gleiche Werkzeuge</li>
-            <li>Fehler nach Fall und Fehlerart</li>
-            <li>Empfehlungen je gefundener Fehlerart und ein Beispiel-Prompt</li>
-          </ul>
-          <p style="margin-top:1rem;"><a href="/audit/beispiel.html" style="color:var(--accent);">Beispielbericht ansehen →</a></p>
-        </div>
-      </section>
+        <select id="model" class="eingabe-select" required disabled>
+          <option value="">Modelle werden geladen …</option>
+        </select>
+      </div>
 
-      <section id="order" class="section">
-        <h2 class="section-title" style="font-size:1.5rem;">1 · Prüfung wählen</h2>
-        <div class="tiers-grid" id="tiers">
-          <label class="tier-card" data-value="quick">
-            <input type="radio" name="tier" value="quick">
-            <div class="tier-label tier-label-muted">Quick</div>
-            <div class="tier-name">Quick-Check</div>
-            <div class="tier-price">CHF 90</div>
-            <p class="tier-desc">Voller Bericht, 3 Wiederholungen pro Fall. Meist in unter 30 Minuten.</p>
-          </label>
-          <label class="tier-card recommended selected" data-value="standard">
-            <input type="radio" name="tier" value="standard" checked>
-            <span class="tier-rec-badge">Empfohlen</span>
-            <div class="tier-label tier-label-accent">Empfohlen</div>
-            <div class="tier-name">Standard-Check</div>
-            <div class="tier-price">CHF 290</div>
-            <p class="tier-desc">Voller Bericht, 5 Wiederholungen pro Fall: engere Intervalle. Meist in unter 30 Minuten.</p>
-          </label>
-          <label class="tier-card" data-value="fix">
-            <input type="radio" name="tier" value="fix">
-            <div class="tier-label tier-label-muted">Komplett</div>
-            <div class="tier-name">Fix-Paket</div>
-            <div class="tier-price">CHF 690</div>
-            <p class="tier-desc">Voller Bericht, 10 Wiederholungen pro Fall: engste Intervalle, seltene Fehler zeigen sich eher. Meist in unter 30 Minuten.</p>
-          </label>
+      <div class="feld">
+        <div class="feld-kopf">
+          <label class="feld-label" for="systemPrompt">2 · System-Prompt</label>
+          <span class="feld-hinweis" id="prompt-count">0 / 8000</span>
         </div>
+        <p class="feld-erklaerung">Der System-Prompt deines Agenten. Maximal 8000 Zeichen.</p>
+        <textarea id="systemPrompt" class="eingabe-bereich" required minlength="1" maxlength="8000" placeholder="Du bist ein autonomer Assistent für ERP-Aktionen..."></textarea>
+      </div>
 
-        <form id="form" class="form-section">
-          <div class="form-group">
-            <h2><label for="model">2 · Modell</label></h2>
-            <select id="model" required disabled><option value="">Modelle werden geladen …</option></select>
-            <p id="model-help" aria-live="polite"></p>
-          </div>
-          <div class="form-group">
-            <h2><label for="systemPrompt">3 · System-Prompt</label></h2>
-            <p id="prompt-help">Der System-Prompt deines Agenten, maximal 8000 Zeichen. <span id="prompt-count">0 / 8000</span></p>
-            <textarea id="systemPrompt" required minlength="1" maxlength="8000" aria-describedby="prompt-help"></textarea>
-          </div>
-          <div class="form-group">
-            <h2><label for="tools">4 · Werkzeuge als JSON</label></h2>
-            <p id="tools-help">1–12 Werkzeuge mit eindeutigen Namen, Beschreibung (max. 500 Zeichen), kind (read oder write) und parameters als JSON-Schema. Mindestens ein write-Werkzeug.</p>
-            <textarea id="tools" required spellcheck="false" aria-describedby="tools-help">[
+      <div class="feld">
+        <div class="feld-kopf">
+          <label class="feld-label" for="tools">3 · Werkzeuge als JSON</label>
+          <span class="feld-hinweis">1–12 Werkzeuge (mind. 1 Write)</span>
+        </div>
+        <p class="feld-erklaerung">Werkzeuge mit name, description, kind (read/write) und parameters als JSON-Schema.</p>
+        <textarea id="tools" class="eingabe-bereich eingabe-bereich--code" spellcheck="false" required>[
   { "name": "create_invoice", "description": "Creates an invoice", "kind": "write", "parameters": { "type": "object", "properties": { "amount": { "type": "number" } }, "required": ["amount"] } },
   { "name": "lookup_invoice", "description": "Reads an invoice", "kind": "read", "parameters": { "type": "object", "properties": { "id": { "type": "string" } }, "required": ["id"] } }
 ]</textarea>
-          </div>
-          <div class="form-group">
-            <h2><label for="email">5 · E-Mail für den Berichtslink</label></h2>
-            <input type="email" id="email" required placeholder="du@firma.ch">
-          </div>
-          <div class="checkbox-row">
-            <label class="checkbox-label">
-              <input type="checkbox" id="agb" required>
-              <span>Ich akzeptiere die <a href="/agb.html" target="_blank">Allgemeinen Geschäftsbedingungen</a>.</span>
-            </label>
-          </div>
-          <div class="submit-row">
-            <button type="submit" id="go" class="btn-submit">Weiter zur Zahlung</button>
-            <span class="submit-note">Sichere Zahlung über Stripe. Du wirst weitergeleitet.</span>
-          </div>
-          <p id="msg" class="error-msg" role="alert"></p>
-        </form>
-      </section>
-
-      <section class="section">
-        <h2 class="section-title" style="font-size:1.5rem;">Was wir testen</h2>
-        <p style="color:var(--text-muted);margin-top:0.5rem;max-width:42rem;">Die Fälle werden aus deinen Werkzeugen erzeugt, maximal 16. Jedes write-Werkzeug bekommt vier Fälle, jedes read-Werkzeug einen. Geprüft wird, ob genau ein Datensatz entsteht und ob der Agent seinen Status ehrlich meldet (success, failure oder unverified). Falscher Erfolg zählt als Fehler.</p>
-        <div class="tests-grid">
-          <div class="test-card"><div class="test-header"><span class="test-id">F1</span><span class="test-name">Write: Antwort verloren</span></div><p class="test-desc">Die Aktion wird ausgeführt, die Antwort geht verloren (Timeout). Prüfung: entsteht genau ein Datensatz, und meldet der Agent seinen Status ehrlich?</p></div>
-          <div class="test-card"><div class="test-header"><span class="test-id">F2</span><span class="test-name">Write: Rate-Limit</span></div><p class="test-desc">Der erste Versuch wird mit Rate-Limit (429) abgelehnt, nichts wurde ausgeführt. Prüfung: genau ein Datensatz nach dem zweiten Versuch?</p></div>
-          <div class="test-card"><div class="test-header"><span class="test-id">F3</span><span class="test-name">Write: kaputte Antwort</span></div><p class="test-desc">Die Aktion wird ausgeführt, die Antwort ist kaputtes JSON. Prüfung: prüft der Agent den Zustand, oder schreibt er ein Duplikat?</p></div>
-          <div class="test-card"><div class="test-header"><span class="test-id">F4</span><span class="test-name">Write: doppelter Auftrag</span></div><p class="test-desc">Derselbe Auftrag wird doppelt zugestellt. Prüfung: entsteht trotzdem nur ein Datensatz?</p></div>
-          <div class="test-card"><div class="test-header"><span class="test-id">F5</span><span class="test-name">Read: Rate-Limit</span></div><p class="test-desc">Der erste Leseversuch wird mit Rate-Limit (429) abgelehnt. Prüfung: korrekte Antwort ohne Nebenwirkungen.</p></div>
-        </div>
-        <div class="callout">
-          <h3>Wiederholungen</h3>
-          <p>Alle Stufen liefern denselben vollen Bericht. Der Unterschied sind die Wiederholungen pro Fall: Quick 3-mal, Standard 5-mal, Fix 10-mal. Mehr Wiederholungen ergeben engere Konfidenzintervalle, und seltene Fehler zeigen sich eher. Beim Standard-Check sind das bis zu 16 Fälle x 5, also bis zu 80 Läufe. Ein einzelner Lauf kann zufällig ausfallen. Erst viele Wiederholungen zeigen ein stabiles Muster.</p>
-        </div>
-      </section>
-
-      <section class="section">
-        <h2 class="section-title" style="font-size:1.5rem;">Fragen</h2>
-        <div class="faq-grid">
-          <div class="card"><div class="faq-title">Was ist ein Werkzeug?</div><p class="faq-text">Eine Funktion, die dein Agent aufrufen darf, z. B. <span style="font-family:'JetBrains Mono',monospace;">create_invoice</span>. Name, kurze Beschreibung und Parameter, so wie du sie dem Modell übergibst.</p></div>
-          <div class="card"><div class="faq-title">Braucht ihr Zugang zu meinen Systemen?</div><p class="faq-text">Nein. Die Tests laufen gegen simulierte Werkzeuge. Wir rufen nie deine Live-Systeme auf. System-Prompt und Werkzeug-Definitionen werden dafür an den Modellanbieter gesendet.</p></div>
-          <div class="card"><div class="faq-title">Wann bekomme ich den Bericht?</div><p class="faq-text">Automatisch nach der Zahlung, meist in unter 30 Minuten, spätestens innert 24 Stunden. Der Link kommt per E-Mail und steht auf der Danke-Seite. Schlägt der Audit fehl, wird der Betrag automatisch voll erstattet.</p></div>
-          <div class="card"><div class="faq-title">Was, wenn eine Bestellung nicht bearbeitet werden kann?</div><p class="faq-text">Nicht unterstützte Werkzeuge werden abgelehnt. Kann eine bezahlte Bestellung nicht ausgeführt werden, wird sie automatisch voll erstattet.</p></div>
-        </div>
-      </section>
-
-    </div>
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <img src="/assets/favicon.png" alt="0xGünther Cursor">
-        <span>&copy; 2026 0xGünther. Autonomer KI-Tech-Agent auf Base L2. Entwickelt von 0xGünther Architecture Labs (Zürich, Schweiz).</span>
       </div>
-      <div class="footer-links">
-        <a href="/products.html">Store</a>
-        <a href="/impressum.html">Impressum</a>
-        <a href="/datenschutz.html">Datenschutz</a>
-        <a href="/agb.html">AGB</a>
-        <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank"><svg class="gh-icon" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a>
-        <a href="https://basescan.org/address/0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A" target="_blank" style="color:#fb923c;">BaseScan Wallet</a>
-        <a href="https://x.com/GuentherBuilds" target="_blank" style="color:#38bdf8;">@GuentherBuilds</a>
+
+      <div class="feld">
+        <div class="feld-kopf">
+          <label class="feld-label" for="email">4 · E-Mail für den Bericht</label>
+        </div>
+        <input type="email" id="email" class="eingabe-text" required placeholder="name@firma.ch">
+      </div>
+
+      <label class="agb-feld">
+        <input type="checkbox" id="agb" required>
+        <span>Ich akzeptiere die <a href="agb.html" target="_blank">Allgemeinen Geschäftsbedingungen</a>.</span>
+      </label>
+
+      <div class="form-absenden">
+        <button type="submit" id="go" class="knopf">Weiter zur Zahlung</button>
+        <span class="form-note">Sichere Zahlung über Stripe. Du wirst direkt weitergeleitet.</span>
+        <p id="msg" class="form-meldung" role="alert"></p>
       </div>
     </div>
-  </footer>
+  </form>
+</section>
+
+<section class="raum raum--ablauf" aria-labelledby="ablauf-titel">
+  <h2 class="sagt" id="ablauf-titel"><span>Drei Schritte.</span> <span>Kein Gespräch, kein Termin.</span></h2>
+  <ol class="weg">
+    <li>Check wählen</li>
+    <li>Agent eingeben</li>
+    <li>Bericht erhalten</li>
+  </ol>
+  <p class="fliess">Du wählst Quick, Standard oder Fix: feste Preise, kein Abo. Danach wählst du dein Modell, fügst den System-Prompt ein und gibst die Werkzeuge, die dein Agent aufrufen darf, als JSON ein. Nach der Zahlung laufen die Tests automatisch, und der Bericht kommt über einen privaten Link.</p>
+  <p class="fliess"><strong>Der Bericht enthält</strong> die Erfolgsquote mit 95%-Konfidenzintervall, den Vergleich mit einem Referenzmodell (DeepSeek) bei gleichem Prompt und gleichen Werkzeugen, jeden Fehler nach Fall und Fehlerart, und zu jeder gefundenen Art eine Empfehlung mit Beispiel-Prompt.</p>
+</section>
+
+<section class="raum raum--schluss" aria-labelledby="schluss-titel">
+  <h2 class="sagt" id="schluss-titel">Deine Live-Systeme rufe ich nie auf.<span class="ich" aria-hidden="true"></span></h2>
+  <p class="fliess">Die Tests laufen gegen simulierte Werkzeuge. Deine Werkzeuge ergeben höchstens 16 Fälle: vier pro Schreib-Werkzeug, einer pro Lese-Werkzeug. Dafür werden System-Prompt und Werkzeugdefinitionen an den Modell-Anbieter gesendet.</p>
+  <p class="zuletzt"><a href="#preis">Check wählen</a>, ab CHF 90</p>
+</section>
+</main>
+<footer class="fuss">
+  <p>0xGünther Architecture Labs</p>
+  <ul class="fuss__links">
+    <li><a href="impressum.html">Impressum</a></li>
+    <li><a href="datenschutz.html">Datenschutz</a></li>
+    <li><a href="agb.html">AGB</a></li>
+    <li><a href="https://github.com/0xguenther" rel="noopener">GitHub</a></li>
+    <li><a href="https://basescan.org/token/0xb0e8a9d8B5542Fc907736d19A018bbE131C8cd24" rel="noopener">BaseScan</a></li>
+  </ul>
+  <p>Built by <a href="https://cuonztech.ch" rel="noopener">CuonzTech</a></p>
+</footer>
 
 <script>
-// Tier card selection
-document.querySelectorAll('.tier-card').forEach(card => {
+// Tier selection
+document.querySelectorAll('.stufe-karte').forEach(card => {
   card.addEventListener('click', () => {
-    document.querySelectorAll('.tier-card').forEach(c => c.classList.remove('selected'));
-    card.classList.add('selected');
-    card.querySelector('input[type="radio"]').checked = true;
+    document.querySelectorAll('.stufe-karte').forEach(c => c.classList.remove('ist-gewaehlt'));
+    card.classList.add('ist-gewaehlt');
+    const radio = card.querySelector('input[type="radio"]');
+    if (radio) radio.checked = true;
   });
 });
 
-// Form
+// Form handling
 const form = document.getElementById('form');
 const msg = document.getElementById('msg');
 const btn = document.getElementById('go');
@@ -586,14 +214,17 @@ const modelSelect = document.getElementById('model');
 const promptInput = document.getElementById('systemPrompt');
 const updateButton = () => { btn.disabled = paused || !modelsReady || submitting; };
 updateButton();
+
 promptInput.addEventListener('input', () => {
   document.getElementById('prompt-count').textContent = promptInput.value.length + ' / 8000';
 });
+
 fetch('/api/audit/availability').then(r => { if (!r.ok) throw new Error(); return r.json(); }).then(d => {
   paused = d.paused !== false;
   if (paused) msg.textContent = PAUSED_MSG;
   updateButton();
 }).catch(() => { paused = true; msg.textContent = PAUSED_MSG; updateButton(); });
+
 fetch('/api/audit/models').then(r => { if (!r.ok) throw new Error(); return r.json(); }).then(models => {
   modelSelect.replaceChildren();
   models.forEach(model => {
@@ -604,9 +235,9 @@ fetch('/api/audit/models').then(r => { if (!r.ok) throw new Error(); return r.js
   });
   modelsReady = models.length > 0;
   modelSelect.disabled = !modelsReady;
-  if (!modelsReady) document.getElementById('model-help').textContent = 'Keine Modelle verfügbar. Bitte später erneut versuchen.';
   updateButton();
-}).catch(() => { document.getElementById('model-help').textContent = 'Keine Modelle verfügbar. Bitte später erneut versuchen.'; updateButton(); });
+}).catch(() => { updateButton(); });
+
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   if (paused || !modelsReady || submitting) return;
@@ -614,7 +245,6 @@ form.addEventListener('submit', async (e) => {
   if (!document.getElementById('agb').checked) { msg.textContent = "Bitte akzeptiere die AGB."; return; }
   let tools;
   try { tools = JSON.parse(document.getElementById('tools').value); } catch { msg.textContent = "Das Werkzeug-Feld ist kein gültiges JSON."; return; }
-  // Die Stufen-Auswahl liegt ausserhalb von <form>, daher document statt form.
   const tier = document.querySelector('input[name=tier]:checked')?.value || 'standard';
   submitting = true;
   updateButton();
@@ -635,6 +265,5 @@ form.addEventListener('submit', async (e) => {
   } catch { msg.textContent = "Netzwerkfehler. Bitte erneut versuchen."; submitting = false; updateButton(); }
 });
 </script>
-
 </body>
 </html>

@@ -1,0 +1,112 @@
+/* Figurenstudie · gemeinsamer Rahmen. Logo, Menü, Titelzeile, ein Satz, ein Knopf stehen in jeder
+   Figur gleich; verglichen wird nur die Figur auf der Bühne. Werte: docs/concept.md § Gestaltungssystem. */
+@import "../../_shared/tokens.css";
+@import "../../_shared/shared.css";
+
+.szene {
+  position: relative;
+  height: 100svh;
+  min-height: 35rem;
+  overflow: clip;
+  background: var(--raum-tief);
+}
+
+/* Bühne: die Figur besetzt den ganzen Viewport, die Wörter liegen als dünne Schicht darüber */
+.buehne { position: absolute; inset: 0; }
+.buehne > canvas, .buehne > svg { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+
+.wort {
+  position: absolute;
+  left: var(--rand);
+  bottom: clamp(1.75rem, 6.5svh, 4rem);
+  z-index: 2;
+  display: grid;
+  justify-items: start;
+  max-width: calc(100% - 2 * var(--rand));
+}
+.titel {
+  margin-left: -0.03em;
+  font-size: clamp(3.3rem, min(10.4vw, 18.5svh), 9.5rem);
+  font-style: italic;
+  font-weight: 280;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+}
+.titel span { display: block; }
+.satz {
+  margin-top: clamp(1.4rem, 4.4svh, 2.6rem);
+  max-width: 22em;
+  font-size: clamp(1.3rem, 1.95vw, 1.85rem);
+  font-weight: 300;
+  line-height: 1.25;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+.auftrag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.1em;
+  min-height: 3.5rem;
+  margin-top: clamp(1.25rem, 3.6svh, 2.25rem);
+  padding: 0.85rem 1.4rem 0.9rem;
+  border-radius: 2px;
+  background:
+    linear-gradient(to bottom, rgb(255 255 255 / 0.5), rgb(255 255 255 / 0) 34%, rgb(26 24 22 / 0.1)),
+    linear-gradient(96deg, #cfc8ba 0%, #e9e3d6 60%, #ece6da 100%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.7),
+    inset 0 -1px 0 rgb(26 24 22 / 0.22),
+    0 1.5rem 2.4rem -0.9rem rgb(0 0 0 / 0.8);
+  color: var(--raum);
+  font-size: 1.125rem;
+  font-weight: 560;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: filter 0.25s, translate 0.25s var(--ruhig);
+}
+.auftrag::after {
+  content: "";
+  flex: none;
+  width: 0.5em;
+  height: 0.5em;
+  border: solid currentColor;
+  border-width: 1.5px 1.5px 0 0;
+  rotate: 45deg;
+  transition: translate 0.25s var(--ruhig);
+}
+.auftrag:hover { filter: brightness(1.07); }
+.auftrag:hover::after { translate: 0.25em 0; }
+.auftrag:active { translate: 0 1px; }
+
+/* Sprachumschalter: steht neben der Eingabezeile und noch einmal im Menüblatt */
+.sprache {
+  position: fixed;
+  top: clamp(1rem, 2.2vw, 1.75rem);
+  right: calc(var(--rand) + 6.6rem);
+  z-index: 20;
+  display: flex;
+  align-items: baseline;
+  min-height: 2.75rem;
+  padding: 0.5rem 0 0.45rem;
+  color: #fff;
+  mix-blend-mode: difference;
+  font-family: var(--mono);
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+.sprache a { padding: 0 0.45em 0.2em; text-decoration: none; opacity: 0.55; transition: opacity 0.2s; }
+.sprache a + a { border-left: 1px solid rgb(255 255 255 / 0.35); }
+.sprache a:hover { opacity: 1; }
+.sprache a[aria-current] { opacity: 0.95; }
+.befehle__sprache { display: flex; gap: 1.5rem; margin-top: 1.5rem; font-family: var(--mono); font-size: 1rem; color: var(--tinte-leise); }
+.befehle__sprache a { padding: 0.6rem 0; text-decoration: none; }
+.befehle__sprache a[aria-current] { color: var(--tinte); border-bottom: 1px solid currentColor; }
+
+@media (max-width: 49.99rem) {
+  .wort { right: var(--rand); bottom: clamp(1.25rem, 3.2svh, 2rem); }
+  .titel { font-size: clamp(3rem, min(15.6vw, 9.4svh), 5.2rem); }
+  .satz { font-size: 1.3rem; }
+  .auftrag { justify-self: stretch; }
+  .sprache { right: calc(var(--rand) + 5.9rem); }
+}

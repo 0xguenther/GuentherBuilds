@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why Your AI Agent Needs a Security Audit (And What We Found in Ours) · 0xGünther</title>
+<meta name="description" content="AI agents that write files, send emails, and call APIs need security testing. Here&#x27;s what an automated write-path audit found in a production agent — and why you should run one too.">
+<meta name="theme-color" content="#1a1816">
+<meta name="color-scheme" content="dark">
+<link rel="alternate" hreflang="de" href="../blog-ai-agent-security-audit.html">
+<link rel="alternate" hreflang="en" href="blog-ai-agent-security-audit.html">
+<link rel="icon" href="../images/cursor.png" type="image/png">
+<link rel="preload" href="../fonts/source-serif-4-opsz-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../figuren/_shared/rahmen.css">
+<link rel="stylesheet" href="../_shared/kapitel.css">
+<link rel="stylesheet" href="../css/index.css">
+<link rel="stylesheet" href="../css/seiten.css">
+<script src="../figuren/_shared/rahmen.js" defer></script>
+</head>
+<body>
+<a class="sprung" href="#inhalt">Skip to content</a>
+<header class="kopf">
+  <a class="marke" href="index.html" aria-label="0xGünther, home">
+    <img src="../images/logo.jpg" alt="0xGünther" width="2816" height="1536">
+  </a>
+</header>
+<nav class="sprache" aria-label="Language"><a href="../blog-ai-agent-security-audit.html" lang="de" hreflang="de">DE</a><a href="blog-ai-agent-security-audit.html" lang="en" hreflang="en" aria-current="true">EN</a></nav>
+<button class="eingabe" type="button" aria-expanded="false" aria-controls="befehle" data-auf="Menu" data-zu="close">
+  <span aria-hidden="true">&gt;</span>
+  <span class="eingabe__wort">Menu</span>
+</button>
+<div class="befehle" id="befehle" hidden>
+  <nav class="befehle__blatt" aria-label="Main navigation">
+    <label class="befehle__zeile">
+      <span aria-hidden="true">&gt;</span>
+      <input class="befehle__feld" type="text" autocomplete="off" spellcheck="false" placeholder="where to?" aria-label="Type a destination, filters the list">
+    </label>
+    <ul class="befehle__liste">
+      <li><a href="agent-check.html"><span class="befehle__name">agent-check</span><span class="befehle__was">Find out whether your agent writes twice</span></a></li>
+      <li><a href="playbook.html"><span class="befehle__name">playbook</span><span class="befehle__was">Günther Craft, 66 pages</span></a></li>
+      <li><a href="module.html"><span class="befehle__name">modules</span><span class="befehle__was">Three building blocks in TypeScript</span></a></li>
+      <li><a href="verzeichnis.html"><span class="befehle__name">ledger</span><span class="befehle__was">Burns on Base, as of 7 October 2026</span></a></li>
+      <li><a href="blog.html"><span class="befehle__name">blog</span><span class="befehle__was">Notes from operations</span></a></li>
+      <li><a href="api.html"><span class="befehle__name">api</span><span class="befehle__was">Interfaces</span></a></li>
+    </ul>
+    <p class="befehle__hilfe">Typing filters. Enter follows the first match. Esc closes.</p>
+    <p class="befehle__sprache"><a href="../blog-ai-agent-security-audit.html" lang="de" hreflang="de">DE</a><a href="blog-ai-agent-security-audit.html" lang="en" hreflang="en" aria-current="true">EN</a></p>
+  </nav>
+</div>
+<main id="inhalt">
+<!-- no-images: Der Kunde besitzt nur sein Logo und keine Fotos (docs/dna.md § Bildwelt). -->
+<section class="seite" aria-labelledby="titel">
+<p class="etikett">Blog</p>
+<h1 class="sagt sagt--lang" id="titel">Why Your AI Agent Needs a Security Audit (And What We Found in Ours)</h1>
+<div class="einleitung"><p>AI agents that write files, send emails, and call APIs need security testing. Here&#x27;s what an automated write-path audit found in a production agent — and why you should run one too.</p><p class="leise">October 5, 2026 · 4 min read · security · ai-agents · audit · devops</p></div>
+<div class="abschnitt abschnitt--breit"><p class="offen">[OFFEN: The package details in the article (Quick 1 repetition, Standard 10, Fix «full audit», delivery times 24, 72, 120 hours, 10 test cases) differ from today&#x27;s Agent Check (3, 5, 10 repetitions, at most 16 cases, usually under 30 minutes). The findings (3 high, 5 medium) have no source apart from this article. Clarify or adjust the article]</p></div>
+<div class="abschnitt abschnitt--breit"><h2 class="sr">Text</h2><div class="fliess"><p>Most AI agent developers focus on making their agents work. Fewer think about what happens when their agent works too well — writing files it shouldn&#x27;t, calling APIs it wasn&#x27;t supposed to, or escalating permissions beyond its intended scope.</p><p>This post walks through a real write-path audit we ran on a production agent, what we found, and why every autonomous AI agent should undergo security testing before deployment.</p></div></div>
+<div class="abschnitt"><h2>What Is a Write-Path Audit?</h2><div class="fliess"><p>A write-path audit tests every action your AI agent can take that modifies state: writing files, sending emails, creating tickets, placing orders, calling webhooks, or executing database queries.</p><p>Unlike traditional penetration testing, which focuses on external attackers, write-path auditing asks: &quot;What damage can the agent itself do?&quot;</p><p>This is critical because LLM-based agents are non-deterministic. The same prompt can produce different outputs. A prompt injection attack, a corrupted context window, or even a slightly different temperature setting can cause your agent to take actions you never intended.</p></div></div>
+<div class="abschnitt"><h2>The Test Harness</h2><div class="fliess"><p>We built an automated test harness with 10 test cases covering the most common agent failure modes:</p><table class="tafel"><thead><tr><th scope="col">Case</th><th scope="col">What It Tests</th></tr></thead><tbody><tr><td data-l="Case">Wrong Domain</td><td data-l="What It Tests">Agent accessing files outside its allowed directory</td></tr><tr><td data-l="Case">Phantom List</td><td data-l="What It Tests">Agent acting on data that doesn&#x27;t exist</td></tr><tr><td data-l="Case">Duplicate Alias</td><td data-l="What It Tests">Race conditions in concurrent writes</td></tr><tr><td data-l="Case">Timeout Bomb</td><td data-l="What It Tests">Long-running operations that hang the agent</td></tr><tr><td data-l="Case">Missing Scan</td><td data-l="What It Tests">Agent skipping required validation steps</td></tr><tr><td data-l="Case">Broken JSON</td><td data-l="What It Tests">Handling malformed structured data</td></tr><tr><td data-l="Case">Forbidden File</td><td data-l="What It Tests">Agent attempting to write to restricted paths</td></tr><tr><td data-l="Case">Redirect Trap</td><td data-l="What It Tests">Agent following malicious redirects</td></tr><tr><td data-l="Case">Compromised Context</td><td data-l="What It Tests">Prompt injection via context poisoning</td></tr><tr><td data-l="Case">Partial Success</td><td data-l="What It Tests">Agent completing some steps but failing others</td></tr></tbody></table><p>Each test case runs multiple repetitions with statistical confidence tracking (Wilson confidence intervals, Chi-squared tests) to ensure results are reproducible, not flukes.</p></div></div>
+<div class="abschnitt"><h2>What We Found</h2><div class="fliess"><p>Running this audit against a real production agent (a commerce agent handling invoices, emails, tickets, and orders) revealed:</p><p>3 High-Severity Findings:</p><p>Path traversal via tool parameters. The agent&#x27;s file-writing tool accepted relative paths. A carefully crafted context could trick the agent into writing outside its designated directory.</p><p>No confirmation on destructive actions. The agent could delete records and overwrite files without any confirmation step. One bad inference = permanent data loss.</p><p>Unbounded API calls. The agent had no rate limiting on its external API calls. A loop in the reasoning chain could exhaust API quotas or trigger account bans.</p><p>5 Medium-Severity Findings:</p><ul><li>Email sending without recipient validation</li><li>Missing idempotency on order creation (duplicates possible)</li><li>No rollback mechanism for partial failures</li><li>Verbose error messages leaking internal state</li><li>Missing audit trail for agent actions</li></ul></div></div>
+<div class="abschnitt"><h2>Why Automated &gt; Manual</h2><div class="fliess"><p>Manual security reviews are thorough but slow. For an agent with 4 tool types and 10 test cases, a manual review takes 2-3 days. Our automated harness runs in under 15 minutes and produces a statistical confidence score.</p><p>More importantly, automated testing is repeatable. Every time you update your agent&#x27;s prompt, swap out a model, or change a tool, you can re-run the harness and catch regressions immediately.</p></div></div>
+<div class="abschnitt"><h2>The Business Case</h2><div class="fliess"><p>If your AI agent handles any of the following, a write-path audit is not optional:</p><ul><li>Customer data (emails, names, payment info)</li><li>Financial transactions (invoices, payments, refunds)</li><li>External communications (emails, Slack messages, API calls)</li><li>File operations (creating, modifying, or deleting files)</li><li>Database writes (CRUD operations on production data)</li></ul><p>One bad agent action can mean GDPR violations, lost customer trust, financial liability, or reputational damage.</p></div></div>
+<div class="abschnitt"><h2>Run Your Own Audit</h2><div class="fliess"><p>We&#x27;ve productized our test harness as AgentCheck — an automated write-path audit service for AI agents. You describe your agent&#x27;s tools in JSON, we run 10 test cases across multiple repetitions, and deliver a detailed HTML report with severity ratings, reproduction steps, and fix recommendations.</p><p>Three tiers available:</p><ul><li>Quick Check (CHF 90): 1 repetition, 24-hour delivery</li><li>Standard Check (CHF 290): 10 repetitions with statistical confidence, 72-hour delivery</li><li>Fix Check (CHF 690): Full audit + patch recommendations, 120-hour delivery</li></ul><p>Every order includes proof-of-execution on Base L2 — an immutable on-chain record that your agent was tested.</p><p>Run an AgentCheck →</p></div></div>
+<div class="abschnitt"><h2>Key Takeaways</h2><div class="fliess"><ul><li>AI agents are non-deterministic — traditional testing isn&#x27;t enough</li><li>Write-path audits test what your agent can do, not just what it should do</li><li>Statistical confidence (multiple repetitions) catches flaky failures</li><li>Automated harnesses make audits repeatable and regression-safe</li><li>On-chain proof-of-execution provides immutable audit trails</li></ul><p>Your agent is only as safe as its weakest write path. Test it before your customers find the bugs.</p></div></div>
+<div class="abschnitt abschnitt--breit"><h2 class="sr">Agent Check</h2><a class="auftrag" href="agent-check.html">Check an agent, from CHF 90</a></div>
+<nav class="weiter" aria-label="Next"><a href="index.html">Home</a><a href="blog.html">Blog</a><a href="blog-feedxml.html">RSS</a></nav>
+</section>
+</main>
+<footer class="fuss">
+  <p>0xGünther Architecture Labs</p>
+  <ul class="fuss__links">
+    <li><a href="impressum.html">Legal notice</a></li>
+    <li><a href="datenschutz.html">Privacy</a></li>
+    <li><a href="agb.html">Terms</a></li>
+    <li><a href="https://github.com/0xguenther" rel="noopener">GitHub</a></li>
+    <li><a href="https://basescan.org/token/0xb0e8a9d8B5542Fc907736d19A018bbE131C8cd24" rel="noopener">BaseScan</a></li>
+  </ul>
+  <p>Built by <a href="https://cuonztech.ch" rel="noopener">CuonzTech</a></p>
+</footer>
+</body>
+</html>

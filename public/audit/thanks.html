@@ -1,393 +1,186 @@
 <!DOCTYPE html>
-<html lang="de" class="dark">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Agent-Check: Erstellt dein Agent Dinge doppelt? · 0xGünther</title>
-  <meta name="description" content="Wir prüfen, ob dein KI-Agent nach einem Timeout Datensätze doppelt schreibt und Erfolg meldet, den es nicht gab.">
-  <link rel="canonical" href="https://0xguenther.org/audit/">
-  <link rel="alternate" hreflang="de" href="https://0xguenther.org/audit/">
-  <link rel="alternate" hreflang="en" href="https://0xguenther.org/en/audit/">
-  <link rel="icon" type="image/png" href="/assets/favicon.png">
-
-  <!-- OpenGraph -->
-  <meta property="og:title" content="0xGünther — Autonome KI-Agenten &amp; Produktions-Software">
-  <meta property="og:description" content="Autonome KI-Agentensysteme mit messbarem ROI für Entwickler und Unternehmen. Proxmox LXC Cluster, gehärtete MCP-Server und verifizierte Base L2 Token Burns.">
-  <meta property="og:url" content="https://0xguenther.org/">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="https://0xguenther.org/assets/Logo.jpg">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:site" content="@GuentherBuilds">
-  <meta name="twitter:creator" content="@GuentherBuilds">
-  <meta name="twitter:title" content="0xGünther — Autonomous AI Entrepreneur on Base L2">
-  <meta name="twitter:description" content="Production architecture: ElizaOS, Fastify, Stripe fulfillment, and native viem Base L2 burns. Read the 66-page playbook.">
-  <meta name="twitter:image" content="https://0xguenther.org/assets/Logo.jpg">
-
-  <!-- Schema.org JSON-LD -->
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Auftrag eingegangen · Agent Check · 0xGünther</title>
+  <meta name="theme-color" content="#1a1816">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="/images/cursor.png" type="image/png">
+  <link rel="stylesheet" href="/_shared/tokens.css">
+  <link rel="stylesheet" href="/_shared/shared.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #05070B;
-      --card: #0d1117;
-      --border: #1e293b;
-      --accent: #00FF66;
-      --accent-dim: #00cc52;
-      --text: #e2e8f0;
-      --text-muted: #94a3b8;
-      --text-faint: #64748b;
-      --yellow: #facc15;
-      --red: #f87171;
-    }
-
-    html { scroll-behavior: smooth; }
-
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      background: var(--raum);
+      color: var(--tinte);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
     }
+    .ak {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: clamp(1rem, 2.2vw, 1.75rem) var(--rand);
+      font-family: var(--mono);
+      font-size: 1rem;
+    }
+    .ak a { color: var(--tinte); text-decoration: none; }
+    .ak__marke { font-weight: 560; }
+    .ak__marke span { color: var(--tinte-leise); margin-right: 0.5em; }
+    .ak__zurueck { color: var(--tinte-leise); }
+    .ak__zurueck:hover { color: var(--tinte); text-decoration: underline; }
 
-    ::selection { background: var(--accent); color: #000; }
-
-    a { color: inherit; text-decoration: none; }
-
-    /* Header */
-    header {
-      position: sticky; top: 0; z-index: 50;
-      border-bottom: 1px solid var(--border);
-      background: rgba(5,7,11,0.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-    .header-inner {
-      max-width: 72rem; margin: 0 auto; padding: 0 1.5rem;
-      height: 5rem; display: flex; align-items: center; justify-content: space-between;
-    }
-    .logo-link { display: flex; align-items: center; gap: 0.75rem; font-family: 'JetBrains Mono', monospace; }
-    .logo-link:hover .logo-text { color: var(--accent); }
-    .logo-img { width: 2rem; height: 2rem; border-radius: 0.375rem; border: 1px solid rgba(0,255,102,0.4); box-shadow: 0 0 12px rgba(0,255,102,0.25); }
-    .logo-text { font-weight: 700; font-size: 1.25rem; color: #fff; letter-spacing: -0.02em; transition: color 0.2s; display: flex; align-items: center; }
-    .logo-text .accent { color: var(--accent); margin-right: 0.25rem; }
-    .logo-text .cursor { color: var(--accent); margin-left: 2px; animation: pulse 2s infinite; }
-    .logo-badge {
-      font-size: 0.625rem; font-family: 'JetBrains Mono', monospace;
-      background: rgba(0,255,102,0.08); color: var(--accent);
-      border: 1px solid rgba(0,255,102,0.25); border-radius: 9999px;
-      padding: 0.125rem 0.5rem; margin-left: 0.75rem;
-    }
-
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-    nav { display: flex; align-items: center; gap: 1rem; font-size: 0.875rem; font-weight: 500; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
-    nav a:hover { color: var(--accent); }
-    nav a { transition: color 0.2s; display: inline-flex; align-items: center; gap: 0.375rem; }
-    nav .gh-icon { width: 0.875rem; height: 0.875rem; fill: currentColor; }
-
-    .header-actions { display: flex; align-items: center; gap: 0.75rem; }
-    .lang-switch {
-      display: flex; align-items: center;
-      background: var(--card); border: 1px solid rgba(30,41,59,0.8);
-      border-radius: 0.5rem; padding: 2px;
-      font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;
-    }
-    .lang-switch span, .lang-switch a { padding: 0.25rem 0.5rem; border-radius: 0.375rem; }
-    .lang-active { background: rgba(0,255,102,0.15); color: var(--accent); font-weight: 700; }
-    .lang-inactive { color: var(--text-faint); transition: color 0.2s; }
-    .lang-inactive:hover { color: #fff; }
-
-    .btn-playbook {
-      background: var(--accent); color: #000;
-      font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.75rem;
-      padding: 0.625rem 1rem; border-radius: 0.5rem;
-      transition: background 0.2s, box-shadow 0.2s;
-      box-shadow: 0 4px 20px rgba(0,255,102,0.15);
-    }
-    .btn-playbook:hover { background: var(--accent-dim); }
-
-    .nav-mobile-toggle { display: none; background: none; border: none; color: var(--text); cursor: pointer; padding: 0.5rem; }
-    .nav-mobile-toggle svg { width: 1.5rem; height: 1.5rem; stroke: currentColor; fill: none; stroke-width: 2; }
-
-    /* Main */
-    main { flex: 1; display: flex; align-items: center; justify-content: center; }
-
-    .thanks-card {
-      max-width: 32rem; width: 100%; margin: 0 auto;
-      padding: 3rem 2rem; text-align: center;
-    }
-
-    .thanks-icon {
-      width: 5rem; height: 5rem; margin: 0 auto 2rem;
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 2rem; position: relative;
-    }
-    .thanks-icon.pending {
-      background: rgba(0,255,102,0.08); border: 1px solid rgba(0,255,102,0.2);
-    }
-    .thanks-icon.running {
-      background: rgba(250,204,21,0.08); border: 1px solid rgba(250,204,21,0.2);
-    }
-    .thanks-icon.done {
-      background: rgba(0,255,102,0.1); border: 1px solid rgba(0,255,102,0.3);
-    }
-    .thanks-icon.error {
-      background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2);
-    }
-
-    /* Spinner */
-    .spinner {
-      width: 2rem; height: 2rem; border: 2px solid transparent;
-      border-top-color: var(--accent); border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    .spinner.yellow { border-top-color: var(--yellow); }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Pulse ring for active states */
-    .thanks-icon.running::after {
-      content: ''; position: absolute; inset: -4px;
-      border-radius: 50%; border: 2px solid rgba(250,204,21,0.3);
-      animation: ring-pulse 2s ease-out infinite;
-    }
-    .thanks-icon.pending::after {
-      content: ''; position: absolute; inset: -4px;
-      border-radius: 50%; border: 2px solid rgba(0,255,102,0.2);
-      animation: ring-pulse 2s ease-out infinite;
-    }
-    @keyframes ring-pulse {
-      0% { transform: scale(1); opacity: 1; }
-      100% { transform: scale(1.3); opacity: 0; }
-    }
-
-    .thanks-title {
-      font-size: 2rem; font-weight: 800; color: #fff;
-      letter-spacing: -0.02em;
-    }
-
-    .thanks-status {
-      margin-top: 1.5rem; font-family: 'JetBrains Mono', monospace;
-      font-size: 0.9375rem; padding: 0.75rem 1.25rem;
-      border-radius: 0.75rem; display: inline-block;
-      transition: all 0.4s ease;
-    }
-    .status-pending { color: var(--accent); background: rgba(0,255,102,0.06); border: 1px solid rgba(0,255,102,0.15); }
-    .status-running { color: var(--yellow); background: rgba(250,204,21,0.06); border: 1px solid rgba(250,204,21,0.15); }
-    .status-done { color: var(--accent); background: rgba(0,255,102,0.1); border: 1px solid rgba(0,255,102,0.25); }
-    .status-error { color: var(--red); background: rgba(248,113,113,0.06); border: 1px solid rgba(248,113,113,0.15); }
-
-    .thanks-note {
-      margin-top: 1.5rem; color: var(--text-muted); font-size: 0.875rem;
-      line-height: 1.7;
-    }
-
-    .thanks-download {
-      display: none; margin-top: 1.5rem; padding: 0.75rem 1.5rem;
-      background: var(--accent); color: #000; font-weight: 700; font-family: 'JetBrains Mono', monospace;
-      border-radius: 0.5rem; text-decoration: none;
-    }
-    .thanks-download:hover { box-shadow: 0 0 24px rgba(0,255,102,0.3); }
-    .thanks-back {
-      margin-top: 2rem;
-    }
-    .thanks-back a {
-      color: var(--accent); font-weight: 500;
-      transition: text-shadow 0.2s;
-    }
-    .thanks-back a:hover { text-shadow: 0 0 12px rgba(0,255,102,0.4); }
-
-    /* Footer */
-    footer {
-      border-top: 1px solid rgba(30,41,59,0.5);
-      background: var(--bg); padding: 3rem 0;
-      color: var(--text-faint); font-size: 0.75rem;
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .footer-inner {
-      max-width: 72rem; margin: 0 auto; padding: 0 1.5rem;
-      display: flex; flex-wrap: wrap; justify-content: space-between;
-      align-items: center; gap: 1.5rem;
-    }
-    .footer-brand { display: flex; align-items: center; gap: 0.75rem; }
-    .footer-brand img { width: 1.25rem; height: 1.25rem; border-radius: 0.25rem; border: 1px solid rgba(0,255,102,0.3); }
-    .footer-links { display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; }
-    .footer-links a { transition: color 0.2s; }
-    .footer-links a:hover { color: var(--accent); }
-    .footer-links .gh-icon { width: 0.75rem; height: 0.75rem; fill: currentColor; vertical-align: middle; margin-right: 0.25rem; }
-
-    /* Responsive */
-    @media (max-width: 1023px) {
-      nav { display: none; }
-      .nav-mobile-toggle { display: block; }
-      .logo-badge { display: none; }
-      .header-inner { height: 4rem; }
-      .thanks-card { padding: 2rem 1.5rem; }
-      .thanks-title { font-size: 1.5rem; }
-    }
-
-    /* Hamburger menu */
-    .hamburger {
+    main {
+      flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 40px;
-      height: 40px;
-      background: none;
-      border: 1px solid #1e293b;
-      border-radius: 8px;
-      color: #e2e8f0;
-      cursor: pointer;
-      transition: border-color 0.2s;
+      padding: 3rem var(--rand);
     }
-    .hamburger:hover { border-color: #00FF66; color: #00FF66; }
-    .hamburger svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; }
-    @media (min-width: 1024px) { .hamburger { display: none; } }
-
-    .mobile-menu {
-      display: none;
-      position: fixed;
-      top: 80px;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(5, 7, 11, 0.97);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      z-index: 49;
-      padding: 32px 24px;
-      flex-direction: column;
-      gap: 0;
-      overflow-y: auto;
+    .status-karte {
+      max-width: 36rem;
+      width: 100%;
+      background: var(--raum-gehoben);
+      border: 1px solid var(--linie);
+      padding: clamp(2rem, 5vw, 3.5rem);
+      text-align: center;
     }
-    .mobile-menu.open { display: flex; }
-    .mobile-menu a {
+    .status-symbol {
+      width: 3.5rem;
+      height: 3.5rem;
+      margin: 0 auto 1.5rem;
+      border: 1px solid var(--linie);
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 16px 0;
-      border-bottom: 1px solid #1e293b;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 15px;
-      color: #e2e8f0;
-      transition: color 0.2s;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 1.5rem;
     }
-    .mobile-menu a:hover { color: #00FF66; }
-    .mobile-menu a:last-child { border-bottom: none; }
-    .mobile-menu__label { color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; padding: 24px 0 8px; font-weight: 600; }
-    @media (min-width: 1024px) { .mobile-menu { display: none !important; } }
+    .status-symbol.done {
+      border-color: rgb(43 254 90 / 0.5);
+      color: var(--licht);
+    }
+    .status-symbol.error {
+      border-color: #ff8a80;
+      color: #ff8a80;
+    }
+    .spinner {
+      width: 1.5rem;
+      height: 1.5rem;
+      border: 2px solid var(--linie);
+      border-top-color: var(--licht);
+      border-radius: 50%;
+      animation: dreh 1s linear infinite;
+    }
+    @keyframes dreh { to { transform: rotate(360deg); } }
+
+    .status-titel {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(2rem, 3.5vw, 2.8rem);
+      line-height: 1.1;
+      color: #f3eee2;
+      margin-bottom: 1rem;
+    }
+    .status-text {
+      font-family: var(--mono);
+      font-size: 0.9375rem;
+      color: var(--tinte);
+      line-height: 1.5;
+      margin-bottom: 2rem;
+    }
+    .knopf-dl {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 0.7em;
+      min-height: 3.2rem;
+      padding: 0.8rem 1.5rem;
+      background: var(--tinte);
+      color: var(--raum);
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 560;
+      text-decoration: none;
+      margin: 0 auto 1.5rem;
+      transition: background-color 0.2s;
+    }
+    .knopf-dl:hover { background: #fffdf6; }
+    .knopf-dl::before { content: ">"; opacity: 0.6; }
+
+    .status-hinweis {
+      font-size: 0.875rem;
+      color: var(--tinte-leise);
+      line-height: 1.5;
+      margin-top: 1.5rem;
+      border-top: 1px solid var(--linie);
+      padding-top: 1.5rem;
+    }
+    .status-hinweis a { color: var(--tinte); }
+
+    .fuss {
+      padding: 2rem var(--rand);
+      font-family: var(--mono);
+      font-size: 0.8125rem;
+      color: var(--tinte-leise);
+      text-align: center;
+      border-top: 1px solid var(--linie);
+    }
   </style>
 </head>
 <body>
-
-  <header>
-    <div class="header-inner">
-      <div>
-        <a href="/" class="logo-link">
-          <img src="/assets/favicon.png" alt="0xGünther Cursor" class="logo-img">
-          <div style="display:flex;align-items:center;">
-            <span class="logo-text"><span class="accent">&gt;</span>0xGünther<span class="cursor">■</span></span>
-            <span class="logo-badge">AUTONOMOUS AGENT</span>
-          </div>
-        </a>
-      </div>
-
-      <nav>
-        <a href="/audit/">Agent Check</a>
-        <a href="/blog">Blog</a>
-        <a href="/products.html">Produkte</a>
-        <a href="/api-docs.html">API-Doku</a>
-      </nav>
-
-      <div class="header-actions">
-        <div class="lang-switch">
-          <span class="lang-active">DE</span>
-          <a href="/en/audit/" class="lang-inactive">EN</a>
-        </div>
-        <a href="https://buy.stripe.com/6oU7sLdpn5Vx7501PY8g003" target="_blank" class="btn-playbook">&gt; Playbook ($49)</a>
-        <button class="hamburger" onclick="document.querySelector('.mobile-menu').classList.toggle('open')" aria-label="Menu">
-          <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
-      </div>
-    </div>
+  <header class="ak">
+    <a class="ak__marke" href="/"><span aria-hidden="true">&gt;</span>0xGünther</a>
+    <a class="ak__zurueck" href="/agent-check.html">← Zur Prüfung</a>
   </header>
 
-  <div class="mobile-menu">
-    <a href="/audit/">Agent Check</a>
-    <a href="/blog">Blog</a>
-    <a href="/products.html">Produkte</a>
-    <a href="/api-docs.html">API-Doku</a>
-    <a href="/preview.html">Leseprobe</a>
-    <span class="mobile-menu__label">More</span>
-    <a href="/#playbook">Günther Craft</a>
-    <a href="/#clawmart">Claw Mart</a>
-    <a href="/#terminal">Live Agent</a>
-    <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank">GitHub</a>
-  </div>
-
   <main>
-    <div class="thanks-card">
-      <div class="thanks-icon pending" id="statusIcon">
+    <div class="status-karte">
+      <div class="status-symbol" id="statusIcon">
         <div class="spinner" id="statusSpinner"></div>
       </div>
-      <h1 class="thanks-title">Bestellung eingegangen</h1>
-      <p id="status" class="thanks-status status-pending">Bestellung wird geprüft…</p>
-      <a id="download" class="thanks-download" href="#" target="_blank" rel="noopener">&gt; Bericht herunterladen</a>
-      <p class="thanks-note">Der Bericht kommt über einen privaten Link. Der Link ist 48 Stunden gültig und kann höchstens 5 Mal geöffnet werden.</p>
-      <p class="thanks-back"><a href="/audit/">Zurück zur Prüfung</a></p>
+      <h1 class="status-titel">Auftrag eingegangen</h1>
+      <p id="status" class="status-text">Bestellung wird verifiziert …</p>
+      <a id="download" class="knopf-dl" href="#" target="_blank" rel="noopener">Bericht herunterladen</a>
+      <p class="status-hinweis">
+        Der Bericht wird nach Abschluss direkt hier zum Download freigeschaltet und zusätzlich an deine E-Mail gesendet. Der Link ist 48 Stunden gültig (max. 5 Downloads).
+      </p>
     </div>
   </main>
 
+  <footer class="fuss">
+    <p>0xGünther Architecture Labs · Zürich, Schweiz · Built by <a href="https://cuonztech.ch" style="color:var(--tinte);">CuonzTech</a></p>
+  </footer>
+
   <script>
   const labels = {
-    "pending_payment": { text: "Warten auf die Zahlungsbestätigung.", state: "pending" },
-    "paid":            { text: "Zahlung eingegangen. Deine Prüfung ist eingeplant.", state: "pending" },
-    "running":         { text: "Deine Prüfung läuft.", state: "running" },
-    "delivered":       { text: "Dein Bericht ist fertig.", state: "done" },
-    "rejected":        { text: "Nicht unterstützte Werkzeuge in dieser Bestellung. Der Betrag wird automatisch voll erstattet.", state: "error" },
-    "failed":          { text: "Der Lauf ist fehlgeschlagen. Der Betrag wird automatisch voll erstattet.", state: "error" }
+    "pending_payment": { text: "Warten auf Zahlungsbestätigung von Stripe …", state: "pending" },
+    "paid":            { text: "Zahlung verifiziert. Dein Testlauf ist in Vorbereitung.", state: "pending" },
+    "running":         { text: "Dein Agent wird gegen simulierte Werkzeuge geprüft …", state: "running" },
+    "delivered":       { text: "Prüfung abgeschlossen. Dein Bericht steht bereit.", state: "done" },
+    "rejected":        { text: "Nicht unterstützte Konfiguration. Der Betrag wird automatisch erstattet.", state: "error" },
+    "failed":          { text: "Der Prüflauf ist fehlgeschlagen. Der Betrag wird voll erstattet.", state: "error" }
   };
 
   const statusEl = document.getElementById('status');
   const iconEl = document.getElementById('statusIcon');
   const spinnerEl = document.getElementById('statusSpinner');
+  const downloadEl = document.getElementById('download');
 
   function applyState(state, text) {
     statusEl.textContent = text;
-    statusEl.className = 'thanks-status';
-    iconEl.className = 'thanks-icon';
+    iconEl.className = 'status-symbol ' + state;
 
     if (state === 'done') {
-      statusEl.classList.add('status-done');
-      iconEl.classList.add('done');
       spinnerEl.style.display = 'none';
-      iconEl.innerHTML = '<span style="color:var(--accent);font-size:1.5rem;">✓</span>';
+      iconEl.innerHTML = '<span>✓</span>';
     } else if (state === 'error') {
-      statusEl.classList.add('status-error');
-      iconEl.classList.add('error');
       spinnerEl.style.display = 'none';
-      iconEl.innerHTML = '<span style="color:var(--red);font-size:1.5rem;">✕</span>';
-    } else if (state === 'running') {
-      statusEl.classList.add('status-running');
-      iconEl.classList.add('running');
-      spinnerEl.style.display = 'block';
-      spinnerEl.className = 'spinner yellow';
-      iconEl.innerHTML = '';
-      iconEl.appendChild(spinnerEl);
+      iconEl.innerHTML = '<span>✕</span>';
     } else {
-      statusEl.classList.add('status-pending');
-      iconEl.classList.add('pending');
       spinnerEl.style.display = 'block';
-      spinnerEl.className = 'spinner';
       iconEl.innerHTML = '';
       iconEl.appendChild(spinnerEl);
     }
@@ -396,45 +189,31 @@
   const params = new URLSearchParams(location.search);
   const id = params.get('order');
   const sessionId = params.get('session_id');
-  const downloadEl = document.getElementById('download');
 
   async function poll() {
-    if (!id) { applyState('error', 'Keine Bestellung gefunden.'); return; }
+    if (!id) { applyState('error', 'Keine Auftragsnummer gefunden.'); return; }
     try {
       const res = await fetch('/api/audit/orders/' + encodeURIComponent(id)
         + (sessionId ? '?session_id=' + encodeURIComponent(sessionId) : ''));
-      if (!res.ok) { applyState('error', 'Bestellung nicht gefunden.'); return; }
+      if (!res.ok) { applyState('error', 'Auftrag konnte nicht gefunden werden.'); return; }
       const o = await res.json();
       const info = labels[o.status] || { text: o.status, state: 'pending' };
       applyState(info.state, info.text);
-      if (o.downloadUrl) { downloadEl.href = o.downloadUrl; downloadEl.style.display = 'inline-block'; }
-      else if (o.status === 'delivered') {
+      if (o.downloadUrl) {
+        downloadEl.href = o.downloadUrl;
+        downloadEl.style.display = 'inline-flex';
+      } else if (o.status === 'delivered') {
         statusEl.textContent = info.text + ' ' + (o.downloadsLeft === 0
-          ? 'Das Download-Limit ist erreicht. Schreib uns an labs@0xguenther.org.'
-          : 'Den Download-Link findest du auch in der E-Mail zur Bestellung.');
+          ? 'Download-Limit erreicht. Bitte wende dich an labs@0xguenther.org.'
+          : 'Download-Link wurde auch an deine E-Mail gesendet.');
       }
-      if (!['delivered', 'rejected', 'failed'].includes(o.status)) setTimeout(poll, 5000);
-    } catch { applyState('error', 'Verbindungsfehler.'); setTimeout(poll, 5000); }
+      if (!['delivered', 'rejected', 'failed'].includes(o.status)) setTimeout(poll, 4000);
+    } catch {
+      applyState('error', 'Verbindungsfehler beim Abrufen des Status.');
+      setTimeout(poll, 5000);
+    }
   }
   poll();
   </script>
-
-  <footer>
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <img src="/assets/favicon.png" alt="0xGünther Cursor">
-        <span>&copy; 2026 0xGünther. Autonomer KI-Tech-Agent auf Base L2. Entwickelt von 0xGünther Architecture Labs (Zürich, Schweiz).</span>
-      </div>
-      <div class="footer-links">
-        <a href="/products.html">Store</a>
-        <a href="/impressum.html">Impressum</a>
-        <a href="/datenschutz.html">Datenschutz</a>
-        <a href="/agb.html">AGB</a>
-        <a href="https://github.com/0xguenther/GuentherBuilds" target="_blank"><svg class="gh-icon" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a>
-        <a href="https://basescan.org/address/0xb54Ae6096F4C317Cc48B5668572b9E5C010C0f1A" target="_blank" style="color:#fb923c;">BaseScan Wallet</a>
-        <a href="https://x.com/GuentherBuilds" target="_blank" style="color:#38bdf8;">@GuentherBuilds</a>
-      </div>
-    </div>
-  </footer>
 </body>
 </html>
