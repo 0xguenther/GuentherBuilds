@@ -57,6 +57,7 @@ export class HnService {
     const result = await HnMcpClient.submitPost({
       title: post.title,
       url: post.url,
+      text: post.text,
     });
 
     await prisma.trace.create({
@@ -65,7 +66,7 @@ export class HnService {
         task: 'HN_POST',
         model: 'hn',
         status: 'success',
-        metadata: JSON.stringify({ title: post.title, url: post.url, hnUrl: result.url, hnId: result.hnId }),
+        metadata: JSON.stringify({ title: post.title, url: post.url, text: post.text, hnUrl: result.url, hnId: result.hnId }),
       },
     });
 
@@ -73,7 +74,7 @@ export class HnService {
     return result;
   }
 
-  private static getCuratedPost(): { title: string; url: string } | null {
+  private static getCuratedPost(): { title: string; url?: string; text?: string } | null {
     // Rotate between product angles
     const posts = [
       {
@@ -86,7 +87,7 @@ export class HnService {
       },
       {
         title: 'Ask HN: How do you prevent duplicate writes when agent tool calls time out?',
-        url: 'https://0xguenther.org/en/audit/',
+        text: 'When LLM tool calls time out or return network errors, the write might have succeeded upstream. A blind retry creates duplicate invoices, tickets, or emails. How do you handle idempotency, CAS keys, and post-timeout verification in your agent pipelines?',
       },
     ];
 

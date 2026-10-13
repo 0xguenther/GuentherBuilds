@@ -145,7 +145,7 @@ export function aggregateReach(traces: ReachTrace[], orders: { createdAt: Date; 
 
 export class ReachService {
   static async collectRedditSnapshot(): Promise<void> {
-    if (!RedditService.credentialsAvailable()) return;
+    if (!RedditMcpClient.hasValidCredentials()) return;
     const items = await RedditMcpClient.getOwnMetrics();
     await this.saveSocialSnapshot('reddit', items);
   }
