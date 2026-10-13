@@ -27,10 +27,10 @@ Letzte Aktualisierung: 2026-10-13
 - Reddit-Session: **GuentherBuilds** (Cookies von WS-Brave injiziert).
 - Günther (CT115) `.env`: `REDDIT_BROWSER_POSTER_URL=http://10.0.1.233:9333`, `REDDIT_BROWSER_POSTER_TOKEN=gunther-poster-2026`.
 - **VM114 (OpenClaw) hat KEINEN Desktop** — darf keinen bekommen.
-- **MasterWS-01**: Kein Browser-Poster, Brave normal (ohne CDP).
-- Erster Test-Post erfolgreich: r/0xguenther, API `success: true`.
+- Test-Post erfolgreich: r/0xguenther via Browser-Poster live verifiziert (Post `browser_1791889928188`).
 - Fallback-Kette: Browser-Poster → Reddit OAuth API → Test-Simulation.
 - **HN-Integration:** Browser-Poster `/api/hn/submit` + `/api/hn/account`. `HnMcpClient.submitPost()` via fnid/fnop Token-Scrape + POST `/r`. `HnService` autonomer Cycle (max 1/Tag, 3/Woche, rotierende Show HN / Ask HN). Account: `0xguenther`. Live-Test-Post: `news.ycombinator.com/item?id=50068459`.
+- **Stripe Checkout Live:** `POST /api/audit/orders` erzeugt valide Live-Stripe-Sessions (`cs_live_...`) in USD mit Zod-Validierung.
 - **Reach-Analytics:** `/api/reach` aggregiert Klicks, Visits, UTM-Quellen (hn, reddit, x) und Conversions (Orders). Test `test/reach.test.ts` & `test/social.test.ts`.
 
 ## Multi-Agent Audit (2026-10-05)
