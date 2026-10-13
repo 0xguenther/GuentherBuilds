@@ -1,3 +1,6 @@
+import { RedditService } from '../services/redditService.js';
+import { ReachService } from '../services/reachService.js';
+import { HnService } from '../services/hnService.js';
 import { PaymentService } from '../services/paymentService.js';
 import { BurnService } from '../services/burnService.js';
 import { MarketingService } from '../services/marketingService.js';
@@ -15,6 +18,7 @@ export class GuntherDaemon {
   private isRunning = false;
   private isTickBusy = false;
   private lastPulseDate = '';
+  private lastReachPoll = 0;
 
   /**
    * Starts the background daemon with the configured heartbeat interval.
@@ -63,8 +67,11 @@ export class GuntherDaemon {
     try {
       await this.reconcilePendingPayments();
       await this.emitHeartbeat();
+      await this.checkReach();
       await this.checkDailyPulse();
       await this.checkCommunityEngagement();
+      await RedditService.runAutonomousCycle();
+      await HnService.runAutonomousCycle();
       try {
         await AuditFulfillmentService.processPaidOrders();
       } catch (err: unknown) {
@@ -73,6 +80,13 @@ export class GuntherDaemon {
     } finally {
       this.isTickBusy = false;
     }
+  }
+
+  async checkReach() {
+    if (Date.now() - this.lastReachPoll < 60 * 60 * 1000) return;
+    this.lastReachPoll = Date.now();
+    const results = await Promise.allSettled([ReachService.collectSnapshot(), ReachService.collectRedditSnapshot(), ReachService.collectHnSnapshot()]);
+    for (const result of results) if (result.status === 'rejected') console.warn('[Daemon] Reach snapshot failed:', result.reason instanceof Error ? result.reason.message : 'error');
   }
 
   /**
@@ -86,6 +100,12 @@ export class GuntherDaemon {
       console.log(`[Daemon] Triggering autonomous daily market pulse for ${today}...`);
       await MarketingService.generateDailyMarketPulse();
       this.lastPulseDate = today;
+      try {
+        const yesterday = new Date(`${today}T00:00:00Z`);
+        yesterday.setMilliseconds(-1);
+        const [reach] = await ReachService.getDailyReach(1, yesterday);
+        console.log(`[Daemon] Daily reach ${reach.day} UTC: ${reach.posts} posts, ${reach.impressions} observed impressions, ${reach.engagements} engagements, ${reach.landingVisits} landing visits, ${reach.auditOrders} paid audit orders.`);
+      } catch (err) { console.warn('[Daemon] Daily reach report failed:', err instanceof Error ? err.message : err); }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unknown pulse error';
       console.warn(`[Daemon] Daily market pulse skipped or delayed: ${msg}`);

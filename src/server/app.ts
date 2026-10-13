@@ -1,4 +1,6 @@
 import Fastify from 'fastify';
+import { recordAuditLandingVisit } from '../services/reachService.js';
+import { reachRoutes } from './routes/reachRoutes.js';
 import { recordPageView } from '../services/pageViewService.js';
 import rawBody from 'fastify-raw-body';
 import cors from '@fastify/cors';
@@ -55,6 +57,11 @@ export async function buildApp() {
     done();
   });
 
+  app.addHook('onRequest', async request => {
+    try { await recordAuditLandingVisit(request); }
+    catch { request.log.warn('Audit landing visit recording failed'); }
+  });
+
   // Serve static landing page and public assets only
   await app.register(fastifyStatic, {
     root: path.resolve(process.cwd(), 'public'),
@@ -103,7 +110,7 @@ export async function buildApp() {
 
   // Admin auth hook — protects write endpoints from unauthorized access
   const ADMIN_TOKEN = process.env.ADMIN_API_TOKEN;
-  const adminProtectedPrefixes = ['/api/reddit', '/api/growth', '/api/marketing', '/api/metrics/funnel'];
+  const adminProtectedPrefixes = ['/api/reddit', '/api/growth', '/api/marketing', '/api/metrics/funnel', '/api/reach'];
 
   app.addHook('onRequest', async (request, reply) => {
     const url = request.url;
@@ -136,6 +143,7 @@ export async function buildApp() {
   await app.register(redditRoutes);
   await app.register(growthRoutes);
   await app.register(auditRoutes);
+  await app.register(reachRoutes);
   await app.register(playbookRoutes);
   await app.register(blogRoutes);
 

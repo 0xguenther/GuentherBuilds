@@ -1,4 +1,4 @@
-import { fetchResponseWithRetry } from '../utils/retryUtil.js';
+import { executeWithRetry, HttpError } from '../utils/retryUtil.js';
 import { config } from '../config/index.js';
 
 export interface SubmitRedditPostParams {
@@ -27,9 +27,137 @@ export interface RedditAccountInfo {
   isSimulated: boolean;
 }
 
+/**
+ * Posts via the browser-automation service running on the desktop VM.
+ * Returns null if the browser poster is not configured or unreachable.
+ */
+async function postViaBrowser(params: SubmitRedditPostParams): Promise<RedditPostResult | null> {
+  const baseUrl = config.reddit.browserPosterUrl;
+  if (!baseUrl) return null;
+
+  const cleanSubreddit = params.subreddit.replace(/^r\//i, '').trim();
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (config.reddit.browserPosterToken) {
+    headers['Authorization'] = `Bearer ${config.reddit.browserPosterToken}`;
+  }
+
+  const res = await fetch(`${baseUrl}/api/reddit/submit`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      subreddit: cleanSubreddit,
+      title: params.title,
+      body: params.text,
+      url: params.url,
+    }),
+    signal: AbortSignal.timeout(120_000), // browser automation can be slow
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`Browser poster error (HTTP ${res.status}): ${text}`);
+  }
+
+  const json = await res.json() as { success: boolean; post?: RedditPostResult; error?: string };
+  if (!json.success || !json.post) throw new Error(json.error || 'Browser poster returned no result');
+  return json.post;
+}
+
+async function getAccountViaBrowser(): Promise<RedditAccountInfo | null> {
+  const baseUrl = config.reddit.browserPosterUrl;
+  if (!baseUrl) return null;
+
+  const headers: Record<string, string> = {};
+  if (config.reddit.browserPosterToken) {
+    headers['Authorization'] = `Bearer ${config.reddit.browserPosterToken}`;
+  }
+
+  const res = await fetch(`${baseUrl}/api/reddit/account`, {
+    headers,
+    signal: AbortSignal.timeout(30_000),
+  });
+
+  if (!res.ok) return null;
+  return await res.json() as RedditAccountInfo;
+}
+
 export class RedditMcpClient {
   private static cachedAccessToken: string | null = null;
   private static tokenExpiresAt = 0;
+
+  private static nextRequestAt = 0;
+
+  private static async request(url: string, options: RequestInit, retryableStatuses: number[] = [429, 500, 502, 503, 504]): Promise<Response> {
+    try {
+    return await executeWithRetry(async () => {
+      const wait = this.nextRequestAt - Date.now();
+      // Defer the daemon cycle instead of holding it for a long server reset.
+      if (wait > 30000) throw new Error('Reddit rate budget exhausted; deferred until reset');
+      if (wait > 0) await new Promise(resolve => setTimeout(resolve, wait));
+      const response = await fetch(url, { ...options, signal: AbortSignal.timeout(15000) });
+      const remaining = response.headers.get('x-ratelimit-remaining');
+      const reset = Number(response.headers.get('x-ratelimit-reset'));
+      if (remaining !== null && Number.isFinite(reset) && reset > 0) {
+        const budget = Number(remaining);
+        this.nextRequestAt = Date.now() + Math.ceil(reset * 1000 / Math.max(1, budget));
+      }
+      if (!response.ok) {
+        const failure = HttpError.fromResponse(response);
+        if (response.status === 429) this.nextRequestAt = Math.max(this.nextRequestAt, Date.now() + (failure.retryAfterMs ?? 0));
+        throw failure;
+      }
+      return response;
+    }, { retryableStatuses, initialDelayMs: 1000 });
+    } catch (err) {
+      // Final HTTP failures stay inspectable by callers with domain-specific errors.
+      if (err instanceof HttpError && err.response) return err.response;
+      throw err;
+    }
+  }
+
+  static async api(path: string, form?: Record<string, string>): Promise<unknown> {
+    if (!this.hasValidCredentials()) throw new Error('Reddit credentials missing');
+    const token = await this.getAccessToken();
+    const response = await this.request(`https://oauth.reddit.com${path}`, {
+      method: form ? 'POST' : 'GET',
+      headers: { Authorization: `Bearer ${token}`, 'User-Agent': config.reddit.userAgent,
+        ...(form ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {}) },
+      ...(form ? { body: new URLSearchParams(form).toString() } : {}),
+    }, form ? [429] : undefined);
+    if (!response.ok) throw new Error(`Reddit HTTP ${response.status}`);
+    const result = await response.json() as { json?: { errors?: unknown[] } };
+    if (result.json?.errors?.length) throw new Error('Reddit API rejected action');
+    return result;
+  }
+
+  static async listing(path: string): Promise<{ items: RedditItem[]; after: string | null }> {
+    const result = await this.api(path) as { data?: { children?: { data: RedditItem }[]; after?: string } };
+    return { items: (result.data?.children ?? []).map(c => c.data), after: result.data?.after ?? null };
+  }
+
+  static async submitComment(threadId: string, body: string): Promise<string> {
+    const result = await this.api('/api/comment', { api_type: 'json', thing_id: threadId, text: body }) as
+      { json?: { data?: { things?: { data?: { name?: string } }[] } } };
+    const id = result.json?.data?.things?.[0]?.data?.name;
+    if (!id) throw new Error('Reddit comment outcome unknown');
+    return id;
+  }
+
+  static async getOwnMetrics(): Promise<{ id: string; score: number; num_comments?: number }[]> {
+    const since = Date.now() / 1000 - 14 * 86400;
+    const metrics: { id: string; score: number; num_comments?: number }[] = [];
+    let after: string | null = null;
+    do {
+      const page = await this.listing(`/user/${encodeURIComponent(config.reddit.username)}/overview?sort=new&limit=100${after ? `&after=${encodeURIComponent(after)}` : ''}`);
+      for (const item of page.items) {
+        if (item.created_utc >= since && item.author?.toLowerCase() === config.reddit.username.toLowerCase())
+          metrics.push({ id: item.name, score: item.score, ...(typeof item.num_comments === 'number' ? { num_comments: item.num_comments } : {}) });
+      }
+      if (page.items.some(item => item.created_utc < since) || !page.items.length || page.after === after) break;
+      after = page.after;
+    } while (after);
+    return metrics;
+  }
 
   /**
    * Checks whether valid live Reddit credentials are configured
@@ -39,7 +167,7 @@ export class RedditMcpClient {
       config.reddit.clientId &&
       config.reddit.clientSecret &&
       config.reddit.username &&
-      config.reddit.password
+      config.reddit.password && config.reddit.userAgent
     );
   }
 
@@ -49,7 +177,8 @@ export class RedditMcpClient {
    */
   static async getAccessToken(): Promise<string> {
     const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
-    if (!this.hasValidCredentials() || isTestMode) {
+    if (!this.hasValidCredentials()) throw new Error('Reddit credentials missing');
+    if (isTestMode) {
       return 'simulated_reddit_access_token';
     }
 
@@ -68,7 +197,7 @@ export class RedditMcpClient {
       password: config.reddit.password,
     });
 
-    const res = await fetchResponseWithRetry('https://www.reddit.com/api/v1/access_token', {
+    const res = await this.request('https://www.reddit.com/api/v1/access_token', {
       method: 'POST',
       headers: {
         Authorization: authHeader,
@@ -96,35 +225,44 @@ export class RedditMcpClient {
   }
 
   /**
-   * Fetches account profile details to verify age and karma
+   * Fetches account profile details to verify age and karma.
+   * Priority: Browser Poster → Reddit API → Simulation (test).
    */
   static async getAccountInfo(): Promise<RedditAccountInfo> {
     const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
-    if (!this.hasValidCredentials() || isTestMode) {
+
+    if (isTestMode) {
       return {
         username: config.reddit.username || 'guenther_autonomous',
         linkKarma: 15,
         commentKarma: 35,
         totalKarma: 50,
-        createdUtc: Math.floor(Date.now() / 1000) - 86400 * 30, // 30 days old simulated
+        createdUtc: Math.floor(Date.now() / 1000) - 86400 * 30,
         accountAgeDays: 30,
         isSimulated: true,
       };
     }
 
+    // Try browser-poster first
+    if (this.hasBrowserPoster()) {
+      try {
+        const info = await getAccountViaBrowser();
+        if (info) return info;
+      } catch {
+        // fall through to API
+      }
+    }
+
+    // Fallback: Reddit API
+    if (!this.hasValidCredentials()) throw new Error('Reddit credentials missing');
     const token = await this.getAccessToken();
 
-    const res = await fetchResponseWithRetry('https://oauth.reddit.com/api/v1/me', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'User-Agent': config.reddit.userAgent,
-      },
+    const res = await this.request('https://oauth.reddit.com/api/v1/me', {
+      headers: { Authorization: `Bearer ${token}`, 'User-Agent': config.reddit.userAgent },
       signal: AbortSignal.timeout(10000),
     });
 
-    if (!res.ok) {
-      throw new Error(`Failed to fetch Reddit user profile (HTTP ${res.status})`);
-    }
+    if (!res.ok) throw new Error(`Failed to fetch Reddit user profile (HTTP ${res.status})`);
 
     const data = (await res.json()) as { name: string; link_karma?: number; comment_karma?: number; created_utc?: number };
     const createdUtc = data.created_utc || Math.floor(Date.now() / 1000);
@@ -142,20 +280,25 @@ export class RedditMcpClient {
   }
 
   /**
+   * Checks if the browser-poster service is configured
+   */
+  static hasBrowserPoster(): boolean {
+    return Boolean(config.reddit.browserPosterUrl);
+  }
+
+  /**
    * Submits a post (self-text or link) to a target subreddit.
-   * If credentials are missing or in test mode, executes in simulation mode.
+   * Priority: Browser Poster (desktop VM) → Reddit API → Simulation (test).
    */
   static async submitPost(params: SubmitRedditPostParams): Promise<RedditPostResult> {
     const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
     const cleanSubreddit = params.subreddit.replace(/^r\//i, '').trim();
 
-    if (!this.hasValidCredentials() || isTestMode) {
-      console.log(`[RedditMcp] (${isTestMode ? 'Test Mode' : 'Simulation Mode'}) Submitting to r/${cleanSubreddit}:`);
+    // Test/simulation mode
+    if (isTestMode) {
+      console.log(`[RedditMcp] (Test Mode) Submitting to r/${cleanSubreddit}:`);
       console.log(`Title: "${params.title}"`);
-      if (params.text) {
-        console.log(`Text preview: ${params.text.slice(0, 150)}...`);
-      }
-
+      if (params.text) console.log(`Text preview: ${params.text.slice(0, 150)}...`);
       const simulatedId = `t3_sim_${Date.now()}`;
       return {
         redditId: simulatedId,
@@ -165,6 +308,22 @@ export class RedditMcpClient {
         createdAt: new Date().toISOString(),
       };
     }
+
+    // Try browser-poster first (desktop VM with Brave)
+    if (this.hasBrowserPoster()) {
+      try {
+        const result = await postViaBrowser(params);
+        if (result) {
+          console.log(`[RedditMcp] Browser-poster submitted to r/${cleanSubreddit}: ${result.url}`);
+          return result;
+        }
+      } catch (err) {
+        console.warn(`[RedditMcp] Browser-poster failed, falling back to API: ${err instanceof Error ? err.message : err}`);
+      }
+    }
+
+    // Fallback: Reddit OAuth API
+    if (!this.hasValidCredentials()) throw new Error('Reddit credentials missing (and no browser poster configured)');
 
     const token = await this.getAccessToken();
 
@@ -177,14 +336,10 @@ export class RedditMcpClient {
       sendreplies: 'true',
     });
 
-    if (params.text) {
-      formBody.set('text', params.text);
-    }
-    if (params.url) {
-      formBody.set('url', params.url);
-    }
+    if (params.text) formBody.set('text', params.text);
+    if (params.url) formBody.set('url', params.url);
 
-    const res = await fetchResponseWithRetry('https://oauth.reddit.com/api/submit', {
+    const res = await this.request('https://oauth.reddit.com/api/submit', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -193,11 +348,9 @@ export class RedditMcpClient {
       },
       body: formBody.toString(),
       signal: AbortSignal.timeout(15000),
-    }, { retryableStatuses: [429] });
+    }, [429]);
 
-    if (res.status === 429) {
-      throw new Error('Reddit API rate limit (429)');
-    }
+    if (res.status === 429) throw new Error('Reddit API rate limit (429)');
 
     if (!res.ok) {
       const errText = await res.text();
@@ -214,7 +367,7 @@ export class RedditMcpClient {
     const redditId = postData?.id || postData?.name || `t3_${Date.now()}`;
     const url = postData?.url || `https://www.reddit.com/r/${cleanSubreddit}/comments/${redditId}`;
 
-    console.log(`[RedditMcp] Successfully posted to r/${cleanSubreddit}: ${url}`);
+    console.log(`[RedditMcp] API posted to r/${cleanSubreddit}: ${url}`);
 
     return {
       redditId,
@@ -224,4 +377,10 @@ export class RedditMcpClient {
       createdAt: new Date().toISOString(),
     };
   }
+}
+
+export interface RedditItem {
+  name: string; title?: string; selftext?: string; body?: string; author?: string;
+  subreddit: string; created_utc: number; stickied?: boolean; locked?: boolean; archived?: boolean;
+  score: number; num_comments?: number;
 }

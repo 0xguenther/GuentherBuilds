@@ -31,6 +31,16 @@ export interface PostTweetResult {
   createdAt: string;
 }
 
+export interface TweetMetrics {
+  id: string;
+  impression_count?: number;
+  like_count?: number;
+  retweet_count?: number;
+  reply_count?: number;
+  quote_count?: number;
+  url_link_clicks?: number;
+}
+
 export interface SearchTweetItem {
   id: string;
   text: string;
@@ -92,6 +102,53 @@ function buildOAuthHeader(
 }
 
 export class XMcpClient {
+  /** Read-only user-context lookup; unavailable private metrics fall back to public counters. */
+  static async getTweetMetrics(ids: string[]): Promise<TweetMetrics[]> {
+    if (!config.x.apiKey || !config.x.apiSecret || !config.x.accessToken || !config.x.accessSecret) return [];
+    const unique = [...new Set(ids)].filter(id => /^\d+$/.test(id));
+    const result: TweetMetrics[] = [];
+    const url = 'https://api.twitter.com/2/tweets';
+    for (let offset = 0; offset < unique.length; offset += 100) {
+      const batch = unique.slice(offset, offset + 100);
+      const request = async (includePrivate: boolean) => executeWithRetry(async () => {
+        const query = { ids: batch.join(','), 'tweet.fields': includePrivate ? 'public_metrics,non_public_metrics' : 'public_metrics' };
+        const oauth = {
+          oauth_consumer_key: config.x.apiKey, oauth_nonce: crypto.randomBytes(16).toString('hex'),
+          oauth_signature_method: 'HMAC-SHA1', oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
+          oauth_token: config.x.accessToken, oauth_version: '1.0',
+        };
+        const response = await fetch(`${url}?${new URLSearchParams(query)}`, {
+          headers: { Authorization: buildOAuthHeader('GET', url, oauth, config.x.apiSecret, config.x.accessSecret, query) },
+          signal: AbortSignal.timeout(10000),
+        });
+        if (response.status === 429) throw HttpError.fromResponse(response);
+        return response;
+      }, { maxRetries: 4, initialDelayMs: 1500, retryableStatuses: [429], jitter: false });
+      let response = await request(true);
+      if ([400, 401, 403].includes(response.status)) response = await request(false);
+      if (!response.ok) throw HttpError.fromResponse(response);
+      type Payload = { data?: Array<{ id: string; public_metrics?: Record<string, number>; non_public_metrics?: Record<string, number> }>; errors?: unknown[] };
+      let payload = await response.json() as Payload;
+      // Field-level authorization failures may arrive as HTTP 200 with errors.
+      if (payload.errors?.length && !payload.data?.some(tweet => tweet.public_metrics)) {
+        response = await request(false);
+        if (!response.ok) throw HttpError.fromResponse(response);
+        payload = await response.json() as Payload;
+      }
+      for (const tweet of payload.data ?? []) {
+        if (!batch.includes(tweet.id)) continue;
+        const metrics = { ...tweet.public_metrics, ...tweet.non_public_metrics };
+        const row: TweetMetrics = { id: tweet.id };
+        for (const key of ['impression_count', 'like_count', 'retweet_count', 'reply_count', 'quote_count', 'url_link_clicks'] as const) {
+          const value = metrics[key];
+          if (typeof value === 'number' && Number.isFinite(value) && value >= 0) row[key] = value;
+        }
+        if (Object.keys(row).length > 1) result.push(row);
+      }
+    }
+    return result;
+  }
+
   /**
    * Posts a tweet or reply to X using OAuth 1.0a User Context.
    * If in test mode or API keys are missing, runs in verified simulated mode.

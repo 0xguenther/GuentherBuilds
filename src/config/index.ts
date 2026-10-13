@@ -50,6 +50,13 @@ export const config = {
     username: process.env.REDDIT_USERNAME || '',
     password: process.env.REDDIT_PASSWORD || '',
     userAgent: process.env.REDDIT_USER_AGENT || `web:0xguenther-core:v1.0 (by /u/${process.env.REDDIT_USERNAME || 'guenther'})`,
+    browserPosterUrl: process.env.REDDIT_BROWSER_POSTER_URL || '',
+    browserPosterToken: process.env.REDDIT_BROWSER_POSTER_TOKEN || '',
+  },
+  hn: {
+    username: process.env.HN_USERNAME || '0xguenther',
+    browserPosterUrl: process.env.HN_BROWSER_POSTER_URL || process.env.REDDIT_BROWSER_POSTER_URL || '',
+    browserPosterToken: process.env.HN_BROWSER_POSTER_TOKEN || process.env.REDDIT_BROWSER_POSTER_TOKEN || '',
   },
   llm: {
     localUrl: process.env.LOCAL_LLM_URL || 'http://localhost:11434',

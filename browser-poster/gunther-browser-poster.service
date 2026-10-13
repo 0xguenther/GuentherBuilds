@@ -1,0 +1,23 @@
+# Browser-Poster: Brave must be running with --remote-debugging-port
+# Start Brave first (if not already running):
+#   brave-browser --remote-debugging-port=9222 &
+#
+# Then start this service:
+#   systemctl --user start gunther-browser-poster
+
+[Unit]
+Description=Günther Reddit Browser Poster
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/node /opt/gunther-browser-poster/server.mjs
+WorkingDirectory=/opt/gunther-browser-poster
+Environment=PORT=9333
+Environment=BRAVE_CDP_PORT=9222
+Environment=BROWSER_POSTER_TOKEN=CHANGE_ME
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

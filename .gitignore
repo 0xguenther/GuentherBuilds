@@ -16,6 +16,13 @@ scratch/
 
 # Zugangsdaten nie einchecken
 scripts/post_viral_thread.py
+browser-poster/reddit-cookies.json
+browser-poster/node_modules/
+browser-poster/*.log
 # Bestellberichte enthalten Kundendaten
 data/
 docs/preview/
+.stfolder/
+.stfolder*/
+_temp/
+design-entwuerfe/

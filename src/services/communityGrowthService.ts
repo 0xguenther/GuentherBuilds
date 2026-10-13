@@ -1,9 +1,10 @@
+import { PRODUCTS, productPost, productTurn } from './productCatalog.js';
 import { XMcpClient } from '../mcp/xMcp.js';
 import { MentionService } from './mentionService.js';
 import { MarketingService } from './marketingService.js';
 import { LlmClient } from '../core/llmClient.js';
 import { TraceService } from './traceService.js';
-import { MetricsService } from './metricsService.js';
+import { AUDIT_ANGLES, auditPost, approvedBodies, parseMetadata } from './reachService.js';
 import { config } from '../config/index.js';
 import { prisma } from '../db/client.js';
 import { TimelineScoutService } from './timelineScoutService.js';
@@ -13,13 +14,6 @@ export class CommunityGrowthService {
   private static lastFailureTimestamp = 0;
   private static readonly MIN_POST_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours between builder insight posts
   private static readonly FAILURE_COOLDOWN_MS = 30 * 60 * 1000; // no LLM regeneration every daemon tick after an X rejection
-
-  private static readonly HASHTAG_SETS = [
-    '#buildinpublic #Base #AIagents',
-    '#SelfHosted #Proxmox #Fastify #Base',
-    '#AIagents #Ollama #TypeScript #buildinpublic',
-    '#Base #Onchain #Web3 #AIagents',
-  ];
 
   /**
    * 1. Polls for incoming mentions to @GuentherBuilds and automatically replies
@@ -49,8 +43,7 @@ export class CommunityGrowthService {
   }
 
   /**
-   * 2. Publishes high-signal, hashtag-optimized technical insight posts
-   * that index into active developer search streams (#buildinpublic, #Base, #AIagents).
+   * 2. Publishes factual audit-launch insights with tracked landing links.
    */
   static async publishBuilderInsight(force = false): Promise<{
     published: boolean;
@@ -97,88 +90,81 @@ export class CommunityGrowthService {
       };
     }
 
-    const metrics = await MetricsService.getLiveMetrics();
-    const tagIndex = Math.floor(now / (1000 * 60 * 60 * 6)) % this.HASHTAG_SETS.length;
-    const hashtags = this.HASHTAG_SETS[tagIndex];
-
-    const angles = [
-      'Why 80% of agent startups burn cash calling external LLMs for basic routing, and how local Ollama 8B JSON classification delivers 99.8% gross margin.',
-      'How SQLite WAL mode + Compare-and-Swap state engines prevent webhook race conditions and double-spending under load.',
-      'Why we execute token burns on Base L2 using zero-value calldata transactions instead of smart contract transfers: <$0.002 gas with immutable on-chain proof.',
-      'Running autonomous AI agents on dedicated self-hosted hardware (Debian 12 LXC on Proxmox) vs serverless cold starts.',
-      'Why Model Context Protocol (MCP) isolation beats monolithic agent spaghetti: clean sandboxing for Stripe, X, and Web3.',
-      'Why storing raw wallet private keys on servers is negligence: CDP AgentKit MPC keeps agent funds tamper-proof.',
-      'Selling digital shovels: B2B agents should charge real recurring fiat retainers, not gamble on speculative hype.',
-      'Machine-to-machine commerce: HTTP 402 micro-settlement in USDC on Base turns autonomous agents into sustainable businesses.',
-    ];
-    const selectedAngle = angles[Math.floor(Math.random() * angles.length)];
-
-    let postText = '';
-    
-    // Check if daily LLM cost exceeds safety cap
-    const todayTraces = await prisma.trace.findMany({
-      where: { createdAt: { gte: todayStart } },
-      select: { costUsd: true },
+    const recent = await prisma.trace.findMany({
+      where: { task: 'GROWTH_INSIGHT_DUPLICATE' },
+      orderBy: { createdAt: 'desc' },
+      take: 60,
+      select: { task: true, metadata: true },
     });
-    const totalCostToday = todayTraces.reduce((acc, t) => acc + (t.costUsd || 0), 0);
-    const allowExternalLlm = totalCostToday < config.growth.maxDailyLlmCostUsd;
-
+    // Keep the last 30 successful posts even when rejected duplicates intervene.
+    const posted = await prisma.trace.findMany({
+      where: { task: 'GROWTH_INSIGHT_POSTED' }, orderBy: { createdAt: 'desc' }, take: 30,
+      select: { metadata: true },
+    });
+    const used = new Set([...recent, ...posted].map(t => parseMetadata(t.metadata).text));
+    const todayTraces = await prisma.trace.findMany({
+      where: { createdAt: { gte: todayStart } }, select: { costUsd: true },
+    });
+    const allowExternalLlm = todayTraces.reduce((sum, t) => sum + t.costUsd, 0) < config.growth.maxDailyLlmCostUsd;
+    const products = productTurn(posted);
+    const angles: { id: string; fact: string }[] = products
+      ? [...PRODUCTS].sort((a, b) => {
+        const age = (id: string) => { const i = posted.findIndex(t => parseMetadata(t.metadata).productId === id); return i < 0 ? 999 : i; };
+        return age(b.id) - age(a.id);
+      }) : [...AUDIT_ANGLES];
+    const formatPost = products ? productPost : auditPost;
+    const start = products ? 0 : Math.floor(Math.random() * angles.length);
     let completion: Awaited<ReturnType<typeof LlmClient.generateCompletion>> = null;
-    if (allowExternalLlm) {
-      completion = await LlmClient.generateCompletion({
-        systemPrompt: `You are Günther (@GuentherBuilds), an autonomous self-hosted AI entrepreneur running live on a dedicated Proxmox LXC container (Debian 12, Fastify v5, SQLite WAL, viem on Base L2).
-You share punchy, high-signal technical architecture lessons for developers and founders on X.
-
-Strict Rules:
-- Language: ENGLISH only.
-- Length: Max 210 characters (excluding hashtags).
-- Tone: Direct, mature, pragmatic Swiss engineer. No exclamation marks, no fluffy buzzwords.
-- Content: Focus on real engineering choices (Ollama 8B routing, SQLite CAS, Fastify rawBody, Base L2 calldata).
-- Never use sales slogans. Mention 0xguenther.org as the live proof.`,
-        userPrompt: `Write a short, high-impact builder post about: ${selectedAngle}\nMetrics: $${metrics.financials.totalRevenueUsd.toFixed(2)} USD revenue, ${metrics.financials.totalBurnedTokens} $GUNTER burned. End with 0xguenther.org`,
-        maxTokens: 75,
-        taskId: `growth-insight-${now}`,
-        taskName: 'GENERATE_ORGANIC_BUILDER_INSIGHT',
-        timeoutMs: 8000,
-      });
+    for (let offset = 0; offset < angles.length; offset++) {
+      const angle = angles[(start + offset) % angles.length];
+      const bodies = approvedBodies(angle).filter(body => !used.has(formatPost(angle.id, body)));
+      if (!bodies.length) continue;
+      // Approved wording keeps both numerical claims and their context factual.
+      if (allowExternalLlm && offset === 0) {
+        try {
+          completion = await LlmClient.generateCompletion({
+            systemPrompt: products ? 'You are Guenther, an autonomous agent. Select exactly one approved English body below, with no edits or links. These are the only verified product facts; never invent features, prices or results.' : `You are Guenther, an autonomous agent posting an audit launch on X.
+English only; body at most 230 characters; at most one hashtag. Disclose that this is posted by an autonomous agent naturally.
+Never invent numbers. October 2026 experiment: same harness/prompt/10 failure cases, 100 runs per model, mock tools with fault injection.
+Correct end state /100 and runs with duplicate writes: DeepSeek Flash 91/0 (USD 0.14 total); Qwen3.8 27B free 89/1; Qwen3 14B local 70/0; Claude Haiku 4.5 60/10 (USD 0.35); Ornith 1.5 35B 49/38.
+Harness behaviour, not a ranking; 91 vs 89 is a tie. Timeout after a write, followed by blind retry, can duplicate an invoice/email or produce an unverifiable success claim.
+Raw data: https://github.com/0xguenther/agent-write-path-runs . Quick Check CHF 90.
+Choose and return exactly one approved body supplied below, without quotes or links. A tracked audit link is appended by the application.`,
+            userPrompt: bodies.join('\n'), maxTokens: 100,
+            taskId: `growth-insight-${now}`, taskName: 'GENERATE_ORGANIC_BUILDER_INSIGHT', timeoutMs: 8000,
+          });
+        } catch { /* A model outage must not prevent factual fallback posts. */ }
+      }
+      const proposed = completion?.text?.trim();
+      const body = proposed && bodies.includes(proposed) ? proposed : bodies[0];
+      const postText = formatPost(angle.id, body);
+      try {
+        const res = await XMcpClient.postTweet({ text: postText, idempotencyKey: `growth_insight_${now}_${angle.id}` });
+        this.lastPostTimestamp = now;
+        await TraceService.recordTrace({
+          taskId: `growth-insight-${now}`, task: 'GROWTH_INSIGHT_POSTED',
+          model: proposed === body ? completion?.model || 'deterministic_fallback' : 'deterministic_fallback',
+          costUsd: completion?.costUsd || 0,
+          tokens: (completion?.inputTokens || 0) + (completion?.outputTokens || 0), status: 'ok',
+          metadata: { text: postText, tweetId: res.tweetId, angleId: angle.id, ...(products ? { productId: angle.id } : {}) },
+        });
+        return { published: true, tweetId: res.tweetId, text: postText };
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Unknown error';
+        if (/403/.test(msg) && /duplicate/i.test(msg)) {
+          used.add(postText);
+          await TraceService.recordTrace({
+            taskId: `growth-duplicate-${now}-${angle.id}`, task: 'GROWTH_INSIGHT_DUPLICATE',
+            model: 'x', status: 'error', metadata: { text: postText, angleId: angle.id, ...(products ? { productId: angle.id } : {}) },
+          });
+          continue; // Never retry rejected text, including on the next daemon tick.
+        }
+        this.lastFailureTimestamp = now;
+        return { published: false, reason: msg };
+      }
     }
-
-    const body = completion?.text?.trim().replace(/^["']|["']$/g, '');
-    if (body) {
-      postText = `${body}\n\n${hashtags}`;
-    } else {
-      postText = `Local Ollama 8B JSON routing + atomic SQLite CAS + Base L2 calldata audits is what keeps autonomous agent unit economics positive in production.\n\nLive stack: 0xguenther.org\n${hashtags}`;
-    }
-
-    try {
-      const res = await XMcpClient.postTweet({
-        text: postText,
-        idempotencyKey: `growth_insight_${now}`,
-      });
-
-      this.lastPostTimestamp = now;
-
-      await TraceService.recordTrace({
-        taskId: `growth-insight-${now}`,
-        task: 'GROWTH_INSIGHT_POSTED',
-        model: completion?.model || 'deterministic_fallback',
-        costUsd: completion?.costUsd || 0,
-        tokens: (completion?.inputTokens || 0) + (completion?.outputTokens || 0),
-        status: 'ok',
-      });
-
-      console.log(`[CommunityGrowth] Successfully published builder insight: ${res.tweetId}`);
-      return {
-        published: true,
-        tweetId: res.tweetId,
-        text: postText,
-      };
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Unknown error';
-      this.lastFailureTimestamp = now;
-      console.error('[CommunityGrowth] Failed to post builder insight:', msg);
-      return { published: false, reason: msg };
-    }
+    this.lastFailureTimestamp = now;
+    return { published: false, reason: 'No unused content available for this rotation slot.' };
   }
 
   /**

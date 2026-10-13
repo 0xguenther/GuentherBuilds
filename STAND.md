@@ -1,12 +1,24 @@
 # STAND — Günther (Produktiv-Codebasis)
 
-Letzte Aktualisierung: 2026-10-05
+Letzte Aktualisierung: 2026-10-13
 
 ## Status
 - Repo: `C:\ClaudeProjects\günther`, Branch `master`, HEAD `29f2119` (feat(scout): multi-domain classification …)
 - Läuft produktiv auf Proxmox CT 115 (`10.0.1.115:3000`, Service `gunther-core.service`), laut `MEMORY.md`.
 - Öffentliche Referenz-Version lebt separat in `C:\ClaudeProjects\gunther-core` (Derivat, nicht parallel pflegen).
 - Letzte dokumentierte Tests: 29/29 bestanden (Security-/Heartbeat-Audit, siehe `MEMORY.md`). Aktuelle Testläufe seit HEAD nicht verifiziert.
+
+## Reddit Self-Promotion via Browser (2026-10-13)
+- **VM100** (`10.0.1.233`, hades-VM100 computer-use-desktop) = Desktop-VM für Brave + Reddit.
+- Brave läuft mit `--remote-debugging-port=9222` auf Display :1 (XFCE/VNC).
+- **Browser-Poster** (`/opt/gunther-browser-poster/server.mjs`, Port 9333) nutzt Browser-Cookies für Reddit + HN API-Calls.
+- Reddit-Session: **GuentherBuilds** (Cookies von WS-Brave injiziert).
+- Günther (CT115) `.env`: `REDDIT_BROWSER_POSTER_URL=http://10.0.1.233:9333`, `REDDIT_BROWSER_POSTER_TOKEN=gunther-poster-2026`.
+- **VM114 (OpenClaw) hat KEINEN Desktop** — darf keinen bekommen.
+- **MasterWS-01**: Kein Browser-Poster, Brave normal (ohne CDP).
+- Erster Test-Post erfolgreich: r/0xguenther, API `success: true`.
+- Fallback-Kette: Browser-Poster → Reddit OAuth API → Test-Simulation.
+- **HN-Integration:** Browser-Poster `/api/hn/submit` + `/api/hn/account`. `HnMcpClient.submitPost()` via fnid/fnop Token-Scrape + POST `/r`. `HnService` autonomer Cycle (max 1/Tag, 3/Woche, rotierende Show HN / Ask HN). Account: `0xguenther`.
 
 ## Multi-Agent Audit (2026-10-05)
 Durchgeführt mit MiMoCode (Orchestrator) + Claude Code (Security) + interne Agents.
@@ -226,7 +238,7 @@ Stand: 2026-10-03
   - Preise als CHF netto ausweisen (MWST-Sätze: nicht anwendbar)
   - Test-Cohort (max. 5 Bestellungen) für Dokumentation & Treuhänder-Abklärung
   - Stripe-Kontoinhaber: privat (via rk_live_* Key)
-- [x] **Post-Tageslimit:** ✅ 2 pro Kanal pro Tag (Reddit, X), HN manuell oder nicht
+- [x] **Post-Tageslimit:** ✅ 2 pro Kanal pro Tag (Reddit, X), HN max 1/Tag + 3/Woche via HnService
 
 ### Schritt 4 und 5 (Stand)
 - Trace: jede bearbeitete Bestellung wird als AUDIT_FULFILMENT im Trace-Protokoll gespeichert, mit Endstatus.

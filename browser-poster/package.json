@@ -1,0 +1,14 @@
+{
+  "name": "gunther-reddit-browser-poster",
+  "version": "1.0.0",
+  "description": "Reddit browser automation service for Günther — connects to Brave via CDP",
+  "type": "module",
+  "main": "server.mjs",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs"
+  },
+  "dependencies": {
+    "playwright-core": "^1.64.0"
+  }
+}
