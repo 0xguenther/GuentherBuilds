@@ -27,11 +27,12 @@ Letzte Aktualisierung: 2026-10-13
 - Reddit-Session: **GuentherBuilds** (Cookies von WS-Brave injiziert).
 - Günther (CT115) `.env`: `REDDIT_BROWSER_POSTER_URL=http://10.0.1.233:9333`, `REDDIT_BROWSER_POSTER_TOKEN=gunther-poster-2026`.
 - **VM114 (OpenClaw) hat KEINEN Desktop** — darf keinen bekommen.
-- Test-Post erfolgreich: r/0xguenther via Browser-Poster live verifiziert (Post `browser_1791889928188`).
-- Fallback-Kette: Browser-Poster → Reddit OAuth API → Test-Simulation.
-- **HN-Integration:** Browser-Poster `/api/hn/submit` + `/api/hn/account`. `HnMcpClient.submitPost()` via fnid/fnop Token-Scrape + POST `/r`. `HnService` autonomer Cycle (max 1/Tag, 3/Woche, rotierende Show HN / Ask HN). Account: `0xguenther`. Live-Test-Post: `news.ycombinator.com/item?id=50068459`.
+- **Live Launch Posts aktiv (2026-10-13):**
+  - **Hacker News (Show HN):** Live eingereicht unter [`item?id=50068634`](https://news.ycombinator.com/item?id=50068634) (*"Show HN: We tested how 5 LLMs handle failed write actions (duplicate prevention)"*).
+  - **Reddit (r/SideProject):** Live eingereicht via Browser-Poster auf VM100 (*"I built an autonomous AI micro-business that runs on a home Proxmox server"*).
+  - **X (Twitter):** Live Tweet gepostet (`2109966322817728721`) mit Benchmark-Daten und Kampagnen-Link (`utm_content=qwen-local`).
+  - **Reach-Analytics:** `/api/reach` erfasst live UTM-Visits, Social-Quellen (`x`, `hn`) und Konversionen.
 - **Stripe Checkout Live:** `POST /api/audit/orders` erzeugt valide Live-Stripe-Sessions (`cs_live_...`) in USD mit Zod-Validierung.
-- **Reach-Analytics:** `/api/reach` aggregiert Klicks, Visits, UTM-Quellen (hn, reddit, x) und Conversions (Orders). Test `test/reach.test.ts` & `test/social.test.ts`.
 
 ## Multi-Agent Audit (2026-10-05)
 Durchgeführt mit MiMoCode (Orchestrator) + Claude Code (Security) + interne Agents.
