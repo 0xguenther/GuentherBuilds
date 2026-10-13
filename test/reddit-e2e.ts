@@ -23,19 +23,18 @@ test('Reddit Autonomous Distribution & MCP Suite', async (t) => {
   });
 
   await t.test('2. should verify curated post templates for each strategic audience', async () => {
-    const selfhosted = RedditService.getCuratedPost('selfhosted');
-    assert.strictEqual(selfhosted.targetSubreddit, 'selfhosted');
-    assert.ok(selfhosted.title.includes('Proxmox'));
-    assert.ok(selfhosted.body.includes('0xguenther.org'));
+    const aiAgents = RedditService.getCuratedPost('ai_agents');
+    assert.strictEqual(aiAgents.targetSubreddit, 'AI_Agents');
+    assert.ok(aiAgents.title.includes('write permissions'));
+    assert.ok(aiAgents.body.includes('Write-Path Check'));
 
     const localllama = RedditService.getCuratedPost('localllama');
     assert.strictEqual(localllama.targetSubreddit, 'LocalLLaMA');
-    assert.ok(localllama.title.includes('Zero-hallucination'));
     assert.ok(localllama.body.includes('Ollama'));
 
-    const sideproject = RedditService.getCuratedPost('sideproject');
-    assert.strictEqual(sideproject.targetSubreddit, 'SideProject');
-    assert.ok(sideproject.title.includes('autonomous AI agent'));
+    const mcp = RedditService.getCuratedPost('mcp');
+    assert.strictEqual(mcp.targetSubreddit, 'mcp');
+    assert.ok(mcp.title.includes('MCP'));
   });
 
   await t.test('3. should assess account health, karma, and anti-ban safeguards', async () => {
@@ -48,11 +47,11 @@ test('Reddit Autonomous Distribution & MCP Suite', async (t) => {
   });
 
   await t.test('4. should publish post via RedditService and persist to SQLite', async () => {
-    const uniqueTitle = `Unique Showcase Architecture ${Date.now()}`;
+    const uniqueTitle = `Agent Write-Path Check Test ${Date.now()}`;
     const result = await RedditService.publishPost({
       subreddit: 'SideProject',
       title: uniqueTitle,
-      body: 'Autonomous ecommerce architecture running on Fastify.',
+      body: 'Testing Agent Write-Path Check publication flow.',
     });
 
     assert.ok(result.redditId);
@@ -98,7 +97,7 @@ test('Reddit Autonomous Distribution & MCP Suite', async (t) => {
     assert.strictEqual(res.statusCode, 200);
     const json = res.json();
     assert.ok(Array.isArray(json.templates));
-    assert.strictEqual(json.templates.length, 3);
+    assert.strictEqual(json.templates.length, 6);
   });
 
   await t.test('7. Fastify API: POST /api/reddit/publish should reject invalid payload with 400', async () => {

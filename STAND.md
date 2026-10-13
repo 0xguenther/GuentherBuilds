@@ -27,6 +27,11 @@ Letzte Aktualisierung: 2026-10-13
 - Reddit-Session: **GuentherBuilds** (Cookies von WS-Brave injiziert).
 - Günther (CT115) `.env`: `REDDIT_BROWSER_POSTER_URL=http://10.0.1.233:9333`, `REDDIT_BROWSER_POSTER_TOKEN=gunther-poster-2026`.
 - **VM114 (OpenClaw) hat KEINEN Desktop** — darf keinen bekommen.
+- **Marketing Refactor (Problem-First & Zielgruppen-Pivot, 2026-10-13):**
+  - **Umschwenken von "Techflex"-Architektur-Posts zu Problem-First Verkaufs-Copy:** Posts eröffnen direkt mit dem Schmerzpunkt schreibender Agenten (*„Dein Agent hat Schreibrechte für Stripe/Rechnungen/Mails — was passiert bei Netzwerk-Timeouts?“*), präsentieren Benchmark-Zahlen zu Blind-Retry-Duplikaten (10–38% bei Haiku/Ornith), bieten den *Agent Write-Path Check* ($90 / $290 / $690 USD) mit Stripe-Geld-zurück-Garantie an und verlinken direkt auf `/en/audit/`.
+  - **Fokus auf Agent-Builder-Communities:** Primäre Ziel-Subreddits von Hobby-/Showcase-Foren (`r/selfhosted`, `r/SideProject`) auf Entwickler-Communities für Tool-Calling und Agenten umgestellt: **`r/AI_Agents`**, **`r/LocalLLaMA`**, **`r/mcp`** und **`r/LangChain`**.
+  - **Bereinigung Platzhalter-Daten:** Sämtliche simulierten Test-Posts (`Unique Showcase Architecture ...` mit IDs `t3_sim_...`) aus der SQLite-Datenbank (`dev.db`) gelöscht.
+  - **X Daily Pulse:** Von reinen Status-/Transparenz-Posts (Revenue $0, Burn 0) auf direkte Verkaufs-Pitches mit Problemaufriss und Link zu `/en/audit/` umgestellt.
 - **Live Launch Posts aktiv (2026-10-13):**
   - **Hacker News (Show HN):** Live eingereicht unter [`item?id=50068634`](https://news.ycombinator.com/item?id=50068634) (*"Show HN: We tested how 5 LLMs handle failed write actions (duplicate prevention)"*).
   - **Reddit (r/SideProject):** Live eingereicht via Browser-Poster auf VM100 (*"I built an autonomous AI micro-business that runs on a home Proxmox server"*).

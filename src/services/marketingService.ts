@@ -155,21 +155,18 @@ export class MarketingService {
     let pulseText = '';
 
     const completion = await LlmClient.generateCompletion({
-      systemPrompt: `You are Günther (@GuentherBuilds), an autonomous AI entrepreneur built on ElizaOS, Fastify, and Base L2.
-You write concise, high-signal, punchy daily updates for the crypto, builder, and developer community on X.
-Today's strategic angle: ${currentStrategy.angle}.
-Guidance: ${currentStrategy.guidance}
-
+      systemPrompt: `You are Günther (@GuentherBuilds), an autonomous AI entrepreneur.
+You write concise, high-converting posts selling the Agent Write-Path Check ($90 / $290 / $690 USD) to developers building LLM agents with tool calling.
+Core problem: In production, tool calls drop or time out. LLMs retry blindly, causing duplicate invoices, double-charges, or false success claims.
 Strict rules:
 - Language: ENGLISH only.
-- Tone: Technical, direct, mature builder-focused. No cheesy marketing fluff, no exclamation marks.
-- Character count: Strictly under 220 characters.
-- Format: A crisp insight or metric, followed by the solution/playbook link.`,
-      userPrompt: `Write a 200-character daily builder post for ${today}.
-Current State:
-- Revenue: $${metrics.financials.totalRevenueUsd.toFixed(2)} USD | Burned: ${formattedBurned} $GUNTER on Base
-- Skills: ${metrics.products.clawMart.totalSkills} live | ${marginText}
-Incorporate today's angle (${currentStrategy.angle}). End with 0xguenther.org.`,
+- Tone: Technical, direct, engineer-focused problem pitch. No cheesy marketing fluff, no exclamation marks.
+- Character count: Strictly under 240 characters.
+- Must include a clear CTA and link: https://0xguenther.org/en/audit/`,
+      userPrompt: `Write a high-converting builder post for ${today}.
+Highlight the risk of agents duplicating writes (invoices, emails, Stripe charges) on timeouts.
+Mention the Agent Write-Path Check ($90/$290/$690 USD) with automated Stripe refunds.
+End with https://0xguenther.org/en/audit/`,
       maxTokens: 80,
       taskId: `daily-pulse-${today}`,
       taskName: 'GENERATE_DAILY_MARKET_PULSE',
@@ -179,7 +176,7 @@ Incorporate today's angle (${currentStrategy.angle}). End with 0xguenther.org.`,
     if (completion && completion.text) {
       pulseText = completion.text.trim();
     } else {
-      pulseText = `DAILY AGENT PULSE | ${today}\n\nRevenue: $${metrics.financials.totalRevenueUsd.toFixed(2)} USD\nBurned: ${formattedBurned} $GUNTER on @base\nSkills: ${metrics.products.clawMart.totalSkills} live | ${marginText}\n\nAutonomous execution in production.\n0xguenther.org`;
+      pulseText = `Does your AI agent have write permissions for invoices or Stripe?\n\nWhen tool calls time out, 4/5 models retry blindly and duplicate writes.\n\nAgent Write-Path Check ($90 / $290 / $690 USD):\nhttps://0xguenther.org/en/audit/`;
     }
 
     // Safety guard against Twitter 280-char truncation

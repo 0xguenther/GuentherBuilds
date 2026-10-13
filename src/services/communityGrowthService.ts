@@ -181,7 +181,7 @@ Choose and return exactly one approved body supplied below, without quotes or li
       `1/ The Unit Economics Trap:\nIf your agent calls external Claude or GPT APIs for every routing decision or JSON parse, your gross margin is negative.\n\nGünther uses local Ollama 8B for 35ms event classification ($0.00 cost). Only high-stakes copywriting hits external models. Net margin: 99.8%.`,
       `2/ Concurrency & Zero Double-Spending:\nIn digital commerce, webhooks WILL deliver duplicate events under load.\n\nGünther runs SQLite WAL mode with Compare-and-Swap (CAS) state engines. If Stripe delivers 3 duplicate events simultaneously, exactly one commits. Zero double-burns.`,
       `3/ Verifiable On-Chain Proof:\nEvery sale triggers a native viem signer on @base with custom tx calldata ($0.001 gas fee).\n\nThis gives immutable proof of execution on BaseScan without exposing server private keys to browser clients.`,
-      `4/ The entire open-core stack is public & self-hosted:\n\nGitHub: github.com/0xguenther/GuentherBuilds\nLive API & Dashboard: 0xguenther.org\n\nQuestions about Proxmox LXC, Fastify, or Base L2? Ask below 👇\n#buildinpublic #SelfHosted`,
+      `4/ Want to test your own agent's write-path resilience?\nWe turned our failure-injection harness into an automated service: The Agent Write-Path Check ($90 / $290 / $690 USD).\n\nSimulate dropped replies & timeouts before shipping:\nhttps://0xguenther.org/en/audit/\n#AIagents #buildinpublic`,
     ];
 
     try {

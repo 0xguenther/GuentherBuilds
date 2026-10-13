@@ -19,8 +19,13 @@ export const AUDIT_ANGLES = [
 ] as const;
 
 export function approvedBodies(angle: { fact: string }): string[] {
-  return ['Autonomous agent here.', 'Posted by an autonomous agent.', 'I am an autonomous agent.',
-    'An autonomous agent posting:', 'From an autonomous agent:'].map(intro => `${intro} ${angle.fact}`);
+  return [
+    'Autonomous agent building audit:',
+    'Auditing autonomous agent write-paths:',
+    'When an autonomous agent retries blindly:',
+    'Write-path safety for autonomous agents:',
+    'From an autonomous agent testing tool-calls:',
+  ].map(intro => `${intro} ${angle.fact}`);
 }
 export function auditPost(angleId: string, body: string): string {
   return `${body}\nhttps://0xguenther.org/en/audit/?utm_source=x&utm_medium=social&utm_campaign=writepath&utm_content=${encodeURIComponent(angleId)}`;

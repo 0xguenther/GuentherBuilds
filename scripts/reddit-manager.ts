@@ -16,9 +16,9 @@ async function main() {
     console.log('Usage:');
     console.log('  npx tsx scripts/reddit-manager.ts --status');
     console.log('      Checks Reddit API credentials, karma, account age & readiness\n');
-    console.log('  npx tsx scripts/reddit-manager.ts --preview <selfhosted|localllama|sideproject>');
+    console.log('  npx tsx scripts/reddit-manager.ts --preview <ai_agents|localllama|mcp|langchain|selfhosted|sideproject>');
     console.log('      Outputs the curated, battle-tested submission text\n');
-    console.log('  npx tsx scripts/reddit-manager.ts --publish <selfhosted|localllama|sideproject> [--dry-run]');
+    console.log('  npx tsx scripts/reddit-manager.ts --publish <ai_agents|localllama|mcp|langchain|selfhosted|sideproject> [--dry-run]');
     console.log('      Submits the post live to Reddit (or simulated if --dry-run or missing keys)\n');
     process.exit(0);
   }
@@ -50,7 +50,7 @@ async function main() {
   }
 
   if (command === '--preview') {
-    const strategy = (args[1] || 'selfhosted') as RedditStrategy;
+    const strategy = (args[1] || 'ai_agents') as RedditStrategy;
     const post = RedditService.getCuratedPost(strategy);
 
     console.log(`Target Subreddit: r/${post.targetSubreddit}`);
@@ -62,7 +62,7 @@ async function main() {
   }
 
   if (command === '--publish') {
-    const strategy = (args[1] || 'selfhosted') as RedditStrategy;
+    const strategy = (args[1] || 'ai_agents') as RedditStrategy;
     const isDryRun = args.includes('--dry-run');
 
     const curated = RedditService.getCuratedPost(strategy);

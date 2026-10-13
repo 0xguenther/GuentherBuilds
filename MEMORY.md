@@ -53,3 +53,8 @@
   - Deployment-Pipeline Proxmox CT 115 (`scripts/deploy-to-proxmox.ps1`) gehärtet (atomarer Transfer via SCP statt fehleranfälliger PowerShell-Pipes).
   - Live Go-to-Market Posts synchron geschaltet auf Hacker News (Show HN `item?id=50068634`), Reddit (r/SideProject `browser_1791890139220`) und X/Twitter (`2109966322817728721`).
   - Internes Reach-Tracking (`/api/reach`) für Kampagnen-URLs scharf geschaltet. Gesamte Test-Suite mit 154/154 Tests bestanden.
+- **[2026-10-13]** Marketing Refactor — Problem-First Conversion Copywriting & Community-Pivot:
+  - Copywriting von reiner Architektur-Präsentation ("Techflex") auf problem-zentrierten Produktverkauf umgeschrieben: Eröffnung mit dem Schmerzpunkt schreibender Agenten (Tool-Call-Timeouts, Blind-Retry-Duplikate bei Rechnungen/Stripe/Mails), Fakten aus dem 5-Modell-Benchmark (10–38 % Duplikate bei Haiku/Ornith), Angebot des *Agent Write-Path Checks* ($90 / $290 / $690 USD) mit Stripe-Refund-Garantie und direktem Link auf `/en/audit/`.
+  - Zielgruppen-Pivot auf echte Agent-Builder-Communities: Fokus von Hobby-Showcases (`r/selfhosted`, `r/SideProject`) auf Entwickler-Subreddits verlagert: `r/AI_Agents`, `r/LocalLLaMA`, `r/mcp`, `r/LangChain`.
+  - Bereinigung der Datenbank: 3 simulierte Dummy-Posts (`Unique Showcase Architecture ...` mit IDs `t3_sim_...`) vollständig aus der Produktions-DB entfernt.
+  - X Daily Pulse & Reach Hooks von reinen Vanity-Zahlen auf direkte Verkaufs-Pitches umgestellt.

@@ -6,7 +6,7 @@ const PublishPostSchema = z.object({
   subreddit: z.string().min(2).max(50),
   title: z.string().min(5).max(300).optional(),
   body: z.string().min(10).optional(),
-  strategy: z.enum(['selfhosted', 'localllama', 'sideproject']).optional(),
+  strategy: z.enum(['ai_agents', 'localllama', 'mcp', 'langchain', 'selfhosted', 'sideproject']).optional(),
   url: z.string().url().optional(),
 });
 
@@ -30,7 +30,7 @@ export async function redditRoutes(app: FastifyInstance) {
    * Returns high-converting, community-tailored post templates
    */
   app.get('/api/reddit/curated', async (_req, reply) => {
-    const strategies: RedditStrategy[] = ['selfhosted', 'localllama', 'sideproject'];
+    const strategies: RedditStrategy[] = ['ai_agents', 'localllama', 'mcp', 'langchain', 'selfhosted', 'sideproject'];
     const templates = strategies.map((s) => RedditService.getCuratedPost(s));
     return reply.code(200).send({ templates });
   });
