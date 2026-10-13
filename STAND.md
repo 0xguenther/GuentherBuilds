@@ -3,7 +3,7 @@
 Letzte Aktualisierung: 2026-10-13
 
 ## Status
-- Repo: `C:\ClaudeProjects\günther`, Branch `master`, HEAD `ea6805a` (fix(hn,reach): support Ask HN text submission and guard reddit metrics credentials)
+- Repo: `C:\ClaudeProjects\günther`, Branch `master`, synchron mit `origin/master`
 - Läuft produktiv auf Proxmox CT 115 (`10.0.1.115:3000`, Service `gunther-core.service`), verifiziert und via Cloudflare unter `https://0xguenther.org` erreichbar.
 - Öffentliche Referenz-Version lebt separat in `C:\ClaudeProjects\gunther-core` (Derivat, nicht parallel pflegen).
 - Aktuelle Tests: **154/154 bestanden (22 Testdateien)**. TypeScript-Build `npm run build` grün. Remote Healthcheck: OK.
@@ -98,9 +98,8 @@ Durchgeführt mit MiMoCode (Orchestrator) + Claude Code (Security) + interne Age
 ## Offene Punkte
 - **Audit v2 live (2026-10-07):** Die Bestellung nimmt Modell, System-Prompt und Werkzeuge des Kunden entgegen. Der Runner `/opt/canary-experiment/src/customer/run.mjs` (canary-experiment `877bff3`) erzeugt daraus Fehlerfälle (max. 16), vergleicht mit der Referenz deepseek-flash und schreibt einen Bericht mit Empfehlungen. Testberichte: Qwen 3.8 Flash 5/5, GPT-6 Luna 3/10, je ca. 0.01 USD. `AUDIT_ORDERS_ENABLED=1` ist auf CT115 gesetzt. Backups: `/opt/canary-experiment.bak-20261007-110353.tgz`, `prisma/dev.db.bak-pre-auditv2-*`, `dist.bak-pre-auditv2-*`, `.env.bak-pre-orders-enable`. Deploy-Skript nur mit `pwsh` ausführen, Windows PowerShell 5 bricht am UTF-8-Gedankenstrich ab. Testkauf `a46b7a1d…` (CHF 90, Carlo): Rückerstattung über Stripe beantragt, die Freigabe-Anfrage `apreq_61VX…` muss im Dashboard bestätigt werden; danach `refundId` in der DB nachtragen.
 - **Token-Rotation nötig:** Im `.git/config` stand bis 2026-10-03 ein GitHub-PAT im Klartext in der Remote-URL. Remote ist bereinigt (`https://github.com/0xguenther/GuentherBuilds.git`), der Token selbst ist aber **noch nicht widerrufen**. Zu tun: Token in GitHub widerrufen, neuen im KeePassXC-Tresor ablegen. Auth läuft jetzt über Git Credential Manager.
-- **Uncommitted Änderung:** `scripts/deploy-to-proxmox.ps1` (noch nicht geprüft/committed).
-- **Remote-Historie:** `origin` zeigt auf dasselbe Repo wie `gunther-core` (`0xguenther/GuentherBuilds`). Vor einem Push prüfen, ob Historien kollidieren.
-- **Strategie-Frage offen:** Mögliche Neuausrichtung von "digitale Produkte verkaufen" hin zu "Services betreiben" (AgentCheck, AgentWatch, …). Noch nicht entschieden, keine Umsetzung begonnen.
+- **Deploy-Skript:** `scripts/deploy-to-proxmox.ps1` gehärtet (atomarer Transfer via SCP + SSH mit Timeouts) und committed.
+- **Strategie-Schwenk erfolgt:** Agent Write-Path Check ($90 / $290 / $690 USD) ist live als primäre Dienstleistung in Produktion geschaltet. Social Distribution auf Hacker News, Reddit und X aktiv.
 
 ## Status: Phase 1 COMPLETE ✅ → Phase 2 GO-LIVE 🚀 (2026-10-06, Strategic Pivot)
 

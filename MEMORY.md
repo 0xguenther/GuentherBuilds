@@ -25,3 +25,31 @@
   - Automatisches Nachbearbeiten offener Zahlungen bei Server-Restarts via atomarem CAS.
   - Heartbeat-Monitoring, Uptime Kuma Push Support, Graceful Shutdown (SIGINT/SIGTERM).
   - Live auf Proxmox CT 115 im `gunther-core.service` aktiv.
+- **[2026-10-03]** Realdaten-Befund & Produktbereinigung:
+  - Audit der Produktions-DB auf CT 115: 141 Zahlungen und B2B-Verträge als unbezahlte Testartefakte identifiziert, realer Stripe-Umsatz war bis dahin 0.
+  - Konzeption des "Agent Write-Path Check" (`docs/konzept/KONZEPT.md`): Strategische Neuausrichtung von rein passiven PDF-Verkäufen auf einen automatisierten Verifikationsdienst für LLM-Tool-Calling mit Schreibrechten (Quick $90, Standard $290, Fix $690).
+- **[2026-10-05]** Multi-Agent Codebase Audit & Hardening:
+  - Tiefenaudit durchgeführt (MiMoCode + Claude Code).
+  - 16 P0/P1-Fixes implementiert: Strikte CORS-Einschränkung, Admin-Auth-Hook, Mention-Stuck-Bug in X-Pipeline behoben, Download-Race-Conditions geschlossen, Prisma-Disconnects und Unhandled Rejections abgefangen, unberechtigte Credentials entfernt.
+  - 4 langlebige Überwachungsschleifen (Cron-Loops) eingerichtet (Daily Günther Check, Weekly Code Quality, Daily Business Dev, Weekly Security).
+- **[2026-10-06]** Strategischer Pivot (Arsenal-Modell) & Blocker-Entscheidungen:
+  - Strategischer Schwenk: Statt des harten Shutdown-Kriteriums nach 30 Tagen wird das Arsenal-Modell etabliert (parallele Evaluierung von Developer-Ops-Tools wie AgentWatch/PromptDoctor).
+  - Kaufmännische und rechtliche Leitplanken verbindlich definiert: Automatische Erstattung via Stripe Refund API bei fehlgeschlagener Ausführung; Schweizer Einzelfirma (MWST-Befreiung bis CHF 100k); Tageslimit für Social-Posts (X/Reddit max. 2/Tag, HN max. 1/Tag & 3/Woche).
+  - Vitest-Framework eingeführt, Langfuse TraceService mit Tagging integriert, resilientes Retry/Backoff-Utility implementiert.
+- **[2026-10-07]** $GUNTER Token Launch auf Base Mainnet & Delivery-Hardening:
+  - Eigener ERC-20 Token `Günther` (`$GUNTER`) auf Base Mainnet deployt: `0xb0e8a9d8B5542Fc907736d19A018bbE131C8cd24` (1 Mrd Fixed Supply, OpenZeppelin 5.4, verifiziert auf Sourcify).
+  - Burn-Sicherheit & Idempotenz gehärtet (`src/mcp/web3Mcp.ts`): Feste Signierung vor RPC-Broadcast, automatischer Re-Broadcast mit identischem Nonce, robuster viem RPC-Fallback (`base-rpc.publicnode.com`, `base.drpc.org`, `1rpc.io/base`).
+  - `test/e2eGuard.ts` eingeführt: Erzwingt `NODE_ENV=test` und separate SQLite-Testinstanzen, sodass Testskripte niemals die Produktionsdatenbank berühren.
+  - Bereinigung der Produktionsdatenbank auf CT 115 durchgeführt und verifiziert.
+  - Erster vollständiger E2E-Audit-Kauf abgewickelt, Resend-E-Mail-Zustellung über verifizierte Domain `0xguenther.org` konfiguriert und Danke-Seite mit signiertem Token-Download (`/api/audit/download/:token`) scharf geschaltet.
+- **[2026-10-12]** Multi-Channel Browser-Poster Integration (VM100):
+  - Distribution auf Hacker News und Reddit automatisiert: Anbindung an VM100 (`10.0.1.233:9333`) via Headless Brave CDP (Port 9222).
+  - `HnService` implementiert: Autonome Show HN / Ask HN Submissions mit fnid/fnop CSRF-Token-Scraping unter dem Account `0xguenther`.
+  - `RedditBrowserPosterClient` implementiert: Automatisierte Submissions unter dem Account `GuentherBuilds` (z.B. r/SideProject).
+- **[2026-10-13]** Design-Upgrade v3, USD-Unifizierung & Go-to-Market Launch:
+  - Modernes Terminal-Design v3 aus `WebDesigner\kunden\gunther-v2` übernommen: Anthrazit-Farbpalette (`#1a1816`), Three.js 3D ASCII-Büste (`bueste.glb`), Typografie in JetBrains Mono und Source Serif 4.
+  - Self-Service Agent Check Checkout vollständig verdrahtet (Modellabruf via `/api/audit/models`, Verfügbarkeits-Guard, Zod-Schema-Validierung, direkte Stripe-Checkout-Weiterleitung).
+  - Gesamter Webauftritt, Checkout und Dokumentation einheitlich auf US-Dollar (USD / $) vereinheitlicht.
+  - Deployment-Pipeline Proxmox CT 115 (`scripts/deploy-to-proxmox.ps1`) gehärtet (atomarer Transfer via SCP statt fehleranfälliger PowerShell-Pipes).
+  - Live Go-to-Market Posts synchron geschaltet auf Hacker News (Show HN `item?id=50068634`), Reddit (r/SideProject `browser_1791890139220`) und X/Twitter (`2109966322817728721`).
+  - Internes Reach-Tracking (`/api/reach`) für Kampagnen-URLs scharf geschaltet. Gesamte Test-Suite mit 154/154 Tests bestanden.

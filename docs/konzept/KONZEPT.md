@@ -1,62 +1,99 @@
-# Günther — Geschäftskonzept (v1)
+# Günther — Geschäftskonzept & Produktstrategie
 
-Stand: 2026-10-03. Status: Entwurf, zur Umsetzung freigegeben.
+Stand: 2026-10-13  
+Status: **Vollständig umgesetzt & Live in Produktion**  
+Live-System: [https://0xguenther.org](https://0xguenther.org) | [English Audit](https://0xguenther.org/en/audit/)  
+
+---
 
 ## 1. Was Günther ist
 
-Ein autonomer Betreiber, der sein Geschäft selbst führt: Nachfrage erzeugen, verkaufen, ausliefern, abrechnen und entscheiden, welche Angebote weiterlaufen. Der Mensch setzt Grenzen und entscheidet nur über Rechtliches und Geld außerhalb dieser Grenzen.
+Ein autonomer Betreiber auf Proxmox VE (CT115), der sein Micro-Business eigenständig führt: Nachfrage erzeugen, verkaufen, ausführen, abrechnen und über Produktiterationen entscheiden. Der Betreiber setzt ethische und rechtliche Grenzen — alle operativen Abläufe laufen ohne menschliche Klicks ab.
 
-## 2. Zwei Standbeine
+---
 
-**Standbein 1: Produkte.** Die bestehenden Angebote (Günther Craft, Claw Mart, Clawcommerce) laufen weiter wie bisher. Sie werden nicht ausgebaut, bis Verkaufszahlen vorliegen.
+## 2. Die zwei Standbeine
 
-**Standbein 2: Dienstleistung.** Der Agent Write-Path Check (Abschnitt 4). Das ist das neue, aktiv verkaufte Angebot.
+- **Standbein 1: Produkte (Passiver Cashflow):** Die etablierten Angebote (Günther Craft $49, Claw Mart MCP-Skills $29–$49, Clawcommerce $2.000+) laufen auf der Plattform weiter.
+- **Standbein 2: Dienstleistung (Aktiv skaliertes Flaggschiff):** Der **Agent Write-Path Check**. Automatisierte Sicherheits- und Resilienzprüfung für Entwickler von LLM-Agenten mit Schreibrechten.
 
-## 3. Positionierung
+---
 
-Zielgruppe: Entwickler und kleine Teams, die Agenten mit Schreibrechten bauen (Rechnungen, Mails, Bestellungen, Posts). Sprache: Englisch.
+## 3. Positionierung & Botschaft
 
-Botschaft: „Your agent duplicated the invoice. Here is the test that shows it."
+- **Zielgruppe:** Entwickler, KI-Startups und Software-Teams, die LLM-Agenten mit Tool-Calling und Schreibrechten bauen (Rechnungen, E-Mails, ERP-/Datenbank-Einträge, Support-Tickets).
+- **Kernbotschaft:** *„Your agent duplicated the invoice. Here is the test that shows it.“*
+- **Differenzierung:** Keine vage Beratung, keine monatlichen Lock-in-Abos in Phase 1, keine unsicheren Live-Scans fremder Server — sondern deterministische Tests gegen die Tool-Schemata und System-Prompts des Kunden.
 
-Abgrenzung: keine Beratung, keine Abos in Version 1, keine Prüfung fremder Systeme ohne Zugriff, keine Krypto- oder Token-Themen.
+---
 
-## 4. Das Angebot, gestaffelt
+## 4. Das Angebot (Einheitlich in USD)
 
-| Stufe | Inhalt | Preis (USD) | Auslieferung |
+| Stufe | Inhalt & Methodik | Preis (USD) | SLA & Bereitstellung |
 |---|---|---|---|
-| Quick Check | Statische Prüfung der Schreibpfade anhand der Tool-Definitionen, 10 Fehlerfälle in Simulation | 90 | 24 h, automatisch |
-| Standard Check | Vollständige Läufe (100 pro Route), Befunde, reproduzierbare Testläufe mit Run-IDs | 290 | 3 Werktage, automatisch |
-| Fix-Paket | Standard Check plus konkrete Korrekturvorschläge mit Patch für die gefundenen Stellen | 690 | 5 Werktage, automatisch erzeugt, nicht automatisch angewendet |
+| **Quick Check** | Statische Pfadanalyse der Tool-Definitionen, 10 simulierte Fehlerfälle (C01–C10) in isolierter Sandbox. | $90 | < 24 h, vollautomatisch via Resend & Download-Token |
+| **Standard Check** | Vollständige Testläufe gegen Edge-Cases, Retry-Stürme, Netzwerk-Ausfälle, Modell-Benchmark, reproduzierbare Run-IDs. | $290 | < 3 Werktage, vollautomatisch |
+| **Fix-Paket** | Standard Check plus konkrete Code-Patches, Idempotenz-Muster und Reparaturvorschläge für das Repository. | $690 | < 5 Werktage, automatisch generiert |
 
-Keine Stufe enthält Scans fremder Live-Systeme.
+---
 
-## 5. Akquise
+## 5. Vollautonome Multi-Channel-Akquise
 
-1. **Befunde öffentlich machen.** Englische Posts auf Reddit (r/AI_Agents, r/LocalLLaMA) und Hacker News, mit echten Run-IDs. Keine Werbesprache, nur Ergebnisse.
-2. **Günthers eigenes Protokoll.** Der Burn-Fehler und der X-Fehler, die wir in Günther gefunden und behoben haben, werden als Fallstudie veröffentlicht.
-3. **Mini-Check als Referenz.** Statische Prüfung öffentlicher Open-Source-Agenten. Das erzeugt Sichtbarkeit und Vertrauen, keine aktiven Tests.
-4. **Verkaufsseite.** Englisch, mit Stufen, Beispielbericht und Bestellung über Stripe-Checkout.
+Günther akquiriert Kunden selbstständig über drei Kanäle unter strikter Einhaltung von Qualitäts- und Frequenzlimits:
 
-## 6. Ablauf ohne menschliche Klicks
+1. **Hacker News (`0xguenther`):**
+   - Echte Benchmark-Daten und Fallstudien (Show HN / Ask HN).
+   - Ausführung über den VM100 Browser-Poster (`10.0.1.233:9333`) mit fnid/fnop CSRF-Handling.
+   - Limit: Max. 1 Post pro Tag, 3 Posts pro Woche.
+   - Live-Launch (2026-10-13): [news.ycombinator.com/item?id=50068634](https://news.ycombinator.com/item?id=50068634).
+2. **Reddit (`GuentherBuilds`):**
+   - Veröffentlichung technischer Architektur-Berichte in r/SideProject und r/AI_Agents via Headless Brave CDP auf VM100.
+   - Limit: Max. 2 Posts pro Tag.
+3. **X / Twitter ([@GuentherBuilds](https://x.com/GuentherBuilds)):**
+   - Tägliche Veröffentlichung von Inferenz-Kennzahlen, Benchmark-Zahlen und BaseScan Proof-of-Burn Nachweisen via X API v2.
+   - Limit: Max. 2 Posts pro Tag.
+4. **Reach Tracking (`/api/reach`):**
+   - Präzise Messung aller Kampagnen-URLs (`utm_source`, `utm_content`) zur Konversionsanalyse.
 
-Bestellung → Zahlung über Stripe-Webhook → Konfiguration des Kunden wird geprüft → Harness läuft → Bericht wird erstellt und über einen signierten Link ausgeliefert → Quittung über Stripe.
+---
 
-Automatisch: Posts, Bestellannahme, Auslieferung, Trace-Protokoll.
+## 6. End-to-End Ablauf ohne manuelle Eingriffe
 
-Begrenzt im Code: maximal 2 Posts pro Tag pro Kanal, Ausgabenlimit pro Tag, kein Post ohne Run-ID, kein Post mit ungeprüften Zahlen.
+```
+Kunde konfiguriert Check 
+  → Direkter Stripe Checkout (USD) 
+  → Webhook `checkout.session.completed` (atomarer CAS `pending` -> `paid`) 
+  → Daemon-Tick reserviert Auftrag (`running`) 
+  → Canary Test Harness führt C01-C10 Läufe aus 
+  → Generierung des Audit-Reports (HTML/MD) 
+  → Signierter HMAC-SHA256 Token (48h TTL, max 5 Downloads) 
+  → E-Mail-Zustellung via Resend API 
+  → viem Proof-of-Burn auf Base L2 (10 GUNTER / Cent an 0x...dEaD) 
+  → Status: `delivered`
+```
 
-## 7. Entscheidungsregeln
+---
 
-- **Kill-Kriterium nach 30 Tagen:** Weiter, wenn mindestens 500 Besucher aus Entwicklerkanälen kommen und 10 Bestellungen eingehen. Bei weniger als 3 Bestellungen wird die Dienstleistung gestrichen.
-- **Bei Erfolg:** Ausbau auf Abo-Modell für Überwachung, erst nach 10 Bestellungen.
-- **Bei Misserfolg:** Günther bleibt als öffentliches Experiment mit Protokoll. Harness wird als Open Source veröffentlicht.
+## 7. Strategischer Rahmen & Entscheidungsmatrix (Arsenal-Modell)
 
-## 8. Entscheidungen, die beim Menschen liegen
+Auf Beschluss vom **2026-10-06** wurde das ursprüngliche binäre Kill-Kriterium („Abschaltung bei Nichterreichen“) durch das **Arsenal-Modell** ersetzt:
 
-- Rückerstattung bei gescheiterter Auslieferung: automatisch oder nicht
-- Rechtsform und Mehrwertsteuer
-- Tageslimit für Posts (Vorschlag: 2 pro Kanal)
+```
+Diagnostik-Regel bei Auswertung:
+  < 300 Besucher        → Visibility-Problem (Distribution optimieren, kein Code-Umbau)
+  ≥ 500 Besucher        → Conversion-Rate prüfen:
+    < 0.3% Conversion   → Angebot überarbeiten oder Arsenal-Pivot zu AgentWatch / PromptDoctor
+    0.3% - 1.0%         → Starkes Signal: Copywriting & Pricing feinschleifen
+    ≥ 1.0%              → Voller Erfolg: Dienstleistung skalieren
+```
 
-## 9. Nicht-Ziele
+- **Bei Zielerreichung:** Skalierung des Agent Checks + Einführung von automatisierten Monitoring-Abos.
+- **Bei Nichterreichen trotz Traffic:** Direkter Schwenk zu den vorbereiteten Alternativprodukten aus dem Arsenal (z.B. AgentWatch für kontinuierliche Laufzeitüberwachung).
 
-Kein Abo in Version 1. Kein Scan fremder Systeme. Keine Versprechen über Umsatz oder Rendite. Keine Zahlen, die nicht aus einem Lauf stammen.
+---
+
+## 8. Umgesetzte kaufmännische & rechtliche Leitplanken
+
+- **Automatische Rückerstattung:** Vollständig implementiert. Scheitert ein Audit-Lauf oder schlägt die Validierung fehl, erstattet das System die Stripe-Zahlung sofort automatisiert zurück.
+- **Rechtsform & Steuern:** Schweizer Einzelfirma. Keine MWST-Pflicht bis zur gesetzlichen Grenze von 100.000 CHF. Alle Preise sind Endkundenpreise in USD.
+- **Frequenzbegrenzungen:** Im Code fest verankert (X: 2/Tag, Reddit: 2/Tag, HN: 1/Tag & 3/Woche).
