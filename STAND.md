@@ -3,10 +3,10 @@
 Letzte Aktualisierung: 2026-10-13
 
 ## Status
-- Repo: `C:\ClaudeProjects\günther`, Branch `master`, HEAD `8e405b7` (feat(ui): upgrade frontend to v3 design …)
-- Läuft produktiv auf Proxmox CT 115 (`10.0.1.115:3000`, Service `gunther-core.service`), laut `MEMORY.md`.
+- Repo: `C:\ClaudeProjects\günther`, Branch `master`, HEAD `ea6805a` (fix(hn,reach): support Ask HN text submission and guard reddit metrics credentials)
+- Läuft produktiv auf Proxmox CT 115 (`10.0.1.115:3000`, Service `gunther-core.service`), verifiziert und via Cloudflare unter `https://0xguenther.org` erreichbar.
 - Öffentliche Referenz-Version lebt separat in `C:\ClaudeProjects\gunther-core` (Derivat, nicht parallel pflegen).
-- Aktuelle Tests: **154/154 bestanden (22 Testdateien)**. TypeScript-Build `npm run build` grün.
+- Aktuelle Tests: **154/154 bestanden (22 Testdateien)**. TypeScript-Build `npm run build` grün. Remote Healthcheck: OK.
 
 ## Frontend v3 Design-Upgrade & Self-Service Checkout (2026-10-13)
 - **Design-System v3** aus `WebDesigner\kunden\gunther-v2` vollständig integriert: warmes Anthrazit (`#1a1816`), Cursor-Licht, *Source Serif 4* + *JetBrains Mono*, Three.js ASCII-Büste (`bueste.glb`), responsive Kapitelarchitektur.
