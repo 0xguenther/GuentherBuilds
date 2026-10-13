@@ -3,13 +3,24 @@
 Letzte Aktualisierung: 2026-10-13
 
 ## Status
-- Repo: `C:\ClaudeProjects\günther`, Branch `master`, HEAD `29f2119` (feat(scout): multi-domain classification …)
+- Repo: `C:\ClaudeProjects\günther`, Branch `master`, HEAD `8e405b7` (feat(ui): upgrade frontend to v3 design …)
 - Läuft produktiv auf Proxmox CT 115 (`10.0.1.115:3000`, Service `gunther-core.service`), laut `MEMORY.md`.
 - Öffentliche Referenz-Version lebt separat in `C:\ClaudeProjects\gunther-core` (Derivat, nicht parallel pflegen).
-- Letzte dokumentierte Tests: 29/29 bestanden (Security-/Heartbeat-Audit, siehe `MEMORY.md`). Aktuelle Testläufe seit HEAD nicht verifiziert.
+- Aktuelle Tests: **154/154 bestanden (22 Testdateien)**. TypeScript-Build `npm run build` grün.
 
-## Reddit Self-Promotion via Browser (2026-10-13)
-- **VM100** (`10.0.1.233`, hades-VM100 computer-use-desktop) = Desktop-VM für Brave + Reddit.
+## Frontend v3 Design-Upgrade & Self-Service Checkout (2026-10-13)
+- **Design-System v3** aus `WebDesigner\kunden\gunther-v2` vollständig integriert: warmes Anthrazit (`#1a1816`), Cursor-Licht, *Source Serif 4* + *JetBrains Mono*, Three.js ASCII-Büste (`bueste.glb`), responsive Kapitelarchitektur.
+- **Agent Check Self-Service:** Das Bestellformular auf `/agent-check.html`, `/audit/`, `/en/agent-check.html` und `/en/audit/` ist vollständig verdrahtet:
+  - Dynamischer Abruf der Modelle über `/api/audit/models`
+  - Verfügbarkeits-Guard über `/api/audit/availability`
+  - Interaktive Stufenauswahl (Quick CHF 90, Standard CHF 290, Fix CHF 690)
+  - System-Prompt-Eingabe (max 8.000 Zeichen) & Werkzeuge-JSON-Eingabe mit Validierung
+  - Direkte Weiterleitung zu Stripe Checkout (`POST /api/audit/orders`)
+- **Danke-Seite ([`/audit/thanks`](file:///C:/ClaudeProjects/g%C3%BCnther/public/audit/thanks.html)):** Auf v3 umgestylt, pollt automatisch Auftragsstatus und schaltet den Download-Button nach Berichtserstellung frei.
+- **Routing & Aliase in Fastify:** `/audit`, `/en/audit`, `/agent-check`, `/playbook`, `/module`, `/verzeichnis`, `/api`, `/blog` (inkl. 4 Fachartikel DE/EN) nahtlos registriert. Eigener Test `test/routes-v3.test.ts`.
+
+## Reddit & Hacker News Distribution (2026-10-13)
+- **VM100** (`10.0.1.233`, hades-VM100 computer-use-desktop) = Desktop-VM für Brave + Reddit + HN.
 - Brave läuft mit `--remote-debugging-port=9222` auf Display :1 (XFCE/VNC).
 - **Browser-Poster** (`/opt/gunther-browser-poster/server.mjs`, Port 9333) nutzt Browser-Cookies für Reddit + HN API-Calls.
 - Reddit-Session: **GuentherBuilds** (Cookies von WS-Brave injiziert).
@@ -18,7 +29,8 @@ Letzte Aktualisierung: 2026-10-13
 - **MasterWS-01**: Kein Browser-Poster, Brave normal (ohne CDP).
 - Erster Test-Post erfolgreich: r/0xguenther, API `success: true`.
 - Fallback-Kette: Browser-Poster → Reddit OAuth API → Test-Simulation.
-- **HN-Integration:** Browser-Poster `/api/hn/submit` + `/api/hn/account`. `HnMcpClient.submitPost()` via fnid/fnop Token-Scrape + POST `/r`. `HnService` autonomer Cycle (max 1/Tag, 3/Woche, rotierende Show HN / Ask HN). Account: `0xguenther`.
+- **HN-Integration:** Browser-Poster `/api/hn/submit` + `/api/hn/account`. `HnMcpClient.submitPost()` via fnid/fnop Token-Scrape + POST `/r`. `HnService` autonomer Cycle (max 1/Tag, 3/Woche, rotierende Show HN / Ask HN). Account: `0xguenther`. Live-Test-Post: `news.ycombinator.com/item?id=50068459`.
+- **Reach-Analytics:** `/api/reach` aggregiert Klicks, Visits, UTM-Quellen (hn, reddit, x) und Conversions (Orders). Test `test/reach.test.ts` & `test/social.test.ts`.
 
 ## Multi-Agent Audit (2026-10-05)
 Durchgeführt mit MiMoCode (Orchestrator) + Claude Code (Security) + interne Agents.
