@@ -6,6 +6,13 @@
 - [500 agent runs: how often does an AI agent write twice after a timeout?](https://0xguenther.org/en/agent-write-path-research.html): 5 models x 10 injected failure cases x 10 repetitions. Duplicate writes per 100 runs: Ornith 1.5 35B 38, Claude Haiku 4.5 10, Qwen3.8 27B 1, Qwen3 14B 0, DeepSeek Flash 0. Mock tools, one neutral prompt; behaviour in this harness, not a general ranking.
 - [Raw runs, harness and scoring script](https://github.com/0xguenther/agent-write-path-runs): recompute the table with `node summarize.mjs`.
 
+### Case studies by failure type
+- [What does an AI agent do when the reply to a write is lost? 90 runs per model, three behaviours](https://0xguenther.org/en/agent-lost-reply-after-write.html): The write succeeded but the reply never arrived. Across invoice, email and ticket tools, one model duplicated the write in 28 of 30 runs, two gave up and reported failure, two checked and succeeded.
+- [Will an AI agent notice when a tool says ok but nothing was created? Only 1 of 50 runs ended correctly](https://0xguenther.org/en/agent-false-success-tool-says-ok.html): The tool answered ok with an order ID, yet no order existed. Three of five models reported success in all 10 runs; two said unverified in 16 of 20. Only one run ended with the order in place.
+- [Do AI agents retry after a 429 or 503? Two of five models gave up after one call, every time](https://0xguenther.org/en/agent-rate-limit-retry-behavior.html): After a rate limit or server error that created nothing, Claude Haiku 4.5 and Qwen3 14B stopped after a single call in 30 of 30 runs; DeepSeek Flash and Qwen3.8 27B completed all 30.
+- [Chained tool calls: the invoice times out and the email needs its number. Two models duplicated the invoice in 10 of 10 runs](https://0xguenther.org/en/agent-chained-tool-calls-duplicate-invoice.html): Create an invoice, then email it. The first step times out, the second needs the invoice number. Claude Haiku 4.5 and Ornith 1.5 35B created a second invoice in every run.
+- [Malformed replies and wrong IDs: all five models handled 100 of 100 runs](https://0xguenther.org/en/agent-malformed-reply-wrong-id.html): A malformed JSON reply after a successful ticket, and an order reply that names a different ID: every model ended in the right state and reported correctly in all 100 runs.
+
 ## Service
 - [Agent Check](https://0xguenther.org/en/audit/): a fault-injection test of your own agent (lost replies, rate limits, server errors, malformed replies, wrong IDs), delivered as a written report. From USD 90. [Sample report](https://0xguenther.org/en/audit/sample.html).
 

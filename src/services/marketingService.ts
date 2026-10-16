@@ -7,29 +7,55 @@ import { guntherCharacter } from '../core/character.js';
 import { prisma } from '../db/client.js';
 import { config } from '../config/index.js';
 
-/** Public raw data of the October 2026 write-path experiment: the only link the daily post carries. */
+/** Public raw data of the October 2026 write-path experiment. */
 export const PULSE_DATA_URL = 'https://github.com/0xguenther/agent-write-path-runs';
 
-const PULSE_ANGLES = [
-  'a timeout after a successful write is the dangerous case, not the failed call',
-  'read the system of record before every retry',
-  'enforce the retry budget in the harness, not in the prompt',
-  'give every write an idempotency key the model cannot regenerate',
-  'a success claim needs evidence from the system of record',
+const SITE_EN = 'https://0xguenther.org/en/';
+const tracked = (slug: string) => `${SITE_EN}${slug}?utm_source=x&utm_medium=social&utm_campaign=research&utm_content=${slug.replace('.html', '')}`;
+
+/**
+ * One finding per day, each with its case-study page. Every number comes from the published
+ * runs (agent-write-path-runs); the page builder asserts the same figures against runs.jsonl.
+ */
+export const PULSE_TOPICS = [
+  {
+    url: tracked('agent-lost-reply-after-write.html'),
+    fact: 'The reply to a write is lost to a timeout, 30 runs per model: Ornith 1.5 35B created a duplicate in 28. Claude Haiku 4.5 and Qwen3 14B created none but reported failure in all 30 although the record existed. DeepSeek Flash and Qwen3.8 27B read the state back and were right 30 of 30.',
+    fallback: 'A write times out and the reply is lost. In 30 runs per model, one model duplicated it 28 times, two reported failure for a record that existed, two checked first and got 30 of 30. Check the state before you retry.',
+  },
+  {
+    url: tracked('agent-false-success-tool-says-ok.html'),
+    fact: 'The tool answered ok with an order ID but no order existed. Only 1 of 50 runs ended with the order in place. Three models reported success in all 10 runs; two said unverified in 16 of 20.',
+    fallback: 'The tool said ok with an order ID. No order existed. Only 1 of 50 runs ended with the order in place; 32 reported a success the system did not support. Read it back before you report done.',
+  },
+  {
+    url: tracked('agent-rate-limit-retry-behavior.html'),
+    fact: 'After a single 429 or 503 that created nothing, Claude Haiku 4.5 and Qwen3 14B stopped after one call in 30 of 30 runs. DeepSeek Flash and Qwen3.8 27B completed 30 of 30. Retrying is safe there because nothing was written.',
+    fallback: 'After one 429 or 503 that created nothing, two of five models stopped after a single call in 30 of 30 runs. Retrying is safe there. Put the retry policy in the harness, not in the prompt.',
+  },
+  {
+    url: tracked('agent-chained-tool-calls-duplicate-invoice.html'),
+    fact: 'Create an invoice, then email it: the first step times out and the email needs the invoice number. Claude Haiku 4.5 and Ornith 1.5 35B created a second invoice in 10 of 10 runs.',
+    fallback: 'Invoice times out, the email needs its number. Two of five models created a second invoice in 10 of 10 runs. Look the invoice up by its idempotency key before you write again.',
+  },
+  {
+    url: tracked('agent-malformed-reply-wrong-id.html'),
+    fact: 'A malformed JSON reply after a successful ticket and a reply that names a different order ID: all five models handled 100 of 100 runs. The failures sit elsewhere: lost replies, a false ok and chained steps.',
+    fallback: 'A malformed JSON reply and a wrong ID in the reply: all five models handled 100 of 100 runs. The failures sit elsewhere: lost replies, a false ok and chained steps.',
+  },
 ];
 
-// Facts only come from the published experiment (duplicate writes per 100 runs: 38 / 10 / 1 / 0 / 0).
-export const PULSE_FALLBACKS = [
-  `A tool call times out after the write already went through. A blind retry then creates the second invoice. In our test one model duplicated writes in 38 of 100 runs, another in 0. Read the state before you retry.\n${PULSE_DATA_URL}`,
-  `A timeout is not a failure: the write may have landed. Give every write an idempotency key the model cannot regenerate and check the system of record before a retry. Raw data, 5 models x 100 runs:\n${PULSE_DATA_URL}`,
-  `Retry budgets belong in the harness, not in the prompt. On identical fault-injection cases, models ranged from 0 to 38 duplicate writes in 100 runs. Raw data:\n${PULSE_DATA_URL}`,
-];
+export const PULSE_FALLBACKS = PULSE_TOPICS.map(t => `${t.fallback}\n${t.url}`);
+const PULSE_LINKS = [PULSE_DATA_URL, ...PULSE_TOPICS.map(t => t.url)];
 
-/** A generated post must be pure insight: ends with the data link, fits X, no price or sales language. */
+/** A generated post must be pure insight: ends with an allowed research link, fits X, no price or sales language. */
 export function isValidPulse(text: string): boolean {
-  return text.length >= 60 && text.length <= 275 && text.endsWith(PULSE_DATA_URL) &&
-    text.slice(0, text.length - PULSE_DATA_URL.length).length <= 235 &&
-    !/\$\s?\d|\bprice|\bpricing|audit|0xguenther\.org|\bbuy\b|!/i.test(text);
+  const url = PULSE_LINKS.find(u => text.endsWith(u));
+  if (!url) return false;
+  const body = text.slice(0, text.length - url.length);
+  // X counts every link as 23 characters.
+  return body.length >= 40 && body.length <= 235 && body.length + 23 <= 280 &&
+    !/\$\s?\d|\bprice|\bpricing|audit|0xguenther\.org|\bbuy\b|!/i.test(body);
 }
 
 export class MarketingService {
@@ -151,7 +177,7 @@ export class MarketingService {
         : `Margin: ${netProfitMarginPercent}%`;
 
     const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
-    const angle = PULSE_ANGLES[dayOfYear % PULSE_ANGLES.length];
+    const topic = PULSE_TOPICS[dayOfYear % PULSE_TOPICS.length];
 
     // Participation first: a data-backed lesson for agent builders, no price and no sales pitch.
     // The raw data link is the only link; the audit stays one click away on the profile.
@@ -159,13 +185,14 @@ export class MarketingService {
 
     const completion = await LlmClient.generateCompletion({
       systemPrompt: `You are Günther (@GuentherBuilds), an autonomous AI agent, posting one technical observation on X for developers who build LLM agents with tool calling.
-Facts you may use (never invent numbers): October 2026 experiment, same harness and prompt, 10 failure cases, 100 runs per model, mock tools with fault injection. Runs with a duplicate write after a timeout followed by a retry: Ornith 1.5 35B 38/100, Claude Haiku 4.5 10/100, Qwen3.8 27B 1/100, Qwen3 14B 0/100, DeepSeek Flash 0/100. This is harness behaviour, not a ranking.
+Background: October 2026 experiment, same harness and prompt, 10 failure cases, 100 runs per model, mock tools with fault injection. It is harness behaviour, not a ranking.
+Today's finding (use only these numbers, never invent others): ${topic.fact}
 Strict rules:
 - English only, plain text, at most 230 characters before the link.
 - One concrete insight or practical tip an engineer can use today.
 - No price, no sales pitch, no call to buy, no exclamation marks, no hashtags, no emojis.
-- End with the raw data link: ${PULSE_DATA_URL}`,
-      userPrompt: `Write today's post (${today}). Angle: ${angle}.`,
+- End with exactly this link on its own line: ${topic.url}`,
+      userPrompt: `Write today's post (${today}) about this finding.`,
       maxTokens: 120,
       taskId: `daily-pulse-${today}`,
       taskName: 'GENERATE_DAILY_MARKET_PULSE',

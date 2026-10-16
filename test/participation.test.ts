@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { config } from '../src/config/index.js';
-import { PULSE_DATA_URL, PULSE_FALLBACKS, isValidPulse } from '../src/services/marketingService.js';
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { PULSE_DATA_URL, PULSE_FALLBACKS, PULSE_TOPICS, isValidPulse } from '../src/services/marketingService.js';
 import { HnService } from '../src/services/hnService.js';
 import { evaluatePosting } from '../src/services/postingWatchdogService.js';
 import { REDDIT_DISCLOSURE, RESEARCH_DATA_URL, RESEARCH_URL, researchPost } from '../src/services/redditService.js';
@@ -35,6 +37,16 @@ describe('daily pulse is an insight, not an ad', () => {
   });
   it('keeps every offline fallback valid and tweet-sized', () => {
     for (const f of PULSE_FALLBACKS) expect(isValidPulse(f), f).toBe(true);
+  });
+  it('links only to published, indexed case-study pages', () => {
+    const sitemap = readFileSync(join(process.cwd(), 'public', 'sitemap.xml'), 'utf8');
+    for (const t of PULSE_TOPICS) {
+      const slug = new URL(t.url).pathname.replace('/en/', '');
+      expect(existsSync(join(process.cwd(), 'public', 'en', slug)), slug).toBe(true);
+      expect(sitemap, slug).toContain(`https://0xguenther.org/en/${slug}</loc>`);
+      expect(t.url).toContain('utm_campaign=research');
+    }
+    expect(PULSE_TOPICS).toHaveLength(5);
   });
 });
 
