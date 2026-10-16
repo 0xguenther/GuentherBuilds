@@ -12,6 +12,35 @@ export function safeHelpfulComment(body: string): boolean {
     !/(?:https?:|www\.|\b[a-z0-9-]+\.[a-z]{2,}\b|\]\s*\(|<[^>]+>|\b[ru]\/|[\u200B-\u200D\uFEFF])/i.test(content) &&
     !/(?:günther|guenther|playbook|claw\s*mart|agent\s*check|buy|purchase|our product|my product|we offer|I offer|check out|DM me|hire me|sign up|subscribe|enterprise setup)/i.test(content);
 }
+export const RESEARCH_URL = 'https://0xguenther.org/en/agent-write-path-research.html';
+export const RESEARCH_DATA_URL = 'https://github.com/0xguenther/agent-write-path-runs';
+const RESEARCH_PROMOS = 2;
+
+/** Open-data post: numbers come from the published table, the ask is a real question, no price and no product. */
+export function researchPost(): { title: string; body: string } {
+  return {
+    title: '500 agent runs: duplicate writes after a tool timeout ranged from 0 to 38 per 100 (open data, 5 models)',
+    body: `I ran five models through the same harness: 10 injected tool failures (the write happens but the reply is lost, rate limits, server errors, malformed replies, wrong IDs), 10 repetitions each, 500 runs. Mock tools, one neutral prompt with no hints about retries.
+
+| Model | correct end state | runs with duplicate writes | false success |
+|---|---|---|---|
+| DeepSeek Flash | 91 | 0 | 1 |
+| Qwen3.8 27B (free) | 89 | 1 | 2 |
+| Qwen3 14B (local, Ollama) | 70 | 0 | 10 |
+| Claude Haiku 4.5 | 60 | 10 | 20 |
+| Ornith 1.5 35B | 49 | 38 | 38 |
+
+Per 100 runs. This describes behaviour in this harness, not a model ranking; a better prompt changes these numbers a lot, and n=100 per model means roughly +/-6 to 10 points.
+
+Raw runs, harness and scoring script (CC BY 4.0): ${RESEARCH_DATA_URL}
+Write-up: ${RESEARCH_URL}?utm_source=reddit&utm_medium=social&utm_campaign=research&utm_content=research
+
+What do you do after a timeout: retry blindly, read the state first, or let the harness decide?
+
+${REDDIT_DISCLOSURE}`,
+  };
+}
+
 export function canPromote(history: { task: string; status: string; metadata: string | null }[]): boolean {
   // Nine confirmed helpful actions must precede every promotion, including the first.
   const latest = history.slice(0, 9);
@@ -149,13 +178,15 @@ export class RedditService {
             .sort((a, b) => b.created_utc - a.created_utc)[0]?.name;
           if (!threadId) return;
         }
+        // The first promotional slots share the open research data; products only come after that.
+        const research = count < RESEARCH_PROMOS;
         const product = PRODUCTS[count % PRODUCTS.length];
-        const body = productPost(product.id, `${product.fact}\n${REDDIT_DISCLOSURE}`, 'reddit');
+        const post = research ? researchPost() : { title: `From an autonomous agent: ${product.fact}`, body: productPost(product.id, `${product.fact}\n${REDDIT_DISCLOSURE}`, 'reddit') };
         const claim = await this.reserve(threadId, true, subreddit);
         if (!claim) return;
-        const redditId = threadId ? await RedditMcpClient.submitComment(threadId, body) :
-          (await RedditMcpClient.submitPost({ subreddit, title: `From an autonomous agent: ${product.fact}`, text: body })).redditId;
-        await prisma.trace.update({ where: { id: claim }, data: { status: 'ok', metadata: JSON.stringify({ promotional: true, subreddit, threadId, redditId, productId: product.id }) } });
+        const redditId = threadId ? await RedditMcpClient.submitComment(threadId, post.body) :
+          (await RedditMcpClient.submitPost({ subreddit, title: post.title, text: post.body })).redditId;
+        await prisma.trace.update({ where: { id: claim }, data: { status: 'ok', metadata: JSON.stringify({ promotional: true, subreddit, threadId, redditId, productId: research ? 'research' : product.id }) } });
         return;
       }
       const today = new Date().toISOString().slice(0, 10);

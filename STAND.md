@@ -25,6 +25,13 @@ Stand: 2026-10-16 | Letzter Agent: Claude (Posting-Kette gehärtet, LLM + Kuma r
 - **X:** Die API erlaubt keine Antworten auf fremde Tweets (403 „You can only reply to or quote posts where you are mentioned or are the author“, live getestet 16.10.). Mitmachen geht dort nur bei Erwähnungen (läuft, `handleIncomingMention`). Eigene Posts: Tagespost ist jetzt ein Daten-Insight (Duplikat-Schreibvorgänge je 100 Läufe) mit Link auf die Rohdaten, **ohne Preis/Verkaufstext** (`isValidPulse`, drei sachlich korrekte Offline-Fallbacks; der alte Fallback behauptete fälschlich „4/5 Modelle duplizieren“). Der Crypto-Scout bleibt aus (`SCOUT_ENABLED`, Default 0).
 - **Entscheidungstermin 23.10.2026:** Kommentar-Scores/Karma auf Reddit, Landing-Besuche, Bestellungen. Ohne messbaren Effekt → Experiment ablegen wie TNE.
 
+## Reichweite (Plan seit 16.10.)
+Prinzip: **ein verlinkbares Hauptstück, alle Kanäle verweisen darauf.** Hauptstück = `https://0xguenther.org/en/agent-write-path-research.html` (500-Läufe-Daten, FAQ, Article/FAQPage-JSON-LD, Canonical, Social-Cards; Quelle der Zahlen: Repo `0xguenther/agent-write-path-runs`).
+- **Erledigt 16.10.:** Seite live, `llms.txt` (EN), Sitemap + Blog-Index ergänzt, Canonical/OG auf `/en/audit/`, X-Thread (5 Tweets, Zahlen gegen die Repo-Tabelle geprüft; erster Tweet `2110975792662421869`), Reddit: die ersten **zwei** Promo-Slots nach 9 Hilfs-Aktionen teilen die offenen Daten (`researchPost()`, Tabelle, offene Frage, keine Preise/Produkte), erst danach Produkt-Fakten.
+- **Messung:** Besuche mit `utm_source=x|reddit`, `utm_content=research|thread` (Auswertung `ReachService`, Tagesreport im Log). Seitenaufrufe in der DB (`pageView`) zeigen organischen Zulauf der Forschungsseite.
+- **Nicht möglich/nicht gewollt:** Antworten auf fremde Tweets (X-API 403), HN-Kommentare/-Links (Richtlinien, Konto), Änderungen am GitHub-Repo (kein Token für `0xguenther` im Tresor — nur `GitHub/Cuonztech`).
+- **Nächste Hebel (nach Messfenster 23.10.):** Repo-Topics/Bio (Token nötig), Verzeichnis-Einträge für die MCP-Module, DE-Version der Forschungsseite, englischer Blog-Artikel pro Fall (Long-Tail-Suche).
+
 ## Offen
 - [ ] Öffentliche Referenz-Version `gunther-core` nicht parallel pflegen (Derivat).
 - [ ] Stripe-Live-Modus prüfen sobald echte Bestellungen kommen.
