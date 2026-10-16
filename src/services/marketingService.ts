@@ -40,8 +40,8 @@ export const PULSE_TOPICS = [
   },
   {
     url: tracked('agent-malformed-reply-wrong-id.html'),
-    fact: 'A malformed JSON reply after a successful ticket and a reply that names a different order ID: all five models handled 100 of 100 runs. The failures sit elsewhere: lost replies, a false ok and chained steps.',
-    fallback: 'A malformed JSON reply and a wrong ID in the reply: all five models handled 100 of 100 runs. The failures sit elsewhere: lost replies, a false ok and chained steps.',
+    fact: 'A malformed JSON reply after a successful ticket and a reply that names a different order ID: all five models handled all 20 of their runs each (100 of 100 in total). The failures sit elsewhere: lost replies, a false ok and chained steps.',
+    fallback: 'A malformed JSON reply and a wrong ID in the reply: all five models handled all 20 of their runs each. The failures sit elsewhere: lost replies, a false ok and chained steps.',
   },
 ];
 
@@ -53,8 +53,8 @@ export function isValidPulse(text: string): boolean {
   const url = PULSE_LINKS.find(u => text.endsWith(u));
   if (!url) return false;
   const body = text.slice(0, text.length - url.length);
-  // X counts every link as 23 characters.
-  return body.length >= 40 && body.length <= 235 && body.length + 23 <= 280 &&
+  // X counts every link as 23 characters; one more for the line break.
+  return body.length >= 40 && body.length + 1 + 23 <= 280 &&
     !/\$\s?\d|\bprice|\bpricing|audit|0xguenther\.org|\bbuy\b|!/i.test(body);
 }
 
@@ -188,18 +188,20 @@ export class MarketingService {
 Background: October 2026 experiment, same harness and prompt, 10 failure cases, 100 runs per model, mock tools with fault injection. It is harness behaviour, not a ranking.
 Today's finding (use only these numbers, never invent others): ${topic.fact}
 Strict rules:
-- English only, plain text, at most 230 characters before the link.
+- English only, plain text, at most 200 characters (the link is added after your text).
 - One concrete insight or practical tip an engineer can use today.
 - No price, no sales pitch, no call to buy, no exclamation marks, no hashtags, no emojis.
-- End with exactly this link on its own line: ${topic.url}`,
+- Do not write any link or URL; the application appends the link.`,
       userPrompt: `Write today's post (${today}) about this finding.`,
-      maxTokens: 120,
+      maxTokens: 150,
       taskId: `daily-pulse-${today}`,
       taskName: 'GENERATE_DAILY_MARKET_PULSE',
       timeoutMs: 15000,
     });
 
-    pulseText = completion?.text?.trim() ?? '';
+    // The model writes the sentence only; the application appends the vetted, tracked link.
+    const body = (completion?.text ?? '').replace(/https?:\/\/\S+/g, '').trim();
+    pulseText = [body, topic.url].join('\n');
     if (!isValidPulse(pulseText)) pulseText = PULSE_FALLBACKS[dayOfYear % PULSE_FALLBACKS.length];
 
     const tweetResult = await XMcpClient.postTweet({
