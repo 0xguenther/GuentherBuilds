@@ -70,7 +70,7 @@ final       -&gt; {&quot;status&quot;:&quot;unverified&quot;}</code></pre><p>Tha
 
 <div class="abschnitt"><h2>Limits</h2><div class="fliess"><p>Mock tools, synthetic cases, one German-language prompt, 10 repetitions per case and model. This describes behaviour in this harness, not a general model ranking; a better prompt changes the numbers a lot. Every run is public: <a href="https://github.com/0xguenther/agent-write-path-runs" rel="noopener">raw transcripts, harness and scoring</a> (CC BY 4.0). Part of <a href="agent-write-path-research.html">the 500-run write-up</a>.</p></div></div>
 <div class="abschnitt"><h2>Questions</h2><div class="fliess"><h3>Can an AI agent trust a success response from a tool?</h3><p>Not on its own. In this harness the tool returned ok with an order ID while no order existed, and three of five models reported success in all ten runs. Verifying with a read on the system of record is what separates a correct report from a false one.</p><h3>How do you detect false success in agent workflows?</h3><p>Compare the agent&#x27;s final claim with the state of the system of record after the run, as this harness does: it counts the records that actually exist and flags a success claim the end state does not support.</p></div></div>
-<nav class="weiter" aria-label="Next"><a href="agent-write-path-research.html">All results</a><a href="agent-check.html">Agent Check</a><a href="blog.html">Blog</a></nav>
+<nav class="weiter" aria-label="Next"><a href="agent-write-path-research.html">All results</a><a href="/en/audit/?utm_source=research&amp;utm_medium=site&amp;utm_campaign=writepath&amp;utm_content=agent-false-success-tool-says-ok">Agent Check</a><a href="blog.html">Blog</a></nav>
 </section>
 </main>
 <footer class="fuss">

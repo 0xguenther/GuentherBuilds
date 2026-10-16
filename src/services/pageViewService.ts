@@ -4,7 +4,9 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import { prisma } from '../db/client.js';
 
 const processSecret = randomBytes(32).toString('hex');
-const BOT_UA = /bot|crawl|spider|slurp|preview|monitor|uptime|kuma|curl|wget|python|headless/i;
+const BOT_UA = /bot|crawl|spider|slurp|preview|monitor|uptime|kuma|curl|wget|python|headless|facebookexternalhit|whatsapp|embedly|skypeuri|go-http-client|okhttp|axios|node-fetch|libwww|scrapy|httpclient|postman|ahrefs|semrush/i;
+/** Only these campaign sources are stored; arbitrary query values may contain PII. */
+export const PAGE_VIEW_SOURCES = ['x', 'reddit', 'hn', 'research'] as const;
 
 export function visitorHash(day: string, ip: string, userAgent: string): string {
   const dailySalt = createHmac('sha256', process.env.TRACKING_SALT || processSecret).update(day).digest('hex');
@@ -33,7 +35,9 @@ export async function recordPageView(request: FastifyRequest, reply: FastifyRepl
     const referrer = new URL(request.headers.referer ?? '');
     if (referrer.protocol === 'http:' || referrer.protocol === 'https:') referrerHost = referrer.hostname;
   } catch { /* Missing or malformed referrers are ignored. */ }
+  const utm = new URL(request.url, 'http://localhost').searchParams.get('utm_source')?.toLowerCase() ?? '';
+  const source = (PAGE_VIEW_SOURCES as readonly string[]).includes(utm) ? utm : undefined;
   await prisma.pageView.create({
-    data: { createdAt, day, path: pathname, visitorHash: visitorHash(day, ip, userAgent), referrerHost },
+    data: { createdAt, day, path: pathname, visitorHash: visitorHash(day, ip, userAgent), referrerHost, source },
   });
 }

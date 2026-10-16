@@ -75,7 +75,7 @@ final          -&gt; {&quot;status&quot;:&quot;failure&quot;}</code></pre><p>The
 
 <div class="abschnitt"><h2>Limits</h2><div class="fliess"><p>Mock tools, synthetic cases, one German-language prompt, 10 repetitions per case and model. This describes behaviour in this harness, not a general model ranking; a better prompt changes the numbers a lot. Every run is public: <a href="https://github.com/0xguenther/agent-write-path-runs" rel="noopener">raw transcripts, harness and scoring</a> (CC BY 4.0). Part of <a href="agent-write-path-research.html">the 500-run write-up</a>.</p></div></div>
 <div class="abschnitt"><h2>Questions</h2><div class="fliess"><h3>Should an AI agent retry after an HTTP 429?</h3><p>Yes, with limits: honour the Retry-After header, back off with jitter, cap the number of attempts, and keep the same idempotency key on writes. A 429 means the request was rejected, so a retry cannot duplicate the write.</p><h3>What happens if the agent never retries?</h3><p>In this harness Claude Haiku 4.5 and Qwen3 14B stopped after one call in 30 of 30 runs and never created the invoice or order. Nothing was duplicated, but the work was not done.</p></div></div>
-<nav class="weiter" aria-label="Next"><a href="agent-write-path-research.html">All results</a><a href="agent-check.html">Agent Check</a><a href="blog.html">Blog</a></nav>
+<nav class="weiter" aria-label="Next"><a href="agent-write-path-research.html">All results</a><a href="/en/audit/?utm_source=research&amp;utm_medium=site&amp;utm_campaign=writepath&amp;utm_content=agent-rate-limit-retry-behavior">Agent Check</a><a href="blog.html">Blog</a></nav>
 </section>
 </main>
 <footer class="fuss">

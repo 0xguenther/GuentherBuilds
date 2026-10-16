@@ -93,6 +93,7 @@ describe('seeded funnel and kill criterion', () => {
   });
 
   it('sums daily uniques, counts paid statuses and checkouts, and measures linear progress independently of days', async () => {
+    vi.stubEnv('KILL_TARGET_VISITORS', '500'); vi.stubEnv('KILL_TARGET_ORDERS', '10');
     await prisma.pageView.createMany({ data: [
       { id: `${prefix}-1`, day: '2080-01-02', createdAt: new Date('2080-01-02'), path: '/', visitorHash: 'same', referrerHost: 'example.test' },
       { id: `${prefix}-2`, day: '2080-01-02', createdAt: new Date('2080-01-02'), path: '/', visitorHash: 'same', referrerHost: 'example.test' },
@@ -110,19 +111,43 @@ describe('seeded funnel and kill criterion', () => {
       id: prefix, companyName: 'Test', contactName: 'Test', contactEmail: 'test@example.test', useCase: 'test', monthlyVolume: 'test', integrations: '', stripeCheckoutId: prefix, createdAt,
     } });
     const funnel = await MetricsService.getFunnel();
-    expect(funnel).toMatchObject({ days: 30, pageViews: 4, uniqueVisitors: 3, checkoutsStarted: 9, ordersPaid: 6 });
+    expect(funnel).toMatchObject({ days: 30, pageViews: 4, uniqueVisitors: 3, qualifiedVisitors: 1, checkoutsStarted: 9, ordersPaid: 6 });
     expect(funnel.conversionRates).toEqual({ visitorToCheckout: 3, checkoutToPaid: 6 / 9 });
     expect(funnel.topPaths[0]).toEqual({ path: '/', pageViews: 3 });
     expect(funnel.topReferrerHosts).toEqual([{ host: 'example.test', pageViews: 2 }]);
-    expect(funnel.killCriterion).toMatchObject({ start: '2080-01-01', decisionDay: '2080-01-31', daysLeft: 15, visitors: 3, paidOrders: 6, onTrack: false });
-    await prisma.pageView.createMany({ data: Array.from({ length: 247 }, (_, i) => ({
-      id: `${prefix}-pace-${i}`, day: '2080-01-02', createdAt, path: '/', visitorHash: `visitor-${i}`,
+    expect(funnel.killCriterion).toMatchObject({ start: '2080-01-01', decisionDay: '2080-01-31', daysLeft: 15, visitors: 1, rawVisitors: 3, paidOrders: 6, onTrack: false });
+    await prisma.pageView.createMany({ data: Array.from({ length: 249 }, (_, i) => ({
+      id: `${prefix}-pace-${i}`, day: '2080-01-02', createdAt, path: '/', visitorHash: `visitor-${i}`, referrerHost: 'example.test',
     })) });
     const shortRange = await MetricsService.getFunnel({ days: 1 });
     expect(shortRange).toMatchObject({ pageViews: 0, uniqueVisitors: 0, checkoutsStarted: 0, ordersPaid: 0, conversionRates: { visitorToCheckout: 0, checkoutToPaid: 0 } });
     expect(shortRange.killCriterion).toMatchObject({ visitors: 250, paidOrders: 6, onTrack: true });
     vi.setSystemTime(new Date('2080-02-01T00:00:00Z'));
     expect((await MetricsService.getFunnel()).killCriterion).toMatchObject({ daysLeft: 0, onTrack: false });
+  });
+
+  it('separates attributable visitors from unattributed direct traffic and reports sources and research visitors', async () => {
+    const at = new Date('2080-01-05');
+    const row = (id: string, path: string, visitorHash: string, extra: { source?: string; referrerHost?: string } = {}) =>
+      ({ id: `${prefix}-${id}`, day: '2080-01-05', createdAt: at, path, visitorHash, ...extra });
+    await prisma.pageView.createMany({ data: [
+      row('a', '/en/agent-write-path-research.html', 'a', { source: 'x' }),
+      row('b', '/en/agent-lost-reply-after-write.html', 'b', { referrerHost: 'www.google.com' }),
+      row('c', '/', 'c'),
+      row('d', '/', 'd', { referrerHost: '0xguenther.org' }),
+      row('e', '/en/agent-check.html', 'e', { source: 'reddit' }),
+    ] });
+    const funnel = await MetricsService.getFunnel();
+    expect(funnel).toMatchObject({ uniqueVisitors: 5, qualifiedVisitors: 3, researchVisitors: 2 });
+    expect(funnel.topSources).toEqual(expect.arrayContaining([{ source: 'x', pageViews: 1 }, { source: 'reddit', pageViews: 1 }]));
+    expect(funnel.killCriterion).toMatchObject({ visitors: 3, rawVisitors: 5, targets: { visitors: 300, paidOrders: 3 }, windowDays: 30 });
+  });
+
+  it('uses the reset window by default and lets the env override start, length and targets', async () => {
+    vi.unstubAllEnvs();
+    expect((await MetricsService.getFunnel()).killCriterion).toMatchObject({ start: '2026-10-17', targets: { visitors: 300, paidOrders: 3 }, windowDays: 30 });
+    vi.stubEnv('KILL_CRITERION_START', '2080-01-10'); vi.stubEnv('KILL_CRITERION_DAYS', '14'); vi.stubEnv('KILL_TARGET_ORDERS', '2');
+    expect((await MetricsService.getFunnel()).killCriterion).toMatchObject({ decisionDay: '2080-01-24', windowDays: 14, targets: { paidOrders: 2 } });
   });
 
   it('rejects invalid ranges and handles a future start without negative pace', async () => {

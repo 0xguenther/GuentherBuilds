@@ -69,7 +69,7 @@ final          -&gt; {&quot;status&quot;:&quot;success&quot;}</code></pre><p>The
 
 <div class="abschnitt"><h2>Limits</h2><div class="fliess"><p>Mock tools, synthetic cases, one German-language prompt, 10 repetitions per case and model. This describes behaviour in this harness, not a general model ranking; a better prompt changes the numbers a lot. Every run is public: <a href="https://github.com/0xguenther/agent-write-path-runs" rel="noopener">raw transcripts, harness and scoring</a> (CC BY 4.0). Part of <a href="agent-write-path-research.html">the 500-run write-up</a>.</p></div></div>
 <div class="abschnitt"><h2>Questions</h2><div class="fliess"><h3>Why do chained tool calls make duplicate writes more likely?</h3><p>A later step depends on the result of an earlier one. When that result is lost, the agent is pushed to repeat the earlier step to obtain it, instead of looking the existing record up. In this harness two models did exactly that in 10 of 10 runs.</p><h3>How do you stop an agent from creating a second invoice after a timeout?</h3><p>Use an idempotency key per logical invoice and look the invoice up by that key before creating another one. Continue the chain with the number you find.</p></div></div>
-<nav class="weiter" aria-label="Next"><a href="agent-write-path-research.html">All results</a><a href="agent-check.html">Agent Check</a><a href="blog.html">Blog</a></nav>
+<nav class="weiter" aria-label="Next"><a href="agent-write-path-research.html">All results</a><a href="/en/audit/?utm_source=research&amp;utm_medium=site&amp;utm_campaign=writepath&amp;utm_content=agent-chained-tool-calls-duplicate-invoice">Agent Check</a><a href="blog.html">Blog</a></nav>
 </section>
 </main>
 <footer class="fuss">

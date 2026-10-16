@@ -47,7 +47,7 @@ export async function recordAuditLandingVisit(request: FastifyRequest): Promise<
   const content = url.searchParams.get('utm_content');
   const metadata = {
     path: url.pathname,
-    utm_source: ['x', 'reddit', 'hn'].includes(url.searchParams.get('utm_source') ?? '') ? url.searchParams.get('utm_source') : null,
+    utm_source: ['x', 'reddit', 'hn', 'research'].includes(url.searchParams.get('utm_source') ?? '') ? url.searchParams.get('utm_source') : null,
     utm_campaign: ['writepath', 'products'].includes(url.searchParams.get('utm_campaign') ?? '') ? url.searchParams.get('utm_campaign') : null,
     utm_content: AUDIT_ANGLES.some(angle => angle.id === content) || PRODUCTS.some(p => p.id === content) ? content : null,
     ...(!audit || url.searchParams.get('utm_campaign') === 'products' ? { productId: PRODUCTS.find(p => p.id === content)?.id ?? (audit ? 'audit' : /preview/.test(url.pathname) ? 'playbook' : 'unknown') } : {}),

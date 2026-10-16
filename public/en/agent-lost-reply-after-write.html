@@ -76,7 +76,7 @@ try {
 
 <div class="abschnitt"><h2>Limits</h2><div class="fliess"><p>Mock tools, synthetic cases, one German-language prompt, 10 repetitions per case and model. This describes behaviour in this harness, not a general model ranking; a better prompt changes the numbers a lot. Every run is public: <a href="https://github.com/0xguenther/agent-write-path-runs" rel="noopener">raw transcripts, harness and scoring</a> (CC BY 4.0). Part of <a href="agent-write-path-research.html">the 500-run write-up</a>.</p></div></div>
 <div class="abschnitt"><h2>Questions</h2><div class="fliess"><h3>What should an AI agent do when a tool call times out after a write?</h3><p>Treat the result as unknown. Read the current state, or retry only with the same idempotency key so that a second attempt cannot create a second record. Then report what the system of record shows.</p><h3>Is it better to retry or to report failure after a timeout?</h3><p>Neither on its own. In this harness the models that reported failure created no duplicates but told the user the work had not happened when it had; the model that retried blindly duplicated the write in 28 of 30 runs. The two models that checked the state first got 30 of 30 right.</p></div></div>
-<nav class="weiter" aria-label="Next"><a href="agent-write-path-research.html">All results</a><a href="agent-check.html">Agent Check</a><a href="blog.html">Blog</a></nav>
+<nav class="weiter" aria-label="Next"><a href="agent-write-path-research.html">All results</a><a href="/en/audit/?utm_source=research&amp;utm_medium=site&amp;utm_campaign=writepath&amp;utm_content=agent-lost-reply-after-write">Agent Check</a><a href="blog.html">Blog</a></nav>
 </section>
 </main>
 <footer class="fuss">

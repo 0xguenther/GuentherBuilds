@@ -7,6 +7,7 @@ import { MarketingService } from '../services/marketingService.js';
 import { CommunityGrowthService } from '../services/communityGrowthService.js';
 import { TraceService } from '../services/traceService.js';
 import { PostingWatchdogService } from '../services/postingWatchdogService.js';
+import { MetricsService } from '../services/metricsService.js';
 import { AuditFulfillmentService } from '../services/auditFulfillmentService.js';
 import { checkDatabaseConnection } from '../db/client.js';
 import { config } from '../config/index.js';
@@ -119,6 +120,11 @@ export class GuntherDaemon {
         const [reach] = await ReachService.getDailyReach(1, yesterday);
         console.log(`[Daemon] Daily reach ${reach.day} UTC: ${reach.posts} posts, ${reach.impressions} observed impressions, ${reach.engagements} engagements, ${reach.landingVisits} landing visits, ${reach.auditOrders} paid audit orders.`);
       } catch (err) { console.warn('[Daemon] Daily reach report failed:', err instanceof Error ? err.message : err); }
+      try {
+        const f = await MetricsService.getFunnel({ days: 30 });
+        const k = f.killCriterion;
+        console.log(`[Daemon] KPI ${k.start} to ${k.decisionDay}: qualified visitors ${k.visitors}/${k.targets.visitors} (raw ${k.rawVisitors}), paid orders ${k.paidOrders}/${k.targets.paidOrders}, research visitors ${f.researchVisitors}, ${k.daysLeft} days left, on track: ${k.onTrack}`);
+      } catch (err) { console.warn('[Daemon] KPI report failed:', err instanceof Error ? err.message : err); }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unknown pulse error';
       console.warn(`[Daemon] Daily market pulse skipped or delayed: ${msg}`);

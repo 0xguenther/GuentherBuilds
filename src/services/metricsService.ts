@@ -78,12 +78,16 @@ export interface SystemMetrics {
 
 const DAY_MS = 86400000;
 const PAID_AUDIT_STATUSES = ['paid', 'running', 'delivered', 'failed', 'rejected'];
+const OWN_HOSTS = ['0xguenther.org', 'www.0xguenther.org', 'localhost'];
+/** A visitor counts as qualified when we can attribute the visit: campaign source or an external referrer. Direct traffic without referrer is mostly crawlers and stays a separate number. */
+const QUALIFIED = { OR: [{ source: { not: null } }, { referrerHost: { not: null, notIn: OWN_HOSTS } }] };
 
 async function funnelCounts(start: Date, end: Date) {
   const createdAt = { gte: start, lt: end };
   // Only persisted checkouts can be counted; playbook sessions are stored on payment receipt.
-  const [visitors, audits, paymentCheckouts, b2bCheckouts, paidAudits, paidPayments] = await Promise.all([
+  const [visitors, qualified, audits, paymentCheckouts, b2bCheckouts, paidAudits, paidPayments] = await Promise.all([
     prisma.pageView.groupBy({ by: ['day', 'visitorHash'], where: { createdAt } }),
+    prisma.pageView.groupBy({ by: ['day', 'visitorHash'], where: { createdAt, ...QUALIFIED } }),
     prisma.auditOrder.count({ where: { createdAt } }),
     prisma.payment.count({ where: { createdAt, stripeSessionId: { not: null } } }),
     prisma.b2bLead.count({ where: { createdAt, stripeCheckoutId: { not: null } } }),
@@ -91,7 +95,7 @@ async function funnelCounts(start: Date, end: Date) {
     // Payment rows are only created on receipt; 'failed' is the sole status without money kept.
     prisma.payment.count({ where: { createdAt, status: { in: ['received', 'calculating', 'burning', 'burned', 'needs_review'] } } }),
   ]);
-  return { uniqueVisitors: visitors.length, checkoutsStarted: audits + paymentCheckouts + b2bCheckouts, ordersPaid: paidAudits + paidPayments };
+  return { uniqueVisitors: visitors.length, qualifiedVisitors: qualified.length, checkoutsStarted: audits + paymentCheckouts + b2bCheckouts, ordersPaid: paidAudits + paidPayments };
 }
 
 export class MetricsService {
@@ -103,20 +107,28 @@ export class MetricsService {
     const today = new Date(now.toISOString().slice(0, 10));
     const start = new Date(today.getTime() - (days - 1) * DAY_MS);
     const createdAt = { gte: start, lt: end };
-    const startDay = process.env.KILL_CRITERION_START || '2026-10-07';
+    // Reset 2026-10-16: the first window (from 2026-10-07) counted crawler noise as visitors, had no source attribution and
+    // an unrealistic order target. The new window starts on a clean measurement setup; targets are overridable per env.
+    const startDay = process.env.KILL_CRITERION_START || '2026-10-17';
+    const windowDays = Number(process.env.KILL_CRITERION_DAYS || 30);
+    const targetVisitors = Number(process.env.KILL_TARGET_VISITORS || 300);
+    const targetOrders = Number(process.env.KILL_TARGET_ORDERS || 3);
     const killStart = new Date(`${startDay}T00:00:00.000Z`);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(startDay) || !Number.isFinite(killStart.getTime()) || killStart.toISOString().slice(0, 10) !== startDay) {
       throw new Error('KILL_CRITERION_START must be a valid YYYY-MM-DD date');
     }
-    const decisionDay = new Date(killStart.getTime() + 30 * DAY_MS);
-    const [counts, pageViews, paths, referrers, killCounts] = await Promise.all([
+    const decisionDay = new Date(killStart.getTime() + windowDays * DAY_MS);
+    const [counts, pageViews, paths, referrers, sources, research, killCounts] = await Promise.all([
       funnelCounts(start, end),
       prisma.pageView.count({ where: { createdAt } }),
       prisma.pageView.groupBy({ by: ['path'], where: { createdAt }, _count: { _all: true }, orderBy: { _count: { path: 'desc' } }, take: 10 }),
       prisma.pageView.groupBy({ by: ['referrerHost'], where: { createdAt, referrerHost: { not: null } }, _count: { _all: true }, orderBy: { _count: { referrerHost: 'desc' } }, take: 10 }),
+      prisma.pageView.groupBy({ by: ['source'], where: { createdAt, source: { not: null } }, _count: { _all: true }, orderBy: { _count: { source: 'desc' } } }),
+      // The write-path research pages: the shared asset all channels point to.
+      prisma.pageView.groupBy({ by: ['day', 'visitorHash'], where: { createdAt, path: { startsWith: '/en/agent-' }, NOT: { path: { in: ['/en/agent-check.html', '/en/agent-check-beispiel.html'] } } } }),
       funnelCounts(killStart, new Date(Math.min(end.getTime(), decisionDay.getTime()))),
     ]);
-    const elapsedDays = Math.min(30, Math.max(0, (now.getTime() - killStart.getTime()) / DAY_MS));
+    const elapsedDays = Math.min(windowDays, Math.max(0, (now.getTime() - killStart.getTime()) / DAY_MS));
     return {
       days, pageViews, ...counts,
       conversionRates: {
@@ -125,12 +137,16 @@ export class MetricsService {
       },
       topPaths: paths.map((row) => ({ path: row.path, pageViews: row._count._all })),
       topReferrerHosts: referrers.map((row) => ({ host: row.referrerHost, pageViews: row._count._all })),
+      topSources: sources.map((row) => ({ source: row.source, pageViews: row._count._all })),
+      researchVisitors: research.length,
       killCriterion: {
         start: startDay, decisionDay: decisionDay.toISOString().slice(0, 10),
-        targets: { visitors: 500, paidOrders: 10 },
-        visitors: killCounts.uniqueVisitors, paidOrders: killCounts.ordersPaid,
+        targets: { visitors: targetVisitors, paidOrders: targetOrders },
+        windowDays,
+        /** Qualified visitors only (attributable source or external referrer); rawVisitors includes unattributed direct traffic. */
+        visitors: killCounts.qualifiedVisitors, rawVisitors: killCounts.uniqueVisitors, paidOrders: killCounts.ordersPaid,
         daysLeft: Math.max(0, Math.ceil((decisionDay.getTime() - now.getTime()) / DAY_MS)),
-        onTrack: killCounts.uniqueVisitors >= 500 * elapsedDays / 30 && killCounts.ordersPaid >= 10 * elapsedDays / 30,
+        onTrack: killCounts.qualifiedVisitors >= targetVisitors * elapsedDays / windowDays && killCounts.ordersPaid >= targetOrders * elapsedDays / windowDays,
       },
     };
   }

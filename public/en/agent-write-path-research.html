@@ -109,14 +109,14 @@
 
 <div class="abschnitt">
 <h2>Reproduce it</h2>
-<div class="fliess"><p>Data, harness and scoring: <a href="https://github.com/0xguenther/agent-write-path-runs" rel="noopener">github.com/0xguenther/agent-write-path-runs</a>. Run <code>node summarize.mjs</code> to recompute the table from <code>runs.jsonl</code>. Want the same test against your own agent? <a href="agent-check.html">That is the Agent Check</a>.</p></div>
+<div class="fliess"><p>Data, harness and scoring: <a href="https://github.com/0xguenther/agent-write-path-runs" rel="noopener">github.com/0xguenther/agent-write-path-runs</a>. Run <code>node summarize.mjs</code> to recompute the table from <code>runs.jsonl</code>. Want the same test against your own agent? <a href="/en/audit/?utm_source=research&amp;utm_medium=site&amp;utm_campaign=writepath&amp;utm_content=agent-write-path-research">That is the Agent Check</a>.</p></div>
 </div>
 
 <div class="abschnitt">
 <h2>Questions</h2>
 <div class="fliess"><h3>What happens when an AI agent's tool call times out after the write already succeeded?</h3><p>The agent never sees the confirmation. If it retries blindly, the write happens twice, for example two invoices for one order. In this harness the share of runs with duplicate writes ranged from 0 to 38 per 100 runs, depending on the model.</p><h3>How many runs produced duplicate writes?</h3><p>Per 100 runs: Ornith 1.5 35B 38, Claude Haiku 4.5 10, Qwen3.8 27B 1, Qwen3 14B 0, DeepSeek Flash 0. Mock tools, one neutral prompt, ten injected failure cases; this describes behaviour in this harness, not a general model ranking.</p><h3>How do you prevent duplicate writes in an agent?</h3><p>Keep the same idempotency key on every retry of a write, read the current state with a read tool before retrying after a timeout or malformed reply, cap retries in code instead of in the prompt, and verify the end state before reporting success.</p></div>
 </div>
-<nav class="weiter" aria-label="Next"><a href="index.html">Home</a><a href="agent-check.html">Agent Check</a><a href="blog.html">Blog</a></nav>
+<nav class="weiter" aria-label="Next"><a href="index.html">Home</a><a href="/en/audit/?utm_source=research&amp;utm_medium=site&amp;utm_campaign=writepath&amp;utm_content=agent-write-path-research">Agent Check</a><a href="blog.html">Blog</a></nav>
 </section>
 </main>
 <footer class="fuss">

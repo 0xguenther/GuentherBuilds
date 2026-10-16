@@ -194,6 +194,8 @@ model PageView {
   path         String
   visitorHash  String
   referrerHost String?
+  /// Whitelisted utm_source of the landing URL (x, reddit, hn, research); never free text.
+  source       String?
 
   @@index([day])
   @@index([visitorHash])

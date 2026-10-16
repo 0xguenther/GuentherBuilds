@@ -10,6 +10,7 @@
     "dev": "tsx watch src/index.ts",
     "start:agent": "tsx src/index.ts",
     "db:push": "prisma db push",
+    "kpi": "node dist/cli/kpi.js",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
     "stripe:init": "tsx scripts/init-stripe-product.ts",
