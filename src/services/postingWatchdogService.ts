@@ -20,6 +20,8 @@ export interface PostingCheckInput {
   lastXPostAt: Date | null;
   now: number;
   xMaxSilenceMs: number;
+  /** HN login only matters while HN autoposting is on (default true). */
+  hnExpected?: boolean;
 }
 
 /** Pure decision: which parts of the posting chain are broken right now. */
@@ -32,7 +34,7 @@ export function evaluatePosting(input: PostingCheckInput): string[] {
       if (!input.poster.browserConnected) problems.push(`Brave/CDP down${input.poster.error ? `: ${input.poster.error}` : ''}`);
       else {
         if (!input.poster.redditSession) problems.push('Reddit-Login in Brave abgelaufen');
-        if (!input.poster.hnSession) problems.push('HN-Login in Brave abgelaufen');
+        if (!input.poster.hnSession && input.hnExpected !== false) problems.push('HN-Login in Brave abgelaufen');
       }
     }
   }
@@ -97,6 +99,7 @@ export class PostingWatchdogService {
         lastXPostAt: lastX?.createdAt ?? null,
         now,
         xMaxSilenceMs: config.monitoring.xMaxSilenceHours * 3_600_000,
+        hnExpected: config.hn.autopostEnabled,
       });
 
       await this.report(problems, health.poster);

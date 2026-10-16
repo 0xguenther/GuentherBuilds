@@ -215,7 +215,8 @@ Choose and return exactly one approved body supplied below, without quotes or li
   static async runGrowthCycle(): Promise<{ mentionsProcessed: number; insightPublished: boolean; scoutActed: boolean }> {
     const mentionsProcessed = await this.processIncomingMentions();
     const insightResult = await this.publishBuilderInsight(false);
-    const scoutResult = await TimelineScoutService.scoutAndReact(false);
+    // X's API only allows replies to posts that mention us, so the old crypto scout (standalone posts) stays off by default.
+    const scoutResult = config.growth.scoutEnabled ? await TimelineScoutService.scoutAndReact(false) : { acted: false };
     return {
       mentionsProcessed,
       insightPublished: insightResult.published,

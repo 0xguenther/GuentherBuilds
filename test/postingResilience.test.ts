@@ -185,8 +185,10 @@ describe('reddit drafting and cycle bounds', () => {
 });
 
 describe('HN cycle safety', () => {
+  afterEach(() => { config.hn.autopostEnabled = false; });
   const trace = (over: Record<string, unknown> = {}) => ({ id: 'claim-1', ...over });
   beforeEach(() => {
+    config.hn.autopostEnabled = true;
     (HnService as unknown as { nextAttemptAt: number }).nextAttemptAt = 0;
     vi.spyOn(HnMcpClient, 'hasBrowserPoster').mockReturnValue(true);
     vi.spyOn(PostingWatchdogService, 'isBrowserDown').mockReturnValue(false);

@@ -55,6 +55,8 @@ export const config = {
   },
   hn: {
     username: process.env.HN_USERNAME || '0xguenther',
+    /** Link submissions of a karma-2 account get flagged dead; keep off until the account is in good standing. */
+    autopostEnabled: process.env.HN_AUTOPOST_ENABLED === '1',
     browserPosterUrl: process.env.HN_BROWSER_POSTER_URL || process.env.REDDIT_BROWSER_POSTER_URL || '',
     browserPosterToken: process.env.HN_BROWSER_POSTER_TOKEN || process.env.REDDIT_BROWSER_POSTER_TOKEN || '',
   },
@@ -84,5 +86,7 @@ export const config = {
     maxRepliesPerUserDaily: parseIntSafe(process.env.MAX_REPLIES_PER_USER_DAILY, 2),
     minHoursBetweenInsights: parseIntSafe(process.env.MIN_HOURS_BETWEEN_INSIGHTS, 6),
     maxDailyLlmCostUsd: parseFloatSafe(process.env.MAX_DAILY_LLM_COST_USD, 1.50),
+    /** Old crypto-ecosystem scout (standalone posts, not replies). Off by default. */
+    scoutEnabled: process.env.SCOUT_ENABLED === '1',
   },
 };

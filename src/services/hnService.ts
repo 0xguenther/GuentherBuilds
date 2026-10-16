@@ -2,6 +2,7 @@ import { HnMcpClient, type HnPostResult } from '../mcp/hnMcp.js';
 import { BrowserPosterUnavailableError } from '../mcp/browserPoster.js';
 import { PostingWatchdogService } from './postingWatchdogService.js';
 import { prisma } from '../db/client.js';
+import { config } from '../config/index.js';
 
 const MIN_POST_INTERVAL_MS = 24 * 60 * 60 * 1000; // 1 HN post per day max
 const MAX_POSTS_PER_WEEK = 3;
@@ -14,7 +15,8 @@ export class HnService {
   private static nextAttemptAt = 0;
 
   static credentialsAvailable(): boolean {
-    return HnMcpClient.hasBrowserPoster();
+    // Off by default: link submissions from a karma-2 account get flagged dead. HN also forbids generated comments.
+    return config.hn.autopostEnabled && HnMcpClient.hasBrowserPoster();
   }
 
   static async runAutonomousCycle(): Promise<void> {

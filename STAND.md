@@ -19,9 +19,15 @@ Stand: 2026-10-16 | Letzter Agent: Claude (Posting-Kette gehärtet, LLM + Kuma r
 - **Reddit-Entwürfe:** lokales Modell zuerst (auf CT115 nicht vorhanden → 30 min Pause), dann Cloud; Cloud-Antwort wird tolerant geparst (nur `threadId/body/relevant`). Relevanz streng: lose Treffer → `relevant=false`. `safeHelpfulComment` filtert weiterhin (Links, Domains, Produktnennung).
 - Jeder Neustart von `gunther-core` startet sofort einen Reddit-Zyklus (max. 3 Hilfs-Kommentare/Tag). Am 16.10. 05:43/05:44 UTC liefen so zwei Kommentare in r/AI_Agents live (`t1_ph1ykcf`, `t1_ph1yor3`).
 
+## Strategie: mitmachen statt bewerben (seit 16.10.)
+- **Reddit (Hauptkanal):** hilfreiche Kommentare ohne Link/Produkt, mit Offenlegung „autonomous agent“, max. 3/Tag; Kandidaten-Filter erkennt Tool-Calls, Function-Calling, Retries, Timeouts, Idempotenz, MCP; Relevanz streng (lose Treffer = verworfen). Promo erst nach 9 bestätigten Hilfs-Aktionen.
+- **HN: aus.** `HN_AUTOPOST_ENABLED` (Default 0). Link-Posts eines Karma-2-Kontos landen als `dead` (3 von 4 zuletzt), und HN-Richtlinien verbieten generierte Kommentare — automatisches Mitmachen dort würde das Konto gefährden. HN-Login-Alarm im Watchdog ist deshalb ebenfalls aus.
+- **X:** Die API erlaubt keine Antworten auf fremde Tweets (403 „You can only reply to or quote posts where you are mentioned or are the author“, live getestet 16.10.). Mitmachen geht dort nur bei Erwähnungen (läuft, `handleIncomingMention`). Eigene Posts: Tagespost ist jetzt ein Daten-Insight (Duplikat-Schreibvorgänge je 100 Läufe) mit Link auf die Rohdaten, **ohne Preis/Verkaufstext** (`isValidPulse`, drei sachlich korrekte Offline-Fallbacks; der alte Fallback behauptete fälschlich „4/5 Modelle duplizieren“). Der Crypto-Scout bleibt aus (`SCOUT_ENABLED`, Default 0).
+- **Entscheidungstermin 23.10.2026:** Kommentar-Scores/Karma auf Reddit, Landing-Besuche, Bestellungen. Ohne messbaren Effekt → Experiment ablegen wie TNE.
+
 ## Offen
 - [ ] Öffentliche Referenz-Version `gunther-core` nicht parallel pflegen (Derivat).
 - [ ] Stripe-Live-Modus prüfen sobald echte Bestellungen kommen.
-- [ ] X-Reichweite: ~3 Impressionen/Tag bei 2–3 Posts/Tag — Inhalt/Konto-Strategie, kein Infra-Thema.
+- [ ] X-Reichweite: ~3 Impressionen/Tag bei 2–3 Posts/Tag; die 2 Growth-Insight-Posts/Tag (`publishBuilderInsight`) sind weiterhin Audit-/Produkt-Werbung mit Link — nach dem Messfenster entscheiden, ob sie wegfallen.
 - [ ] Optional: eigener OpenRouter-Key für Marketing, damit das Audit-Budget (25 USD) nicht geteilt wird. `KUMA_PUSH_URL` (alter Heartbeat) ist weiterhin leer, durch Monitor 47 nicht mehr nötig.
 - [ ] `BROWSER_POSTER_TOKEN` steht jetzt im Tresor (`Projects/Gunther`) und zusätzlich in der VM100-Unit — bei Rotation beide Stellen ändern.

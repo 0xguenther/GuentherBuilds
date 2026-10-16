@@ -166,7 +166,7 @@ export class RedditService {
         for (const thread of items) {
           if (thread.locked || thread.archived || thread.created_utc < Date.now() / 1000 - 3 * 86400 ||
               thread.author?.toLowerCase() === config.reddit.username.toLowerCase() ||
-              !/tool.?calls?|retr(?:y|ies)|idempoten|\bMCP\b/i.test(`${thread.title} ${thread.selftext}`)) continue;
+              !/tool.?calls?|function.?call|retr(?:y|ies)|idempoten|timeouts?|duplicate (?:write|charge|email|invoice|order)|\bMCP\b/i.test(`${thread.title} ${thread.selftext}`)) continue;
           if (this.rejectedThreads.has(thread.name)) continue;
           if (await prisma.trace.findUnique({ where: { id: `reddit-thread-${thread.name}` } })) continue;
           // Bounds LLM cost and trace noise per hourly cycle; unanswered threads are retried next hour.

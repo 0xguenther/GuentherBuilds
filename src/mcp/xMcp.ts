@@ -19,6 +19,9 @@ export class XUnconfirmedError extends Error {
   }
 }
 
+/** @GuentherBuilds user id. */
+export const X_OWN_USER_ID = '2104592585335443457';
+
 export interface PostTweetParams {
   text: string;
   inReplyToStatusId?: string;
@@ -306,6 +309,7 @@ export class XMcpClient {
     const queryParams: Record<string, string> = {
       query: params.query,
       max_results: String(params.maxResults || 10),
+      'tweet.fields': 'author_id,created_at',
     };
 
     const oauthParams: Record<string, string> = {
@@ -376,7 +380,7 @@ export class XMcpClient {
       return [];
     }
 
-    const userId = '2104592585335443457';
+    const userId = X_OWN_USER_ID;
     const url = `https://api.twitter.com/2/users/${userId}/mentions`;
     const queryParams: Record<string, string> = {
       expansions: 'author_id',
@@ -591,7 +595,7 @@ export class XMcpClient {
       return true;
     }
 
-    const myUserId = '2104592585335443457';
+    const myUserId = X_OWN_USER_ID;
     const url = `https://api.twitter.com/2/users/${myUserId}/following`;
 
     const oauthParams: Record<string, string> = {
