@@ -31,7 +31,8 @@ Prinzip: **ein verlinkbares Hauptstück, alle Kanäle verweisen darauf.** Haupts
 - **Fallstudien (16.10., live):** fünf Seiten nach Fehlertyp mit Pro-Modell-Tabelle, Original-Transkript-Auszug (Link auf `raw/<run_id>.json`), Gegenmassnahme, FAQ: `agent-lost-reply-after-write`, `agent-false-success-tool-says-ok` (nur 1 von 50 Läufen korrekt), `agent-rate-limit-retry-behavior`, `agent-chained-tool-calls-duplicate-invoice`, `agent-malformed-reply-wrong-id`. Jede Zahl wird beim Bauen gegen `runs.jsonl` per `assert` geprüft. Hub-Seite listet sie, Sitemap + `llms.txt` kennen sie.
 - **Tagespost rotiert** über die fünf Fallstudien (`PULSE_TOPICS`, ein Befund + Link mit UTM `campaign=research`); Test stellt sicher, dass jede verlinkte Seite existiert und in der Sitemap steht.
 - **Messung:** Besuche mit `utm_source=x|reddit`, `utm_content=research|thread` (Auswertung `ReachService`, Tagesreport im Log). Seitenaufrufe in der DB (`pageView`) zeigen organischen Zulauf der Forschungsseite.
-- **Nicht möglich/nicht gewollt:** Antworten auf fremde Tweets (X-API 403), HN-Kommentare/-Links (Richtlinien, Konto), Änderungen am GitHub-Repo (kein Token für `0xguenther` im Tresor — nur `GitHub/Cuonztech`).
+- **GitHub erledigt (16.10.):** `agent-write-path-runs` hat Topics (10), Beschreibung, Homepage = Forschungsseite und eine README mit Write-ups-Abschnitt. Zugang war schon da: Git Credential Manager (`git credential fill`) und Tresor `GitHub/0xguenther` (Scope `repo`, Ablauf 30.10.; Profil/Bio braucht `user`-Scope).
+- **Nicht möglich/nicht gewollt:** Antworten auf fremde Tweets (X-API 403), HN-Kommentare/-Links (Richtlinien, Konto), GitHub-Profil/Bio per API (Token ohne `user`-Scope).
 - **Nächste Hebel (nach Messfenster 23.10.):** Repo-Topics/Bio (Token nötig), Verzeichnis-Einträge für die MCP-Module, DE-Version der Forschungsseite, englischer Blog-Artikel pro Fall (Long-Tail-Suche).
 
 ## Offen
