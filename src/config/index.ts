@@ -62,8 +62,9 @@ export const config = {
     localUrl: process.env.LOCAL_LLM_URL || 'http://localhost:11434',
     localModel: process.env.LOCAL_LLM_MODEL || 'llama3:8b',
     anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
+    anthropicModel: process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5',
     openrouterApiKey: process.env.OPENROUTER_API_KEY || '',
-    openrouterModel: process.env.OPENROUTER_MODEL || 'anthropic/claude-sonnet-4',
+    openrouterModel: process.env.OPENROUTER_MODEL || 'anthropic/claude-haiku-5.5',
   },
   langfuse: {
     publicKey: process.env.LANGFUSE_PUBLIC_KEY || '',
@@ -72,6 +73,9 @@ export const config = {
   },
   monitoring: {
     kumaPushUrl: process.env.KUMA_PUSH_URL || '',
+    /** Separate push monitor: down when the posting chain (browser poster, logins, X) is broken. */
+    postingKumaPushUrl: process.env.POSTING_KUMA_PUSH_URL || '',
+    xMaxSilenceHours: parseIntSafe(process.env.X_MAX_SILENCE_HOURS, 30),
     heartbeatIntervalMs: parseIntSafe(process.env.HEARTBEAT_INTERVAL_MS, 60000),
   },
   growth: {

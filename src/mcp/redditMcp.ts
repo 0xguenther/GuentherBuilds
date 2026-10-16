@@ -1,5 +1,6 @@
 import { executeWithRetry, HttpError } from '../utils/retryUtil.js';
 import { config } from '../config/index.js';
+import { BrowserPosterUnavailableError, posterFetch, redditPoster } from './browserPoster.js';
 
 export interface SubmitRedditPostParams {
   subreddit: string;
@@ -32,53 +33,26 @@ export interface RedditAccountInfo {
  * Returns null if the browser poster is not configured or unreachable.
  */
 async function postViaBrowser(params: SubmitRedditPostParams): Promise<RedditPostResult | null> {
-  const baseUrl = config.reddit.browserPosterUrl;
-  if (!baseUrl) return null;
+  if (!config.reddit.browserPosterUrl) return null;
 
   const cleanSubreddit = params.subreddit.replace(/^r\//i, '').trim();
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  if (config.reddit.browserPosterToken) {
-    headers['Authorization'] = `Bearer ${config.reddit.browserPosterToken}`;
-  }
-
-  const res = await fetch(`${baseUrl}/api/reddit/submit`, {
+  const json = await posterFetch<{ success: boolean; post?: RedditPostResult; error?: string }>(redditPoster(), '/api/reddit/submit', {
     method: 'POST',
-    headers,
-    body: JSON.stringify({
-      subreddit: cleanSubreddit,
-      title: params.title,
-      body: params.text,
-      url: params.url,
-    }),
-    signal: AbortSignal.timeout(120_000), // browser automation can be slow
+    body: { subreddit: cleanSubreddit, title: params.title, body: params.text, url: params.url },
+    timeoutMs: 120_000, // browser automation can be slow
   });
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(`Browser poster error (HTTP ${res.status}): ${text}`);
-  }
-
-  const json = await res.json() as { success: boolean; post?: RedditPostResult; error?: string };
   if (!json.success || !json.post) throw new Error(json.error || 'Browser poster returned no result');
   return json.post;
 }
 
-async function getAccountViaBrowser(): Promise<RedditAccountInfo | null> {
-  const baseUrl = config.reddit.browserPosterUrl;
-  if (!baseUrl) return null;
+async function getAccountViaBrowser(): Promise<RedditAccountInfo> {
+  return posterFetch<RedditAccountInfo>(redditPoster(), '/api/reddit/account', { timeoutMs: 30_000 });
+}
 
-  const headers: Record<string, string> = {};
-  if (config.reddit.browserPosterToken) {
-    headers['Authorization'] = `Bearer ${config.reddit.browserPosterToken}`;
-  }
+type RedditListingPayload = { data?: { children?: { data: RedditItem }[]; after?: string } };
 
-  const res = await fetch(`${baseUrl}/api/reddit/account`, {
-    headers,
-    signal: AbortSignal.timeout(30_000),
-  });
-
-  if (!res.ok) return null;
-  return await res.json() as RedditAccountInfo;
+function parseListing(result: RedditListingPayload): { items: RedditItem[]; after: string | null } {
+  return { items: (result.data?.children ?? []).map(c => c.data), after: result.data?.after ?? null };
 }
 
 export class RedditMcpClient {
@@ -130,12 +104,33 @@ export class RedditMcpClient {
     return result;
   }
 
+  /** Reads need no OAuth when the browser session is available; reads are safe to fall back. */
   static async listing(path: string): Promise<{ items: RedditItem[]; after: string | null }> {
-    const result = await this.api(path) as { data?: { children?: { data: RedditItem }[]; after?: string } };
-    return { items: (result.data?.children ?? []).map(c => c.data), after: result.data?.after ?? null };
+    if (this.hasBrowserPoster()) {
+      try {
+        return parseListing(await posterFetch<RedditListingPayload>(redditPoster(), `/api/reddit/listing?path=${encodeURIComponent(path)}`, { timeoutMs: 45_000 }));
+      } catch (err) {
+        if (!this.hasValidCredentials()) throw err;
+        console.warn(`[RedditMcp] Browser-poster listing failed, falling back to API: ${err instanceof Error ? err.message : err}`);
+      }
+    }
+    return parseListing(await this.api(path) as RedditListingPayload);
   }
 
   static async submitComment(threadId: string, body: string): Promise<string> {
+    if (this.hasBrowserPoster()) {
+      try {
+        const res = await posterFetch<{ success: boolean; comment?: { redditId: string }; error?: string }>(redditPoster(), '/api/reddit/comment', {
+          method: 'POST', body: { thingId: threadId, text: body }, timeoutMs: 60_000,
+        });
+        if (!res.success || !res.comment?.redditId) throw new Error(res.error || 'Reddit comment outcome unknown');
+        return res.comment.redditId;
+      } catch (err) {
+        // A write may only fall back when it provably was not sent; otherwise the caller keeps its pending claim.
+        if (!(err instanceof BrowserPosterUnavailableError) || !this.hasValidCredentials()) throw err;
+        console.warn(`[RedditMcp] Browser-poster unavailable, commenting via API: ${err.message}`);
+      }
+    }
     const result = await this.api('/api/comment', { api_type: 'json', thing_id: threadId, text: body }) as
       { json?: { data?: { things?: { data?: { name?: string } }[] } } };
     const id = result.json?.data?.things?.[0]?.data?.name;
@@ -246,10 +241,10 @@ export class RedditMcpClient {
     // Try browser-poster first
     if (this.hasBrowserPoster()) {
       try {
-        const info = await getAccountViaBrowser();
-        if (info) return info;
-      } catch {
-        // fall through to API
+        return await getAccountViaBrowser();
+      } catch (err) {
+        // Surface the real poster failure instead of a misleading "credentials missing".
+        if (!this.hasValidCredentials()) throw err;
       }
     }
 
@@ -318,7 +313,9 @@ export class RedditMcpClient {
           return result;
         }
       } catch (err) {
-        console.warn(`[RedditMcp] Browser-poster failed, falling back to API: ${err instanceof Error ? err.message : err}`);
+        // Only fall back when the post provably was not sent; an unclear outcome must never be repeated.
+        if (!(err instanceof BrowserPosterUnavailableError) || !this.hasValidCredentials()) throw err;
+        console.warn(`[RedditMcp] Browser-poster unavailable, falling back to API: ${err.message}`);
       }
     }
 

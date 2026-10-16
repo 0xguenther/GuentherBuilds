@@ -275,7 +275,7 @@ export class MetricsService {
         totalInferenceCostUsd: parseFloat(totalInferenceCostUsd.toFixed(4)),
         netProfitMarginPercent,
         activeProvider: config.llm.anthropicApiKey ? 'Anthropic Direct' : (config.llm.openrouterApiKey ? 'OpenRouter' : 'Deterministic Fallback'),
-        activeModel: config.llm.anthropicApiKey ? 'claude-3-5-sonnet' : (config.llm.openrouterApiKey ? config.llm.openrouterModel : 'none'),
+        activeModel: config.llm.anthropicApiKey ? config.llm.anthropicModel : (config.llm.openrouterApiKey ? config.llm.openrouterModel : 'none'),
       },
       system: {
         uptimeSeconds: Math.floor(process.uptime()),

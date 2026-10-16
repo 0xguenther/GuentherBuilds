@@ -6,6 +6,7 @@ import { BurnService } from '../services/burnService.js';
 import { MarketingService } from '../services/marketingService.js';
 import { CommunityGrowthService } from '../services/communityGrowthService.js';
 import { TraceService } from '../services/traceService.js';
+import { PostingWatchdogService } from '../services/postingWatchdogService.js';
 import { AuditFulfillmentService } from '../services/auditFulfillmentService.js';
 import { checkDatabaseConnection } from '../db/client.js';
 import { config } from '../config/index.js';
@@ -19,6 +20,7 @@ export class GuntherDaemon {
   private isTickBusy = false;
   private lastPulseDate = '';
   private lastReachPoll = 0;
+  private isWatchdogBusy = false;
 
   /**
    * Starts the background daemon with the configured heartbeat interval.
@@ -64,6 +66,7 @@ export class GuntherDaemon {
     }
 
     this.isTickBusy = true;
+    this.runPostingWatchdog();
     try {
       await this.reconcilePendingPayments();
       await this.emitHeartbeat();
@@ -80,6 +83,16 @@ export class GuntherDaemon {
     } finally {
       this.isTickBusy = false;
     }
+  }
+
+  /**
+   * Posting-chain watchdog, deliberately outside the tick's await chain: a poster that self-heals
+   * (restarting Brave) can take ~30 s and must not delay payments or burns.
+   */
+  private runPostingWatchdog() {
+    if (this.isWatchdogBusy) return;
+    this.isWatchdogBusy = true;
+    PostingWatchdogService.check().finally(() => { this.isWatchdogBusy = false; });
   }
 
   async checkReach() {

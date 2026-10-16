@@ -1,5 +1,6 @@
 import { fetchWithRetry } from '../utils/retryUtil.js';
 import { config } from '../config/index.js';
+import { hnPoster, posterFetch } from './browserPoster.js';
 
 export interface HnMetric { id: string; score?: number; num_comments?: number }
 
@@ -24,47 +25,19 @@ export interface HnAccountInfo {
 }
 
 async function postViaBrowser(params: SubmitHnPostParams): Promise<HnPostResult | null> {
-  const baseUrl = config.hn.browserPosterUrl;
-  if (!baseUrl) return null;
+  if (!config.hn.browserPosterUrl) return null;
 
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  if (config.hn.browserPosterToken) {
-    headers['Authorization'] = `Bearer ${config.hn.browserPosterToken}`;
-  }
-
-  const res = await fetch(`${baseUrl}/api/hn/submit`, {
+  const json = await posterFetch<{ success: boolean; post?: HnPostResult; error?: string }>(hnPoster(), '/api/hn/submit', {
     method: 'POST',
-    headers,
-    body: JSON.stringify({ title: params.title, url: params.url, text: params.text }),
-    signal: AbortSignal.timeout(120_000),
+    body: { title: params.title, url: params.url, text: params.text },
+    timeoutMs: 120_000,
   });
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(`Browser poster error (HTTP ${res.status}): ${text}`);
-  }
-
-  const json = await res.json() as { success: boolean; post?: HnPostResult; error?: string };
   if (!json.success || !json.post) throw new Error(json.error || 'Browser poster returned no result');
   return json.post;
 }
 
-async function getAccountViaBrowser(): Promise<HnAccountInfo | null> {
-  const baseUrl = config.hn.browserPosterUrl;
-  if (!baseUrl) return null;
-
-  const headers: Record<string, string> = {};
-  if (config.hn.browserPosterToken) {
-    headers['Authorization'] = `Bearer ${config.hn.browserPosterToken}`;
-  }
-
-  const res = await fetch(`${baseUrl}/api/hn/account`, {
-    headers,
-    signal: AbortSignal.timeout(30_000),
-  });
-
-  if (!res.ok) return null;
-  return await res.json() as HnAccountInfo;
+async function getAccountViaBrowser(): Promise<HnAccountInfo> {
+  return posterFetch<HnAccountInfo>(hnPoster(), '/api/hn/account', { timeoutMs: 30_000 });
 }
 export function parseHnItem(value: unknown, since: number, until = Date.now() / 1000): HnMetric | null {
   if (!value || typeof value !== 'object') return null;
@@ -109,8 +82,7 @@ export class HnMcpClient {
 
     if (this.hasBrowserPoster()) {
       try {
-        const info = await getAccountViaBrowser();
-        if (info) return info;
+        return await getAccountViaBrowser();
       } catch { /* fall through */ }
     }
 

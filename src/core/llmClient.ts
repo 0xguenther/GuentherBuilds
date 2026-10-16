@@ -113,7 +113,7 @@ ${eventDescription}`;
 
     const timeoutMs = params.timeoutMs || 8000;
     const maxTokens = params.maxTokens || 300;
-    const usedModel = hasAnthropic ? 'claude-3-5-sonnet-20241022' : config.llm.openrouterModel;
+    const usedModel = hasAnthropic ? config.llm.anthropicModel : config.llm.openrouterModel;
 
     try {
       let replyText = '';
@@ -158,6 +158,8 @@ ${eventDescription}`;
           body: JSON.stringify({
             model: usedModel,
             max_tokens: maxTokens,
+            // Short posts/drafts must not burn the token budget on hidden reasoning (content came back empty).
+            reasoning: { enabled: false },
             messages: [
               { role: 'system', content: params.systemPrompt },
               { role: 'user', content: params.userPrompt },
