@@ -1,6 +1,15 @@
 # STAND — Günther
 Stand: 2026-10-24 | Letzter Agent: Claude (Produkt-Entwurfs-Zyklus, Warteschlange mit Freigabe) | Historie: `docs/STAND_HISTORIE_20261014.md`
 
+## Stand 24.10. Abend (fest)
+- Quelle der Wahrheit: Git-Commit fe149ed. CT115 läuft exakt darauf (src/index.ts, src/server/app.ts identisch zu git).
+- Verkauf: AUDIT_ORDERS_ENABLED=0 auf CT115. Live-Stripe: eine Zahlung (90 CHF, 07.10.), keine neuen.
+- Sicherheit: Admin-Schutz auf /api/hn, /api/sales, /api/market, /api/products. Ohne Token 401.
+- Test-Instanz: DAEMON_ENABLED=0 startet nur HTTP.
+- Stripe-Testmodus: Das Stripe-MCP hat nur den Livemodus. Die Stripe-CLI ist installiert (v1.55.1) und für das Live-Konto freigegeben. Testsandbox angelegt: guenther-test, acct_1UTxwDK9zDuchIy0. Diese ist noch NICHT per CLI freigegeben (der zweite Freigabelink hat nicht funktioniert).
+- Nächster Schritt (autonom machbar, sobald ein Sandbox-Schlüssel vorliegt): Testinstanz auf CT115 auf Port 3100 mit DAEMON_ENABLED=0 und sk_test-Schlüssel starten, Testbestellung per Checkout + Testkarte, Webhook und Fulfilment prüfen.
+- Offen: Nachweis, dass Stripe-Testschlüssel im Tresor liegt (Projects/Gunther-Stripe-Test).
+
 ## Verbindlicher Stand
 - Git-Repo ist die einzige Quelle. CT115 entspricht dem Commit, der hier steht (ab 24.10. Abend). Abweichungen auf CT115 werden nicht mehr geduldet; Backups liegen unter /opt/gunther-core/_backup-20261024.
 - Test-Instanz: DAEMON_ENABLED=0 startet nur HTTP (kein Posting, keine Auszahlung, kein Outreach).
