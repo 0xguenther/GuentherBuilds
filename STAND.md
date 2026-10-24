@@ -1,6 +1,10 @@
 # STAND — Günther
 Stand: 2026-10-24 | Letzter Agent: Claude (Produkt-Entwurfs-Zyklus, Warteschlange mit Freigabe) | Historie: `docs/STAND_HISTORIE_20261014.md`
 
+## Verbindlicher Stand
+- Git-Repo ist die einzige Quelle. CT115 entspricht dem Commit, der hier steht (ab 24.10. Abend). Abweichungen auf CT115 werden nicht mehr geduldet; Backups liegen unter /opt/gunther-core/_backup-20261024.
+- Test-Instanz: DAEMON_ENABLED=0 startet nur HTTP (kein Posting, keine Auszahlung, kein Outreach).
+
 ## Stand 24.10. Abend (Umschaltung)
 - CT115: Code auf Git-Stand a8ebc24 umgeschaltet (Backup in /opt/gunther-core/_backup-20261024, DB-Backup prisma/dev.db.bak-20261024). Schema-Push additiv (ProductDraft). Tests im Bau-Verzeichnis /opt/gunther-next: 28 Dateien grün.
 - Verkaufs-Gate auf CT115: AUDIT_ORDERS_ENABLED=0 (vorher 1, mit Live-Keys).

@@ -30,10 +30,14 @@ async function main() {
     console.log(`✓ Webhook Hub & Health Endpoint listening on http://${config.server.host}:${config.server.port}`);
     console.log(`✓ Active network: ${config.web3.networkId}`);
 
-    // Start 24/7 background reconciliation & heartbeat daemon
-    guntherDaemon.start();
-
-    console.log('Günther ReAct loop & Heartbeat Daemon are active.');
+    // Start 24/7 background reconciliation & heartbeat daemon.
+    // DAEMON_ENABLED=0 keeps a test instance from posting, paying out or outreaching with the production keys.
+    if (process.env.DAEMON_ENABLED === '0') {
+      console.log('Daemon disabled (DAEMON_ENABLED=0): HTTP only.');
+    } else {
+      guntherDaemon.start();
+      console.log('Günther ReAct loop & Heartbeat Daemon are active.');
+    }
   } catch (err) {
     app.log.error(err);
     process.exit(1);
