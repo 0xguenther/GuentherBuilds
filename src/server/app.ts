@@ -113,7 +113,10 @@ export async function buildApp() {
 
   // Admin auth hook — protects write endpoints from unauthorized access
   const ADMIN_TOKEN = process.env.ADMIN_API_TOKEN;
-  const adminProtectedPrefixes = ['/api/reddit', '/api/growth', '/api/marketing', '/api/metrics/funnel', '/api/reach'];
+  const adminProtectedPrefixes = [
+    '/api/reddit', '/api/growth', '/api/marketing', '/api/metrics/funnel', '/api/reach',
+    '/api/hn', '/api/sales', '/api/market', '/api/products',
+  ];
 
   app.addHook('onRequest', async (request, reply) => {
     const url = request.url;

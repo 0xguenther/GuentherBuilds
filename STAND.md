@@ -1,6 +1,12 @@
 # STAND — Günther
 Stand: 2026-10-24 | Letzter Agent: Claude (Produkt-Entwurfs-Zyklus, Warteschlange mit Freigabe) | Historie: `docs/STAND_HISTORIE_20261014.md`
 
+## Stand 24.10. Abend (Umschaltung)
+- CT115: Code auf Git-Stand a8ebc24 umgeschaltet (Backup in /opt/gunther-core/_backup-20261024, DB-Backup prisma/dev.db.bak-20261024). Schema-Push additiv (ProductDraft). Tests im Bau-Verzeichnis /opt/gunther-next: 28 Dateien grün.
+- Verkaufs-Gate auf CT115: AUDIT_ORDERS_ENABLED=0 (vorher 1, mit Live-Keys).
+- Sicherheit: Admin-Schutz erweitert auf /api/hn, /api/sales, /api/market, /api/products (vorher offen, inkl. POST auf HN-Post und Produkt-Freigabe).
+- Offen: public/ products/ content/ scripts/ auf CT115 weichen vom Git-Stand ab (73 Einträge in public/), nicht angefasst. Sales-Outreach sendet selbst nichts außer X-Mention-Antworten; Rest sind Entwürfe/Warteschlangen. Test-Bestellung im Stripe-Testmodus steht aus.
+
 ## Autonomie-Umbau (24.10., Ziel: Markt beobachten → Produkte entwerfen → vermarkten)
 - **Ist-Lücken:** Produkte fest im Code (`productCatalog.ts`), Marktnachfrage nur angezeigt (keine Wirkung auf Posts), Verkauf per `AUDIT_ORDERS_ENABLED` / `AUDIT_POSTS_ENABLED` gesperrt, Reichweite über Reddit-Warm-up (Karma 4), HN aus, X nur Erwähnungen.
 - **Erledigt:** `ProductDraftService` (`src/services/productDraftService.ts`). Höchstens wöchentlich (Markt ändert sich über Wochen) entsteht aus der ersten Marktlücke des 30-Tage-Briefs (`MarketDemandService.loadLatestBrief().gaps`) ein Produktentwurf mit Status `pending`. Die LLM-Antwort wird streng validiert (Slug, Preis 9–990 USD, keine Links, Längen). Pro Kategorie höchstens alle 14 Tage. Freigabe per `POST /api/products/drafts/:id/approve|reject` (Admin-Token, Compare-and-Swap). **Freigabe veröffentlicht nichts**; der Katalogeintrag bleibt manuell. Tabelle `ProductDraft` (`prisma db push` nötig).
