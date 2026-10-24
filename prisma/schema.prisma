@@ -200,3 +200,61 @@ model PageView {
   @@index([day])
   @@index([visitorHash])
 }
+
+// --- Sales Pipeline: commercial signals from Reddit / X / landing / abandoned checkouts ---
+
+model SalesSignal {
+  id        String   @id @default(uuid())
+  source    String   // reddit | x_mention | landing | abandoned_checkout
+  sourceId  String   @unique
+  author    String?
+  text      String
+  score     Int      @default(0)
+  status    String   @default("new") // new | qualified | outreach_sent | converted | rejected
+  action    String?  // reddit_comment | sales_reply | b2b_proposal | checkout_followup | none
+  actionRef String?
+  metadata  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([source, createdAt])
+}
+
+// --- HN human-in-the-loop comment drafts (karma building; never auto-posted) ---
+
+model HnDraft {
+  id        String   @id @default(uuid())
+  threadId  String   // HN item id
+  threadTitle String
+  threadUrl String
+  author    String?
+  draftBody String
+  status    String   @default("pending") // pending | approved | posted | rejected
+  postedUrl String?
+  score     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([threadId])
+}
+
+// --- Product drafts from uncovered market needs (never published automatically) ---
+
+model ProductDraft {
+  id          String   @id @default(uuid())
+  needCategory String  // NeedCategory that produced the draft
+  slug        String   @unique
+  title       String
+  fact        String   // catalog-style one-liner, reviewed before publish
+  priceUsd    Int
+  rationale   String
+  evidence    String   // JSON array of sample signals
+  status      String   @default("pending") // pending | approved | rejected
+  decidedAt   DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([status])
+  @@index([needCategory])
+}

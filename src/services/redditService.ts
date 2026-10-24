@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { config } from '../config/index.js';
 import { fetchWithRetry } from '../utils/retryUtil.js';
-import { PRODUCTS, productPost } from './productCatalog.js';
+import { PRODUCTS, productPost, orderedProducts } from './productCatalog.js';
 import { parseMetadata } from './reachService.js';
 import type { RedditItem } from '../mcp/redditMcp.js';
 
@@ -180,13 +180,15 @@ export class RedditService {
         }
         // The first promotional slots share the open research data; products only come after that.
         const research = count < RESEARCH_PROMOS;
-        const product = PRODUCTS[count % PRODUCTS.length];
+        const { MarketDemandService } = await import('./marketDemandService.js');
+        const preference = await MarketDemandService.preferredProductOrder().catch(() => [] as string[]);
+        const product = orderedProducts(preference)[count % PRODUCTS.length];
         const post = research ? researchPost() : { title: `From an autonomous agent: ${product.fact}`, body: productPost(product.id, `${product.fact}\n${REDDIT_DISCLOSURE}`, 'reddit') };
         const claim = await this.reserve(threadId, true, subreddit);
         if (!claim) return;
         const redditId = threadId ? await RedditMcpClient.submitComment(threadId, post.body) :
           (await RedditMcpClient.submitPost({ subreddit, title: post.title, text: post.body })).redditId;
-        await prisma.trace.update({ where: { id: claim }, data: { status: 'ok', metadata: JSON.stringify({ promotional: true, subreddit, threadId, redditId, productId: research ? 'research' : product.id }) } });
+        await prisma.trace.update({ where: { id: claim }, data: { status: 'ok', metadata: JSON.stringify({ promotional: true, subreddit, threadId, redditId, productId: research ? 'research' : product.id, body: post.body }) } });
         return;
       }
       const today = new Date().toISOString().slice(0, 10);
@@ -211,7 +213,7 @@ export class RedditService {
           const claim = await this.reserve(thread.name, false, subreddit);
           if (!claim) continue;
           const redditId = await RedditMcpClient.submitComment(thread.name, draft.body);
-          await prisma.trace.update({ where: { id: claim }, data: { status: 'ok', metadata: JSON.stringify({ promotional: false, subreddit, threadId: thread.name, redditId }) } });
+          await prisma.trace.update({ where: { id: claim }, data: { status: 'ok', metadata: JSON.stringify({ promotional: false, subreddit, threadId: thread.name, threadTitle: thread.title, redditId, body: draft.body }) } });
           return;
         }
       }

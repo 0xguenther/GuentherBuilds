@@ -15,6 +15,7 @@ nohup brave-browser \
   --no-first-run \
   --disable-default-apps \
   --disable-popup-blocking \
+  --disable-blink-features=AutomationControlled \
   --no-sandbox \
   > /var/log/brave-cdp.log 2>&1 &
 

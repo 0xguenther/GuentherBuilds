@@ -1,4 +1,4 @@
-import { PRODUCTS, productPost, productTurn } from './productCatalog.js';
+import { PRODUCTS, productPost, productTurn, orderedProducts } from './productCatalog.js';
 import { XMcpClient } from '../mcp/xMcp.js';
 import { MentionService } from './mentionService.js';
 import { MarketingService } from './marketingService.js';
@@ -107,10 +107,14 @@ export class CommunityGrowthService {
     });
     const allowExternalLlm = todayTraces.reduce((sum, t) => sum + t.costUsd, 0) < config.growth.maxDailyLlmCostUsd;
     const products = productTurn(posted);
+    // Market-demand ranking first; among equal rank the least-recently posted wins.
+    const { MarketDemandService } = await import('./marketDemandService.js');
+    const preference = await MarketDemandService.preferredProductOrder().catch(() => [] as string[]);
     const angles: { id: string; fact: string }[] = products
-      ? [...PRODUCTS].sort((a, b) => {
+      ? orderedProducts(preference).sort((a, b) => {
         const age = (id: string) => { const i = posted.findIndex(t => parseMetadata(t.metadata).productId === id); return i < 0 ? 999 : i; };
-        return age(b.id) - age(a.id);
+        const rank = (id: string) => { const i = preference.indexOf(id); return i < 0 ? 99 : i; };
+        return rank(a.id) - rank(b.id) || age(b.id) - age(a.id);
       }) : [...AUDIT_ANGLES];
     const formatPost = products ? productPost : auditPost;
     const start = products ? 0 : Math.floor(Math.random() * angles.length);

@@ -52,6 +52,17 @@ export class SkillService {
         assetPath: 'skills/cdp-mpc-wallet-guard.zip',
         version: '1.0.0',
       },
+      {
+        title: 'Agent Trace Pack — Observability for Tool Calls',
+        slug: 'agent-trace-pack',
+        description: 'Trace-Schema, 12-Punkte-Checklist und Queries für Agent-Tool-Call-Observability (Langfuse/OTEL): Retries, Timeouts, Ghost-Writes sichtbar machen.',
+        category: 'workflow',
+        priceCents: 3900, // $39
+        takeRatePercent: 100,
+        isOfficial: true,
+        assetPath: 'skills/agent-trace-pack.zip',
+        version: '1.0.0',
+      },
     ];
 
     for (const skill of defaultSkills) {

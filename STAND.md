@@ -1,5 +1,14 @@
 # STAND — Günther
-Stand: 2026-10-16 | Letzter Agent: Claude (Posting-Kette gehärtet, LLM + Kuma repariert) | Historie: `docs/STAND_HISTORIE_20261014.md`
+Stand: 2026-10-24 | Letzter Agent: Claude (Produkt-Entwurfs-Zyklus, Warteschlange mit Freigabe) | Historie: `docs/STAND_HISTORIE_20261014.md`
+
+## Autonomie-Umbau (24.10., Ziel: Markt beobachten → Produkte entwerfen → vermarkten)
+- **Ist-Lücken:** Produkte fest im Code (`productCatalog.ts`), Marktnachfrage nur angezeigt (keine Wirkung auf Posts), Verkauf per `AUDIT_ORDERS_ENABLED` / `AUDIT_POSTS_ENABLED` gesperrt, Reichweite über Reddit-Warm-up (Karma 4), HN aus, X nur Erwähnungen.
+- **Erledigt:** `ProductDraftService` (`src/services/productDraftService.ts`). Höchstens wöchentlich (Markt ändert sich über Wochen) entsteht aus der ersten Marktlücke des 30-Tage-Briefs (`MarketDemandService.loadLatestBrief().gaps`) ein Produktentwurf mit Status `pending`. Die LLM-Antwort wird streng validiert (Slug, Preis 9–990 USD, keine Links, Längen). Pro Kategorie höchstens alle 14 Tage. Freigabe per `POST /api/products/drafts/:id/approve|reject` (Admin-Token, Compare-and-Swap). **Freigabe veröffentlicht nichts**; der Katalogeintrag bleibt manuell. Tabelle `ProductDraft` (`prisma db push` nötig).
+- **Entscheidungen Carlo (24.10.):** Entwürfe in Warteschlange mit Freigabe (keine Auto-Veröffentlichung). Verkauf erst nach Test-Bestellung im Stripe-Testmodus freischalten.
+- **Offen:** (1) Test-Bestellung im Stripe-Testmodus prüfen, dann Gates auf CT115 setzen. (2) Deploy: Commit, `prisma db push`, Neustart `gunther-core`. (3) Brief an die Post-Auswahl koppeln (aktuell nur `recommendedPush`, ohne Konsument). (4) Entwürfe-Freigabe im Alltag testen (Liste über Admin-Route).
+- **Recherche (24.10.):** Marktbrief läuft wöchentlich über 30 Tage. Neue Quelle: öffentliche HN-Suche (Algolia, ohne Schlüssel) mit fünf Suchbegriffen (`HN_RESEARCH_QUERIES`), zusätzlich zu den Reddit-Subs.
+- **Karma/Reichweite:** keine automatisierten Kommentare nur für Karma. Das verstößt gegen die Regeln von Reddit und HN und gefährdet das Konto. Gültig bleibt die offengelegte Hilfe-Routine (max. 3/Tag, Promo erst nach 9 Hilfs-Aktionen).
+- **Tests:** 209/209 grün (28 Dateien), `tsc --noEmit` ok. Nicht gegen CT115 getestet.
 
 ## Status
 - Läuft produktiv auf CT115 (`10.0.1.115:3000`, `gunther-core.service`), erreichbar unter `https://0xguenther.org`. Branch `master`; Änderungen vom 16.10. sind deployt, aber **noch nicht committet**.

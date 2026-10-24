@@ -14,7 +14,7 @@ afterEach(() => { vi.restoreAllMocks(); });
 
 describe('product announcements', () => {
   it('covers all products with UTM-tagged links', () => {
-    expect(PRODUCTS.map(p => p.id)).toEqual(['playbook', 'eliza-token-burner', 'fastify-stripe-mcp', 'cdp-mpc-wallet-guard', 'audit', 'enterprise']);
+    expect(PRODUCTS.map(p => p.id)).toEqual(['playbook', 'eliza-token-burner', 'fastify-stripe-mcp', 'cdp-mpc-wallet-guard', 'agent-trace-pack', 'audit', 'enterprise']);
     for (const p of PRODUCTS) {
       const url = new URL(productPost(p.id, 'x').split('\n')[1]);
       expect(Object.fromEntries(url.searchParams)).toEqual({ utm_source: 'x', utm_medium: 'social', utm_campaign: 'products', utm_content: p.id });

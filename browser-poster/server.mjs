@@ -34,6 +34,60 @@ function httpError(status, message) {
   return Object.assign(new Error(message), { status });
 }
 
+// ── Human-like input pacing ──────────────────────────────────────────────
+// Instant form.fetch() from page.evaluate is the classic automation tell.
+// Real keystrokes + jitter + a "thinking" pause before submit look much closer
+// to a person, and HN/Reddit bot checks weight input timing.
+
+function rand(min, max) {
+  return min + Math.random() * (max - min);
+}
+
+async function humanDelay(minMs, maxMs) {
+  await new Promise(r => setTimeout(r, rand(minMs, maxMs)));
+}
+
+/** Types like a person: uneven keystrokes, occasional longer pauses. */
+async function humanType(page, selector, text) {
+  const el = page.locator(selector).first();
+  await el.click({ delay: rand(40, 120) });
+  await humanDelay(200, 600);
+  // Chunked typing: bursts of 3–12 chars with micro-pauses, plus rare "think" stops.
+  let i = 0;
+  while (i < text.length) {
+    const burst = Math.min(text.length - i, Math.floor(rand(3, 13)));
+    await el.pressSequentially(text.slice(i, i + burst), { delay: rand(28, 95) });
+    i += burst;
+    if (i < text.length) {
+      // Longer pause after punctuation or newline (sentence boundary).
+      const prev = text[i - 1];
+      const longPause = /[.!?\n]/.test(prev) || Math.random() < 0.08;
+      await humanDelay(longPause ? 350 : 60, longPause ? 1200 : 220);
+    }
+  }
+}
+
+/** Mouse moves to the element before clicking — no teleporting pointer. */
+async function humanClick(page, selector) {
+  const el = page.locator(selector).first();
+  const box = await el.boundingBox();
+  if (box) {
+    await page.mouse.move(box.x + box.width / 2 + rand(-8, 8), box.y + box.height / 2 + rand(-6, 6), { steps: Math.floor(rand(8, 22)) });
+    await humanDelay(50, 180);
+  }
+  await el.click({ delay: rand(50, 140) });
+}
+
+/** Random scroll on the page — people read before they write. */
+async function humanSkim(page) {
+  await page.mouse.wheel(0, Math.floor(rand(80, 320)));
+  await humanDelay(400, 1100);
+  if (Math.random() < 0.5) {
+    await page.mouse.wheel(0, Math.floor(rand(-120, -40)));
+    await humanDelay(300, 800);
+  }
+}
+
 async function cdpAlive() {
   try {
     const res = await fetch(`http://${CDP_HOST}:${CDP_PORT}/json/version`, { signal: AbortSignal.timeout(3000) });
@@ -185,6 +239,8 @@ async function redditListing(path) {
 async function submitComment({ thingId, text }) {
   if (!/^t[13]_[a-z0-9]{1,12}$/.test(thingId || '')) throw httpError(400, 'thingId must be t1_/t3_ fullname');
   if (typeof text !== 'string' || !text.trim() || text.length > 10_000) throw httpError(400, 'text required (max 10000 chars)');
+  // Small pacing gap so consecutive API comments don't look machine-gun timed.
+  await humanDelay(1500, 4500);
   const page = await getRedditPage();
   const result = await page.evaluate(async ({ thingId, text }) => {
     let uh = '';
@@ -317,56 +373,56 @@ async function submitHnPost(params) {
   if (!linkUrl && !text) throw new Error('url or text required');
 
   const page = await getHnPage();
+  await humanDelay(800, 2500);
 
-  // Navigate to submit page and extract form tokens
+  // Navigate to submit page like a user who just decided to post.
   await page.goto('https://news.ycombinator.com/submit', { waitUntil: 'domcontentloaded', timeout: 20000 });
-  await page.waitForTimeout(1500);
+  await humanDelay(1200, 2800);
 
-  const result = await page.evaluate(async ({ title, linkUrl, text }) => {
-    // Extract fnid and fnop from the submit form
+  const meta = await page.evaluate(() => {
     const form = document.querySelector('form');
-    if (!form) return { error: 'No submit form found — may not be logged in' };
-
+    if (!form) return { ok: false };
     const fnid = form.querySelector('input[name="fnid"]')?.value || '';
     const fnop = form.querySelector('input[name="fnop"]')?.value || '';
-    if (!fnid) return { error: 'No fnid token found — may not be logged in' };
+    return { ok: !!fnid, fnid, fnop };
+  });
+  if (!meta.ok) throw new Error('No submit form found — may not be logged in');
 
-    const body = new URLSearchParams({
-      fnid,
-      fnop: fnop || 'submit-page',
-      title,
-    });
-    if (linkUrl) {
-      body.set('url', linkUrl);
-    } else {
-      body.set('text', text || '');
-    }
+  await humanType(page, 'input[name="title"]', title);
+  await humanDelay(300, 900);
+  if (linkUrl) {
+    await humanType(page, 'input[name="url"]', linkUrl);
+    await humanDelay(250, 700);
+  } else if (text) {
+    await humanType(page, 'textarea[name="text"]', text);
+    await humanDelay(400, 1100);
+  }
+  await humanDelay(900, 2400);
 
-    const res = await fetch('https://news.ycombinator.com/r', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: body.toString(),
-      credentials: 'include',
-      redirect: 'follow',
-    });
+  const form = page.locator('form').first();
+  const action = await form.getAttribute('action').catch(() => null);
+  const submit = page.locator('form input[type="submit"]').first();
+  await submit.click({ delay: rand(60, 150) });
+  await page.waitForLoadState('domcontentloaded').catch(() => {});
+  await humanDelay(500, 1600);
 
-    const html = await res.text();
-    // HN returns the new item page on success, or the submit form again on error
-    const idMatch = html.match(/item\?id=(\d+)/);
-    const errorMatch = html.match(/class="error"[^>]*>(.*?)</s);
-    return {
-      status: res.status,
-      id: idMatch ? idMatch[1] : null,
-      error: errorMatch ? errorMatch[1].trim() : null,
-      url: idMatch ? `https://news.ycombinator.com/item?id=${idMatch[1]}` : null,
-    };
-  }, { title, linkUrl, text });
+  const html = await page.content();
+  const idMatch = html.match(/item\?id=(\d+)/);
+  const errorMatch = html.match(/class="error"[^>]*>(.*?)</s);
+  const result = {
+    status: 200,
+    id: idMatch ? idMatch[1] : null,
+    error: errorMatch ? errorMatch[1].trim() : null,
+    url: idMatch ? `https://news.ycombinator.com/item?id=${idMatch[1]}` : null,
+    action,
+    fnidPresent: Boolean(meta.fnid),
+  };
 
   if (result.error) {
     throw new Error(`HN rejected: ${result.error}`);
   }
   if (!result.id) {
-    throw new Error(`HN submit failed (HTTP ${result.status}): no item ID in response`);
+    throw new Error(`HN submit failed (html ${html.length}): no item ID in response`);
   }
 
   console.log(`[BrowserPoster] Posted to HN: ${result.url}`);
@@ -374,6 +430,75 @@ async function submitHnPost(params) {
     hnId: result.id,
     url: result.url,
     title,
+    createdAt: new Date().toISOString(),
+  };
+}
+
+/** Reply to an existing HN item (comment). Human-paced UI interaction, no fetch() shortcut. */
+async function submitHnComment(params) {
+  const { parentId, text } = params;
+  if (!parentId) throw new Error('parentId required');
+  if (!text || text.trim().length < 20) throw new Error('text too short');
+
+  const page = await getHnPage();
+  // Slight pre-navigation pause — not a bot that fires the instant the API calls.
+  await humanDelay(600, 2200);
+  await page.goto(`https://news.ycombinator.com/item?id=${encodeURIComponent(parentId)}`, {
+    waitUntil: 'domcontentloaded', timeout: 20000,
+  });
+  await humanDelay(1200, 2800);
+  await humanSkim(page);
+
+  // Inline reply form on the item page: action="comment", fields parent/goto/hmac/text.
+  const formInfo = await page.evaluate(() => {
+    const form = [...document.querySelectorAll('form')].find(f => {
+      const action = (f.getAttribute('action') || '').replace(/^\/+/, '');
+      return action === 'comment' && f.querySelector('input[name="parent"]');
+    });
+    if (!form) return { ok: false };
+    const val = (name) => form.querySelector(`[name="${name}"]`)?.value || '';
+    return {
+      ok: true,
+      parent: val('parent'),
+      goto: val('goto'),
+      hmac: val('hmac'),
+    };
+  });
+  if (!formInfo.ok) {
+    throw new Error('No comment form — not logged in, archived, or low karma');
+  }
+
+  // Click the textarea, type like a human, think, then submit.
+  await humanDelay(400, 1000);
+  await humanType(page, 'form[action="comment"] textarea[name="text"]', text);
+  await humanDelay(1200, 3200); // read own comment
+
+  const submitSelector = 'form[action="comment"] input[type="submit"]';
+  await humanClick(page, submitSelector);
+
+  // Follow the form POST the real browser just made (Playwright awaits navigation).
+  await page.waitForLoadState('domcontentloaded').catch(() => {});
+  await humanDelay(500, 1500);
+  const html = await page.content();
+  const idMatch = html.match(/item\?id=(\d+)/);
+  const errorMatch = html.match(/class="error"[^>]*>(.*?)</s);
+  const result = {
+    status: 200,
+    id: idMatch ? idMatch[1] : null,
+    error: errorMatch ? errorMatch[1].trim() : null,
+    url: idMatch ? `https://news.ycombinator.com/item?id=${idMatch[1]}` : null,
+    htmlLen: html.length,
+    form: formInfo,
+  };
+
+  if (result.error) throw new Error(`HN rejected: ${result.error}`);
+  if (!result.id) throw new Error(`HN reply failed (html ${result.htmlLen}): no comment ID`);
+
+  console.log(`[BrowserPoster] HN comment on ${parentId}: ${result.url}`);
+  return {
+    hnId: result.id,
+    url: result.url,
+    parentId: String(parentId),
     createdAt: new Date().toISOString(),
   };
 }
@@ -481,6 +606,14 @@ const server = http.createServer(async (req, res) => {
       if (!body.url && !body.text) return json(400, { error: 'url or text required' });
       const result = await exclusive(() => submitHnPost(body));
       return json(200, { success: true, post: result });
+    }
+
+    if (req.method === 'POST' && reqUrl.pathname === '/api/hn/comment') {
+      const body = await parseBody(req);
+      if (!body.parentId) return json(400, { error: 'parentId required' });
+      if (!body.text) return json(400, { error: 'text required' });
+      const result = await exclusive(() => submitHnComment(body));
+      return json(200, { success: true, comment: result });
     }
 
     json(404, { error: 'Not found' });

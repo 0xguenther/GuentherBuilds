@@ -9,6 +9,10 @@ import { TraceService } from '../services/traceService.js';
 import { PostingWatchdogService } from '../services/postingWatchdogService.js';
 import { MetricsService } from '../services/metricsService.js';
 import { AuditFulfillmentService } from '../services/auditFulfillmentService.js';
+import { SalesOutreachService } from '../services/salesOutreachService.js';
+import { MarketDemandService } from '../services/marketDemandService.js';
+import { HnDraftService } from '../services/hnDraftService.js';
+import { ProductDraftService } from '../services/productDraftService.js';
 import { checkDatabaseConnection } from '../db/client.js';
 import { config } from '../config/index.js';
 
@@ -80,6 +84,27 @@ export class GuntherDaemon {
         await AuditFulfillmentService.processPaidOrders();
       } catch (err: unknown) {
         console.error('[Daemon] Audit-Fulfilment fehlgeschlagen:', err instanceof Error ? err.message : err);
+      }
+      try {
+        await SalesOutreachService.runOutreachCycle();
+      } catch (err: unknown) {
+        console.error('[Daemon] Sales outreach failed:', err instanceof Error ? err.message : err);
+      }
+      try {
+        await MarketDemandService.runDemandAnalysis(false);
+      } catch (err: unknown) {
+        console.error('[Daemon] Market demand analysis failed:', err instanceof Error ? err.message : err);
+      }
+      try {
+        await HnDraftService.runScan(false);
+      } catch (err: unknown) {
+        console.error('[Daemon] HN draft scan failed:', err instanceof Error ? err.message : err);
+      }
+      try {
+        const draft = await ProductDraftService.runDraftCycle();
+        if (draft.drafted) console.log(`[Daemon] Product draft queued: ${draft.reason}`);
+      } catch (err: unknown) {
+        console.error('[Daemon] Product draft cycle failed:', err instanceof Error ? err.message : err);
       }
     } finally {
       this.isTickBusy = false;

@@ -111,4 +111,36 @@ export class HnMcpClient {
     console.log(`[HnMcp] Browser-poster submitted: ${result.url}`);
     return result;
   }
+
+  /** Reply to an HN item via the browser poster (human-reviewed draft text). */
+  static async submitComment(params: { parentId: string; text: string }): Promise<HnPostResult> {
+    const isTestMode = process.env.NODE_ENV === 'test' || config.server.env === 'test';
+
+    if (isTestMode) {
+      console.log(`[HnMcp] (Test Mode) Comment on ${params.parentId}: ${params.text.slice(0, 60)}…`);
+      return {
+        hnId: `sim_c_${Date.now()}`,
+        url: `https://news.ycombinator.com/item?id=sim_c_${Date.now()}`,
+        title: `comment on ${params.parentId}`,
+        createdAt: new Date().toISOString(),
+      };
+    }
+
+    if (!this.hasBrowserPoster()) {
+      throw new Error('HN browser poster not configured');
+    }
+
+    const json = await posterFetch<{ success: boolean; comment?: HnPostResult; error?: string }>(
+      hnPoster(),
+      '/api/hn/comment',
+      {
+        method: 'POST',
+        body: { parentId: params.parentId, text: params.text },
+        timeoutMs: 120_000,
+      }
+    );
+    if (!json.success || !json.comment) throw new Error(json.error || 'HN comment outcome unknown');
+    console.log(`[HnMcp] HN comment posted: ${json.comment.url}`);
+    return json.comment;
+  }
 }

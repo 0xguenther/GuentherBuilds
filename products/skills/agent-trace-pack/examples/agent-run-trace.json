@@ -1,0 +1,105 @@
+{
+  "comment": "One agent.run with: (1) successful read, (2) write that timed out then was verified, (3) retry with same idempotency key. Attribute names match trace-schema.md exactly.",
+  "spans": [
+    {
+      "span_id": "run-001",
+      "name": "agent.run",
+      "start_ms": 0,
+      "end_ms": 2400,
+      "attributes": {
+        "agent.run_id": "3f8c2a1e-9b4d-4e2a-8c1f-0a5b6d7e8f90",
+        "agent.name": "invoice-bot",
+        "agent.trigger": "webhook",
+        "agent.session_id": "ticket-8841"
+      }
+    },
+    {
+      "span_id": "llm-001",
+      "parent": "run-001",
+      "name": "llm.completion",
+      "start_ms": 10,
+      "end_ms": 420,
+      "attributes": {
+        "llm.model": "claude-haiku-4.5",
+        "llm.input_tokens": 1800,
+        "llm.output_tokens": 220,
+        "llm.finish_reason": "tool_calls"
+      },
+      "events": [
+        { "name": "llm.request", "attributes": { "llm.prompt_hash": "a1b2…" } },
+        { "name": "llm.response", "attributes": { "llm.response_hash": "c3d4…" } }
+      ]
+    },
+    {
+      "span_id": "tool-read-001",
+      "parent": "run-001",
+      "name": "tool.call",
+      "start_ms": 430,
+      "end_ms": 510,
+      "attributes": {
+        "tool.name": "get_customer",
+        "tool.kind": "read",
+        "tool.outcome": "ok",
+        "tool.duration_ms": 80,
+        "tool.attempt": 1,
+        "tool.http_status": 200
+      }
+    },
+    {
+      "span_id": "tool-write-001",
+      "parent": "run-001",
+      "name": "tool.call",
+      "start_ms": 520,
+      "end_ms": 3520,
+      "attributes": {
+        "tool.name": "create_invoice",
+        "tool.kind": "write",
+        "tool.outcome": "ok",
+        "tool.duration_ms": 3000,
+        "tool.attempt": 1,
+        "tool.idempotency_key": "create_invoice:sha256(4f9a…):3f8c2a1e",
+        "tool.payload_hash": "4f9a1c2b3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abc",
+        "tool.error_type": "timeout",
+        "tool.retryable": true
+      },
+      "note": "First attempt timed out from the client's point of view; readback proved the invoice exists, so final outcome is ok. error_type keeps the fact that the HTTP call timed out.",
+      "events": [
+        {
+          "name": "retry.scheduled",
+          "at_ms": 3530,
+          "attributes": {
+            "retry.delay_ms": 1500,
+            "retry.reason": "timeout",
+            "tool.attempt": 1
+          }
+        },
+        {
+          "name": "write.verified",
+          "at_ms": 5200,
+          "attributes": {
+            "write.state": "exists",
+            "write.checked_at_ms": 5200
+          }
+        }
+      ]
+    },
+    {
+      "span_id": "tool-write-002",
+      "parent": "run-001",
+      "name": "tool.call",
+      "start_ms": 5210,
+      "end_ms": 5890,
+      "attributes": {
+        "tool.name": "create_invoice",
+        "tool.kind": "write",
+        "tool.outcome": "ok",
+        "tool.duration_ms": 680,
+        "tool.attempt": 2,
+        "tool.idempotency_key": "create_invoice:sha256(4f9a…):3f8c2a1e",
+        "tool.payload_hash": "4f9a1c2b3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abc",
+        "tool.http_status": 200
+      },
+      "note": "Retry after readback. Same idempotency key → no duplicate.risk event. Server returned the existing invoice (idempotent)."
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+# otel-collector.yaml — minimal excerpt for agent traces
+
+This is a **fragment**, not a full production config. Merge into your
+existing collector. Tested pattern: OTLP in → batch → OTLP out to your
+backend (Langfuse, Honeycomb, Jaeger, …).
+
+```yaml
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+    timeout: 5s
+    send_batch_size: 512
+  # Drop noisy read spans if you only care about writes
+  filter/read-spans:
+    error_mode: ignore
+    traces:
+      span:
+        - 'attributes["tool.kind"] == "read"'
+
+exporters:
+  otlp/langfuse:
+    endpoint: ${env:OTLP_ENDPOINT}
+    headers:
+      Authorization: Basic ${env:OTLP_AUTH}
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp/langfuse]
+    # Optional: drop reads entirely
+    # traces/writes-only:
+    #   receivers: [otlp]
+    #   processors: [batch, filter/read-spans]
+    #   exporters: [otlp/langfuse]
+```
+
+## Notes
+
+1. Set `OTLP_ENDPOINT` and `OTLP_AUTH` from your secret store, never in git.
+2. Keep the batch processor. Sync export on every span loses data on crash.
+3. Do **not** add a processor that rewrites `tool.*` attribute names —
+   `queries.sql` depends on them.
+4. If you use Langfuse, the same OTLP ingest works; check their current
+   docs for the exact header format.
+
+## Language SDKs
+
+| Stack | Start from |
+|---|---|
+| Node/TS | `@opentelemetry/sdk-node` + `OTLPTraceExporter` |
+| Python | `opentelemetry-sdk` + `OTLPSpanExporter` |
+| Go | `go.opentelemetry.io/otel/exporters/otlp/otlptrace` |
+
+Map `ToolCallAttrs` from `trace-schema.md` as span attributes. No other
+code from this pack is required at runtime.
